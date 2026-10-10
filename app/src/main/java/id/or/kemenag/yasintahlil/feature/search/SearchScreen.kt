@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.navigation.Routes
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import kotlinx.coroutines.launch
@@ -25,27 +26,27 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
             repo.yasin.verses.forEach { v ->
                 if (v.terjemahan.contains(q, true) || v.latin.contains(q, true) || q.trim() == v.nomor.toString())
                     add(Hit("yasin:${v.nomor}", "Yasin ayat ${v.nomor}", v.terjemahan.take(120),
-                        id.or.kemenag.yasintahlil.navigation.Routes.YASIN))
+                        Routes.YASIN))
             }
             repo.tahlil().forEach { t ->
                 if (t.judul.contains(q, true) || t.terjemahan.contains(q, true))
                     add(Hit("tahlil:${t.id}", "Tahlil: ${t.judul}", t.terjemahan.take(120),
-                        id.or.kemenag.yasintahlil.navigation.Routes.TAHLIL))
+                        Routes.TAHLIL))
             }
             repo.dzikir().flatMap { it.items }.forEach { d ->
                 if (d.judul.contains(q, true) || d.terjemahan.contains(q, true))
                     add(Hit("dzikir:${d.judul}", "Doa: ${d.judul}", d.terjemahan.take(120),
-                        id.or.kemenag.yasintahlil.navigation.Routes.DZIKIR))
+                        Routes.DZIKIR))
             }
             (repo.sholatWajib() + repo.sholatSunnah()).forEach { s ->
                 if (s.nama.contains(q, true) || s.deskripsi.contains(q, true))
                     add(Hit("sholat:${s.id}", "Sholat: ${s.nama}", s.deskripsi.take(120),
-                        id.or.kemenag.yasintahlil.navigation.Routes.SHOLAT))
+                        Routes.SHOLAT))
             }
             repo.sholatBacaan().forEach { b ->
                 if (b.judul.contains(q, true))
                     add(Hit("bacaan:${b.id}", "Bacaan: ${b.judul}", b.kapan,
-                        id.or.kemenag.yasintahlil.navigation.Routes.SHOLAT))
+                        Routes.SHOLAT))
             }
         }.take(50)
     }

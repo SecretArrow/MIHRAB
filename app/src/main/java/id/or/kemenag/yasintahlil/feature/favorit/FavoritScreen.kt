@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.navigation.Routes
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import kotlinx.coroutines.launch
@@ -24,12 +25,12 @@ fun FavoritScreen(go: (String) -> Unit) {
         last = store.get(Store.LAST, "")
     }
     fun rute(id: String) = when {
-        id.startsWith("yasin") -> id.or.kemenag.yasintahlil.navigation.Routes.YASIN
-        id.startsWith("tahlil") -> id.or.kemenag.yasintahlil.navigation.Routes.TAHLIL
-        id.startsWith("dzikir") || id.startsWith("doa") || id.startsWith("jawab") -> id.or.kemenag.yasintahlil.navigation.Routes.DZIKIR
-        id.startsWith("bacaan") || id.startsWith("niat") || id.startsWith("langkah") || id.startsWith("ghaib") || id.startsWith("jenazah") -> id.or.kemenag.yasintahlil.navigation.Routes.SHOLAT
-        id.startsWith("adzan") || id.startsWith("iqomah") -> id.or.kemenag.yasintahlil.navigation.Routes.ADZAN
-        else -> id.or.kemenag.yasintahlil.navigation.Routes.HOME
+        id.startsWith("yasin") -> Routes.YASIN
+        id.startsWith("tahlil") -> Routes.TAHLIL
+        id.startsWith("dzikir") || id.startsWith("doa") || id.startsWith("jawab") -> Routes.DZIKIR
+        id.startsWith("bacaan") || id.startsWith("niat") || id.startsWith("langkah") || id.startsWith("ghaib") || id.startsWith("jenazah") -> Routes.SHOLAT
+        id.startsWith("adzan") || id.startsWith("iqomah") -> Routes.ADZAN
+        else -> Routes.HOME
     }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Favorit, Riwayat & Terakhir dibaca", style = MaterialTheme.typography.titleLarge)

@@ -28,19 +28,19 @@ fun JadwalScreen() {
     var corrTxt by remember { mutableStateOf("0,0,0,0,0,0") }
     var times by remember { mutableStateOf<PrayerTimes?>(null) }
     var nowMin by remember { mutableStateOf(0) }
-    LaunchedEffect(Unit) {
-        city = store.get(Store.CITY, "Jakarta")
-        lat = store.get(Store.LAT, -6.2); lon = store.get(Store.LON, 106.8)
-        asarH = store.get(Store.ASAR, "syafii") == "hanafi"
-        corrTxt = store.get(Store.CORR, "0,0,0,0,0,0")
-        recompute()
-    }
     fun recompute() {
         val c = corrTxt.split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }
         val now = Calendar.getInstance()
         nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
         times = PrayerCalc.compute(now, PrayerCalc.Params(lat, lon,
             asarFactor = if (asarH) 2.0 else 1.0, corr = c.take(6)))
+    }
+    LaunchedEffect(Unit) {
+        city = store.get(Store.CITY, "Jakarta")
+        lat = store.get(Store.LAT, -6.2); lon = store.get(Store.LON, 106.8)
+        asarH = store.get(Store.ASAR, "syafii") == "hanafi"
+        corrTxt = store.get(Store.CORR, "0,0,0,0,0,0")
+        recompute()
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Jadwal Sholat — metode Kemenag", style = MaterialTheme.typography.titleLarge)

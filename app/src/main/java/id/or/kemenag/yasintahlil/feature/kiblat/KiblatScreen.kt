@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.designsystem.rememberStore
 import id.or.kemenag.yasintahlil.core.util.QiblaCalc
 import kotlinx.coroutines.launch
 import kotlin.math.*
@@ -98,7 +99,7 @@ fun KiblatScreen() {
                 val rel = q - a
                 drawLine(Color(0xFFC9A227), c,
                     c + Offset(sin(rel).toFloat() * (R - 12), (-cos(rel)).toFloat() * (R - 12)), 10f)
-                drawCircle(Color.Red, c, 8f)
+                drawCircle(Color.Red, 8f, c)
             }
         }
         Text("Jarum emas = kiblat • garis abu = utara • Akurasi kompas tidak dijamin; pisahkan azimut matematis vs sensor.",

@@ -16,6 +16,7 @@ fun SholatScreen(go: (String) -> Unit) {
     val wajib = remember { repo.sholatWajib() }
     val sunnah = remember { repo.sholatSunnah() }
     var tab by remember { mutableStateOf(0) }
+    val bacaan = remember { repo.sholatBacaan() }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Panduan Sholat (Fasolatan Kemenag)", style = MaterialTheme.typography.titleLarge)
         TabRow(tab) {
@@ -49,7 +50,6 @@ fun SholatScreen(go: (String) -> Unit) {
                 }
             }
             if (tab == 2) {
-                val bacaan = remember { repo.sholatBacaan() }
                 items(bacaan) { b ->
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
