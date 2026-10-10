@@ -29,4 +29,4 @@ jobs:
           disable-animations: false
           emulator-boot-timeout: 900
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: ./gradlew :app:connectedDebugAndroidTest --parallel --build-cache
+          script: adb wait-for-device && sleep 90 && ./gradlew :app:connectedDebugAndroidTest --parallel --build-cache
