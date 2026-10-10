@@ -1,0 +1,39 @@
+# SUMBER RESMI — WAJIB DIRUJUK, DILARANG KARANG TEKS AGAMA
+
+Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
+
+## 1. Teks Al-Qur'an / Yasin + Terjemahan
+- https://quran.kemenag.go.id/ (Mushaf Standar Indonesia, LPMQ Kemenag RI)
+- https://quran-api.lpmqkemenag.id/ (Qur'an Kemenag API — daftar + surat ke lajnah@kemenag.go.id)
+- https://quranindonesia.kemenag.go.id/ (aplikasi rujukan resmi)
+- https://lajnah.kemenag.go.id/ (unduhan mushaf resmi)
+- Edisi terjemah: Kemenag 2019. Yasin = 83 ayat. File: `app/src/main/assets/content/yasin.json`
+- Atribusi di About: "Sumber teks: Lajnah Pentashihan Mushaf Al-Qur'an (LPMQ) Kemenag RI"
+
+## 2. Jadwal Sholat
+- https://sihat.kemenag.dev/ (SIHAT Ditjen Bimas Islam — metode baku Kemenag per kab/kota)
+- https://sihat.kemenag.dev/pengembang (API resmi: Bearer token + IP whitelist, rate-limited, wajib cantum "Kementerian Agama RI")
+- https://bimasislam.kemenag.go.id/jadwalshalat (fallback bulanan)
+- Fallback offline: algoritma Astronomical Algorithms (Jean Meeus) + Ilmu Falak (Muhyidin Khazin), label "perkiraan lokal — verifikasi SIHAT"
+
+## 3. Kalender Hijriah
+- https://sihat.kemenag.dev/kalender-hijriah (Kalender Hijriah Indonesia Bimas Islam)
+- PDF Kalender 2026 + Sidang Isbat (1 Ramadan 1447H = 19 Feb 2026, 96 titik rukyat)
+- Pendamping: https://hilal.bmkg.go.id/ (hisab + rukyat BMKG)
+
+## 4. Arah Kiblat
+- https://sihat.kemenag.dev/arah-kiblat (azimut busur terpendek dari utara sejati)
+- https://sihat.kemenag.dev/e-kiblat (sertifikat via Kemenag Kab/Kota, teodolit)
+- Koordinat Ka'bah resmi: 21°25'21.0"U 39°49'34.3"T
+- Rashdul kiblat 2x setahun (bayangan tongkat) sebagai fallback tanpa sensor
+
+## 5. Panduan Sholat + Sholat Ghaib
+- Program Fasolatan / Ngaji Fasolatan Ditjen Bimas Islam (launch 24 Jun 2025): kerangka wudhu, tayamum, sholat, imam-makmum
+- Verifikasi hadis: https://sunnah.com/ (Bukhari 756/1335, Muslim 394, Musnad Syafi'i 588)
+- Sholat Ghaib: imbauan resmi Kemenag (Cianjur 2022, Turki-Suriah 2023, Maroko-Libya 2023); dalil primer HR Muttafaq Alaih (Abu Hurairah, sholat Najasyi 4 takbir); penjelasan syarat + kritik sanad via NU Online (hanya Najasyi yang sahih)
+- Perbedaan mazhab wajib tampil: Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia = Syafi'i.
+
+## 6. Aturan konten
+- Setiap entri JSON wajib: `arab, latin, terjemahan, sumber_url, edisi, catatan_mazhab`.
+- CI gagal jika `sumber_url` kosong atau domain di luar: `*.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id` (penjelas saja).
+- Dilarang generate teks Arab dengan AI. Dilarang karang hadis/sanad.

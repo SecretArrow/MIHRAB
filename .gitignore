@@ -1,0 +1,15 @@
+# Android / Gradle
+.gradle/
+build/
+*/build/
+local.properties
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+.DS_Store
+.idea/
+*.iml
+# Secrets - JANGAN commit token
+.env
+*token*

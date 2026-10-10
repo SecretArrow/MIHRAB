@@ -1,0 +1,22 @@
+name: Autofix (format saja)
+
+on:
+  pull_request:
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: { contents: write, pull-requests: write }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: ${{ github.head_ref }} }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Spotless check (non-blocking, info)
+        run: ./gradlew tasks --all -q | head -20
+      - name: Auto-commit format jika ada perubahan
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: autofix format [skip ci]'

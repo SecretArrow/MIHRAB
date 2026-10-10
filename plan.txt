@@ -1,0 +1,465 @@
+https://github.com/SecretArrow/Yasin-dan-Tahlil.git pakai repo ini, untuk push ke main github juga untuk github actions ci cd , mulai dari sekarang pakai repo ini saja, pakai repo ini saja, token github via env GH_TOKEN (JANGAN commit token) jangan buil local, pakai github actions ci cd unit lint e2e test , pikirkan cara cepat dan hemat waktu build, auto fix, auto release
+
+# MASTER PROMPT — APLIKASI ANDROID ISLAMI MODERN
+
+Bangun aplikasi Android Islami modern dengan nama sementara **Yasin dan Tahlil** yang menyediakan panduan ibadah harian lengkap, akurat, mudah digunakan, dan nyaman untuk semua kalangan. Aplikasi harus memiliki UI/UX premium, responsif, performa ringan, mendukung penggunaan offline, dan mengikuti standar pengembangan Android modern.
+
+Aplikasi harus siap dikembangkan menjadi aplikasi produksi, bukan hanya prototype, mockup, atau kumpulan halaman statis.
+
+## Konsep dan Identitas Aplikasi
+
+Buat aplikasi Islami dengan desain modern, elegan, minimalis, tenang, dan memiliki identitas visual Islami yang kuat.
+
+Gunakan prinsip desain berikut:
+
+- Material Design 3 dengan adaptasi khusus untuk aplikasi Islami.
+- Palet warna hijau zamrud, hijau gelap, putih gading, dan aksen emas yang lembut.
+- Mode terang dan mode gelap.
+- Tipografi yang nyaman dibaca, khususnya teks Arab, transliterasi Latin, dan terjemahan bahasa Indonesia.
+- Ornamen geometris Islami yang halus, tanpa membuat antarmuka terlihat ramai.
+- Ikon konsisten, animasi ringan, transisi halus, serta feedback visual pada setiap interaksi.
+- Layout responsif untuk berbagai ukuran layar dan kepadatan piksel Android.
+- Dukungan ukuran font sistem dan aksesibilitas.
+- Hindari iklan yang mengganggu ketika pengguna sedang membaca Al-Qur'an atau melaksanakan ibadah.
+
+Gunakan bahasa Indonesia sebagai bahasa utama, dengan dukungan teks Arab yang benar dan tampilan RTL (Right-to-Left).
+
+## Beranda Utama
+
+Buat dashboard yang informatif dan mudah dipahami.
+
+Tampilkan:
+
+- Salam Islami dan tanggal Hijriah serta Masehi.
+- Waktu saat ini.
+- Lokasi pengguna dan pilihan mengganti lokasi secara manual.
+- Jadwal sholat Subuh, Zuhur, Asar, Magrib, dan Isya.
+- Hitung mundur menuju waktu sholat berikutnya.
+- Status waktu sholat berikutnya.
+- Tombol cepat menuju Yasin, Tahlil, Panduan Sholat, Adzan, Doa, dan Arah Kiblat.
+- Ringkasan jadwal sholat hari ini.
+- Pengingat ibadah yang dapat diaktifkan atau dinonaktifkan.
+- Bagian bacaan terakhir yang dibuka.
+- Favorit dan riwayat aktivitas.
+- Widget atau kartu informasi Islami harian yang dapat dinonaktifkan.
+
+Susun navigasi bawah dengan menu Beranda, Ibadah, Alat, dan Pengaturan. Tempatkan semua fitur penting agar mudah dijangkau dengan satu tangan.
+
+## Fitur Surat Yasin
+
+Bangun modul pembacaan Surat Yasin yang lengkap dan nyaman digunakan.
+
+Fitur wajib:
+
+- Teks Surat Yasin dalam bahasa Arab sesuai mushaf yang tepercaya.
+- Penomoran ayat yang jelas.
+- Transliterasi Latin sebagai pilihan.
+- Terjemahan bahasa Indonesia.
+- Tampilan Arab, Latin, dan terjemahan secara bersamaan atau terpisah.
+- Pilihan ukuran font Arab dan Latin.
+- Pengaturan jarak antarbaris dan tema halaman.
+- Mode membaca layar penuh.
+- Penanda ayat terakhir yang dibaca.
+- Bookmark ayat.
+- Pencarian ayat.
+- Salin teks ayat.
+- Bagikan ayat beserta terjemahannya.
+- Mode layar tetap menyala saat membaca.
+- Navigasi cepat berdasarkan nomor ayat.
+- Dukungan membaca tanpa koneksi internet.
+
+Pastikan teks Arab tidak terpotong, tidak terbalik, dan memiliki rendering yang benar pada berbagai perangkat Android.
+
+Jangan membuat teks ayat atau terjemahan dengan AI secara bebas. Gunakan sumber teks Al-Qur'an yang tepercaya, pertahankan tanda baca dan nomor ayat, serta dokumentasikan sumber data yang digunakan.
+
+## Fitur Tahlil Lengkap
+
+Buat modul bacaan Tahlil yang terstruktur dan dapat digunakan untuk kegiatan pribadi maupun berjamaah.
+
+Sediakan susunan bacaan yang dapat dikonfigurasi, termasuk:
+
+- Pembukaan dan tawasul.
+- Istighfar.
+- Sholawat.
+- Surat Al-Fatihah.
+- Ayat atau surat Al-Qur'an yang lazim dibaca dalam rangkaian Tahlil.
+- Surat Al-Ikhlas.
+- Surat Al-Falaq.
+- Surat An-Nas.
+- Ayat Kursi.
+- Bacaan tahlil dan kalimat dzikir.
+- Tasbih, tahmid, takbir, dan tahlil.
+- Doa untuk orang yang telah meninggal.
+- Doa penutup.
+
+Ketentuan implementasi:
+
+- Sediakan teks Arab, transliterasi Latin, dan terjemahan bahasa Indonesia jika tersedia.
+- Cantumkan jumlah pengulangan untuk bacaan yang memang memiliki hitungan dalam susunan yang dipilih.
+- Sediakan penghitung bacaan interaktif.
+- Tombol tambah hitungan, kurangi, reset, dan tandai selesai.
+- Navigasi antarbagian dengan tombol Sebelumnya dan Berikutnya.
+- Progress bar untuk menunjukkan kemajuan bacaan.
+- Mode Tahlil berjamaah dengan tampilan teks besar.
+- Simpan progres bacaan secara lokal.
+- Sediakan beberapa susunan Tahlil berdasarkan sumber atau tradisi yang jelas, jika memungkinkan.
+- Izinkan pengguna memilih susunan bacaan tanpa mengubah teks sumber secara otomatis.
+
+Jangan menyatakan bahwa satu susunan Tahlil merupakan satu-satunya susunan yang benar. Berikan keterangan bahwa susunan dapat berbeda menurut tradisi dan rujukan keagamaan.
+
+## Panduan Sholat Lengkap
+
+Bangun panduan sholat yang mencakup sholat wajib dan sholat sunnah, dari persiapan hingga salam.
+
+### A. Sholat Wajib
+
+Sediakan panduan untuk:
+
+- Sholat Subuh.
+- Sholat Zuhur.
+- Sholat Asar.
+- Sholat Magrib.
+- Sholat Isya.
+- Sholat Jumat dengan penjelasan khusus.
+- Sholat jenazah.
+- Sholat ketika bepergian, termasuk penjelasan qashar dan jamak sesuai ketentuan.
+
+Jelaskan jumlah rakaat, waktu pelaksanaan, persiapan, niat, dan tata cara yang relevan.
+
+### B. Sholat Sunnah
+
+Sediakan kategori sholat sunnah dengan penjelasan yang memadai, termasuk:
+
+- Rawatib qabliyah dan ba'diyah.
+- Sholat Dhuha.
+- Sholat Tahajud.
+- Sholat Witir.
+- Sholat Tarawih.
+- Sholat Tahiyatul Masjid.
+- Sholat Istikharah.
+- Sholat Taubat.
+- Sholat Hajat.
+- Sholat Tasbih.
+- Sholat Gerhana.
+- Sholat Istisqa.
+- Sholat Idulfitri dan Iduladha.
+- Sholat sunnah lainnya yang didukung sumber tepercaya.
+
+Kelompokkan sholat berdasarkan waktu pelaksanaan, jumlah rakaat, dan tujuan. Jelaskan bahwa beberapa ketentuan memiliki perbedaan pendapat di kalangan ulama.
+
+### C. Tata Cara Sholat Langkah demi Langkah
+
+Untuk setiap sholat yang relevan, sediakan panduan interaktif:
+
+- Syarat wajib dan syarat sah.
+- Persiapan sebelum sholat.
+- Wudhu dan hal yang membatalkannya.
+- Penutup aurat dan kebersihan tempat sholat.
+- Penentuan arah kiblat.
+- Niat dan penjelasan kedudukannya.
+- Takbiratul ihram.
+- Doa iftitah.
+- Bacaan Al-Fatihah.
+- Surat atau ayat setelah Al-Fatihah sesuai ketentuan.
+- Rukuk dan bacaannya.
+- I'tidal dan bacaannya.
+- Sujud dan bacaannya.
+- Duduk di antara dua sujud.
+- Tasyahud awal jika relevan.
+- Tasyahud akhir.
+- Sholawat Ibrahimiyah.
+- Salam.
+- Dzikir dan doa setelah sholat.
+
+Setiap gerakan harus memiliki ilustrasi atau visual demonstrasi yang sopan, deskripsi posisi tubuh, teks Arab, transliterasi, dan terjemahan.
+
+Buat mode belajar langkah demi langkah dengan tombol Berikutnya, Sebelumnya, Ulangi, dan Selesai. Pengguna dapat memilih mode pemula atau mode ringkas untuk mengulang bacaan.
+
+Sediakan opsi bacaan dan catatan perbedaan tata cara berdasarkan mazhab atau rujukan yang dipilih. Jangan mencampurkan pendapat yang berbeda tanpa penjelasan.
+
+### D. Bacaan dan Doa Sholat
+
+Buat pustaka khusus untuk seluruh bacaan yang diperlukan, termasuk:
+
+- Niat atau penjelasan niat sholat.
+- Doa iftitah.
+- Al-Fatihah.
+- Bacaan rukuk.
+- Bacaan i'tidal.
+- Bacaan sujud.
+- Doa di antara dua sujud.
+- Tasyahud awal dan akhir.
+- Sholawat Ibrahimiyah.
+- Salam.
+- Dzikir setelah sholat.
+- Doa setelah sholat wajib.
+- Doa qunut sesuai kategori dan rujukan yang digunakan.
+
+Tampilkan teks Arab dengan harakat jika tersedia, transliterasi, terjemahan, dan keterangan kapan bacaan digunakan.
+
+## Fitur Adzan
+
+Buat modul adzan dengan dukungan jadwal sholat dan pengingat otomatis.
+
+Fitur wajib:
+
+- Jadwal adzan untuk Subuh, Zuhur, Asar, Magrib, dan Isya.
+- Pilihan suara adzan dari sumber audio yang legal digunakan.
+- Pengaturan volume dan jenis suara.
+- Pilihan mengaktifkan atau menonaktifkan adzan untuk masing-masing waktu.
+- Pengaturan notifikasi sebelum waktu sholat.
+- Pengaturan pengecualian notifikasi saat mode senyap atau mode istirahat.
+- Tombol pratinjau audio.
+- Pengaturan metode perhitungan jadwal sholat.
+- Pengaturan lokasi otomatis atau manual.
+- Koreksi waktu manual jika diperlukan.
+- Dukungan zona waktu dan perubahan tanggal.
+- Penanganan jadwal saat perangkat offline.
+
+Sediakan pengingat yang sesuai dengan batasan notifikasi dan pemutaran audio Android modern. Jelaskan jika izin sistem, optimasi baterai, atau pembatasan aplikasi di latar belakang dapat memengaruhi ketepatan pemutaran.
+
+Jangan mengklaim bahwa adzan pasti berbunyi ketika Android membatasi aktivitas latar belakang. Implementasikan mekanisme penjadwalan yang paling andal dan tampilkan petunjuk izin jika diperlukan.
+
+## Doa Sebelum dan Sesudah Adzan
+
+Sediakan halaman khusus yang berisi bacaan terkait adzan.
+
+### Doa Sebelum Adzan
+
+Jelaskan bahwa tidak ada satu doa khusus universal yang wajib dibaca tepat sebelum adzan. Sediakan dzikir atau amalan yang relevan dengan penjelasan sumbernya jika disertakan.
+
+### Bacaan Setelah Adzan
+
+Sediakan:
+
+- Bacaan menjawab panggilan muadzin.
+- Bacaan khusus ketika muadzin mengucapkan hayya 'alash-shalah dan hayya 'alal-falah.
+- Sholawat kepada Nabi Muhammad SAW setelah adzan.
+- Doa setelah adzan.
+- Terjemahan bahasa Indonesia.
+- Transliterasi Latin.
+- Penjelasan waktu membacanya.
+- Referensi hadis atau sumber keagamaan yang dapat diverifikasi.
+
+Tambahkan tombol untuk menyalin bacaan, membagikan doa, menyimpan favorit, dan mengaktifkan pengingat membaca doa setelah adzan.
+
+## Fitur Iqomah
+
+Buat modul Iqomah yang berisi:
+
+- Teks Iqomah dalam bahasa Arab.
+- Transliterasi Latin.
+- Terjemahan bahasa Indonesia.
+- Urutan bacaan yang jelas.
+- Penjelasan perbedaan susunan Iqomah menurut rujukan atau mazhab.
+- Mode tampilan layar penuh untuk imam atau muadzin.
+- Pengaturan ukuran teks.
+- Tombol salin dan bagikan.
+
+Tambahkan pengatur waktu Iqomah opsional setelah pengingat masuk waktu sholat. Fitur ini hanya berfungsi sebagai pengingat pribadi dan tidak boleh menganggap waktu Iqomah sama di semua masjid.
+
+## Fitur Arah Kiblat
+
+Bangun kompas kiblat yang akurat dan mudah digunakan.
+
+Fitur wajib:
+
+- Kompas interaktif yang menunjukkan arah kiblat dari lokasi pengguna menuju Ka'bah di Makkah.
+- Tampilan sudut azimut kiblat dalam derajat.
+- Tampilan arah mata angin.
+- Indikator status kalibrasi sensor.
+- Petunjuk menggerakkan perangkat membentuk pola angka delapan jika sensor memerlukan kalibrasi.
+- Peringatan ketika sensor kompas tidak tersedia atau tidak akurat.
+- Penggunaan GPS atau lokasi manual dengan persetujuan pengguna.
+- Perhitungan azimut berdasarkan koordinat lokasi dan koordinat Ka'bah yang benar.
+- Dukungan perangkat yang tidak memiliki magnetometer melalui tampilan arah berbasis peta atau sudut hasil perhitungan, dengan penjelasan bahwa kompas langsung tidak tersedia.
+- Tampilan peta untuk memeriksa posisi pengguna dan arah kiblat.
+- Pengaturan satuan dan tampilan kompas.
+- Mode layar penuh.
+
+Jangan mengklaim arah kompas selalu akurat. Pertimbangkan gangguan magnetik, casing magnetik, kualitas sensor, dan ketepatan koordinat. Pisahkan arah kiblat matematis dari akurasi sensor perangkat.
+
+## Jadwal Sholat dan Pengaturan Adzan
+
+Bangun sistem jadwal sholat yang terintegrasi.
+
+- Hitung jadwal Subuh, Zuhur, Asar, Magrib, dan Isya.
+- Gunakan metode perhitungan yang dapat dipilih.
+- Sediakan pilihan metode yang relevan untuk Indonesia, termasuk metode Kementerian Agama RI jika tersedia dan terverifikasi.
+- Atur mazhab perhitungan waktu Asar sesuai preferensi.
+- Tampilkan waktu terbit matahari.
+- Dukungan koordinat GPS dan pemilihan kota secara manual.
+- Pengaturan zona waktu.
+- Koreksi menit per waktu sholat.
+- Pembaruan jadwal saat lokasi berubah.
+- Cache jadwal agar aplikasi tetap berguna tanpa internet.
+- Penjelasan metode perhitungan yang sedang digunakan.
+
+Jangan menggunakan jadwal sholat statis sebagai data produksi. Gunakan algoritma atau sumber data tepercaya dan lakukan pengujian pada beberapa lokasi di Indonesia.
+
+## Pustaka Doa dan Dzikir
+
+Sediakan koleksi tambahan:
+
+- Dzikir pagi dan petang.
+- Dzikir setelah sholat.
+- Doa masuk dan keluar masjid.
+- Doa masuk dan keluar rumah.
+- Doa sebelum dan sesudah makan.
+- Doa sebelum tidur dan setelah bangun tidur.
+- Doa bepergian.
+- Doa untuk orang tua.
+- Doa memohon ampunan.
+- Doa ketika sakit.
+- Doa untuk orang yang meninggal.
+- Doa harian lainnya yang memiliki sumber jelas.
+
+Semua bacaan harus mendukung teks Arab, transliterasi, terjemahan, penanda favorit, penghitung dzikir, dan mode membaca layar penuh.
+
+## Pencarian, Favorit, dan Riwayat
+
+Implementasikan pencarian terpadu untuk:
+
+- Nama surat.
+- Nomor ayat.
+- Nama doa.
+- Bacaan sholat.
+- Kata dalam terjemahan.
+- Bagian Tahlil.
+- Panduan ibadah.
+
+Sediakan favorit, riwayat terakhir dibaca, bookmark, dan pencarian terbaru. Simpan preferensi serta progres secara lokal sehingga data tidak hilang ketika aplikasi ditutup.
+
+## UI/UX dan Navigasi
+
+Pastikan pengalaman penggunaan sederhana, konsisten, dan tidak membingungkan.
+
+- Beranda dengan kartu informasi yang rapi.
+- Navigasi bawah dengan ikon dan label.
+- Halaman bacaan menggunakan tipografi besar dan nyaman.
+- Mode membaca tanpa gangguan.
+- Tombol aksi utama mudah dijangkau.
+- Gunakan bottom sheet untuk pengaturan singkat.
+- Gunakan dialog konfirmasi hanya ketika benar-benar dibutuhkan.
+- Berikan skeleton loading atau indikator proses saat memuat data.
+- Sediakan tampilan kosong, pesan kesalahan, dan tombol mencoba kembali.
+- Pastikan setiap tombol memiliki fungsi nyata.
+- Hindari tombol dekoratif yang tidak bekerja.
+- Gunakan animasi secukupnya dan hindari efek berlebihan.
+- Terapkan dukungan TalkBack dan label aksesibilitas.
+- Pastikan kontras warna memenuhi standar aksesibilitas.
+- Sediakan pencarian dan akses cepat pada halaman yang memiliki banyak konten.
+
+## Pengaturan Aplikasi
+
+Sediakan pengaturan untuk:
+
+- Tema terang, gelap, dan mengikuti sistem.
+- Bahasa aplikasi.
+- Ukuran teks Arab dan Latin.
+- Tampilkan atau sembunyikan transliterasi.
+- Tampilkan atau sembunyikan terjemahan.
+- Metode perhitungan jadwal sholat.
+- Lokasi dan zona waktu.
+- Suara adzan.
+- Notifikasi dan pengingat.
+- Mazhab atau rujukan panduan sholat.
+- Preferensi susunan Tahlil.
+- Pengaturan kompas kiblat.
+- Manajemen data offline.
+- Backup dan pemulihan data lokal.
+- Tentang aplikasi, sumber konten, lisensi, serta kebijakan privasi.
+
+## Teknologi dan Arsitektur
+
+Gunakan teknologi native Android modern dengan Kotlin dan Jetpack Compose.
+
+Komponen yang disarankan:
+
+- Kotlin.
+- Jetpack Compose dan Material 3.
+- Navigation Compose.
+- ViewModel dan StateFlow.
+- Kotlin Coroutines.
+- Room Database untuk data lokal.
+- DataStore untuk pengaturan pengguna.
+- WorkManager atau mekanisme penjadwalan Android yang sesuai untuk pekerjaan terjadwal.
+- AlarmManager hanya jika diperlukan dan sesuai kebijakan izin Android.
+- Android Location APIs untuk lokasi.
+- Android Sensor APIs untuk kompas.
+- Media3 untuk pemutaran audio jika diperlukan.
+- Dependency Injection menggunakan Hilt atau pendekatan yang sebanding.
+- Unit test, UI test, dan instrumented test.
+
+Terapkan arsitektur modular yang memisahkan UI, domain, data, penjadwalan, audio, lokasi, dan sensor. Gunakan repository pattern, penanganan error yang konsisten, serta state management yang terstruktur.
+
+Utamakan pendekatan offline-first. Fitur inti seperti membaca Yasin, Tahlil, doa, panduan sholat, dan Iqomah harus tetap berfungsi tanpa koneksi internet setelah data tersedia di perangkat.
+
+## Akurasi Konten Keagamaan
+
+Akurasi merupakan persyaratan utama aplikasi.
+
+- Gunakan sumber Al-Qur'an, terjemahan, hadis, dan panduan ibadah yang tepercaya.
+- Jangan menghasilkan teks Arab secara acak atau merekonstruksi bacaan yang belum diverifikasi.
+- Verifikasi harakat, ejaan, nomor ayat, transliterasi, dan terjemahan.
+- Cantumkan sumber dan referensi untuk bacaan yang memerlukannya.
+- Bedakan bacaan yang bersumber dari Al-Qur'an, hadis, dzikir umum, dan tradisi lokal.
+- Jelaskan perbedaan pendapat ulama jika memengaruhi tata cara ibadah.
+- Jangan menyatakan amalan tertentu wajib jika statusnya sunnah atau diperselisihkan.
+- Jangan mengarang hadis, sanad, atau nomor referensi.
+- Sediakan mekanisme pembaruan konten dengan validasi sumber.
+- Jangan mengganti konten keagamaan yang telah diverifikasi dengan teks buatan AI tanpa pemeriksaan manusia.
+
+## Keamanan dan Privasi
+
+- Minta izin lokasi hanya ketika diperlukan.
+- Jelaskan kegunaan akses lokasi.
+- Berikan pilihan menggunakan lokasi manual.
+- Jangan mengumpulkan data pribadi yang tidak dibutuhkan.
+- Simpan preferensi dan progres membaca secara lokal.
+- Jangan mengirim lokasi ke server tanpa kebutuhan dan persetujuan yang jelas.
+- Gunakan koneksi aman untuk sumber online.
+- Jangan menanamkan API key rahasia di aplikasi.
+- Dokumentasikan izin Android dan alasan penggunaannya.
+
+## Pengujian dan Kriteria Penyelesaian
+
+Lakukan implementasi secara bertahap, tetapi setiap tahap harus menghasilkan fitur yang dapat dijalankan.
+
+Wajib menjalankan:
+
+- Build debug dan release.
+- Unit test untuk perhitungan jadwal sholat dan azimut kiblat.
+- Pengujian parsing serta validasi konten.
+- UI test navigasi dan interaksi utama.
+- Pengujian penyimpanan bookmark dan progres.
+- Pengujian mode offline.
+- Pengujian tema terang dan gelap.
+- Pengujian pada beberapa ukuran layar.
+- Pengujian izin lokasi dan sensor tidak tersedia.
+- Pengujian penjadwalan pengingat dan perilaku aplikasi di latar belakang.
+- Lint dan pemeriksaan dependensi.
+- Pemeriksaan crash serta error log.
+
+Jangan menandai pekerjaan selesai apabila build gagal, fitur inti masih berupa mockup, atau tombol utama belum berfungsi.
+
+## Hasil Akhir yang Harus Dibuat
+
+Hasilkan proyek Android Studio yang lengkap dengan:
+
+- Source code Kotlin.
+- UI/UX Jetpack Compose.
+- Struktur proyek yang rapi.
+- Seluruh halaman dan navigasi.
+- Modul Yasin, Tahlil, sholat wajib dan sunnah, adzan, doa sebelum dan sesudah adzan, Iqomah, arah kiblat, jadwal sholat, serta doa dan dzikir.
+- Database lokal dan dukungan offline.
+- Data keagamaan yang memiliki sumber jelas.
+- Unit test dan UI test.
+- Dokumentasi setup dan build.
+- Dokumentasi izin serta konfigurasi.
+- README berisi cara menjalankan proyek.
+- APK debug yang dapat dipasang untuk pengujian jika lingkungan build mendukungnya.
+
+Mulai dengan memeriksa kebutuhan, merancang arsitektur, mendefinisikan model data dan sumber konten, lalu membangun sistem desain dan navigasi. Implementasikan fitur satu per satu, integrasikan dengan data nyata, jalankan pengujian, perbaiki seluruh error yang ditemukan, dan lakukan build ulang hingga berhasil.
+
+Prioritaskan aplikasi yang akurat, ringan, mudah digunakan, aman, dan dapat diandalkan untuk kebutuhan ibadah sehari-hari. Jangan mengorbankan kebenaran konten keagamaan demi tampilan visual atau kecepatan implementasi.
