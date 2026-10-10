@@ -10,7 +10,7 @@ class PrayerCalcTest2 {
         set(y, m - 1, d, 12, 0, 0); set(Calendar.MILLISECOND, 0)
     }
 
-    @Test fun jakartaJan KisaranWajar() {
+    @Test fun jakartaJanKisaranWajar() {
         val t = PrayerCalc.compute(cal(2026, 1, 15),
             PrayerCalc.Params(-6.2, 106.8, tz = TimeZone.getTimeZone("Asia/Jakarta")))
         val s = PrayerCalc.toMinutes(t.subuh)
