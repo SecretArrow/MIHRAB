@@ -31,6 +31,11 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Dependabot untuk dependensi Gradle & GitHub Actions (`.github/dependabot.yml`).
 - Berkas `LICENSE` (Apache-2.0) untuk kode aplikasi, dengan catatan bahwa konten keagamaan
   tetap tunduk pada sumber resminya masing-masing; serta `.editorconfig`.
+- **Wudhu & Tayamum**: panduan langkah demi langkah (kerangka Fasolatan/Bimas Islam, mazhab
+  Syafi'i), daftar pembatal wudhu, dan penanda "sudah dipelajari" yang tersimpan di Room.
+  Lafaz Arab sengaja belum dicantumkan — menunggu verifikasi sumber resmi.
+- **Backup/pemulihan penuh**: satu berkas memuat preferensi (DataStore) sekaligus favorit,
+  bookmark, riwayat, dan progres (Room); tetap kompatibel dengan backup lama.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)
@@ -42,6 +47,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ### Dihapus
 - Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);
   pemeriksaan tetap dilakukan oleh lint & unit test di `ci.yml`.
+- Izin `INTERNET` dan `ACCESS_NETWORK_STATE` dari manifes: tidak ada kode jaringan sama sekali,
+  sehingga deklarasi izin kini jujur sejalan dengan sifat aplikasi yang 100% offline.
 
 ### Catatan
 - Sumber jadwal/kalender **online resmi** belum diaktifkan karena SIHAT Bimas Islam tidak
