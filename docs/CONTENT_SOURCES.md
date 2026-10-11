@@ -32,8 +32,26 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
    Indonesia yang tepercaya (mis. terbitan LPMQ/Fasolatan) — **jangan** hasil generate AI.
 3. **Terjemahan** — sudah Kemenag 2019 (resmi). Pertahankan.
 
+## Kekurangan yang masih menunggu sumber resmi
+
+`plan.txt` meminta beberapa bacaan yang **belum dapat dicantumkan** karena teks Arabnya belum
+tersedia dari sumber di whitelist. Sesuai aturan proyek ("Jangan karang teks agama"), entri ini
+**dibiarkan kosong, bukan dikarang** — dan dicatat di sini agar dapat diisi setelah diverifikasi
+manusia dari sumber resmi.
+
+| Yang diminta `plan.txt` | Status | Sumber yang diperlukan |
+|---|---|---|
+| Doa **keluar masjid** | ❌ belum ada di `dzikir.json` (yang ada: doa masuk masjid) | sunnah.com — HR Muslim/Abu Dawud |
+| Doa **masuk rumah** | ❌ belum ada (yang ada: doa keluar rumah) | sunnah.com — HR Abu Dawud 5095 |
+| Doa **bepergian (safar)** | ❌ belum ada | sunnah.com — HR Muslim 1342 |
+| **Lafaz sholawat setelah adzan** | ⚠️ disebutkan di layar doa adzan, lafaznya belum dicantumkan | sunnah.com — HR Muslim 384 |
+| **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
+| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
+
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum
 > tersedia, entri ditandai `catatan_verifikasi` dan dibiarkan apa adanya, bukan dikarang.
+> Doa untuk orang yang meninggal dan doa ampunan sudah tersedia (modul Tahlil, sholat
+> jenazah/ghaib, serta Istighfar/Sayyidul Istighfar di `dzikir.json`).
 
 ## Cara memeriksa
 

@@ -52,6 +52,12 @@ fun SettingsScreen() {
                 FilterChip(theme == t, { theme = t; scope.launch { store.set(Store.DARK, t) } }, { Text(t) })
             }
         }
+        Text("Bahasa aplikasi", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
+        Text("Indonesia — satu-satunya bahasa antarmuka. Teks Arab tetap Arab, dan terjemahan yang " +
+                "disajikan adalah terjemahan resmi Kemenag 2019 berbahasa Indonesia. Belum ada " +
+                "terjemahan antarmuka lain, jadi tidak ada tombol bahasa yang tidak berfungsi.",
+            style = MaterialTheme.typography.labelSmall)
+
         Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = 16f..40f)
         Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = 12f..24f)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

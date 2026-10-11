@@ -9,10 +9,12 @@
     <!-- Notifikasi: pengingat waktu sholat/adzan (Android 13+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Penjadwalan pengingat yang tepat waktu + bertahan setelah reboot. -->
+    <!-- Penjadwalan pengingat + bertahan setelah reboot.
+         Pengingat memakai WorkManager (bukan AlarmManager), jadi SCHEDULE_EXACT_ALARM /
+         USE_EXACT_ALARM sengaja TIDAK dideklarasikan — izin hanya diminta bila benar-benar
+         dipakai (lihat OfflineManifestTest). -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <!-- Pemutaran adzan di latar belakang (foreground service media). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
