@@ -131,4 +131,22 @@ class ContentSourceTest {
             }
         }
     }
+
+    /** Penjelasan Jumat & safar harus prosedural (tanpa teks Arab) dan benar-benar ada. */
+    @Test
+    fun jumatAndSafarHaveProceduralKetentuan() {
+        val text = File(contentDir(), "sholat_daftar.json").readText()
+        val arabic = Regex("[\\u0600-\\u06FF]")
+        listOf("jumat", "safar").forEach { id ->
+            val start = text.indexOf("\"id\": \"$id\"")
+            assertTrue("Entri $id tidak ditemukan", start >= 0)
+            val next = text.indexOf("\"id\":", start + 1)
+            val block = if (next > start) text.substring(start, next) else text.substring(start)
+            assertTrue("$id tanpa daftar ketentuan", block.contains("\"ketentuan\""))
+            val ketStart = block.indexOf("\"ketentuan\"")
+            val ketEnd = block.indexOf("]", ketStart).takeIf { it > ketStart } ?: block.length
+            val ket = block.substring(ketStart, ketEnd)
+            assertTrue("Ketentuan $id memuat teks Arab tanpa sumber", !arabic.containsMatchIn(ket))
+        }
+    }
 }

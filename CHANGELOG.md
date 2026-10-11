@@ -40,6 +40,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   bacaan: entri bertanda mazhab (mis. doa qunut — Syafi'i) hanya tampil bila mazhab cocok;
   bacaan juga dapat dibatasi per sholat (qunut hanya muncul di Subuh). Dapat diubah di
   Pengaturan maupun langsung di layar panduan sholat.
+- **Penjelasan khusus sholat**: daftar ketentuan untuk Jumat (siapa yang wajib, khutbah)
+  dan keringanan safar (qashar & jamak) kini tampil di panduan sholat. Lafaz niat Jumat
+  ditandai belum dicantumkan — menunggu verifikasi sumber resmi.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)

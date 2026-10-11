@@ -92,11 +92,14 @@ class ContentRepo(private val ctx: Context) {
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val n = o.optJSONObject("niat")
+            val ket = o.optJSONArray("ketentuan")?.let { k -> (0 until k.length()).map { k.getString(it) } }.orEmpty()
             SholatInfo(
                 o.getString("id"), o.getString("nama"), o.getString("rakaat"),
                 o.getString("waktu"), o.getString("deskripsi"),
                 n?.let { Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan")) },
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") }
+                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                ketentuan = ket,
+                niatCatatan = o.optString("niat_catatan", "")
             )
         }
     }

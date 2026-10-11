@@ -171,7 +171,13 @@
   {
    "deskripsi": "Pengganti Zuhur hari Jumat bagi laki-laki: 2 rakaat didahului 2 khutbah. Perempuan dan yang berhalangan tetap Zuhur.",
    "id": "jumat",
+   "ketentuan": [
+    "Wajib bagi muslim laki-laki, baligh, berakal, dan mukim (tidak sedang safar); gugur bagi perempuan, anak-anak, musafir, dan orang sakit — mereka sholat Zuhur.",
+    "Didahului dua khutbah oleh khatib; jamaah wajib diam dan mendengarkan khutbah.",
+    "Niat mengikuti pola sholat fardhu dengan menyebut Jumat, bukan Zuhur."
+   ],
    "nama": "Jumat",
+   "niat_catatan": "Lafaz niat Jumat mengikuti pola niat Zuhur dengan mengganti sebutan Zuhur menjadi Jumat. Lafaz Arab belum dicantumkan di sini — menunggu verifikasi sumber resmi (lihat SOURCES.md).",
    "rakaat": "2 rakaat + 2 khutbah",
    "waktu": "Waktu Zuhur hari Jumat"
   },
@@ -193,6 +199,13 @@
   {
    "deskripsi": "Keringanan safar (±80 km+): qashar (4→2 rakaat untuk Zuhur/Asar/Isya) dan jamak (taqdim/ta'khir Zuhur-Asar, Magrib-Isya). Syarat dan tata cara dijelaskan di aplikasi.",
    "id": "safar",
+   "ketentuan": [
+    "Qashar: Zuhur, Asar, dan Isya yang 4 rakaat diringkas menjadi 2 rakaat. Subuh (2) dan Magrib (3) tidak diqashar.",
+    "Syarat jarak: perjalanan mencapai ±2 marhalah (sekitar 80–90 km menurut Syafi'i) dan bukan untuk maksiat.",
+    "Jamak: menggabungkan Zuhur–Asar dan Magrib–Isya, secara taqdim (di waktu pertama) atau ta'khir (di waktu kedua).",
+    "Sholat yang dijamak boleh sekaligus diqashar bila syaratnya terpenuhi.",
+    "Tidak boleh qashar bila bermakmum kepada imam yang mukim (Syafi'i)."
+   ],
    "nama": "Qashar & Jamak (safar)",
    "rakaat": "Lihat ketentuan",
    "waktu": "Selama safar memenuhi syarat"

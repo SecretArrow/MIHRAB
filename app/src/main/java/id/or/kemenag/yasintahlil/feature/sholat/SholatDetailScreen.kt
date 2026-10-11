@@ -53,7 +53,20 @@ fun SholatDetailScreen(id: String) {
         info?.niat?.let { n ->
             BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f)
         }
+        if (info?.niat == null) {
+            info?.niatCatatan?.takeIf { it.isNotBlank() }?.let {
+                Text(it, style = MaterialTheme.typography.labelMedium)
+            }
+        }
         if (info?.deskripsi != null) Text(info.deskripsi)
+        info?.ketentuan?.takeIf { it.isNotEmpty() }?.let { ket ->
+            Text("Ketentuan:", style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 4.dp))
+            ket.forEach { k ->
+                Text("• $k", style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 4.dp))
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })

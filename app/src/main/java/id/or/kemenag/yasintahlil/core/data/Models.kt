@@ -15,7 +15,11 @@ data class TahlilSusunan(val id: String, val nama: String, val bagian: List<Stri
 data class Niat(val arab: String, val latin: String, val terjemahan: String)
 data class SholatInfo(
     val id: String, val nama: String, val rakaat: String, val waktu: String,
-    val deskripsi: String, val niat: Niat? = null, val rujukanFile: String? = null
+    val deskripsi: String, val niat: Niat? = null, val rujukanFile: String? = null,
+    /** Ketentuan khusus (mis. Jumat, qashar/jamak safar) — prosedural, tanpa teks Arab. */
+    val ketentuan: List<String> = emptyList(),
+    /** Catatan bila niat sengaja belum disertakan (menunggu verifikasi sumber resmi). */
+    val niatCatatan: String = ""
 )
 data class Bacaan(
     val id: String, val judul: String, val kapan: String = "",
