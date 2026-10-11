@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -31,7 +32,8 @@ class NavSmokeTest {
         rule.onNodeWithText("Menu Alat").assertIsDisplayed()
 
         rule.onNodeWithText("Pengaturan").performClick()
-        rule.onNodeWithText("Tentang & sumber").assertIsDisplayed()
+        // "Tentang & sumber" ada di bagian bawah layar Pengaturan yang bisa digulir — gulir dulu.
+        rule.onNodeWithText("Tentang & sumber").performScrollTo().assertIsDisplayed()
 
         rule.onNodeWithText("Beranda").performClick()
         rule.onNodeWithText("Assalamu'alaikum").assertIsDisplayed()
