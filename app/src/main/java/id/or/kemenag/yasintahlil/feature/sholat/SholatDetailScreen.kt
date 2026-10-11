@@ -9,18 +9,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import kotlinx.coroutines.launch
 
 /** Mode belajar langkah-demi-langkah untuk setiap sholat. */
 @Composable
 fun SholatDetailScreen(id: String) {
     val repo = rememberRepo()
     val store = rememberStore()
+    val userData = rememberUserData()
+    val scope = rememberCoroutineScope()
     val bacaan = remember { repo.sholatBacaan() }
     val info = remember { (repo.sholatWajib() + repo.sholatSunnah()).find { it.id == id } }
     var step by remember { mutableStateOf(0) }
     var ringkas by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
+    var selesai by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { arabSize = store.get(Store.ARAB_SIZE, 22f) }
+    // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
+    LaunchedEffect(id) { userData.progress(KIND, id).collect { selesai = (it?.value ?: 0) > 0 } }
     val steps = remember(ringkas) {
         if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
         else bacaan
@@ -51,9 +57,19 @@ fun SholatDetailScreen(id: String) {
             Button(onClick = { step = 0 }) { Text("Ulangi") }
             Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text("Berikutnya →") }
         }
-        if (step == steps.size - 1) Text("✓ Selesai. Lanjutkan dzikir & doa setelah sholat.",
+        if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
             color = MaterialTheme.colorScheme.primary)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+            Button(onClick = { scope.launch { userData.setProgress(KIND, id, 1) } }, enabled = !selesai) {
+                Text(if (selesai) "✓ Sudah ditandai selesai" else "Tandai selesai")
+            }
+            if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, id, 0) } }) {
+                Text("Batalkan tanda")
+            }
+        }
         Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Lihat SOURCES.md.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
     }
 }
+
+private const val KIND = "sholat"
