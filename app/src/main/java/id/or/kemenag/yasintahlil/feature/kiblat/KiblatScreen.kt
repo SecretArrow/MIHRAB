@@ -124,6 +124,12 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         }
         Text("Jarum emas = kiblat • garis abu = utara • Akurasi kompas tidak dijamin; pisahkan azimut matematis vs sensor.",
             style = MaterialTheme.typography.labelSmall)
+        Text("Peta arah kiblat (offline)", style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(top = 8.dp))
+        KiblatMap(s.lat, s.lon, s.bearing, Modifier.padding(top = 4.dp))
+        Text("Peta skematik tanpa internet: posisi Anda, Ka'bah, dan rute lingkaran besar di antaranya. " +
+            "Jadi acuan arah bila perangkat tak punya magnetometer atau kompas belum terkalibrasi.",
+            style = MaterialTheme.typography.labelSmall)
         Text("Verifikasi tanpa alat: Rashdul kiblat — 2x setahun matahari tepat di atas Ka'bah; bayangan benda tegak menunjuk kiblat. Jadwal: sihat.kemenag.dev/arah-kiblat",
             style = MaterialTheme.typography.labelSmall)
 
