@@ -40,6 +40,28 @@ jalankan_uji() {
   ./gradlew :app:connectedDebugAndroidTest --build-cache > "$LOG" 2>&1
 }
 
+# plan.txt: "Pemeriksaan crash serta error log". Uji yang lulus bisa saja melewati proses
+# yang sempat mati, jadi buffer crash/ANR diperiksa terpisah — selagi emulator masih hidup,
+# sebelum aksi ini mematikannya.
+periksa_crash() {
+  local paket="id.or.kemenag.yasintahlil"
+  local crash
+  crash="$(adb logcat -d -b crash 2>/dev/null | grep -A 25 "FATAL EXCEPTION" || true)"
+  if printf '%s' "$crash" | grep -q "$paket"; then
+    echo "::error::Crash terdeteksi pada $paket selama uji instrumented"
+    printf '%s\n' "$crash"
+    return 1
+  fi
+  local anr
+  anr="$(adb logcat -d 2>/dev/null | grep -E "ANR in $paket" || true)"
+  if [ -n "$anr" ]; then
+    echo "::error::ANR terdeteksi pada $paket selama uji instrumented"
+    printf '%s\n' "$anr"
+    return 1
+  fi
+  echo "Pemeriksaan crash: bersih (tidak ada FATAL EXCEPTION/ANR pada $paket)."
+}
+
 adb start-server
 adb wait-for-device
 tunggu_boot
@@ -47,6 +69,7 @@ tunggu_properti || exit 1
 
 if jalankan_uji; then
   tail -n 15 "$LOG"
+  periksa_crash || exit 1
   exit 0
 fi
 tail -n 60 "$LOG"
@@ -61,6 +84,7 @@ if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible d
   sleep 15
   if jalankan_uji; then
     tail -n 15 "$LOG"
+    periksa_crash || exit 1
     exit 0
   fi
   tail -n 60 "$LOG"
