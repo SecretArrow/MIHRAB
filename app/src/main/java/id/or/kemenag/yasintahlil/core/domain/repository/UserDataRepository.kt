@@ -23,4 +23,10 @@ interface UserDataRepository {
     fun progress(kind: String, refId: String): Flow<ProgressItem?>
     fun progressByKind(kind: String): Flow<List<ProgressItem>>
     suspend fun setProgress(kind: String, refId: String, value: Int)
+
+    /** Ekspor seluruh data terstruktur pengguna sebagai JSON (untuk backup). */
+    suspend fun exportJson(): String
+
+    /** Pulihkan data terstruktur dari JSON hasil [exportJson]; mengganti isi saat ini. */
+    suspend fun restoreJson(json: String)
 }

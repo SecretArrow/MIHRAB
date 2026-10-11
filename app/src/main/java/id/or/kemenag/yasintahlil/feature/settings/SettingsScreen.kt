@@ -13,10 +13,12 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @Composable
 fun SettingsScreen() {
     val store = rememberStore()
+    val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     var theme by remember { mutableStateOf("sistem") }
@@ -87,9 +89,32 @@ fun SettingsScreen() {
         }
         Text("Backup / pulihkan data lokal:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { scope.launch { backup = store.exportJson(); ctx.copyText("backup", backup) } }) { Text("Salin backup") }
-            Button(onClick = { scope.launch { store.importJson(backup) } }) { Text("Pulihkan") }
+            Button(onClick = {
+                scope.launch {
+                    // Gabungkan preferensi (DataStore) + data terstruktur (Room) dalam satu berkas.
+                    backup = JSONObject()
+                        .put("version", 1)
+                        .put("prefs", JSONObject(store.exportJson()))
+                        .put("userData", JSONObject(userData.exportJson()))
+                        .toString()
+                    ctx.copyText("backup", backup)
+                }
+            }) { Text("Salin backup") }
+            Button(onClick = {
+                scope.launch {
+                    val root = runCatching { JSONObject(backup) }.getOrNull()
+                    if (root != null && root.has("prefs")) {
+                        store.importJson(root.getJSONObject("prefs").toString())
+                        userData.restoreJson(root.optJSONObject("userData")?.toString() ?: "{}")
+                    } else {
+                        // Kompatibel dengan backup lama (hanya preferensi).
+                        store.importJson(backup)
+                    }
+                }
+            }) { Text("Pulihkan") }
         }
+        Text("Backup memuat pengaturan, favorit, bookmark, riwayat, dan progres. Simpan berkasnya di tempat aman.",
+            style = MaterialTheme.typography.labelSmall)
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
         Text("Kota: $city (ubah di menu Jadwal). Susunan Tahlil: lazim Indonesia (lihat modul Tahlil).",
             style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(vertical = 8.dp))
