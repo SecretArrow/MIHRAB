@@ -29,6 +29,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Favorit & Riwayat**: disimpan di Room (tahan rotasi & penutupan aplikasi), dengan
   migrasi sekali dari penyimpanan lama.
 - Dependabot untuk dependensi Gradle & GitHub Actions (`.github/dependabot.yml`).
+- Berkas `LICENSE` (Apache-2.0) untuk kode aplikasi, dengan catatan bahwa konten keagamaan
+  tetap tunduk pada sumber resminya masing-masing; serta `.editorconfig`.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)

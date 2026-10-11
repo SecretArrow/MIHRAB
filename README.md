@@ -23,3 +23,11 @@ Secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`. Op
 
 ## Jalankan lokal (opsional)
 Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.
+
+## Lisensi
+Kode aplikasi: **Apache License 2.0** — lihat `LICENSE`.
+Copyright 2026 SecretArrow.
+
+Konten keagamaan (teks Qur'an, hadis, panduan) **tidak** tercakup lisensi ini dan tetap
+tunduk pada sumber resmi masing-masing — lihat `SOURCES.md` dan `docs/CONTENT_SOURCES.md`.
+Kebijakan privasi: `docs/PRIVACY.md`. Daftar izin: `docs/PERMISSIONS.md`.
