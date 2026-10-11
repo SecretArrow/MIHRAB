@@ -6,6 +6,10 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
+  Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
+  `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
+  terkalibrasi. Bujur di-*unwrap* agar rute yang melewati garis tanggal tetap benar.
 - **Ilustrasi gerakan sholat**: setiap langkah panduan sholat kini menampilkan skema posisi
   tubuh (`res/drawable/posisi_*.xml` — garis geometris, tanpa penggambaran figuratif dan tanpa
   teks Arab) beserta deskripsi posisi yang prosedural; pemetaan bacaan→posisi dijaga oleh uji
