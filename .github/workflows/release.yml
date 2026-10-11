@@ -3,6 +3,7 @@ name: Auto Release (tag v*)
 on:
   push:
     tags: ['v*.*.*']
+  workflow_dispatch:
 
 jobs:
   release:
@@ -14,13 +15,27 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v4
-      - name: Decode keystore (jika secrets tersedia)
+      - name: Validasi konten (strict — wajib sumber resmi)
+        run: python3 tools/validate_content.py --strict
+      - name: Siapkan keystore dari Secrets
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        if: env.KEYSTORE_BASE64 != ''
-        run: echo "$KEYSTORE_BASE64" | base64 -d > release.jks
-      - name: Build release
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          {
+            echo "storeFile=$RUNNER_TEMP/release.jks"
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+          } > keystore.properties
+      - name: Build release (signed bila secrets tersedia)
         run: ./gradlew :app:assembleRelease :app:bundleRelease --parallel --build-cache
+      - name: Verifikasi tanda tangan (bukan debug)
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK" || true
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -28,3 +43,6 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
           generate_release_notes: true
+      - name: Bersihkan keystore
+        if: always()
+        run: rm -f keystore.properties "$RUNNER_TEMP/release.jks"

@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Lokasi: hanya untuk arah kiblat & jadwal sholat. Pengguna boleh memakai lokasi manual. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Notifikasi: pengingat waktu sholat/adzan (Android 13+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Penjadwalan pengingat yang tepat waktu + bertahan setelah reboot. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Pemutaran adzan di latar belakang (foreground service media). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- Internet HANYA dipakai bila pengguna memilih sumber jadwal/kalender online di Pengaturan. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
     <application
+        android:name=".YasinApp"
         android:label="Yasin dan Tahlil"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
-        android:allowBackup="true">
+        android:allowBackup="true"
+        android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,5 +39,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- WorkManager diinisialisasi on-demand lewat YasinApp.Configuration.Provider (HiltWorkerFactory). -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 </manifest>

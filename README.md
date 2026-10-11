@@ -14,11 +14,11 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - `.github/workflows/` ci (lint+unit, hemat), e2e (main/nightly saja), release (tag v*), autofix
 
 ## Build (via GitHub Actions, bukan lokal)
-- PR: lint + unit test saja (3-5 mnt).
-- main: + assembleDebug APK.
-- tag `v*.*.*`: signed release AAB/APK + GitHub Release otomatis.
+- PR: validasi konten + lint + unit test + build debug/release (R8) (3-6 mnt).
+- main: sama seperti PR.
+- tag `v*.*.*`: release AAB/APK + GitHub Release otomatis. **Signed** bila Secrets keystore tersedia; bila tidak, APK release bersifat *unsigned* (hanya untuk memvalidasi build R8).
 
-Secrets: `SIHAT_TOKEN`, `QURAN_API_KEY` (opsional), `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
+Secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`. Opsional (bila fitur sumber online dipakai): `SIHAT_TOKEN`.
 
 ## Jalankan lokal (opsional)
 Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.

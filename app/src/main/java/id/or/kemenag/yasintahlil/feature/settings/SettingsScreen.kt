@@ -57,8 +57,8 @@ fun SettingsScreen() {
         }
         Text("Backup / pulihkan data lokal:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { scope.launch { backup = store.exportAll(); ctx.copyText("backup", backup) } }) { Text("Salin backup") }
-            Button(onClick = { scope.launch { store.importAll(backup) } }) { Text("Pulihkan") }
+            Button(onClick = { scope.launch { backup = store.exportJson(); ctx.copyText("backup", backup) } }) { Text("Salin backup") }
+            Button(onClick = { scope.launch { store.importJson(backup) } }) { Text("Pulihkan") }
         }
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
         Text("Kota: $city (ubah di menu Jadwal). Susunan Tahlil: lazim Indonesia (lihat modul Tahlil).",
