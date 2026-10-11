@@ -112,11 +112,13 @@ class ContentRepo(private val ctx: Context) {
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+            val scope = o.optJSONArray("sholat")?.let { s -> (0 until s.length()).map { s.getString(it) } }.orEmpty()
             Bacaan(o.getString("id"), o.getString("judul"), o.optString("kapan"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
-                mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() })
+                mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
+                sholatScope = scope)
         }
     }
 

@@ -38,7 +38,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   bookmark, riwayat, dan progres (Room); tetap kompatibel dengan backup lama.
 - **Pemilihan mazhab panduan** (Syafi'i/Hanafi/Maliki/Hambali) yang benar-benar mengubah
   bacaan: entri bertanda mazhab (mis. doa qunut — Syafi'i) hanya tampil bila mazhab cocok;
-  dapat diubah di Pengaturan maupun langsung di layar panduan sholat.
+  bacaan juga dapat dibatasi per sholat (qunut hanya muncul di Subuh). Dapat diubah di
+  Pengaturan maupun langsung di layar panduan sholat.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)

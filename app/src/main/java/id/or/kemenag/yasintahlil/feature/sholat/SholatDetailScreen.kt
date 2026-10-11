@@ -32,11 +32,15 @@ fun SholatDetailScreen(id: String) {
     }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
     LaunchedEffect(id) { userData.progress(KIND, id).collect { selesai = (it?.value ?: 0) > 0 } }
-    // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i).
-    val steps = remember(ringkas, mazhab) {
+    // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i)
+    // dan cakupan sholat (mis. qunut hanya untuk Subuh).
+    val steps = remember(ringkas, mazhab, id) {
         val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
         else bacaan
-        base.filter { it.mazhab == null || it.mazhab == mazhab }
+        base.filter {
+            (it.mazhab == null || it.mazhab == mazhab) &&
+                (it.sholatScope.isEmpty() || id in it.sholatScope)
+        }
     }
     val mazhabLabel = when (mazhab) {
         "hanafi" -> "Hanafi"; "maliki" -> "Maliki"; "hambali" -> "Hambali"; else -> "Syafi'i"

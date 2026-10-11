@@ -113,10 +113,22 @@ class ContentSourceTest {
         val next = text.indexOf("\"id\":", start + 1)
         val qunutBlock = if (next > start) text.substring(start, next) else text.substring(start)
         assertTrue("qunut tidak ditandai mazhab syafii", qunutBlock.contains("\"mazhab\": \"syafii\""))
+        // Qunut hanya untuk Subuh — jangan sampai muncul di sholat lain.
+        assertTrue("qunut tidak dibatasi ke sholat subuh", qunutBlock.contains("\"sholat\": [\"subuh\"]"))
 
         val allowed = setOf("syafii", "hanafi", "maliki", "hambali")
         Regex("\"mazhab\"\\s*:\\s*\"([^\"]+)\"").findAll(text).forEach {
             assertTrue("Tag mazhab tak dikenal: ${it.groupValues[1]}", it.groupValues[1] in allowed)
+        }
+
+        // Cakupan sholat harus merujuk id sholat yang benar-benar ada di daftar.
+        val known = Regex("\"id\": \"([a-z_]+)\"")
+            .findAll(File(contentDir(), "sholat_daftar.json").readText())
+            .map { it.groupValues[1] }.toSet()
+        Regex("\"sholat\"\\s*:\\s*\\[([^\\]]*)\\]").findAll(text).forEach { m ->
+            Regex("\"([^\"]+)\"").findAll(m.groupValues[1]).forEach { s ->
+                assertTrue("Cakupan sholat tak dikenal: ${s.groupValues[1]}", s.groupValues[1] in known)
+            }
         }
     }
 }

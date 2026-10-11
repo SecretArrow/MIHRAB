@@ -22,7 +22,9 @@ data class Bacaan(
     val arab: String = "", val latin: String = "", val terjemahan: String = "",
     val sumber: String = "", val rujukanFile: String? = null, val catatan: String = "",
     /** Bila terisi (mis. "syafii"), bacaan hanya tampil untuk mazhab itu. null = semua mazhab. */
-    val mazhab: String? = null
+    val mazhab: String? = null,
+    /** Bila terisi (mis. ["subuh"]), bacaan hanya tampil untuk sholat itu. kosong = semua sholat. */
+    val sholatScope: List<String> = emptyList()
 )
 
 data class DzikirItem(
