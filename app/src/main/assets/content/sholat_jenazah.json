@@ -1,0 +1,23 @@
+{
+  "modul": "sholat_jenazah",
+  "judul": "Sholat Jenazah",
+  "hukum": "fardhu_kifayah",
+  "takbir": 4,
+  "tanpa_ruku_sujud": true,
+  "sumber_url": "https://sunnah.com/bukhari:1335",
+  "sumber_tambahan": ["https://www.kemenag.go.id/", "https://sunnah.com/muslim:394"],
+  "dalil": "HR Muttafaq Alaih: Nabi SAW mensholatkan jenazah dengan 4 takbir tanpa ruku dan sujud.",
+  "catatan_mazhab": "Jumlah takbir 4 disepakati. Doa untuk mayit beragam riwayatnya (Muslim, Tirmidzi, Ibnu Majah); dipilih yang sahih. Default Indonesia: Syafi'i.",
+  "syarat": ["jenazah sudah dimandikan & dikafani", "suci", "dihadapkan ke arah kiblat", "sholat dilakukan dengan berdiri (bagi yang mampu)"],
+  "niat": [
+    {
+      "id": "jenazah_laki",
+      "judul": "Laki-laki",
+      "arab": "أُصَلِّي عَلَى هٰذَا الْمَيِّتِ أَرْبَعَ تَكْبِيرَاتٍ فَرْضَ الْكِفَايَةِ إِمَامًا/مَأْمُوْمًا لِلّٰهِ تَعَالَى",
+      "latin": "Ushalli 'ala hadzal mayyiti arba'a takbiratin fardhal kifayati imaman/ma'muman lillahi ta'ala.",
+      "terjemahan": "Aku menyolatkan jenazah ini 4 takbir fardhu kifayah karena Allah.",
+      "catatan": "Untuk jenazah perempuan, lafaz menyesuaikan (muannats): hadzihil mayyitati dan seterusnya."
+    }
+  ],
+  "langkah": ["niat", "takbir1_fatihah", "takbir2_sholawat", "takbir3_doa_mayit", "takbir4_doa_tambahan", "salam"]
+}

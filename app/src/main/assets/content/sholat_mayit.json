@@ -1,0 +1,26 @@
+{
+  "judul": "Bacaan doa untuk mayit",
+  "sumber_url": "https://sunnah.com/",
+  "edisi": "Doa untuk mayit dari hadis sahih (sunnah.com); dipakai pada sholat jenazah & sholat ghaib",
+  "catatan_mazhab": "Doa untuk mayit beragam riwayatnya (Muslim, Tirmidzi, Ibnu Majah); yang dipilih adalah riwayat sahih. Untuk jenazah perempuan, dhamir menyesuaikan (laha, warhamha, dst.).",
+  "bacaan": [
+    {
+      "arab": "اَللّٰهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ",
+      "id": "doa_mayit",
+      "judul": "Doa untuk mayit (takbir ke-3)",
+      "kapan": "Takbir ketiga pada sholat jenazah/ghaib. Untuk jenazah perempuan: laha, warhamha, wa 'afiha, wa'fu 'anha",
+      "latin": "Allahummaghfir lahu warhamhu wa 'afihi wa'fu 'anhu.",
+      "sumber": "HR Muslim — sunnah.com",
+      "terjemahan": "Ya Allah, ampunilah dia, rahmatilah dia, sejahterakanlah dia dan maafkanlah dia."
+    },
+    {
+      "arab": "اَللّٰهُمَّ لَا تَحْرِمْنَا أَجْرَهُ وَلَا تَفْتِنَّا بَعْدَهُ وَاغْفِرْ لَنَا وَلَهُ",
+      "id": "doa_mayit_tambahan",
+      "judul": "Doa tambahan (takbir ke-4)",
+      "kapan": "Takbir keempat pada sholat jenazah/ghaib",
+      "latin": "Allahumma la tahrimna ajrahu wa la taftinna ba'dahu waghfir lana wa lah.",
+      "sumber": "HR Tirmidzi, Ibnu Majah — sunnah.com",
+      "terjemahan": "Ya Allah, jangan halangi pahala (jenazah) sampai kepada kami, jangan beri kami fitnah sepeninggalnya, dan ampunilah kami dan dia."
+    }
+  ]
+}

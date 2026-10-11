@@ -43,6 +43,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Beranda menampilkan hitung mundur sholat berikutnya secara *live*.
 - Favorit, bookmark, riwayat, dan progres dipindahkan dari DataStore ke Room; DataStore
   tetap dipakai untuk preferensi.
+- **Sholat Ghaib & Jenazah**: niat dan doa mayit dipindahkan dari kode Kotlin ke assets
+  (`sholat_ghaib.json`, `sholat_jenazah.json`, `sholat_mayit.json`) agar tervalidasi gate
+  konten; tidak ada lagi teks Arab hardcoded di layar.
 
 ### Dihapus
 - Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);

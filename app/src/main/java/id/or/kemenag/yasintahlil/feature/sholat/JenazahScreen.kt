@@ -8,49 +8,59 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
-/** Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. */
+/**
+ * Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. Konten (niat & doa)
+ * dibaca dari assets (sholat_jenazah.json + bacaan bersama) — tanpa teks Arab di Kotlin.
+ */
 @Composable
 fun JenazahScreen() {
     val repo = rememberRepo()
-    val bacaan = remember { repo.sholatBacaan() }
+    var fullscreen by remember { mutableStateOf(false) }
+    var arabSize by remember { mutableStateOf(22f) }
+    FullscreenEffect(fullscreen)
+    val info = remember { repo.sholatKhusus("sholat_jenazah.json") }
+    val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
+    val steps = listOf(
+        "Takbir 1 → Al-Fatihah" to cari("fatihah"),
+        "Takbir 2 → Sholawat Ibrahimiyah" to cari("sholawat_ibrahimiyah"),
+        "Takbir 3 → Doa untuk mayit" to cari("doa_mayit"),
+        "Takbir 4 → Doa tambahan" to cari("doa_mayit_tambahan"),
+        "Salam" to cari("salam"),
+    )
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Sholat Jenazah — 4 takbir", style = MaterialTheme.typography.titleLarge)
-        Text("Syarat: jenazah sudah dimandikan & dikafani, suci, menghadap kiblat.",
-            style = MaterialTheme.typography.labelMedium)
-        BacaanCard("jenazah:niat", "Niat (laki-laki; perempuan: مَيِّتَةِ ... الْغَائِبَةِ tanpa kata ghaib)",
-            "أُصَلِّي عَلَى هٰذَا الْمَيِّتِ أَرْبَعَ تَكْبِيرَاتٍ فَرْضَ الْكِفَايَةِ إِمَامًا/مَأْمُوْمًا لِلّٰهِ تَعَالَى",
-            "Ushalli 'ala hadzal mayyiti arba'a takbiratin fardhal kifayati imaman/ma'muman lillahi ta'ala.",
-            "Aku menyolatkan jenazah ini 4 takbir fardhu kifayah karena Allah.",
-            true, true, 22f, 15f)
-        listOf(
-            "Takbir 1 → Al-Fatihah" to cari("fatihah"),
-            "Takbir 2 → Sholawat Ibrahimiyah" to cari("sholawat_ibrahimiyah"),
-            "Takbir 3 → Doa mayit" to null,
-            "Takbir 4 → Doa tambahan" to null,
-            "Salam" to cari("salam")
-        ).forEachIndexed { i, (judul, b) ->
+        Text(info.judul.ifBlank { "Sholat Jenazah" } + " — ${info.takbir} takbir",
+            style = MaterialTheme.typography.titleLarge)
+        if (info.syarat.isNotEmpty()) {
+            Text("Syarat: " + info.syarat.joinToString(", ") + ".",
+                style = MaterialTheme.typography.labelMedium)
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            OutlinedButton(onClick = { arabSize = (arabSize + 2).coerceAtMost(44f) }) { Text("A+") }
+            OutlinedButton(onClick = { arabSize = (arabSize - 2).coerceAtLeast(16f) }) { Text("A−") }
+        }
+        info.niat.forEach { n ->
+            BacaanCard("jenazah:niat:${n.id}", "Niat (${n.judul})", n.arab, n.latin, n.terjemahan,
+                true, true, arabSize, 15f, sumber = n.sumber)
+            if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
+        }
+        steps.forEachIndexed { i, (judul, b) ->
             Text("${i + 1}. $judul", style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(top = 8.dp))
-            when {
-                judul.contains("mayit") -> BacaanCard("jenazah:doa3", "Doa takbir ketiga",
-                    "اَللّٰهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ",
-                    "Allahummaghfir lahu warhamhu wa 'afihi wa'fu 'anhu.",
-                    "Ya Allah, ampunilah dia, rahmatilah dia, sejahterakanlah dia dan maafkanlah dia.",
-                    true, true, 22f, 15f, sumber = "HR Muslim — sunnah.com")
-                judul.contains("tambahan") -> BacaanCard("jenazah:doa4", "Doa takbir keempat",
-                    "اَللّٰهُمَّ لَا تَحْرِمْنَا أَجْرَهُ وَلَا تَفْتِنَّا بَعْدَهُ وَاغْفِرْ لَنَا وَلَهُ",
-                    "Allahumma la tahrimna ajrahu wa la taftinna ba'dahu waghfir lana wa lah.",
-                    "Ya Allah, jangan halangi pahalanya sampai kepada kami, jangan beri kami fitnah sepeninggalnya, dan ampunilah kami dan dia.",
-                    true, true, 22f, 15f, sumber = "HR Tirmidzi — sunnah.com")
-                b != null -> {
-                    val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
-                        Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
-                    }
-                    BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true, 22f, 15f, sumber = b.sumber)
+            if (b != null) {
+                val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
+                    Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
+                BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true,
+                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber)
             }
+        }
+        if (info.catatanMazhab.isNotBlank()) {
+            Text("Catatan mazhab: ${info.catatanMazhab}",
+                style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

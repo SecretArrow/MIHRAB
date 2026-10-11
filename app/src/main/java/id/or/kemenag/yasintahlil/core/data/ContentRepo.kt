@@ -101,8 +101,14 @@ class ContentRepo(private val ctx: Context) {
         }
     }
 
-    fun sholatBacaan(): List<Bacaan> {
-        val arr = doc("sholat_bacaan.json").getJSONArray("bacaan")
+    fun sholatBacaan(): List<Bacaan> = parseBacaan("sholat_bacaan.json")
+
+    /** Bacaan doa mayit (dipakai sholat jenazah & ghaib) — berkas terpisah agar tidak
+     *  tercampur ke daftar langkah sholat umum. */
+    fun sholatMayitBacaan(): List<Bacaan> = parseBacaan("sholat_mayit.json")
+
+    private fun parseBacaan(file: String): List<Bacaan> {
+        val arr = doc(file).getJSONArray("bacaan")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
@@ -189,6 +195,35 @@ class ContentRepo(private val ctx: Context) {
             pembatal = stringList("pembatal"),
             catatanMazhab = d.optString("catatan_mazhab"),
             catatanLafaz = d.optString("catatan_lafaz"),
+        )
+    }
+
+    /** Konten sholat khusus (ghaib/jenazah) dari assets — termasuk varian niat. */
+    fun sholatKhusus(file: String): SholatKhusus {
+        val d = doc(file)
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        val niatArr = d.optJSONArray("niat") ?: org.json.JSONArray()
+        val niat = (0 until niatArr.length()).map { i ->
+            val o = niatArr.getJSONObject(i)
+            Bacaan(
+                o.optString("id", "niat_$i"), o.optString("judul"),
+                o.optString("kapan"), o.optString("arab"), o.optString("latin"),
+                o.optString("terjemahan"), o.optString("sumber"),
+                catatan = o.optString("catatan"),
+            )
+        }
+        return SholatKhusus(
+            judul = d.optString("judul"),
+            hukum = d.optString("hukum"),
+            takbir = d.optInt("takbir", 4),
+            dalil = d.optString("dalil"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            syarat = stringList("syarat"),
+            niat = niat,
+            langkah = stringList("langkah"),
         )
     }
 }

@@ -63,4 +63,40 @@ class ContentSourceTest {
         assertTrue("wudhu.json kehilangan bagian tayamum", text.contains("tayamum"))
         assertTrue("wudhu.json kehilangan bagian pembatal", text.contains("pembatal"))
     }
+
+    /** Konten ghaib/jenazah harus berada di assets, bukan di kode Kotlin. */
+    @Test
+    fun ghaibAndJenazahContentLivesInAssets() {
+        val ghaib = File(contentDir(), "sholat_ghaib.json").readText()
+        val jenazah = File(contentDir(), "sholat_jenazah.json").readText()
+        val mayit = File(contentDir(), "sholat_mayit.json").readText()
+        val arabicInField = Regex("\"arab\"\\s*:\\s*\"[^\"]*[\\u0600-\\u06FF]")
+
+        assertTrue("sholat_ghaib.json tanpa varian niat ber-Arab", arabicInField.containsMatchIn(ghaib))
+        assertTrue("sholat_ghaib.json tanpa array niat", ghaib.contains("\"niat\""))
+        assertTrue("sholat_jenazah.json tanpa varian niat ber-Arab", arabicInField.containsMatchIn(jenazah))
+        assertTrue("sholat_mayit.json tanpa doa_mayit", mayit.contains("\"doa_mayit\""))
+        assertTrue("sholat_mayit.json tanpa doa_mayit_tambahan", mayit.contains("\"doa_mayit_tambahan\""))
+        // Doa mayit tidak boleh tercampur ke langkah sholat umum.
+        val umum = File(contentDir(), "sholat_bacaan.json").readText()
+        assertTrue("Doa mayit bocor ke sholat_bacaan.json", !umum.contains("doa_mayit"))
+    }
+
+    /** Layar yang kontennya dari assets tidak boleh memuat teks Arab hardcoded di kode. */
+    @Test
+    fun sholatScreensHaveNoHardcodedArabic() {
+        val files = listOf(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/GhaibScreen.kt",
+            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/JenazahScreen.kt",
+        )
+        val roots = listOf(File("."), File("app"))
+        val arabic = Regex("[\\u0600-\\u06FF]")
+        val problems = mutableListOf<String>()
+        files.forEach { p ->
+            val f = roots.map { File(it, p) }.firstOrNull { it.isFile }
+            assertTrue("Berkas tidak ditemukan: $p", f != null)
+            arabic.find(f!!.readText())?.let { problems += "$p: '${it.value}'" }
+        }
+        assertTrue("Teks Arab hardcoded di kode (pindahkan ke assets): $problems", problems.isEmpty())
+    }
 }

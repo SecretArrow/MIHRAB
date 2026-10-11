@@ -20,7 +20,7 @@ data class SholatInfo(
 data class Bacaan(
     val id: String, val judul: String, val kapan: String = "",
     val arab: String = "", val latin: String = "", val terjemahan: String = "",
-    val sumber: String = "", val rujukanFile: String? = null
+    val sumber: String = "", val rujukanFile: String? = null, val catatan: String = ""
 )
 
 data class DzikirItem(
@@ -46,6 +46,18 @@ data class PanduanBersuci(
     val pembatal: List<String> = emptyList(),
     val catatanMazhab: String = "",
     val catatanLafaz: String = "",
+)
+
+/** Konten sholat khusus (ghaib/jenazah): metadata + varian niat, dibaca dari assets. */
+data class SholatKhusus(
+    val judul: String = "",
+    val hukum: String = "",
+    val takbir: Int = 4,
+    val dalil: String = "",
+    val catatanMazhab: String = "",
+    val syarat: List<String> = emptyList(),
+    val niat: List<Bacaan> = emptyList(),
+    val langkah: List<String> = emptyList(),
 )
 
 data class PrayerTimes(
