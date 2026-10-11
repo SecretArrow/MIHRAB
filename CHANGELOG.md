@@ -72,6 +72,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   konten; tidak ada lagi teks Arab hardcoded di layar.
 
 ### Dihapus
+- Berkas `assets/content/yasin.json` yang yatim (metadata Yasin tak dibaca kode mana pun —
+  aplikasi memakai `yasin_full.json`, yang juga sudah memuat metadata surat). Rujukan di
+  `SOURCES.md` dan `docs/CONTENT_SOURCES.md` disesuaikan.
 - Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);
   pemeriksaan tetap dilakukan oleh lint & unit test di `ci.yml`.
 - Izin `INTERNET` dan `ACCESS_NETWORK_STATE` dari manifes: tidak ada kode jaringan sama sekali,

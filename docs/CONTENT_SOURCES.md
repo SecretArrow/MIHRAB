@@ -21,7 +21,6 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |
-| `yasin.json` | Metadata Yasin | quran.kemenag.go.id | ✅ metadata |
 
 ## Yang WAJIB dibereskan agar 100% sumber resmi
 

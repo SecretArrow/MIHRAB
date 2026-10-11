@@ -7,7 +7,7 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
 - https://quran-api.lpmqkemenag.id/ (Qur'an Kemenag API — daftar + surat ke lajnah@kemenag.go.id)
 - https://quranindonesia.kemenag.go.id/ (aplikasi rujukan resmi)
 - https://lajnah.kemenag.go.id/ (unduhan mushaf resmi)
-- Edisi terjemah: Kemenag 2019. Yasin = 83 ayat. File: `app/src/main/assets/content/yasin.json`
+- Edisi terjemah: Kemenag 2019. Yasin = 83 ayat. File: `app/src/main/assets/content/yasin_full.json`
 - Atribusi di About: "Sumber teks: Lajnah Pentashihan Mushaf Al-Qur'an (LPMQ) Kemenag RI"
 
 ## 2. Jadwal Sholat
