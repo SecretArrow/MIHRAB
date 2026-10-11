@@ -9,7 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
@@ -30,8 +32,11 @@ fun rememberStore(): Store {
 
 @Composable
 fun ArabText(arab: String, sizeSp: Float, modifier: Modifier = Modifier, lineHeightFactor: Float = 1.9f) {
-    Text(arab, fontSize = sizeSp.sp, lineHeight = (sizeSp * lineHeightFactor).sp,
-        textAlign = TextAlign.Right, modifier = modifier.fillMaxWidth())
+    // Teks Arab ditata arah kanan-ke-kiri agar tanda baca & angka menempel benar.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        Text(arab, fontSize = sizeSp.sp, lineHeight = (sizeSp * lineHeightFactor).sp,
+            textAlign = TextAlign.Right, modifier = modifier.fillMaxWidth())
+    }
 }
 
 fun Context.copyText(label: String, text: String) {

@@ -17,11 +17,29 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Penyusun pengingat** (`PrayerScheduler`) yang membaca lokasi/metode/koreksi tersimpan,
   berjalan harian, dan disusun ulang otomatis setelah reboot (`BootReceiver`).
 - Dokumentasi izin (`docs/PERMISSIONS.md`) dan kebijakan privasi (`docs/PRIVACY.md`).
+- **Kiblat**: permintaan izin lokasi saat runtime, lokasi GPS live (bukan hanya
+  `lastKnownLocation`), sensor rotasi bila tersedia (cadangan akselerometer + magnetometer),
+  mode layar penuh, dan tombol "Perbarui lokasi".
+- **Jadwal sholat**: tombol "Pakai lokasi GPS" dengan permintaan izin runtime.
+- **Aksesibilitas**: teks Arab memakai arah tata letak RTL; ikon bilah bawah punya
+  `contentDescription`.
+- **Yasin/Tahlil/Dzikir**: ukuran font & jarak antarbaris, penanda ayat terakhir, bookmark,
+  pencarian internal, counter persisten (Room), pemilih susunan tahlil, dan mode layar penuh
+  yang benar-benar menyembunyikan bilah navigasi.
+- **Favorit & Riwayat**: disimpan di Room (tahan rotasi & penutupan aplikasi), dengan
+  migrasi sekali dari penyimpanan lama.
+- Dependabot untuk dependensi Gradle & GitHub Actions (`.github/dependabot.yml`).
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)
   dan terverifikasi terhadap acuan SIHAT Bimas Islam.
 - Beranda menampilkan hitung mundur sholat berikutnya secara *live*.
+- Favorit, bookmark, riwayat, dan progres dipindahkan dari DataStore ke Room; DataStore
+  tetap dipakai untuk preferensi.
+
+### Dihapus
+- Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);
+  pemeriksaan tetap dilakukan oleh lint & unit test di `ci.yml`.
 
 ### Catatan
 - Sumber jadwal/kalender **online resmi** belum diaktifkan karena SIHAT Bimas Islam tidak

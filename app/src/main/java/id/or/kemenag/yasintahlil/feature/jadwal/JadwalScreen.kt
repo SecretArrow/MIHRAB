@@ -1,5 +1,8 @@
 package id.or.kemenag.yasintahlil.feature.jadwal
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +20,16 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     var drop by remember { mutableStateOf(false) }
     var methodDrop by remember { mutableStateOf(false) }
     var tzDrop by remember { mutableStateOf(false) }
+    var needPermission by remember { mutableStateOf(false) }
+
+    val permLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        if (result.values.any { it }) {
+            needPermission = false
+            vm.useGps()
+        }
+    }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Jadwal Sholat", style = MaterialTheme.typography.titleLarge)
@@ -38,6 +51,21 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         if (drop) vm.kota.forEach { k ->
             TextButton(onClick = { vm.selectCity(k); drop = false }) { Text(k.nama) }
         }
+        OutlinedButton(onClick = {
+            if (vm.hasLocationPermission() && vm.useGps()) {
+                needPermission = false
+            } else {
+                needPermission = true
+                permLauncher.launch(arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ))
+            }
+        }) { Text("Pakai lokasi GPS") }
+        if (needPermission) Text(
+            "Izinkan lokasi agar jadwal memakai koordinat GPS perangkat; bila tidak, pilih kota secara manual.",
+            style = MaterialTheme.typography.labelSmall,
+        )
 
         // Zona waktu
         OutlinedButton(onClick = { tzDrop = !tzDrop; methodDrop = false; drop = false }) {

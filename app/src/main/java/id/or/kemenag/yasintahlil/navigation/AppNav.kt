@@ -88,7 +88,7 @@ fun AppNav() {
                 composable(Routes.JADWAL) { JadwalScreen() }
                 composable(Routes.DZIKIR) { DzikirScreen() }
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
-                composable(Routes.FAVORIT) { FavoritScreen { nav.navigate(it) } }
+                composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
             }
         }
     }

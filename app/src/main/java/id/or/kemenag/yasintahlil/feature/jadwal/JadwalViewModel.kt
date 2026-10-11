@@ -9,6 +9,7 @@ import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Kota
 import id.or.kemenag.yasintahlil.core.data.PrayerTimes
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,11 +80,33 @@ class JadwalViewModel @Inject constructor(
         _state.value = s.copy(times = times, nowMin = nowMin)
     }
 
+    /** Apakah izin lokasi sudah diberikan (untuk menampilkan tombol GPS). */
+    fun hasLocationPermission(): Boolean = LocationProvider.hasPermission(ctx)
+
+    /**
+     * Pakai koordinat GPS perangkat. Mengembalikan false bila izin belum ada atau belum ada
+     * perbaikan lokasi — pemanggil dapat meminta izin lalu mencoba lagi.
+     */
+    fun useGps(): Boolean {
+        val loc = LocationProvider.lastKnown(ctx) ?: return false
+        _state.value = _state.value.copy(city = LocationProvider.GPS_LABEL, lat = loc.latitude, lon = loc.longitude)
+        recompute()
+        viewModelScope.launch {
+            store.set(Store.CITY, LocationProvider.GPS_LABEL)
+            store.set(Store.LAT, loc.latitude)
+            store.set(Store.LON, loc.longitude)
+            store.set(Store.USE_GPS, true)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        return true
+    }
+
     fun selectCity(k: Kota) {
         _state.value = _state.value.copy(city = k.nama, lat = k.lat, lon = k.lon)
         recompute()
         viewModelScope.launch {
             store.set(Store.CITY, k.nama); store.set(Store.LAT, k.lat); store.set(Store.LON, k.lon)
+            store.set(Store.USE_GPS, false)
             PrayerScheduler.scheduleAll(ctx)
         }
     }
