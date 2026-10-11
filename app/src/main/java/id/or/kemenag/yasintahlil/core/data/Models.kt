@@ -9,6 +9,9 @@ data class TahlilItem(
     val ulangi: Int = 1, val rujukanFile: String? = null, val sumber: String = ""
 )
 
+/** Susunan rangkaian tahlil (urut) — merujuk id pada daftar bagian tahlil. */
+data class TahlilSusunan(val id: String, val nama: String, val bagian: List<String>)
+
 data class Niat(val arab: String, val latin: String, val terjemahan: String)
 data class SholatInfo(
     val id: String, val nama: String, val rakaat: String, val waktu: String,

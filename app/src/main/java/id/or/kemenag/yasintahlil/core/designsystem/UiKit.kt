@@ -29,8 +29,8 @@ fun rememberStore(): Store {
 }
 
 @Composable
-fun ArabText(arab: String, sizeSp: Float, modifier: Modifier = Modifier) {
-    Text(arab, fontSize = sizeSp.sp, lineHeight = (sizeSp * 1.9f).sp,
+fun ArabText(arab: String, sizeSp: Float, modifier: Modifier = Modifier, lineHeightFactor: Float = 1.9f) {
+    Text(arab, fontSize = sizeSp.sp, lineHeight = (sizeSp * lineHeightFactor).sp,
         textAlign = TextAlign.Right, modifier = modifier.fillMaxWidth())
 }
 
@@ -52,20 +52,24 @@ fun BacaanCard(
     showLatin: Boolean, showTrans: Boolean,
     arabSize: Float, latinSize: Float,
     ulangi: Int = 1, sumber: String = "",
+    lineHeightFactor: Float = 1.9f,
     onOpen: (() -> Unit)? = null
 ) {
     val ctx = LocalContext.current
-    val store = rememberStore()
+    val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     var fav by remember { mutableStateOf(false) }
-    LaunchedEffect(id) { fav = store.get(Store.FAV, emptySet()).contains(id) }
+    val (favKind, favRef) = remember(id) { splitContentId(id) }
+    LaunchedEffect(id) {
+        userData.isFavorite(favKind, favRef).collect { fav = it }
+    }
     Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Column(Modifier.padding(12.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 if (ulangi > 1) AssistChip(onClick = {}, label = { Text("${ulangi}x") })
             }
-            if (arab.isNotBlank()) ArabText(arab, arabSize)
+            if (arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
             if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
                 color = MaterialTheme.colorScheme.secondary)
             if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)
@@ -73,11 +77,11 @@ fun BacaanCard(
             Row {
                 TextButton(onClick = {
                     ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
-                    scope.launch { store.pushHist("copy:$id") }
+                    scope.launch { userData.pushHistory(favKind, favRef, judul) }
                 }) { Text("Salin") }
                 TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) { Text("Bagikan") }
                 TextButton(onClick = {
-                    scope.launch { store.toggleFav(id); fav = store.get(Store.FAV, emptySet()).contains(id) }
+                    scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
                 }) { Text(if (fav) "★ Favorit" else "☆ Favorit") }
                 if (onOpen != null) TextButton(onClick = onOpen) { Text("Buka") }
             }

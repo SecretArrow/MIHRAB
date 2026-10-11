@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
 
 /** Sholat Ghaib: 4 takbir tanpa ruku/sujud, fardhu kifayah. Dalil: HR Muttafaq Alaih (Najasyi). */
@@ -19,6 +20,7 @@ fun GhaibScreen() {
     val scope = rememberCoroutineScope()
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
+    FullscreenEffect(fullscreen)
     val bacaan = remember { repo.sholatBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
     val steps = listOf(

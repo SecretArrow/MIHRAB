@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -34,6 +35,7 @@ fun IqomahScreen() {
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
     LaunchedEffect(Unit) { mins = store.get(Store.IQOMAH_MIN, 10) }
+    FullscreenEffect(fullscreen)
 
     // Hitung mundur nyata per detik; getar sekali saat habis.
     LaunchedEffect(remaining) {

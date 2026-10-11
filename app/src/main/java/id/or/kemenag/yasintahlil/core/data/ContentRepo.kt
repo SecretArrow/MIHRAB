@@ -52,9 +52,9 @@ class ContentRepo(private val ctx: Context) {
         } else Triple(d.optString("arab"), d.optString("latin"), d.optString("terjemahan"))
     }
 
-    fun tahlil(): List<TahlilItem> {
+    fun tahlil(susunanId: String? = null): List<TahlilItem> {
         val arr = doc("tahlil_full.json").getJSONArray("bagian")
-        return (0 until arr.length()).map { i ->
+        val all = (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
             TahlilItem(
@@ -63,6 +63,23 @@ class ContentRepo(private val ctx: Context) {
                 o.optInt("ulangi", 1),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 o.optString("sumber", "")
+            )
+        }
+        if (susunanId == null) return all
+        val order = tahlilSusunan().firstOrNull { it.id == susunanId }?.bagian ?: return all
+        val byId = all.associateBy { it.id }
+        return order.mapNotNull { byId[it] }.ifEmpty { all }
+    }
+
+    /** Daftar susunan tahlil yang tersedia (mis. "lazim Indonesia"). */
+    fun tahlilSusunan(): List<TahlilSusunan> {
+        val arr = doc("tahlil.json").optJSONArray("susunan") ?: return emptyList()
+        return (0 until arr.length()).map { i ->
+            val o = arr.getJSONObject(i)
+            val b = o.optJSONArray("bagian") ?: org.json.JSONArray()
+            TahlilSusunan(
+                o.getString("id"), o.optString("nama", o.getString("id")),
+                (0 until b.length()).map { b.getString(it) }
             )
         }
     }
