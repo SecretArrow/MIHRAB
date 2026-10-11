@@ -62,7 +62,7 @@ fun HomeScreen(go: (String) -> Unit) {
     val now = remember(tick, tz) { Calendar.getInstance(tz).apply { timeInMillis = tick } }
     val jam = SimpleDateFormat("HH:mm", Locale("id")).format(now.time)
     val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id")).format(now.time)
-    val times = remember(lat, lon, asarH, method, tz, corr) {
+    val times = remember(lat, lon, asarH, method, tz, corr, now.get(Calendar.DAY_OF_YEAR)) {
         PrayerCalc.compute(now, PrayerCalc.Params(
             lat = lat, lon = lon, method = method,
             asarFactor = if (asarH) 2.0 else 1.0, corr = corr, tz = tz,
