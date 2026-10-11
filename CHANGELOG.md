@@ -50,6 +50,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Beranda menampilkan hitung mundur sholat berikutnya secara *live*.
 - Favorit, bookmark, riwayat, dan progres dipindahkan dari DataStore ke Room; DataStore
   tetap dipakai untuk preferensi.
+- **Aksesibilitas warna**: tema gelap memakai varian terang untuk `primary`/`secondary`
+  dengan teks gelap di atas tombol, dan warna teks Latin (emas) digelapkan — semuanya agar
+  lolos ambang kontras WCAG AA. Ditambah uji kontras otomatis (`ContrastTest`).
 - **Sholat Ghaib & Jenazah**: niat dan doa mayit dipindahkan dari kode Kotlin ke assets
   (`sholat_ghaib.json`, `sholat_jenazah.json`, `sholat_mayit.json`) agar tervalidasi gate
   konten; tidak ada lagi teks Arab hardcoded di layar.
