@@ -39,6 +39,7 @@ import id.or.kemenag.yasintahlil.feature.sholat.GhaibScreen
 import id.or.kemenag.yasintahlil.feature.sholat.JenazahScreen
 import id.or.kemenag.yasintahlil.feature.sholat.SholatDetailScreen
 import id.or.kemenag.yasintahlil.feature.sholat.SholatScreen
+import id.or.kemenag.yasintahlil.feature.sholat.WudhuScreen
 import id.or.kemenag.yasintahlil.feature.tahlil.TahlilScreen
 import id.or.kemenag.yasintahlil.feature.yasin.YasinScreen
 
@@ -81,6 +82,7 @@ fun AppNav() {
                 }
                 composable(Routes.GHAIB) { GhaibScreen() }
                 composable(Routes.JENAZAH) { JenazahScreen() }
+                composable(Routes.WUDHU) { WudhuScreen() }
                 composable(Routes.ADZAN) { AdzanScreen() }
                 composable(Routes.DOA_ADZAN) { DoaAdzanScreen() }
                 composable(Routes.IQOMAH) { IqomahScreen() }

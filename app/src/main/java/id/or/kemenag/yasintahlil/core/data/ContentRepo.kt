@@ -167,4 +167,28 @@ class ContentRepo(private val ctx: Context) {
             val o = arr.getJSONObject(i); Kota(o.getString("nama"), o.getDouble("lat"), o.getDouble("lon"))
         }
     }
+
+    /** Panduan bersuci (wudhu, tayamum, pembatal) — langkah prosedural tanpa teks Arab. */
+    fun panduanBersuci(): PanduanBersuci {
+        val d = doc("wudhu.json")
+        fun langkah(key: String): List<Langkah> {
+            val arr = d.optJSONObject(key)?.optJSONArray("langkah") ?: return emptyList()
+            return (0 until arr.length()).map { i ->
+                val o = arr.getJSONObject(i)
+                Langkah(o.optInt("no", i + 1), o.getString("judul"), o.optString("keterangan"))
+            }
+        }
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        return PanduanBersuci(
+            rukun = stringList("rukun"),
+            wudhu = langkah("wudhu"),
+            tayamum = langkah("tayamum"),
+            pembatal = stringList("pembatal"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            catatanLafaz = d.optString("catatan_lafaz"),
+        )
+    }
 }

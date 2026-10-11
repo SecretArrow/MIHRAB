@@ -35,6 +35,19 @@ data class AdzanLafaz(val arab: String, val latin: String, val terjemahan: Strin
 
 data class Kota(val nama: String, val lat: Double, val lon: Double)
 
+/** Satu langkah panduan (wudhu/tayamum) — keterangan prosedural, bukan teks ibadah. */
+data class Langkah(val no: Int, val judul: String, val keterangan: String = "")
+
+/** Panduan bersuci: wudhu, tayamum, dan hal-hal yang membatalkan wudhu. */
+data class PanduanBersuci(
+    val rukun: List<String> = emptyList(),
+    val wudhu: List<Langkah> = emptyList(),
+    val tayamum: List<Langkah> = emptyList(),
+    val pembatal: List<String> = emptyList(),
+    val catatanMazhab: String = "",
+    val catatanLafaz: String = "",
+)
+
 data class PrayerTimes(
     val subuh: String, val terbit: String, val zuhur: String,
     val asar: String, val magrib: String, val isya: String

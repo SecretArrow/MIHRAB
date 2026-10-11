@@ -9,6 +9,7 @@ object Routes {
     const val TAHLIL = "tahlil"
     const val SHOLAT = "sholat"
     const val SHOLAT_DETAIL = "sholat_detail"
+    const val WUDHU = "sholat/wudhu"
     const val GHAIB = "sholat/ghaib"
     const val JENAZAH = "sholat/jenazah"
     const val ADZAN = "adzan"
