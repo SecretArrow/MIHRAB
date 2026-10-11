@@ -22,7 +22,7 @@ jobs:
         run: python3 tools/validate_content.py
       - name: Lint debug (hemat, tanpa emulator)
         run: ./gradlew :app:lintDebug --parallel --build-cache
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with: { name: lint-report, path: app/build/reports/lint-results-debug.html }
 
@@ -36,7 +36,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit test (jadwal, kiblat, hijriah, konten, repo)
         run: ./gradlew :app:testDebugUnitTest --parallel --build-cache
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with: { name: unit-report, path: app/build/reports/tests/testDebugUnitTest/ }
 
@@ -53,5 +53,5 @@ jobs:
         run: ./gradlew :app:assembleDebug --parallel --build-cache
       - name: Build release (validasi R8/ProGuard; unsigned bila tanpa keystore)
         run: ./gradlew :app:assembleRelease --parallel --build-cache
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: app-debug, path: app/build/outputs/apk/debug/*.apk }
