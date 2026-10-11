@@ -48,4 +48,19 @@ class ContentSourceTest {
         }
         assertTrue("Placeholder terdeteksi: $problems", problems.isEmpty())
     }
+
+    /**
+     * wudhu.json sengaja tanpa teks Arab (lafaz menunggu verifikasi sumber resmi). Uji ini
+     * menjaga agar tidak ada yang diam-diam menyisipkan teks Arab hasil karangan ke berkas itu.
+     */
+    @Test
+    fun wudhuContentHasNoFabricatedArabic() {
+        val f = File(contentDir(), "wudhu.json")
+        assertTrue("wudhu.json tidak ditemukan", f.isFile)
+        val text = f.readText()
+        val arabic = Regex("[\\u0600-\\u06FF]").find(text)
+        assertTrue("wudhu.json memuat teks Arab tanpa sumber: '${arabic?.value}'", arabic == null)
+        assertTrue("wudhu.json kehilangan bagian tayamum", text.contains("tayamum"))
+        assertTrue("wudhu.json kehilangan bagian pembatal", text.contains("pembatal"))
+    }
 }
