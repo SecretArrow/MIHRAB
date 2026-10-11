@@ -48,6 +48,7 @@ class Store(private val ctx: Context) {
         val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
         val LANG = stringPreferencesKey("lang") // id|en
         val INFO_CARD = booleanPreferencesKey("info_card")
+        val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
         val FAV = stringSetPreferencesKey("fav") // warisan (legacy) — migrasi ke Room
         val HIST = stringPreferencesKey("hist") // warisan (legacy)
         val LAST = stringPreferencesKey("last") // mis. yasin:58
@@ -107,7 +108,7 @@ class Store(private val ctx: Context) {
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS)
             bool(DND_OVERRIDE); bool(INFO_CARD); bool(NOTIF)
-            int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK)
+            int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)
                 if (arr != null) {

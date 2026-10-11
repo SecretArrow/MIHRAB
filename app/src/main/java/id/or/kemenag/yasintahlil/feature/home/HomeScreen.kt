@@ -12,6 +12,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,34 +23,55 @@ fun HomeScreen(go: (String) -> Unit) {
     var lat by remember { mutableStateOf(-6.2) }
     var lon by remember { mutableStateOf(106.8) }
     var asarH by remember { mutableStateOf(false) }
+    var method by remember { mutableStateOf(PrayerCalc.Method.KEMENAG) }
+    var tzId by remember { mutableStateOf("") }
+    var corr by remember { mutableStateOf(List(6) { 0 }) }
     var last by remember { mutableStateOf("") }
     var infoOn by remember { mutableStateOf(true) }
+    var hijriCorr by remember { mutableStateOf(0) }
+    var tick by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
     LaunchedEffect(Unit) {
         city = store.get(Store.CITY, "Jakarta")
         lat = store.get(Store.LAT, -6.2); lon = store.get(Store.LON, 106.8)
         asarH = store.get(Store.ASAR, "syafii") == "hanafi"
+        method = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
+        tzId = store.get(Store.TZ, "")
+        corr = (store.get(Store.CORR, "0,0,0,0,0,0").split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }).take(6)
         last = store.get(Store.LAST, "")
-        infoOn = store.get(Store.NOTIF, true)
+        infoOn = store.get(Store.INFO_CARD, true)
+        hijriCorr = store.get(Store.HIJRI_CORR, 0)
     }
-    val now = Calendar.getInstance()
+    // Hitung mundur live (perbarui tiap detik).
+    LaunchedEffect(Unit) { while (true) { delay(1_000); tick = System.currentTimeMillis() } }
+
+    val tz = remember(tzId) { if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId) }
+    val now = remember(tick, tz) { Calendar.getInstance(tz).apply { timeInMillis = tick } }
     val jam = SimpleDateFormat("HH:mm", Locale("id")).format(now.time)
     val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id")).format(now.time)
-    val times = remember(lat, lon, asarH) {
-        PrayerCalc.compute(now, PrayerCalc.Params(lat, lon, asarFactor = if (asarH) 2.0 else 1.0))
+    val times = remember(lat, lon, asarH, method, tz, corr) {
+        PrayerCalc.compute(now, PrayerCalc.Params(
+            lat = lat, lon = lon, method = method,
+            asarFactor = if (asarH) 2.0 else 1.0, corr = corr, tz = tz,
+        ))
     }
     val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
     val (berikut, sisa) = PrayerCalc.next(nowMin, times)
+    val berikutJam = when (berikut) {
+        "Subuh" -> times.subuh; "Terbit" -> times.terbit; "Zuhur" -> times.zuhur
+        "Asar" -> times.asar; "Magrib" -> times.magrib; else -> times.isya
+    }
+
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Assalamu'alaikum", style = MaterialTheme.typography.titleLarge)
         Text("$masehi • $jam")
-        Text(HijriCalc.format(now), style = MaterialTheme.typography.labelMedium)
+        Text(HijriCalc.format(now, hijriCorr), style = MaterialTheme.typography.labelMedium)
         Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
-                Text("$city — Berikutnya: $berikut ${times.let {
-                    listOf(it.subuh, it.terbit, it.zuhur, it.asar, it.magrib, it.isya)[
-                        listOf("Subuh", "Terbit", "Zuhur", "Asar", "Magrib", "Isya").indexOf(berikut)]
-                }} (${sisa / 60}j ${sisa % 60}m lagi)", style = MaterialTheme.typography.titleMedium)
+                Text("$city — Berikutnya: $berikut $berikutJam (${sisa / 60}j ${sisa % 60}m lagi)",
+                    style = MaterialTheme.typography.titleMedium)
                 Text("Subuh ${times.subuh} • Zuhur ${times.zuhur} • Asar ${times.asar} • Magrib ${times.magrib} • Isya ${times.isya}")
+                Text("Metode: ${method.label}", style = MaterialTheme.typography.labelSmall)
                 Button(onClick = { go(Routes.JADWAL) }) { Text("Jadwal lengkap / ganti lokasi") }
             }
         }

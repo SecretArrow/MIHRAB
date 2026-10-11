@@ -1,61 +1,113 @@
 package id.or.kemenag.yasintahlil.core.data
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.work.*
-import id.or.kemenag.yasintahlil.core.util.PrayerCalc
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
+import androidx.core.app.NotificationManagerCompat
+import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
+import id.or.kemenag.yasintahlil.MainActivity
+import id.or.kemenag.yasintahlil.core.scheduling.AdzanPlayer
+import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
+import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 
-/** Pengingat waktu sholat via WorkManager. Ketepatan dapat dipengaruhi optimasi baterai/OEM. */
+/**
+ * Pengingat satu waktu sholat. Membaca lokasi/metode/koreksi/zona waktu dari [Store] (bukan hardcode),
+ * menghormati saklar per-waktu, memutar audio adzan pilihan pengguna di latar (foreground service media),
+ * lalu menjadwalkan kemunculan berikutnya lewat [PrayerScheduler].
+ */
 class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(app, params) {
-    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        val nama = inputData.getString("nama") ?: return@withContext Result.success()
+
+    override suspend fun doWork(): Result {
+        val nama = inputData.getString("nama") ?: return Result.success()
+        val isAdzan = inputData.getBoolean("adzan", true)
         val store = Store(applicationContext)
-        if (!store.get(Store.NOTIF, true)) return@withContext Result.success()
-        val mgr = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        try {
-            mgr.createNotificationChannel(NotificationChannel("adzan", "Adzan", NotificationManager.IMPORTANCE_HIGH))
-        } catch (_: Exception) { }
-        val notif = NotificationCompat.Builder(applicationContext, "adzan")
-            .setContentTitle("Waktu $nama telah tiba")
-            .setContentText("Segerakan sholat. Jadwal metode Kemenag — verifikasi sihat.kemenag.dev")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setAutoCancel(true).build()
-        try { mgr.notify(nama.hashCode(), notif) } catch (_: Exception) { }
-        // jadwalkan ulang besok
-        scheduleToday(applicationContext)
-        Result.success()
+        if (!store.get(Store.NOTIF, true)) return Result.success()
+
+        val dnd = store.get(Store.DND_OVERRIDE, false)
+        NotifChannels.ensure(applicationContext, dnd)
+
+        val uri = store.get(Store.ADZAN_URI, "")
+        val vol = store.get(Store.ADZAN_VOL, 0.8f)
+        val preMin = store.get(Store.ADZAN_PRE_MIN, 0)
+
+        if (!isAdzan) {
+            notifyPre(nama, preMin)
+            PrayerScheduler.rescheduleOne(applicationContext, nama)
+            return Result.success()
+        }
+
+        val playAudio = uri.isNotBlank()
+        if (playAudio) {
+            runCatching { setForeground(foregroundInfo(nama)) }
+        }
+        notifyAdzan(nama, playAudio)
+        if (playAudio) {
+            AdzanPlayer.playOnce(applicationContext, uri, vol)
+        }
+        PrayerScheduler.rescheduleOne(applicationContext, nama)
+        return Result.success()
     }
 
-    companion object {
-        fun scheduleToday(ctx: Context) {
-            runCatching {
-                val store = Store(ctx)
-                val wm = WorkManager.getInstance(ctx)
-                wm.cancelAllWorkByTag("sholat")
-                val now = Calendar.getInstance()
-                val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-                // baca prefs sinkron-seperlunya via runBlocking di worker aman; di UI pakai default dulu
-                val names = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
-                val t = PrayerCalc.compute(now, PrayerCalc.Params(-6.2, 106.8))
-                val map = mapOf("Subuh" to t.subuh, "Zuhur" to t.zuhur, "Asar" to t.asar,
-                    "Magrib" to t.magrib, "Isya" to t.isya)
-                names.forEach { n ->
-                    val d = PrayerCalc.toMinutes(map[n]!!) - nowMin
-                    if (d > 1) {
-                        val req = OneTimeWorkRequestBuilder<ReminderWorker>()
-                            .setInitialDelay(d.toLong(), TimeUnit.MINUTES)
-                            .setInputData(workDataOf("nama" to n))
-                            .addTag("sholat").build()
-                        wm.enqueue(req)
-                    }
-                }
-            }
+    private fun contentIntent(): PendingIntent {
+        val i = Intent(applicationContext, MainActivity::class.java)
+        return PendingIntent.getActivity(
+            applicationContext, 0, i,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+
+    private fun foregroundInfo(nama: String): ForegroundInfo {
+        val notif = NotificationCompat.Builder(applicationContext, NotifChannels.ADZAN_SILENT)
+            .setContentTitle("Adzan $nama")
+            .setContentText("Sedang memutar adzan…")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentIntent(contentIntent())
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+        return if (Build.VERSION.SDK_INT >= 29) {
+            ForegroundInfo(nama.hashCode(), notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        } else {
+            ForegroundInfo(nama.hashCode(), notif)
         }
+    }
+
+    private fun notifyAdzan(nama: String, playAudio: Boolean) {
+        // Bila audio adzan diputar lewat ExoPlayer, pakai kanal senyap agar suara tidak ganda.
+        val channel = if (playAudio) NotifChannels.ADZAN_SILENT else NotifChannels.ADZAN
+        val notif = NotificationCompat.Builder(applicationContext, channel)
+            .setContentTitle("Waktu $nama telah tiba")
+            .setContentText("Segerakan sholat. Jadwal dihitung di perangkat (metode Kemenag/SIHAT).")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentIntent(contentIntent())
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setAutoCancel(true)
+            .build()
+        post(nama.hashCode() + 1000, notif)
+    }
+
+    private fun notifyPre(nama: String, preMin: Int) {
+        val notif = NotificationCompat.Builder(applicationContext, NotifChannels.PRE)
+            .setContentTitle("$preMin menit lagi $nama")
+            .setContentText("Bersiap untuk sholat $nama.")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentIntent(contentIntent())
+            .setAutoCancel(true)
+            .build()
+        post(nama.hashCode() + 2000, notif)
+    }
+
+    // Notifikasi hanya relevan bila izin notifikasi diberikan; kegagalan diabaikan agar pengingat lain tetap jalan.
+    @SuppressLint("MissingPermission")
+    private fun post(id: Int, notif: android.app.Notification) {
+        val mgr = NotificationManagerCompat.from(applicationContext)
+        if (!mgr.areNotificationsEnabled()) return
+        runCatching { mgr.notify(id, notif) }
     }
 }
