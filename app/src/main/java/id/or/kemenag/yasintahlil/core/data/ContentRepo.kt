@@ -1,6 +1,8 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import android.content.Context
+import android.util.Log
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONObject
 
 /** Repository offline-first: seluruh konten dibaca dari assets/content (sumber resmi). */
@@ -8,7 +10,13 @@ class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
     private fun doc(file: String): JSONObject =
         cache.getOrPut(file) {
-            JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+            val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+            // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
+            val src = json.optString("sumber_url", "")
+            if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+                Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
+            }
+            json
         }
 
     private fun verse(o: JSONObject) = Verse(

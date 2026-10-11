@@ -1,13 +1,14 @@
 {
  "bacaan": [
   {
-   "arab": "أُصَلِّيْ ... (lafaz niat per sholat, lihat sholat_daftar.json) — niat tempatnya di hati bersamaan takbiratul ihram.",
+   "arab": "",
    "id": "niat",
    "judul": "Niat",
-   "kapan": "Bersamaan takbiratul ihram, di dalam hati",
-   "latin": "Usholli ... (sesuai sholatnya)",
+   "kapan": "Di dalam hati bersamaan takbiratul ihram",
+   "latin": "",
    "sumber": "Fasolatan Kemenag; kedudukan niat: HR Bukhari-Muslim (innamal a'malu binniyat)",
-   "terjemahan": "Aku niat sholat ... karena Allah Ta'ala."
+   "terjemahan": "Niat tempatnya di dalam hati. Lafaz niat berbeda untuk tiap sholat — lihat daftar sholat (wajib/sunnah) untuk niat masing-masing.",
+   "catatan": "Tidak ada satu lafaz niat universal; niat per sholat ada di sholat_daftar.json. Kedudukan niat: HR Bukhari-Muslim (innamal a'malu binniyat) — sunnah.com"
   },
   {
    "arab": "اَللهُ أَكْبَرُ",

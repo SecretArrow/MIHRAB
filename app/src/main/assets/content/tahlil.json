@@ -1,1 +1,29 @@
-{"modul":"tahlil","sumber_url":"https://quran.kemenag.go.id/","catatan_tradisi":"Susunan dapat berbeda menurut tradisi; bukan satu-satunya versi yang benar.","bagian":["pembuka_tawasul","istighfar","sholawat","al_fatihah","al_ikhlas","al_falaq","an_nas","ayat_kursi","tahlil_dzikir","tasbih_tahmid_takbir","doa_mayit","doa_penutup"]}
+{
+ "modul": "tahlil",
+ "sumber_url": "https://quran.kemenag.go.id/",
+ "catatan_tradisi": "Susunan dapat berbeda menurut tradisi; bukan satu-satunya versi yang benar.",
+ "susunan": [
+  {
+   "id": "lazim_indonesia",
+   "nama": "Susunan tahlil lazim Indonesia",
+   "bagian": [
+    "pembuka",
+    "istighfar",
+    "sholawat",
+    "fatihah_1",
+    "ikhlas",
+    "falaq",
+    "nas",
+    "fatihah_2",
+    "kursi",
+    "tasbih",
+    "tahmid",
+    "takbir",
+    "tahlil",
+    "doa_mayit",
+    "doa_penutup"
+   ]
+  }
+ ],
+ "edisi": "Susunan lazim Indonesia; bacaan Qur'an Kemenag 2019, doa/dzikir sunnah.com"
+}

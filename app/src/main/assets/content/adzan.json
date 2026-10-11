@@ -60,27 +60,32 @@
    {
     "arab": "اللهُ أَكْبَرُ",
     "latin": "Allahu akbar.",
-    "ulangi": 2
+    "ulangi": 2,
+    "terjemahan": "Allah Maha Besar."
    },
    {
     "arab": "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ",
     "latin": "Asyhadu alla ilaha illallah.",
-    "ulangi": 1
+    "ulangi": 1,
+    "terjemahan": "Aku bersaksi tidak ada tuhan selain Allah."
    },
    {
     "arab": "أَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ",
     "latin": "Asyhadu anna Muhammadar rasulullah.",
-    "ulangi": 1
+    "ulangi": 1,
+    "terjemahan": "Aku bersaksi bahwa Muhammad adalah utusan Allah."
    },
    {
     "arab": "حَيَّ عَلَى الصَّلَاةِ",
     "latin": "Hayya 'alash-shalah.",
-    "ulangi": 1
+    "ulangi": 1,
+    "terjemahan": "Marilah sholat."
    },
    {
     "arab": "حَيَّ عَلَى الْفَلَاحِ",
     "latin": "Hayya 'alal-falah.",
-    "ulangi": 1
+    "ulangi": 1,
+    "terjemahan": "Marilah menuju kemenangan."
    },
    {
     "arab": "قَدْ قَامَتِ الصَّلَاةُ",
@@ -91,16 +96,20 @@
    {
     "arab": "اللهُ أَكْبَرُ",
     "latin": "Allahu akbar.",
-    "ulangi": 2
+    "ulangi": 2,
+    "terjemahan": "Allah Maha Besar."
    },
    {
     "arab": "لَا إِلٰهَ إِلَّا اللهُ",
     "latin": "La ilaha illallah.",
-    "ulangi": 1
+    "ulangi": 1,
+    "terjemahan": "Tidak ada tuhan selain Allah."
    }
   ],
   "judul": "Lafaz Iqomah",
-  "sumber": "HR Abu Dawud, Tirmidzi — sunnah.com"
+  "sumber": "HR Abu Dawud, Tirmidzi — sunnah.com",
+  "catatan_mazhab": "Susunan iqomah dapat berbeda menurut mazhab/tradisi (mis. jumlah lafaz). Perbedaan dicatat apa adanya.",
+  "sumber_url": "https://sunnah.com/"
  },
  "menjawab_adzan": {
   "arab": "Menjawab seperti lafaz muadzin; saat حي على الصلاة dan حي على الفلاح membaca: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
