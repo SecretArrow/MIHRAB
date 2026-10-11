@@ -13,7 +13,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.IslamiTheme
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
@@ -30,8 +29,7 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
         lifecycleScope.launch {
-            val store = Store(applicationContext)
-            NotifChannels.ensure(applicationContext, store.get(Store.DND_OVERRIDE, false))
+            NotifChannels.ensure(applicationContext)
             // Susun ulang pengingat sesuai lokasi/metode/koreksi terkini.
             PrayerScheduler.scheduleAll(applicationContext)
         }

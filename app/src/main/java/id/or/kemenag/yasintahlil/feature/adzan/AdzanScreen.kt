@@ -65,7 +65,7 @@ fun AdzanScreen() {
         uri = store.get(Store.ADZAN_URI, "")
         vol = store.get(Store.ADZAN_VOL, 0.8f)
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
-        dnd = store.get(Store.DND_OVERRIDE, false)
+        dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
     }
 
@@ -114,14 +114,16 @@ fun AdzanScreen() {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Tembus mode senyap/DND")
             Switch(dnd, {
-                dnd = it
-                scope.launch {
-                    store.set(Store.DND_OVERRIDE, dnd)
-                    NotifChannels.ensure(ctx.applicationContext, dnd)
-                }
+                // Penembusan DND diatur di sistem, bukan oleh aplikasi: buka Pengaturan akses.
+                openDndAccessSettings(ctx)
             })
         }
-        Text("Penembusan DND hanya berlaku bila Anda memberi aplikasi akses Kebijakan Notifikasi (Mode Jangan Ganggu) di Pengaturan sistem.",
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { openDndAccessSettings(ctx) }) { Text("Atur akses DND") }
+            TextButton(onClick = { dnd = NotifChannels.canBypassDnd(ctx.applicationContext) }) { Text("Periksa status") }
+        }
+        Text(if (dnd) "Akses Kebijakan Notifikasi: diberikan. Pengingat dapat dikecualikan dari mode senyap/DND."
+                else "Akses Kebijakan Notifikasi: belum diberikan. Aktifkan lewat \"Atur akses DND\" di Pengaturan sistem.",
             style = MaterialTheme.typography.labelSmall)
 
         Text("Izin yang dibutuhkan:", style = MaterialTheme.typography.titleMedium,
@@ -169,6 +171,14 @@ private fun openExactAlarmSettings(ctx: android.content.Context) {
     runCatching {
         ctx.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
             data = Uri.parse("package:${ctx.packageName}")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+    }
+}
+
+private fun openDndAccessSettings(ctx: android.content.Context) {
+    runCatching {
+        ctx.startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }

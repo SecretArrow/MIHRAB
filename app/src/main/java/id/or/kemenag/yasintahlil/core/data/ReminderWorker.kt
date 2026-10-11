@@ -29,8 +29,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         val store = Store(applicationContext)
         if (!store.get(Store.NOTIF, true)) return Result.success()
 
-        val dnd = store.get(Store.DND_OVERRIDE, false)
-        NotifChannels.ensure(applicationContext, dnd)
+        NotifChannels.ensure(applicationContext)
 
         val uri = store.get(Store.ADZAN_URI, "")
         val vol = store.get(Store.ADZAN_VOL, 0.8f)
@@ -104,7 +103,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
     }
 
     // Notifikasi hanya relevan bila izin notifikasi diberikan; kegagalan diabaikan agar pengingat lain tetap jalan.
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "NotificationPermission")
     private fun post(id: Int, notif: android.app.Notification) {
         val mgr = NotificationManagerCompat.from(applicationContext)
         if (!mgr.areNotificationsEnabled()) return

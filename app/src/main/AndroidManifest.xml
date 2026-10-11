@@ -21,6 +21,10 @@
     <!-- Getar singkat saat timer iqomah berakhir. -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- Opsional: agar pengguna dapat mengecualikan pengingat dari mode Jangan Ganggu (DND).
+         Pemberian akses dilakukan pengguna di Pengaturan sistem, bukan oleh aplikasi. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
     <!-- Internet HANYA dipakai bila pengguna memilih sumber jadwal/kalender online di Pengaturan. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
