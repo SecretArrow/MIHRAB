@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Skema posisi rukuk: membungkuk, punggung rata sejajar lantai,
+  kedua tangan memegang lutut.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- kepala -->
+    <path
+        android:pathData="M20,42 a8,8 0 1 0 16,0 a8,8 0 1 0 -16,0 z"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- punggung rata (horizontal) -->
+    <path
+        android:pathData="M29,44 L64,46"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- kedua tangan menuju lutut -->
+    <path
+        android:pathData="M48,45 L57,62 M54,45 L63,62"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- kedua kaki tegak -->
+    <path
+        android:pathData="M64,46 L58,88 M64,46 L70,88"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- garis lantai -->
+    <path
+        android:pathData="M14,88 L86,88"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
