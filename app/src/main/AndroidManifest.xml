@@ -25,9 +25,9 @@
          Pemberian akses dilakukan pengguna di Pengaturan sistem, bukan oleh aplikasi. -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <!-- Internet HANYA dipakai bila pengguna memilih sumber jadwal/kalender online di Pengaturan. -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Tanpa izin INTERNET: aplikasi 100% offline (perhitungan & konten di perangkat).
+         Tambahkan INTERNET/ACCESS_NETWORK_STATE hanya bila sumber jadwal/kalender online
+         benar-benar diaktifkan, agar deklarasi izin tetap jujur. -->
 
     <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />

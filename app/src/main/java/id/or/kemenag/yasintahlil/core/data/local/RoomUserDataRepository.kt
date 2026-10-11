@@ -84,35 +84,37 @@ class RoomUserDataRepository @Inject constructor(
 
     override suspend fun restoreJson(json: String) {
         val root = runCatching { JSONObject(json) }.getOrNull() ?: return
-        fav.clear(); mark.clear(); prog.clear(); hist.clear()
+        // Parse SEMUA dulu (entri rusak dilewati) sebelum menghapus data lama, agar berkas
+        // backup yang cacat tidak membuat pengguna kehilangan data yang sedang tersimpan.
+        val favs = root.optJSONArray("favorites").toEntities { j ->
+            FavoriteEntity(j.getString("kind"), j.getString("refId"),
+                j.optString("title"), j.optLong("createdAt", System.currentTimeMillis()))
+        }
+        val marks = root.optJSONArray("bookmarks").toEntities { j ->
+            BookmarkEntity(j.getString("kind"), j.getString("refId"),
+                j.optString("label"), j.optLong("createdAt", System.currentTimeMillis()))
+        }
+        val progs = root.optJSONArray("progress").toEntities { j ->
+            ProgressEntity(j.getString("kind"), j.getString("refId"),
+                j.optInt("value"), j.optLong("updatedAt", System.currentTimeMillis()))
+        }
+        val hists = root.optJSONArray("history").toEntities { j ->
+            HistoryEntity(j.optLong("id", 0), j.getString("kind"), j.getString("refId"),
+                j.optString("title"), j.optLong("openedAt", System.currentTimeMillis()))
+        }
 
-        root.optJSONArray("favorites")?.let { arr ->
-            fav.insertAll((0 until arr.length()).map { i ->
-                val j = arr.getJSONObject(i)
-                FavoriteEntity(j.getString("kind"), j.getString("refId"),
-                    j.optString("title"), j.optLong("createdAt", System.currentTimeMillis()))
-            })
-        }
-        root.optJSONArray("bookmarks")?.let { arr ->
-            mark.insertAll((0 until arr.length()).map { i ->
-                val j = arr.getJSONObject(i)
-                BookmarkEntity(j.getString("kind"), j.getString("refId"),
-                    j.optString("label"), j.optLong("createdAt", System.currentTimeMillis()))
-            })
-        }
-        root.optJSONArray("progress")?.let { arr ->
-            prog.insertAll((0 until arr.length()).map { i ->
-                val j = arr.getJSONObject(i)
-                ProgressEntity(j.getString("kind"), j.getString("refId"),
-                    j.optInt("value"), j.optLong("updatedAt", System.currentTimeMillis()))
-            })
-        }
-        root.optJSONArray("history")?.let { arr ->
-            hist.insertAll((0 until arr.length()).map { i ->
-                val j = arr.getJSONObject(i)
-                HistoryEntity(j.optLong("id", 0), j.getString("kind"), j.getString("refId"),
-                    j.optString("title"), j.optLong("openedAt", System.currentTimeMillis()))
-            })
+        fav.clear(); mark.clear(); prog.clear(); hist.clear()
+        if (favs.isNotEmpty()) fav.insertAll(favs)
+        if (marks.isNotEmpty()) mark.insertAll(marks)
+        if (progs.isNotEmpty()) prog.insertAll(progs)
+        if (hists.isNotEmpty()) hist.insertAll(hists)
+    }
+
+    /** Petakan array JSON ke entitas; lewati entri yang gagal di-parse (mis. backup cacat). */
+    private fun <T> JSONArray?.toEntities(map: (JSONObject) -> T): List<T> {
+        if (this == null) return emptyList()
+        return (0 until length()).mapNotNull { i ->
+            runCatching { map(getJSONObject(i)) }.getOrNull()
         }
     }
 

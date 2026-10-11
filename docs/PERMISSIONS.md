@@ -14,11 +14,12 @@ diperlukan tidak diminta saat pemasangan.
 | `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` | Saat memutar audio adzan pilihan pengguna | Memutar adzan di latar belakang | Adzan hanya berupa notifikasi |
 | `VIBRATE` | Saat timer iqomah berakhir | Getar singkat sebagai penanda | Tidak ada getar |
 | `ACCESS_NOTIFICATION_POLICY` | Saat pengguna membuka "Atur akses DND" di menu Adzan | Memungkinkan pengingat dikecualikan dari mode Jangan Ganggu | Pengingat mengikuti aturan mode senyap/DND |
-| `INTERNET`, `ACCESS_NETWORK_STATE` | — | Dicadangkan untuk sumber jadwal/kalender online **bila** sumber resmi tersedia | Perhitungan tetap dilakukan lokal (offline) |
 
 ## Catatan
 
-- **Tidak ada izin** untuk kamera, mikrofon, kontak, SMS, atau penyimpanan eksternal.
+- **Tidak ada izin** untuk kamera, mikrofon, kontak, SMS, penyimpanan eksternal, atau
+  **Internet** — aplikasi sepenuhnya offline. Izin Internet hanya akan ditambahkan bila
+  sumber jadwal/kalender resmi *online* benar-benar diaktifkan.
 - Lokasi hanya dipakai di perangkat untuk menghitung kiblat/jadwal; **tidak pernah dikirim**.
 - Aplikasi tidak menyertakan audio adzan bawaan (alasan lisensi); berkas audio dipilih
   pengguna dan izin baca berkas disimpan agar dapat diputar pekerja latar.

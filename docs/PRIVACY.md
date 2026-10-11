@@ -26,8 +26,9 @@ Rincian lengkap ada di [`PERMISSIONS.md`](PERMISSIONS.md). Intinya:
 - **Lokasi** (opsional) hanya dipakai di perangkat untuk menghitung arah kiblat dan jadwal
   sholat. Koordinat **tidak pernah** dikirim ke server mana pun.
 - **Notifikasi** dipakai untuk pengingat waktu sholat.
-- **Internet** hanya dicadangkan untuk sumber data resmi (bila tersedia) dan tidak dipakai
-  saat ini.
+- Aplikasi **tidak meminta izin Internet**: seluruh perhitungan dan konten berada di
+  perangkat. Izin Internet hanya akan ditambahkan bila sumber data resmi *online*
+  benar-benar diaktifkan.
 
 ## Pihak ketiga
 
