@@ -86,15 +86,19 @@ fun IqomahScreen() {
 fun DoaAdzanScreen() {
     val repo = rememberRepo()
     val (arab, latin, trans) = remember { repo.doaAdzan() }
+    val menjawab = remember { repo.menjawabAdzan() }
+    val sholawat = remember { repo.sholawatAdzan() }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Doa sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
         Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
             style = MaterialTheme.typography.labelMedium)
-        BacaanCard("jawab:adzan", "Menjawab muadzin",
-            "Menjawab seperti lafaz muadzin; saat حي على الصلاة / حي على الفلاح membaca: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
-            "La haula wa la quwwata illa billah.",
-            "Tidak ada daya dan kekuatan kecuali dengan Allah.",
-            true, true, 22f, 15f, sumber = "HR Bukhari-Muslim — sunnah.com")
+        BacaanCard("doa:menjawab_adzan", menjawab.judul,
+            menjawab.arab, menjawab.latin, menjawab.terjemahan,
+            true, true, 22f, 15f, sumber = menjawab.sumber)
+        Text(menjawab.catatan, style = MaterialTheme.typography.labelSmall)
+        BacaanCard("doa:sholawat_adzan", sholawat.judul,
+            sholawat.arab, sholawat.latin, sholawat.terjemahan,
+            true, true, 22f, 15f, sumber = sholawat.sumber)
         BacaanCard("doa:adzan", "Doa setelah adzan", arab, latin, trans,
             true, true, 22f, 15f, sumber = "HR Bukhari — sunnah.com")
         Text("Aktifkan pengingat membaca doa setelah adzan di menu Adzan.",

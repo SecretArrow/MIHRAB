@@ -50,10 +50,10 @@ manusia dari sumber resmi.
 
 | Yang diminta `plan.txt` | Status | Sumber yang diperlukan |
 |---|---|---|
-| Doa **keluar masjid** | ❌ belum ada di `dzikir.json` (yang ada: doa masuk masjid) | sunnah.com — HR Muslim/Abu Dawud |
-| Doa **masuk rumah** | ❌ belum ada (yang ada: doa keluar rumah) | sunnah.com — HR Abu Dawud 5095 |
-| Doa **bepergian (safar)** | ❌ belum ada | sunnah.com — HR Muslim 1342 |
-| **Lafaz sholawat setelah adzan** | ⚠️ disebutkan di layar doa adzan, lafaznya belum dicantumkan | sunnah.com — HR Muslim 384 |
+| Doa **keluar masjid** | ✅ ada di `dzikir.json` | HR Abu Dawud 465 (sahih, Al-Albani) — sunnah.com |
+| Doa **masuk rumah** | ✅ ada di `dzikir.json` — **diberi catatan derajat hadis** | HR Abu Dawud 5096 (**daif** menurut Al-Albani) — sunnah.com |
+| Doa **bepergian (safar)** | ✅ ada di `dzikir.json` | HR Muslim 1342 — sunnah.com |
+| **Lafaz sholawat setelah adzan** | ✅ ada di `adzan.json` (`sholawat_setelah_adzan`) & tampil di layar Doa Adzan | HR Bukhari 3370 — sunnah.com |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
 | **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
 
@@ -61,6 +61,11 @@ manusia dari sumber resmi.
 > tersedia, entri ditandai `catatan_verifikasi` dan dibiarkan apa adanya, bukan dikarang.
 > Doa untuk orang yang meninggal dan doa ampunan sudah tersedia (modul Tahlil, sholat
 > jenazah/ghaib, serta Istighfar/Sayyidul Istighfar di `dzikir.json`).
+>
+> **Doa masuk rumah** disertakan beserta derajat hadisnya (daif menurut Al-Albani) secara
+> terbuka pada field `sumber`, agar pengguna dapat menilai sendiri — bukan disembunyikan.
+> Lafaz menjawab adzan dipindahkan dari kode Kotlin ke `adzan.json` supaya tervalidasi gate
+> konten dan tidak ada teks Arab hardcoded di layar.
 
 ## Cara memeriksa
 

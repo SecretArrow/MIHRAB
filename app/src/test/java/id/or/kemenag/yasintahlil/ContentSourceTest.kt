@@ -82,22 +82,45 @@ class ContentSourceTest {
         assertTrue("Doa mayit bocor ke sholat_bacaan.json", !umum.contains("doa_mayit"))
     }
 
-    /** Layar yang kontennya dari assets tidak boleh memuat teks Arab hardcoded di kode. */
+    /**
+     * Tidak boleh ada teks Arab hardcoded di kode aplikasi mana pun: seluruh teks ibadah wajib
+     * berasal dari assets agar tervalidasi gate konten (`tools/validate_content.py`). Uji ini
+     * menggantikan pemeriksaan per-layar dan berlaku untuk seluruh `app/src/main/java`.
+     */
     @Test
-    fun sholatScreensHaveNoHardcodedArabic() {
-        val files = listOf(
-            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/GhaibScreen.kt",
-            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/JenazahScreen.kt",
-        )
-        val roots = listOf(File("."), File("app"))
+    fun appCodeHasNoHardcodedArabic() {
+        val roots = listOf(File("src/main/java"), File("app/src/main/java"))
+        val srcRoot = roots.firstOrNull { it.isDirectory }
+            ?: error("Direktori sumber tidak ditemukan dari ${File(".").absolutePath}")
         val arabic = Regex("[\\u0600-\\u06FF]")
         val problems = mutableListOf<String>()
-        files.forEach { p ->
-            val f = roots.map { File(it, p) }.firstOrNull { it.isFile }
-            assertTrue("Berkas tidak ditemukan: $p", f != null)
-            arabic.find(f!!.readText())?.let { problems += "$p: '${it.value}'" }
+        srcRoot.walkTopDown().filter { it.isFile && it.extension == "kt" }.forEach { f ->
+            arabic.find(f.readText())?.let { problems += "${f.relativeTo(srcRoot)}: '${it.value}'" }
         }
         assertTrue("Teks Arab hardcoded di kode (pindahkan ke assets): $problems", problems.isEmpty())
+    }
+
+    /**
+     * Bacaan yang tadinya kosong (doa keluar masjid/masuk rumah/safar, lafaz sholawat setelah
+     * adzan) sudah diisi dari sumber resmi — jangan sampai hilang lagi. Lihat
+     * docs/CONTENT_SOURCES.md §"Kekurangan yang masih menunggu sumber resmi".
+     */
+    @Test
+    fun previouslyMissingDoaArePresent() {
+        val dzikir = File(contentDir(), "dzikir.json").readText()
+        listOf("Doa keluar masjid", "Doa masuk rumah", "Doa bepergian (safar)").forEach { judul ->
+            assertTrue("dzikir.json kehilangan '$judul'", dzikir.contains(judul))
+        }
+        // Doa masuk rumah wajib menyebut derajat hadisnya secara terbuka (daif menurut Al-Albani).
+        val i = dzikir.indexOf("Doa masuk rumah")
+        val block = dzikir.substring(i, dzikir.indexOf("\"terjemahan\"", i).takeIf { it > i } ?: dzikir.length)
+        assertTrue("Doa masuk rumah tanpa keterangan derajat hadis", block.contains("daif"))
+
+        val adzan = File(contentDir(), "adzan.json").readText()
+        assertTrue("adzan.json kehilangan sholawat setelah adzan",
+            adzan.contains("\"sholawat_setelah_adzan\""))
+        assertTrue("adzan.json kehilangan catatan menjawab adzan",
+            adzan.contains("\"menjawab_adzan\""))
     }
 
     /**
