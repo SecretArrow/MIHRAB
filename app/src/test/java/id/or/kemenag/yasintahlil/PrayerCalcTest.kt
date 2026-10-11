@@ -92,4 +92,23 @@ class PrayerCalcTest {
         val (n2, _) = PrayerCalc.next(23 * 60, t)
         assertEquals("Subuh", n2)
     }
+
+    @Test
+    fun ekuatorWaktuUrutDanFormatValid() {
+        val tz = TimeZone.getTimeZone("Asia/Pontianak")
+        val t = PrayerCalc.compute(cal(2026, 3, 21, tz), PrayerCalc.Params(0.0, 109.33, tz = tz))
+        val m = listOf(t.subuh, t.terbit, t.zuhur, t.asar, t.magrib, t.isya).map { PrayerCalc.toMinutes(it) }
+        assertTrue("Ekuator: urutan waktu harus naik $m", m.zipWithNext().all { (a, b) -> a < b })
+    }
+
+    @Test
+    fun lintangTinggiTetapMenghasilkanFormatValid() {
+        // Di lintang tinggi, Subuh/Isya bisa tak tercapai (sudut matahari tak dilewati).
+        // Hasil harus tetap "HH:MM" — tanpa NaN/krash.
+        val tz = TimeZone.getTimeZone("Atlantic/Reykjavik")
+        val t = PrayerCalc.compute(cal(2026, 6, 21, tz), PrayerCalc.Params(64.15, -21.94, tz = tz))
+        listOf(t.subuh, t.terbit, t.zuhur, t.asar, t.magrib, t.isya).forEach {
+            assertTrue("Format waktu tidak sah: '$it'", Regex("^\\d{2}:\\d{2}$").matches(it))
+        }
+    }
 }
