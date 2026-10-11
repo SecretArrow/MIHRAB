@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 /**
  * Pengaturan adzan & pengingat: saklar per waktu, berkas audio pilihan pengguna (aplikasi tidak
  * menyertakan audio bawaan karena lisensi), volume, jeda pengingat sebelum adzan, penembus mode
- * senyap, pratinjau, serta pintasan izin sistem (notifikasi, baterai, alarm tepat waktu).
+ * senyap, pratinjau, serta pintasan izin sistem (notifikasi, optimasi baterai, akses DND).
  */
 @Composable
 fun AdzanScreen() {
@@ -135,10 +135,10 @@ fun AdzanScreen() {
             }) { Text("Izin notifikasi") }
             OutlinedButton(onClick = { openBatterySettings(ctx) }) { Text("Optimasi baterai") }
         }
-        if (Build.VERSION.SDK_INT >= 31) {
-            OutlinedButton(onClick = { openExactAlarmSettings(ctx) }) { Text("Alarm tepat waktu") }
-        }
-        Text("Metode jadwal: Kemenag/SIHAT. Koreksi & zona waktu di Pengaturan. Batasan Android modern dapat menunda pengingat — nonaktifkan optimasi baterai agar lebih tepat.",
+        Text("Pengingat dijadwalkan lewat WorkManager (tanpa izin alarm tepat waktu): waktu dapat " +
+                "bergeser beberapa menit saat perangkat tidur (Doze) atau dibatasi optimasi baterai — " +
+                "buka \"Optimasi baterai\" di atas agar lebih tepat. Metode jadwal: Kemenag/SIHAT; " +
+                "koreksi & zona waktu di Pengaturan.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
@@ -162,15 +162,6 @@ private fun openNotificationSettings(ctx: android.content.Context) {
 private fun openBatterySettings(ctx: android.content.Context) {
     runCatching {
         ctx.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        })
-    }
-}
-
-private fun openExactAlarmSettings(ctx: android.content.Context) {
-    runCatching {
-        ctx.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-            data = Uri.parse("package:${ctx.packageName}")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }

@@ -59,6 +59,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Kejujuran izin**: izin `SCHEDULE_EXACT_ALARM` dihapus dari manifes karena pengingat memakai
+  WorkManager dan tidak ada pemakaian `AlarmManager` sama sekali; tombol "Alarm tepat waktu"
+  (yang membuka pengaturan izin tak terpakai) ikut dihapus, dan teks di menu Adzan kini
+  menjelaskan bahwa waktu pengingat dapat bergeser saat perangkat masuk Doze. Invarian
+  "izin alarm tepat waktu hanya bila `AlarmManager` dipakai" dijaga uji.
+- **Pengaturan bahasa**: baris "Bahasa aplikasi" kini menjelaskan bahwa antarmuka hanya
+  tersedia dalam bahasa Indonesia (sesuai `plan.txt`), alih-alih menyimpan kunci `lang`
+  yang tidak pernah dibaca kode mana pun.
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)
   dan terverifikasi terhadap acuan SIHAT Bimas Islam.
 - Beranda menampilkan hitung mundur sholat berikutnya secara *live*.
