@@ -1,1 +1,12 @@
-{"surah":"Yasin","ayat_count":83,"edisi":"Kemenag 2019","sumber_url":"https://quran.kemenag.go.id/","catatan":"Teks penuh 83 ayat dimuat dari Qur'an Kemenag API (LPMQ MSI) saat seed offline. File ini metadata; validasi CI: ayat_count==83.","contoh_ayat_1":{"arab":"يس","latin":"Yā Sīn","terjemahan":"Ya Sin."}}
+{
+ "surah": "Yasin",
+ "ayat_count": 83,
+ "edisi": "Kemenag 2019",
+ "sumber_url": "https://quran.kemenag.go.id/",
+ "catatan": "Metadata Surat Yasin (83 ayat). Teks penuh ada di yasin_full.json. Terjemahan: Kemenag 2019; teks Arab standar Utsmani — perlu dicocokkan dengan MSI LPMQ resmi.",
+ "contoh_ayat_1": {
+  "arab": "يس",
+  "latin": "Yā Sīn",
+  "terjemahan": "Ya Sin."
+ }
+}

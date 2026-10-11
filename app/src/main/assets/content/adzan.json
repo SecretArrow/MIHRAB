@@ -1,1 +1,115 @@
-{"adzan":{"catatan_subuh":"Pada adzan Subuh ditambahkan setelah حي على الفلاح: الصلاة خير من النوم (2x).","daftar":[{"arab":"اللهُ أَكْبَرُ","latin":"Allahu akbar.","terjemahan":"Allah Maha Besar.","ulangi":4},{"arab":"أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ","latin":"Asyhadu alla ilaha illallah.","terjemahan":"Aku bersaksi tidak ada tuhan selain Allah.","ulangi":2},{"arab":"أَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ","latin":"Asyhadu anna Muhammadar rasulullah.","terjemahan":"Aku bersaksi bahwa Muhammad adalah utusan Allah.","ulangi":2},{"arab":"حَيَّ عَلَى الصَّلَاةِ","latin":"Hayya 'alash-shalah.","terjemahan":"Marilah sholat.","ulangi":2},{"arab":"حَيَّ عَلَى الْفَلَاحِ","latin":"Hayya 'alal-falah.","terjemahan":"Marilah menuju kemenangan.","ulangi":2},{"arab":"اللهُ أَكْبَرُ","latin":"Allahu akbar.","terjemahan":"Allah Maha Besar.","ulangi":2},{"arab":"لَا إِلٰهَ إِلَّا اللهُ","latin":"La ilaha illallah.","terjemahan":"Tidak ada tuhan selain Allah.","ulangi":1}],"judul":"Lafaz Adzan","sumber":"HR Bukhari-Muslim — sunnah.com"},"doa_setelah_adzan":{"arab":"اَللّٰهُمَّ رَبَّ هٰذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيْلَةَ وَالْفَضِيْلَةَ وَابْعَثْهُ مَقَامًا مَحْمُوْدًا الَّذِيْ وَعَدْتَهُ","judul":"Doa setelah adzan","latin":"Allahumma rabba hadzihid da'watit tammah, wash-shalatil qa-imah. Ati Muhammadanil wasilata wal fadhilah, wab'atshu maqamam mahmudanilladzi wa'adtah.","sumber":"HR Bukhari — sunnah.com","terjemahan":"Ya Allah Tuhan panggilan yang sempurna dan sholat yang ditegakkan, berilah Muhammad wasilah dan keutamaan, dan bangkitkanlah ia pada kedudukan terpuji yang telah Engkau janjikan."},"iqomah":{"daftar":[{"arab":"اللهُ أَكْبَرُ","latin":"Allahu akbar.","ulangi":2},{"arab":"أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ","latin":"Asyhadu alla ilaha illallah.","ulangi":1},{"arab":"أَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ","latin":"Asyhadu anna Muhammadar rasulullah.","ulangi":1},{"arab":"حَيَّ عَلَى الصَّلَاةِ","latin":"Hayya 'alash-shalah.","ulangi":1},{"arab":"حَيَّ عَلَى الْفَلَاحِ","latin":"Hayya 'alal-falah.","ulangi":1},{"arab":"قَدْ قَامَتِ الصَّلَاةُ","latin":"Qad qamatish-shalah.","terjemahan":"Sholat akan didirikan.","ulangi":2},{"arab":"اللهُ أَكْبَرُ","latin":"Allahu akbar.","ulangi":2},{"arab":"لَا إِلٰهَ إِلَّا اللهُ","latin":"La ilaha illallah.","ulangi":1}],"judul":"Lafaz Iqomah","sumber":"HR Abu Dawud, Tirmidzi — sunnah.com"},"menjawab_adzan":{"arab":"Menjawab seperti lafaz muadzin; saat حي على الصلاة dan حي على الفلاح membaca: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ","judul":"Menjawab adzan","latin":"La haula wa la quwwata illa billah.","sumber":"HR Bukhari-Muslim — sunnah.com","terjemahan":"Tidak ada daya dan kekuatan kecuali dengan Allah."}}
+{
+ "adzan": {
+  "catatan_subuh": "Pada adzan Subuh ditambahkan setelah حي على الفلاح: الصلاة خير من النوم (2x).",
+  "daftar": [
+   {
+    "arab": "اللهُ أَكْبَرُ",
+    "latin": "Allahu akbar.",
+    "terjemahan": "Allah Maha Besar.",
+    "ulangi": 4
+   },
+   {
+    "arab": "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ",
+    "latin": "Asyhadu alla ilaha illallah.",
+    "terjemahan": "Aku bersaksi tidak ada tuhan selain Allah.",
+    "ulangi": 2
+   },
+   {
+    "arab": "أَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ",
+    "latin": "Asyhadu anna Muhammadar rasulullah.",
+    "terjemahan": "Aku bersaksi bahwa Muhammad adalah utusan Allah.",
+    "ulangi": 2
+   },
+   {
+    "arab": "حَيَّ عَلَى الصَّلَاةِ",
+    "latin": "Hayya 'alash-shalah.",
+    "terjemahan": "Marilah sholat.",
+    "ulangi": 2
+   },
+   {
+    "arab": "حَيَّ عَلَى الْفَلَاحِ",
+    "latin": "Hayya 'alal-falah.",
+    "terjemahan": "Marilah menuju kemenangan.",
+    "ulangi": 2
+   },
+   {
+    "arab": "اللهُ أَكْبَرُ",
+    "latin": "Allahu akbar.",
+    "terjemahan": "Allah Maha Besar.",
+    "ulangi": 2
+   },
+   {
+    "arab": "لَا إِلٰهَ إِلَّا اللهُ",
+    "latin": "La ilaha illallah.",
+    "terjemahan": "Tidak ada tuhan selain Allah.",
+    "ulangi": 1
+   }
+  ],
+  "judul": "Lafaz Adzan",
+  "sumber": "HR Bukhari-Muslim — sunnah.com"
+ },
+ "doa_setelah_adzan": {
+  "arab": "اَللّٰهُمَّ رَبَّ هٰذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيْلَةَ وَالْفَضِيْلَةَ وَابْعَثْهُ مَقَامًا مَحْمُوْدًا الَّذِيْ وَعَدْتَهُ",
+  "judul": "Doa setelah adzan",
+  "latin": "Allahumma rabba hadzihid da'watit tammah, wash-shalatil qa-imah. Ati Muhammadanil wasilata wal fadhilah, wab'atshu maqamam mahmudanilladzi wa'adtah.",
+  "sumber": "HR Bukhari — sunnah.com",
+  "terjemahan": "Ya Allah Tuhan panggilan yang sempurna dan sholat yang ditegakkan, berilah Muhammad wasilah dan keutamaan, dan bangkitkanlah ia pada kedudukan terpuji yang telah Engkau janjikan."
+ },
+ "iqomah": {
+  "daftar": [
+   {
+    "arab": "اللهُ أَكْبَرُ",
+    "latin": "Allahu akbar.",
+    "ulangi": 2
+   },
+   {
+    "arab": "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ",
+    "latin": "Asyhadu alla ilaha illallah.",
+    "ulangi": 1
+   },
+   {
+    "arab": "أَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ",
+    "latin": "Asyhadu anna Muhammadar rasulullah.",
+    "ulangi": 1
+   },
+   {
+    "arab": "حَيَّ عَلَى الصَّلَاةِ",
+    "latin": "Hayya 'alash-shalah.",
+    "ulangi": 1
+   },
+   {
+    "arab": "حَيَّ عَلَى الْفَلَاحِ",
+    "latin": "Hayya 'alal-falah.",
+    "ulangi": 1
+   },
+   {
+    "arab": "قَدْ قَامَتِ الصَّلَاةُ",
+    "latin": "Qad qamatish-shalah.",
+    "terjemahan": "Sholat akan didirikan.",
+    "ulangi": 2
+   },
+   {
+    "arab": "اللهُ أَكْبَرُ",
+    "latin": "Allahu akbar.",
+    "ulangi": 2
+   },
+   {
+    "arab": "لَا إِلٰهَ إِلَّا اللهُ",
+    "latin": "La ilaha illallah.",
+    "ulangi": 1
+   }
+  ],
+  "judul": "Lafaz Iqomah",
+  "sumber": "HR Abu Dawud, Tirmidzi — sunnah.com"
+ },
+ "menjawab_adzan": {
+  "arab": "Menjawab seperti lafaz muadzin; saat حي على الصلاة dan حي على الفلاح membaca: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
+  "judul": "Menjawab adzan",
+  "latin": "La haula wa la quwwata illa billah.",
+  "sumber": "HR Bukhari-Muslim — sunnah.com",
+  "terjemahan": "Tidak ada daya dan kekuatan kecuali dengan Allah."
+ },
+ "sumber_url": "https://sunnah.com/",
+ "edisi": "Lafaz adzan/iqomah & doa dari hadis sahih (sunnah.com); acuan Fasolatan Kemenag",
+ "catatan_mazhab": "Susunan iqomah dapat berbeda menurut mazhab/tradisi; perbedaan dicatat apa adanya."
+}

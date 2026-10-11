@@ -1,1 +1,203 @@
-{"catatan_mazhab":"Indonesia umumnya mengikuti mazhab Syafi'i. Beberapa ketentuan (mis. qunut Subuh, jumlah takbir jenazah menurut sebagian riwayat, cara bersedekap) memiliki perbedaan pendapat. Perbedaan dicatat apa adanya tanpa mencampuradukkan.","panduan":"Fasolatan Ditjen Bimas Islam Kemenag; verifikasi hadis via sunnah.com","sunnah":[{"deskripsi":"Sholat 2 rakaat setelah masuk masjid sebelum duduk.","id":"tahiyatul_masjid","nama":"Tahiyatul Masjid","rakaat":"2 rakaat","tujuan":"Penghormatan masjid","waktu":"Saat masuk masjid"},{"deskripsi":"Sholat malam setelah tidur, ditutup witir. Jumlah 2-12 rakaat.","id":"tahajud","nama":"Tahajud","rakaat":"2–12 rakaat (2 rakaat salam)","tujuan":"Mendekatkan diri, mustajab doa","waktu":"Sepertiga malam terakhir"},{"deskripsi":"Dikerjakan sendiri-sendiri, 4 atau 10 rakaat dengan tasbih 300x. Rujukan: HR Abu Dawud, Tirmidzi, Ibnu Majah.","id":"tasbih","nama":"Tasbih","rakaat":"4 rakaat","tujuan":"Ampunan dosa","waktu":"Kapan saja selain waktu terlarang"},{"deskripsi":"Sholat malam 20 rakaat + witir 3 rakaat berjamaah di bulan Ramadan.","id":"tarawih","nama":"Tarawih","rakaat":"20 + witir 3 (atau 8 + witir 3 menurut sebagian)","tujuan":"Qiyam Ramadan","waktu":"Malam Ramadan setelah Isya"},{"deskripsi":"Sholat memohon petunjuk di antara dua pilihan. Dilanjutkan doa istikharah.","id":"istikharah","nama":"Istikharah","rakaat":"2 rakaat","tujuan":"Memohon pilihan terbaik","waktu":"Kapan saja selain waktu terlarang"},{"deskripsi":"Sholat memohon hujan saat kemarau, dikerjakan di lapangan.","id":"istisqa","nama":"Istisqa","rakaat":"2 rakaat + khutbah","tujuan":"Memohon hujan","waktu":"Pagi hari saat kemarau"},{"deskripsi":"Sholat sunnah Idulfitri dan Iduladha 2 rakaat + khutbah, takbir 7x rakaat pertama dan 5x rakaat kedua.","id":"ied","nama":"Idulfitri & Iduladha","rakaat":"2 rakaat + khutbah","tujuan":"Hari raya","waktu":"Pagi 1 Syawal / 10 Zulhijah"},{"deskripsi":"Sholat memohon ampun atas dosa, dilanjutkan istighfar.","id":"taubat","nama":"Taubat","rakaat":"2 rakaat","tujuan":"Taubat nasuha","waktu":"Kapan saja selain waktu terlarang"},{"deskripsi":"Sholat memohon dikabulkannya hajat/keperluan.","id":"hajat","nama":"Hajat","rakaat":"2–12 rakaat","tujuan":"Memohon hajat","waktu":"Kapan saja selain waktu terlarang"},{"deskripsi":"Sholat saat gerhana matahari (kusuf) atau bulan (khusuf), 2 rakaat dengan rukuk panjang.","id":"gerhana","nama":"Gerhana (Kusuf/Khusuf)","rakaat":"2 rakaat","tujuan":"Mengagungkan Allah saat gerhana","waktu":"Saat gerhana berlangsung"},{"deskripsi":"Sholat sunnah di waktu dhuha, pembuka rezeki dan sedekah persendian.","id":"dhuha","nama":"Dhuha","rakaat":"2–12 rakaat","tujuan":"Keutamaan dhuha","waktu":"Setelah matahari terbit hingga sebelum Zuhur"},{"deskripsi":"Qabliyah Subuh 2, Zuhur 2/4 + ba'diyah 2, Magrib 2, Isya 2. Muakkad dan ghairu muakkad dijelaskan di aplikasi.","id":"rawatib","nama":"Rawatib Qabliyah & Ba'diyah","rakaat":"2 rakaat per sholat (Zuhur 2+2/4+4)","tujuan":"Penyempurna sholat wajib","waktu":"Sebelum/sesudah sholat wajib"},{"deskripsi":"Penutup sholat malam dengan rakaat ganjil.","id":"witir","nama":"Witir","rakaat":"1, 3, 5, dst (ganjil)","tujuan":"Penutup malam","waktu":"Setelah Isya hingga sebelum Subuh"}],"wajib":[{"deskripsi":"Sholat fardhu 2 rakaat, dikerjakan setelah terbit fajar hingga sebelum matahari terbit. Disunnahkan qunut menurut Syafi'i.","id":"subuh","nama":"Subuh","niat":{"arab":"أُصَلِّيْ فَرْضَ الصُّبْحِ رَكْعَتَيْنِ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى","latin":"Usholli fardhash-shubhi rak'ataini mustaqbilal qiblati adaa-an lillahi ta'ala.","terjemahan":"Aku niat sholat fardhu Subuh 2 rakaat menghadap kiblat karena Allah Ta'ala."},"rakaat":"2 rakaat","waktu":"Terbit fajar – sebelum matahari terbit"},{"deskripsi":"Sholat fardhu 4 rakaat setelah matahari tergelincir. Qashar/jamak berlaku saat safar sesuai syarat.","id":"zuhur","nama":"Zuhur","niat":{"arab":"أُصَلِّيْ فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى","latin":"Usholli fardhazh-zhuhri arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.","terjemahan":"Aku niat sholat fardhu Zuhur 4 rakaat menghadap kiblat karena Allah Ta'ala."},"rakaat":"4 rakaat","waktu":"Tergelincir matahari – bayangan sama panjang (Syafi'i)"},{"deskripsi":"Sholat fardhu 4 rakaat. Batas akhir hingga matahari menguning/magrib.","id":"asar","nama":"Asar","niat":{"arab":"أُصَلِّيْ فَرْضَ الْعَصْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى","latin":"Usholli fardhal 'ashri arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.","terjemahan":"Aku niat sholat fardhu Asar 4 rakaat menghadap kiblat karena Allah Ta'ala."},"rakaat":"4 rakaat","waktu":"Bayangan sama panjang – matahari terbenam"},{"deskripsi":"Sholat fardhu 3 rakaat setelah matahari terbenam hingga hilangnya mega merah.","id":"magrib","nama":"Magrib","niat":{"arab":"أُصَلِّيْ فَرْضَ الْمَغْرِبِ ثَلَاثَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى","latin":"Usholli fardhal maghribi tsalatsa raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.","terjemahan":"Aku niat sholat fardhu Magrib 3 rakaat menghadap kiblat karena Allah Ta'ala."},"rakaat":"3 rakaat","waktu":"Terbenam matahari – hilang mega merah"},{"deskripsi":"Sholat fardhu 4 rakaat setelah mega merah hingga tengah malam/fajar.","id":"isya","nama":"Isya","niat":{"arab":"أُصَلِّيْ فَرْضَ الْعِشَاءِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى","latin":"Usholli fardhal 'isya-i arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.","terjemahan":"Aku niat sholat fardhu Isya 4 rakaat menghadap kiblat karena Allah Ta'ala."},"rakaat":"4 rakaat","waktu":"Hilang mega merah – tengah malam"},{"deskripsi":"Pengganti Zuhur hari Jumat bagi laki-laki: 2 rakaat didahului 2 khutbah. Perempuan dan yang berhalangan tetap Zuhur.","id":"jumat","nama":"Jumat","rakaat":"2 rakaat + 2 khutbah","waktu":"Waktu Zuhur hari Jumat"},{"deskripsi":"Fardhu kifayah 4 takbir tanpa ruku/sujud. Rukun: niat, 4 takbir, Fatihah, sholawat, doa mayit, salam.","id":"jenazah","nama":"Jenazah (hadir)","rakaat":"4 takbir","waktu":"Setelah jenazah dimandikan-dikafani"},{"deskripsi":"Seperti jenazah untuk mayit yang jauh. Lihat modul Ghaib. Dalil: HR Muttafaq Alaih (Najasyi).","id":"ghaib","nama":"Ghaib","rakaat":"4 takbir","rujukan_file":"sholat_ghaib.json","waktu":"Setelah kabar kematian"},{"deskripsi":"Keringanan safar (±80 km+): qashar (4→2 rakaat untuk Zuhur/Asar/Isya) dan jamak (taqdim/ta'khir Zuhur-Asar, Magrib-Isya). Syarat dan tata cara dijelaskan di aplikasi.","id":"safar","nama":"Qashar & Jamak (safar)","rakaat":"Lihat ketentuan","waktu":"Selama safar memenuhi syarat"}]}
+{
+ "catatan_mazhab": "Indonesia umumnya mengikuti mazhab Syafi'i. Beberapa ketentuan (mis. qunut Subuh, jumlah takbir jenazah menurut sebagian riwayat, cara bersedekap) memiliki perbedaan pendapat. Perbedaan dicatat apa adanya tanpa mencampuradukkan.",
+ "panduan": "Fasolatan Ditjen Bimas Islam Kemenag; verifikasi hadis via sunnah.com",
+ "sunnah": [
+  {
+   "deskripsi": "Sholat 2 rakaat setelah masuk masjid sebelum duduk.",
+   "id": "tahiyatul_masjid",
+   "nama": "Tahiyatul Masjid",
+   "rakaat": "2 rakaat",
+   "tujuan": "Penghormatan masjid",
+   "waktu": "Saat masuk masjid"
+  },
+  {
+   "deskripsi": "Sholat malam setelah tidur, ditutup witir. Jumlah 2-12 rakaat.",
+   "id": "tahajud",
+   "nama": "Tahajud",
+   "rakaat": "2–12 rakaat (2 rakaat salam)",
+   "tujuan": "Mendekatkan diri, mustajab doa",
+   "waktu": "Sepertiga malam terakhir"
+  },
+  {
+   "deskripsi": "Dikerjakan sendiri-sendiri, 4 atau 10 rakaat dengan tasbih 300x. Rujukan: HR Abu Dawud, Tirmidzi, Ibnu Majah.",
+   "id": "tasbih",
+   "nama": "Tasbih",
+   "rakaat": "4 rakaat",
+   "tujuan": "Ampunan dosa",
+   "waktu": "Kapan saja selain waktu terlarang"
+  },
+  {
+   "deskripsi": "Sholat malam 20 rakaat + witir 3 rakaat berjamaah di bulan Ramadan.",
+   "id": "tarawih",
+   "nama": "Tarawih",
+   "rakaat": "20 + witir 3 (atau 8 + witir 3 menurut sebagian)",
+   "tujuan": "Qiyam Ramadan",
+   "waktu": "Malam Ramadan setelah Isya"
+  },
+  {
+   "deskripsi": "Sholat memohon petunjuk di antara dua pilihan. Dilanjutkan doa istikharah.",
+   "id": "istikharah",
+   "nama": "Istikharah",
+   "rakaat": "2 rakaat",
+   "tujuan": "Memohon pilihan terbaik",
+   "waktu": "Kapan saja selain waktu terlarang"
+  },
+  {
+   "deskripsi": "Sholat memohon hujan saat kemarau, dikerjakan di lapangan.",
+   "id": "istisqa",
+   "nama": "Istisqa",
+   "rakaat": "2 rakaat + khutbah",
+   "tujuan": "Memohon hujan",
+   "waktu": "Pagi hari saat kemarau"
+  },
+  {
+   "deskripsi": "Sholat sunnah Idulfitri dan Iduladha 2 rakaat + khutbah, takbir 7x rakaat pertama dan 5x rakaat kedua.",
+   "id": "ied",
+   "nama": "Idulfitri & Iduladha",
+   "rakaat": "2 rakaat + khutbah",
+   "tujuan": "Hari raya",
+   "waktu": "Pagi 1 Syawal / 10 Zulhijah"
+  },
+  {
+   "deskripsi": "Sholat memohon ampun atas dosa, dilanjutkan istighfar.",
+   "id": "taubat",
+   "nama": "Taubat",
+   "rakaat": "2 rakaat",
+   "tujuan": "Taubat nasuha",
+   "waktu": "Kapan saja selain waktu terlarang"
+  },
+  {
+   "deskripsi": "Sholat memohon dikabulkannya hajat/keperluan.",
+   "id": "hajat",
+   "nama": "Hajat",
+   "rakaat": "2–12 rakaat",
+   "tujuan": "Memohon hajat",
+   "waktu": "Kapan saja selain waktu terlarang"
+  },
+  {
+   "deskripsi": "Sholat saat gerhana matahari (kusuf) atau bulan (khusuf), 2 rakaat dengan rukuk panjang.",
+   "id": "gerhana",
+   "nama": "Gerhana (Kusuf/Khusuf)",
+   "rakaat": "2 rakaat",
+   "tujuan": "Mengagungkan Allah saat gerhana",
+   "waktu": "Saat gerhana berlangsung"
+  },
+  {
+   "deskripsi": "Sholat sunnah di waktu dhuha, pembuka rezeki dan sedekah persendian.",
+   "id": "dhuha",
+   "nama": "Dhuha",
+   "rakaat": "2–12 rakaat",
+   "tujuan": "Keutamaan dhuha",
+   "waktu": "Setelah matahari terbit hingga sebelum Zuhur"
+  },
+  {
+   "deskripsi": "Qabliyah Subuh 2, Zuhur 2/4 + ba'diyah 2, Magrib 2, Isya 2. Muakkad dan ghairu muakkad dijelaskan di aplikasi.",
+   "id": "rawatib",
+   "nama": "Rawatib Qabliyah & Ba'diyah",
+   "rakaat": "2 rakaat per sholat (Zuhur 2+2/4+4)",
+   "tujuan": "Penyempurna sholat wajib",
+   "waktu": "Sebelum/sesudah sholat wajib"
+  },
+  {
+   "deskripsi": "Penutup sholat malam dengan rakaat ganjil.",
+   "id": "witir",
+   "nama": "Witir",
+   "rakaat": "1, 3, 5, dst (ganjil)",
+   "tujuan": "Penutup malam",
+   "waktu": "Setelah Isya hingga sebelum Subuh"
+  }
+ ],
+ "wajib": [
+  {
+   "deskripsi": "Sholat fardhu 2 rakaat, dikerjakan setelah terbit fajar hingga sebelum matahari terbit. Disunnahkan qunut menurut Syafi'i.",
+   "id": "subuh",
+   "nama": "Subuh",
+   "niat": {
+    "arab": "أُصَلِّيْ فَرْضَ الصُّبْحِ رَكْعَتَيْنِ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى",
+    "latin": "Usholli fardhash-shubhi rak'ataini mustaqbilal qiblati adaa-an lillahi ta'ala.",
+    "terjemahan": "Aku niat sholat fardhu Subuh 2 rakaat menghadap kiblat karena Allah Ta'ala."
+   },
+   "rakaat": "2 rakaat",
+   "waktu": "Terbit fajar – sebelum matahari terbit"
+  },
+  {
+   "deskripsi": "Sholat fardhu 4 rakaat setelah matahari tergelincir. Qashar/jamak berlaku saat safar sesuai syarat.",
+   "id": "zuhur",
+   "nama": "Zuhur",
+   "niat": {
+    "arab": "أُصَلِّيْ فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى",
+    "latin": "Usholli fardhazh-zhuhri arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.",
+    "terjemahan": "Aku niat sholat fardhu Zuhur 4 rakaat menghadap kiblat karena Allah Ta'ala."
+   },
+   "rakaat": "4 rakaat",
+   "waktu": "Tergelincir matahari – bayangan sama panjang (Syafi'i)"
+  },
+  {
+   "deskripsi": "Sholat fardhu 4 rakaat. Batas akhir hingga matahari menguning/magrib.",
+   "id": "asar",
+   "nama": "Asar",
+   "niat": {
+    "arab": "أُصَلِّيْ فَرْضَ الْعَصْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى",
+    "latin": "Usholli fardhal 'ashri arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.",
+    "terjemahan": "Aku niat sholat fardhu Asar 4 rakaat menghadap kiblat karena Allah Ta'ala."
+   },
+   "rakaat": "4 rakaat",
+   "waktu": "Bayangan sama panjang – matahari terbenam"
+  },
+  {
+   "deskripsi": "Sholat fardhu 3 rakaat setelah matahari terbenam hingga hilangnya mega merah.",
+   "id": "magrib",
+   "nama": "Magrib",
+   "niat": {
+    "arab": "أُصَلِّيْ فَرْضَ الْمَغْرِبِ ثَلَاثَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى",
+    "latin": "Usholli fardhal maghribi tsalatsa raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.",
+    "terjemahan": "Aku niat sholat fardhu Magrib 3 rakaat menghadap kiblat karena Allah Ta'ala."
+   },
+   "rakaat": "3 rakaat",
+   "waktu": "Terbenam matahari – hilang mega merah"
+  },
+  {
+   "deskripsi": "Sholat fardhu 4 rakaat setelah mega merah hingga tengah malam/fajar.",
+   "id": "isya",
+   "nama": "Isya",
+   "niat": {
+    "arab": "أُصَلِّيْ فَرْضَ الْعِشَاءِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلّٰهِ تَعَالَى",
+    "latin": "Usholli fardhal 'isya-i arba'a raka'atim mustaqbilal qiblati adaa-an lillahi ta'ala.",
+    "terjemahan": "Aku niat sholat fardhu Isya 4 rakaat menghadap kiblat karena Allah Ta'ala."
+   },
+   "rakaat": "4 rakaat",
+   "waktu": "Hilang mega merah – tengah malam"
+  },
+  {
+   "deskripsi": "Pengganti Zuhur hari Jumat bagi laki-laki: 2 rakaat didahului 2 khutbah. Perempuan dan yang berhalangan tetap Zuhur.",
+   "id": "jumat",
+   "nama": "Jumat",
+   "rakaat": "2 rakaat + 2 khutbah",
+   "waktu": "Waktu Zuhur hari Jumat"
+  },
+  {
+   "deskripsi": "Fardhu kifayah 4 takbir tanpa ruku/sujud. Rukun: niat, 4 takbir, Fatihah, sholawat, doa mayit, salam.",
+   "id": "jenazah",
+   "nama": "Jenazah (hadir)",
+   "rakaat": "4 takbir",
+   "waktu": "Setelah jenazah dimandikan-dikafani"
+  },
+  {
+   "deskripsi": "Seperti jenazah untuk mayit yang jauh. Lihat modul Ghaib. Dalil: HR Muttafaq Alaih (Najasyi).",
+   "id": "ghaib",
+   "nama": "Ghaib",
+   "rakaat": "4 takbir",
+   "rujukan_file": "sholat_ghaib.json",
+   "waktu": "Setelah kabar kematian"
+  },
+  {
+   "deskripsi": "Keringanan safar (±80 km+): qashar (4→2 rakaat untuk Zuhur/Asar/Isya) dan jamak (taqdim/ta'khir Zuhur-Asar, Magrib-Isya). Syarat dan tata cara dijelaskan di aplikasi.",
+   "id": "safar",
+   "nama": "Qashar & Jamak (safar)",
+   "rakaat": "Lihat ketentuan",
+   "waktu": "Selama safar memenuhi syarat"
+  }
+ ],
+ "sumber_url": "https://sunnah.com/",
+ "edisi": "Daftar sholat wajib/sunnah dari hadis sahih (sunnah.com); kerangka Fasolatan Kemenag"
+}
