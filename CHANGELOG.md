@@ -6,6 +6,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Uji instrumented lengkap** (`app/src/androidTest`) menutup kriteria pengujian `plan.txt`:
+  penyimpanan bookmark/progres/favorit/riwayat beserta backup–pulih (Room), mode offline
+  (seluruh modul konten terbaca dari aset + aplikasi terbukti tidak meminta izin `INTERNET`),
+  izin lokasi dan kiblat tanpa izin, penjadwalan pengingat (jumlah pekerjaan WorkManager per
+  saklar waktu & pra-adzan, pembatalan saat pengingat dimatikan, `BootReceiver` terdaftar),
+  serta tema terang/gelap dan lebar layar ponsel kecil maupun tablet.
+- **Aksesibilitas peta kiblat**: ringkasan peta (rute, jarak, azimut) diumumkan lewat
+  `contentDescription` karena labelnya digambar di kanvas — pembaca layar kini memahami peta.
 - **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
   Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
   `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
