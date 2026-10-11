@@ -13,7 +13,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   saklar waktu & pra-adzan, pembatalan saat pengingat dimatikan, `BootReceiver` terdaftar),
   serta tema terang/gelap dan lebar layar ponsel kecil maupun tablet.
 - **Aksesibilitas peta kiblat**: ringkasan peta (rute, jarak, azimut) diumumkan lewat
-  `contentDescription` karena labelnya digambar di kanvas — pembaca layar kini memahami peta.- **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
+  `contentDescription` karena labelnya digambar di kanvas — pembaca layar kini memahami peta.
+- **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
   Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
   `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
   terkalibrasi. Bujur di-*unwrap* agar rute yang melewati garis tanggal tetap benar.
@@ -69,6 +70,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **`e2e.yml`**: grup `concurrency` kini per-ref (`e2e-${{ github.ref }}`), bukan global
   `e2e-main`. Sebelumnya `workflow_dispatch` pada branch membatalkan run `main` yang sedang
   berjalan, sehingga verifikasi `main` bisa hilang tanpa disadari.
+- **Kejujuran izin**: izin `SCHEDULE_EXACT_ALARM` dihapus dari manifes karena pengingat memakai
+  WorkManager dan tidak ada pemakaian `AlarmManager` sama sekali; tombol "Alarm tepat waktu"
+  (yang membuka pengaturan izin tak terpakai) ikut dihapus, dan teks di menu Adzan kini
+  menjelaskan bahwa waktu pengingat dapat bergeser saat perangkat masuk Doze. Invarian
+  "izin alarm tepat waktu hanya bila `AlarmManager` dipakai" dijaga uji.
+- **Pengaturan bahasa**: baris "Bahasa aplikasi" kini menjelaskan bahwa antarmuka hanya
+  tersedia dalam bahasa Indonesia (sesuai `plan.txt`), alih-alih menyimpan kunci `lang`
+  yang tidak pernah dibaca kode mana pun.
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)
   dan terverifikasi terhadap acuan SIHAT Bimas Islam.
 - Beranda menampilkan hitung mundur sholat berikutnya secara *live*.
