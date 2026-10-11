@@ -43,6 +43,12 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Penjelasan khusus sholat**: daftar ketentuan untuk Jumat (siapa yang wajib, khutbah)
   dan keringanan safar (qashar & jamak) kini tampil di panduan sholat. Lafaz niat Jumat
   ditandai belum dicantumkan — menunggu verifikasi sumber resmi.
+- **Identitas visual**: ikon peluncur adaptif (bulan sabit & bintang, latar gradasi zamrud),
+  termasuk lapisan *monochrome* untuk ikon bertema Android 13+. Nama aplikasi dipindahkan
+  ke `strings.xml`.
+- **Tema jendela terang/gelap** (`values`/`values-night`): latar jendela disamakan dengan
+  palet aplikasi sehingga tidak ada kedipan putih saat dibuka dalam mode gelap; warna bilah
+  status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)

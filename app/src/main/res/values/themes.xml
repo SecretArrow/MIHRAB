@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema jendela sebelum Compose menggambar. Latar disamakan dengan palet aplikasi
+         agar tidak ada kedipan putih saat peluncuran di tema terang. -->
+    <style name="Theme.YasinTahlil" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/gading</item>
+        <item name="android:statusBarColor">@color/zamrud</item>
+        <item name="android:navigationBarColor">@color/zamrud_gelap</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
