@@ -13,3 +13,7 @@ google-services.json
 # Secrets - JANGAN commit token
 .env
 *token*
+
+# Python (skrip validasi konten)
+__pycache__/
+*.pyc
