@@ -1,1 +1,36 @@
-{"modul":"sholat_ghaib","hukum":"fardhu_kifayah","takbir":4,"tanpa_ruku_sujud":true,"sumber_url":"https://sunnah.com/bukhari:1335","sumber_tambahan":["https://www.kemenag.go.id/","https://sunnah.com/muslim:394"],"dalil":"HR Muttafaq Alaih (Abu Hurairah): Nabi sholat ghaib untuk Raja Najasyi, 4 takbir.","catatan_mazhab":"Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia: Syafi'i.","syarat":["jenazah jauh/sulit dijangkau","sudah dimandikan atau niat digantungkan pada sucinya"],"langkah":["niat","takbir1_fatihah","takbir2_sholawat","takbir3_doa_mayit","takbir4_doa_tambahan","salam"]}
+{
+  "modul": "sholat_ghaib",
+  "judul": "Sholat Ghaib",
+  "hukum": "fardhu_kifayah",
+  "takbir": 4,
+  "tanpa_ruku_sujud": true,
+  "sumber_url": "https://sunnah.com/bukhari:1335",
+  "sumber_tambahan": ["https://www.kemenag.go.id/", "https://sunnah.com/muslim:394"],
+  "dalil": "HR Muttafaq Alaih (Abu Hurairah): Nabi sholat ghaib untuk Raja Najasyi, 4 takbir.",
+  "catatan_mazhab": "Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia: Syafi'i.",
+  "syarat": ["jenazah jauh/sulit dijangkau", "sudah dimandikan atau niat digantungkan pada sucinya"],
+  "niat": [
+    {
+      "id": "ghaib_laki",
+      "judul": "Laki-laki (diketahui nama)",
+      "arab": "أُصَلِّي عَلَى مَيِّتِ (فُلَانِ) الْغَائِبِ أَرْبَعَ تَكْبِيرَاتٍ فَرْضَ الْكِفَايَةِ إِمَامًا/مَأْمُوْمًا لِلّٰهِ تَعَالَى",
+      "latin": "Ushalli 'ala mayyiti (fulan) al-gha-ibi arba'a takbiratin fardhal kifayati imaman/ma'muman lillahi ta'ala.",
+      "terjemahan": "Aku menyolatkan jenazah (nama) yang ghaib 4 takbir fardhu kifayah karena Allah."
+    },
+    {
+      "id": "ghaib_perempuan",
+      "judul": "Perempuan",
+      "arab": "أُصَلِّي عَلَى مَيِّتَةِ (فُلَانَةٍ) الْغَائِبَةِ أَرْبَعَ تَكْبِيرَاتٍ فَرْضَ الْكِفَايَةِ إِمَامًا/مَأْمُوْمًا لِلّٰهِ تَعَالَى",
+      "latin": "Ushalli 'ala mayyitati (fulanah) al-ghaibati arba'a takbiratin fardhal kifayati imaman/ma'muman lillahi ta'ala.",
+      "terjemahan": "Aku menyolatkan jenazah perempuan (nama) yang ghaib 4 takbir fardhu kifayah karena Allah."
+    },
+    {
+      "id": "ghaib_jamak",
+      "judul": "Jamak / tidak diketahui",
+      "arab": "أُصَلِّي عَلَى مَنْ صَلَّى عَلَيْهِ الْإِمَامُ أَرْبَعَ تَكْبِيرَاتٍ فَرْضَ الْكِفَايَةِ مَأْمُوْمًا لِلّٰهِ تَعَالَى",
+      "latin": "Ushalli 'ala man shalla 'alaihil imamu arba'a takbiratin fardhal kifayati ma'muman lillahi ta'ala.",
+      "terjemahan": "Aku sholat ghaib mengikuti imam 4 takbir fardhu kifayah karena Allah."
+    }
+  ],
+  "langkah": ["niat", "takbir1_fatihah", "takbir2_sholawat", "takbir3_doa_mayit", "takbir4_doa_tambahan", "salam"]
+}

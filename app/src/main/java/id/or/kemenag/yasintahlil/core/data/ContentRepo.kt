@@ -1,6 +1,8 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import android.content.Context
+import android.util.Log
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONObject
 
 /** Repository offline-first: seluruh konten dibaca dari assets/content (sumber resmi). */
@@ -8,7 +10,13 @@ class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
     private fun doc(file: String): JSONObject =
         cache.getOrPut(file) {
-            JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+            val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+            // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
+            val src = json.optString("sumber_url", "")
+            if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+                Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
+            }
+            json
         }
 
     private fun verse(o: JSONObject) = Verse(
@@ -44,9 +52,9 @@ class ContentRepo(private val ctx: Context) {
         } else Triple(d.optString("arab"), d.optString("latin"), d.optString("terjemahan"))
     }
 
-    fun tahlil(): List<TahlilItem> {
+    fun tahlil(susunanId: String? = null): List<TahlilItem> {
         val arr = doc("tahlil_full.json").getJSONArray("bagian")
-        return (0 until arr.length()).map { i ->
+        val all = (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
             TahlilItem(
@@ -55,6 +63,23 @@ class ContentRepo(private val ctx: Context) {
                 o.optInt("ulangi", 1),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 o.optString("sumber", "")
+            )
+        }
+        if (susunanId == null) return all
+        val order = tahlilSusunan().firstOrNull { it.id == susunanId }?.bagian ?: return all
+        val byId = all.associateBy { it.id }
+        return order.mapNotNull { byId[it] }.ifEmpty { all }
+    }
+
+    /** Daftar susunan tahlil yang tersedia (mis. "lazim Indonesia"). */
+    fun tahlilSusunan(): List<TahlilSusunan> {
+        val arr = doc("tahlil.json").optJSONArray("susunan") ?: return emptyList()
+        return (0 until arr.length()).map { i ->
+            val o = arr.getJSONObject(i)
+            val b = o.optJSONArray("bagian") ?: org.json.JSONArray()
+            TahlilSusunan(
+                o.getString("id"), o.optString("nama", o.getString("id")),
+                (0 until b.length()).map { b.getString(it) }
             )
         }
     }
@@ -67,24 +92,36 @@ class ContentRepo(private val ctx: Context) {
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val n = o.optJSONObject("niat")
+            val ket = o.optJSONArray("ketentuan")?.let { k -> (0 until k.length()).map { k.getString(it) } }.orEmpty()
             SholatInfo(
                 o.getString("id"), o.getString("nama"), o.getString("rakaat"),
                 o.getString("waktu"), o.getString("deskripsi"),
                 n?.let { Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan")) },
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") }
+                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                ketentuan = ket,
+                niatCatatan = o.optString("niat_catatan", "")
             )
         }
     }
 
-    fun sholatBacaan(): List<Bacaan> {
-        val arr = doc("sholat_bacaan.json").getJSONArray("bacaan")
+    fun sholatBacaan(): List<Bacaan> = parseBacaan("sholat_bacaan.json")
+
+    /** Bacaan doa mayit (dipakai sholat jenazah & ghaib) — berkas terpisah agar tidak
+     *  tercampur ke daftar langkah sholat umum. */
+    fun sholatMayitBacaan(): List<Bacaan> = parseBacaan("sholat_mayit.json")
+
+    private fun parseBacaan(file: String): List<Bacaan> {
+        val arr = doc(file).getJSONArray("bacaan")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+            val scope = o.optJSONArray("sholat")?.let { s -> (0 until s.length()).map { s.getString(it) } }.orEmpty()
             Bacaan(o.getString("id"), o.getString("judul"), o.optString("kapan"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
+                sholatScope = scope)
         }
     }
 
@@ -141,5 +178,58 @@ class ContentRepo(private val ctx: Context) {
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i); Kota(o.getString("nama"), o.getDouble("lat"), o.getDouble("lon"))
         }
+    }
+
+    /** Panduan bersuci (wudhu, tayamum, pembatal) — langkah prosedural tanpa teks Arab. */
+    fun panduanBersuci(): PanduanBersuci {
+        val d = doc("wudhu.json")
+        fun langkah(key: String): List<Langkah> {
+            val arr = d.optJSONObject(key)?.optJSONArray("langkah") ?: return emptyList()
+            return (0 until arr.length()).map { i ->
+                val o = arr.getJSONObject(i)
+                Langkah(o.optInt("no", i + 1), o.getString("judul"), o.optString("keterangan"))
+            }
+        }
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        return PanduanBersuci(
+            rukun = stringList("rukun"),
+            wudhu = langkah("wudhu"),
+            tayamum = langkah("tayamum"),
+            pembatal = stringList("pembatal"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            catatanLafaz = d.optString("catatan_lafaz"),
+        )
+    }
+
+    /** Konten sholat khusus (ghaib/jenazah) dari assets — termasuk varian niat. */
+    fun sholatKhusus(file: String): SholatKhusus {
+        val d = doc(file)
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        val niatArr = d.optJSONArray("niat") ?: org.json.JSONArray()
+        val niat = (0 until niatArr.length()).map { i ->
+            val o = niatArr.getJSONObject(i)
+            Bacaan(
+                o.optString("id", "niat_$i"), o.optString("judul"),
+                o.optString("kapan"), o.optString("arab"), o.optString("latin"),
+                o.optString("terjemahan"), o.optString("sumber"),
+                catatan = o.optString("catatan"),
+            )
+        }
+        return SholatKhusus(
+            judul = d.optString("judul"),
+            hukum = d.optString("hukum"),
+            takbir = d.optInt("takbir", 4),
+            dalil = d.optString("dalil"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            syarat = stringList("syarat"),
+            niat = niat,
+            langkah = stringList("langkah"),
+        )
     }
 }

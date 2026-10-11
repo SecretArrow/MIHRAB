@@ -1,1 +1,48 @@
-{"surah": "An-Nas", "ayat_count": 6, "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)", "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)", "sumber_latin": "api.quran.com word transliteration (English)", "verses": [{"nomor": 1, "arab": "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ", "latin": "qul aʿūdhu birabbi l-nāsi", "terjemahan": "Katakanlah: \"Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia."}, {"nomor": 2, "arab": "مَلِكِ ٱلنَّاسِ", "latin": "maliki l-nāsi", "terjemahan": "Raja manusia."}, {"nomor": 3, "arab": "إِلَٰهِ ٱلنَّاسِ", "latin": "ilāhi l-nāsi", "terjemahan": "Sembahan manusia."}, {"nomor": 4, "arab": "مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ", "latin": "min sharri l-waswāsi l-khanāsi", "terjemahan": "Dari kejahatan (bisikan) syaitan yang biasa bersembunyi,"}, {"nomor": 5, "arab": "ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ", "latin": "alladhī yuwaswisu fī ṣudūri l-nāsi", "terjemahan": "yang membisikkan (kejahatan) ke dalam dada manusia,"}, {"nomor": 6, "arab": "مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ", "latin": "mina l-jinati wal-nāsi", "terjemahan": "dari (golongan) jin dan manusia."}]}
+{
+ "surah": "An-Nas",
+ "ayat_count": 6,
+ "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
+ "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
+ "sumber_latin": "api.quran.com word transliteration (English)",
+ "verses": [
+  {
+   "nomor": 1,
+   "arab": "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ",
+   "latin": "qul aʿūdhu birabbi l-nāsi",
+   "terjemahan": "Katakanlah: \"Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia."
+  },
+  {
+   "nomor": 2,
+   "arab": "مَلِكِ ٱلنَّاسِ",
+   "latin": "maliki l-nāsi",
+   "terjemahan": "Raja manusia."
+  },
+  {
+   "nomor": 3,
+   "arab": "إِلَٰهِ ٱلنَّاسِ",
+   "latin": "ilāhi l-nāsi",
+   "terjemahan": "Sembahan manusia."
+  },
+  {
+   "nomor": 4,
+   "arab": "مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ",
+   "latin": "min sharri l-waswāsi l-khanāsi",
+   "terjemahan": "Dari kejahatan (bisikan) syaitan yang biasa bersembunyi,"
+  },
+  {
+   "nomor": 5,
+   "arab": "ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ",
+   "latin": "alladhī yuwaswisu fī ṣudūri l-nāsi",
+   "terjemahan": "yang membisikkan (kejahatan) ke dalam dada manusia,"
+  },
+  {
+   "nomor": 6,
+   "arab": "مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
+   "latin": "mina l-jinati wal-nāsi",
+   "terjemahan": "dari (golongan) jin dan manusia."
+  }
+ ],
+ "sumber_url": "https://quran.kemenag.go.id/",
+ "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
+ "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+}

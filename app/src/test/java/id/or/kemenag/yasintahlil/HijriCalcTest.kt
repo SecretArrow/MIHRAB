@@ -15,4 +15,33 @@ class HijriCalcTest {
         assertEquals(1447, y)
         assertTrue("Bulan Ramadan (9) ±1, got $m/$d", m in 8..10)
     }
+
+    @Test fun koreksiHariMenggeserTanggal() {
+        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta")).apply {
+            set(2026, 1, 19, 12, 0, 0); set(Calendar.MILLISECOND, 0)
+        }
+        val next = (c.clone() as Calendar).apply { add(Calendar.DAY_OF_MONTH, 1) }
+        // Koreksi +1 hari harus sama dengan tanggal Hijriah hari berikutnya.
+        assertEquals(HijriCalc.from(next), HijriCalc.from(c, 1))
+        assertNotEquals(HijriCalc.from(c), HijriCalc.from(c, 1))
+    }
+
+    @Test fun formatMemuatBulanTahunDanDisclaimer() {
+        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta")).apply {
+            set(2026, 1, 19, 12, 0, 0); set(Calendar.MILLISECOND, 0)
+        }
+        val s = HijriCalc.format(c)
+        assertTrue("Format tanpa tahun H: $s", s.contains("1447 H"))
+        assertTrue("Format tanpa nama bulan: $s", HijriCalc.bulan.any { s.contains(it) })
+        assertTrue("Format tanpa disclaimer isbat: $s", s.contains("isbat"))
+    }
+
+    @Test fun formatMenampilkanKoreksiBilaAda() {
+        val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta")).apply {
+            set(2026, 1, 19, 12, 0, 0); set(Calendar.MILLISECOND, 0)
+        }
+        assertTrue("Koreksi 0 tak boleh tampil", !HijriCalc.format(c, 0).contains("koreksi"))
+        assertTrue("Koreksi +2 tidak tampil", HijriCalc.format(c, 2).contains("koreksi +2 hari"))
+        assertTrue("Koreksi -1 tidak tampil", HijriCalc.format(c, -1).contains("koreksi -1 hari"))
+    }
 }

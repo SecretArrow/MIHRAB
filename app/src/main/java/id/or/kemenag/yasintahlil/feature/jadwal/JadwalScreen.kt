@@ -1,5 +1,8 @@
 package id.or.kemenag.yasintahlil.feature.jadwal
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,73 +10,111 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import id.or.kemenag.yasintahlil.core.data.PrayerTimes
-import id.or.kemenag.yasintahlil.core.data.Store
-import id.or.kemenag.yasintahlil.core.designsystem.rememberRepo
-import id.or.kemenag.yasintahlil.core.designsystem.rememberStore
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
-import kotlinx.coroutines.launch
-import java.util.Calendar
 
 @Composable
-fun JadwalScreen() {
-    val repo = rememberRepo()
-    val store = rememberStore()
-    val scope = rememberCoroutineScope()
-    val kota = remember { repo.kota() }
-    var city by remember { mutableStateOf("Jakarta") }
-    var lat by remember { mutableStateOf(-6.2) }
-    var lon by remember { mutableStateOf(106.8) }
-    var asarH by remember { mutableStateOf(false) }
-    var corrTxt by remember { mutableStateOf("0,0,0,0,0,0") }
-    var times by remember { mutableStateOf<PrayerTimes?>(null) }
-    var nowMin by remember { mutableStateOf(0) }
-    fun recompute() {
-        val c = corrTxt.split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }
-        val now = Calendar.getInstance()
-        nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-        times = PrayerCalc.compute(now, PrayerCalc.Params(lat, lon,
-            asarFactor = if (asarH) 2.0 else 1.0, corr = c.take(6)))
+fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
+    val s by vm.state.collectAsStateWithLifecycle()
+    var drop by remember { mutableStateOf(false) }
+    var methodDrop by remember { mutableStateOf(false) }
+    var tzDrop by remember { mutableStateOf(false) }
+    var needPermission by remember { mutableStateOf(false) }
+
+    val permLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        if (result.values.any { it }) {
+            needPermission = false
+            vm.useGps()
+        }
     }
-    LaunchedEffect(Unit) {
-        city = store.get(Store.CITY, "Jakarta")
-        lat = store.get(Store.LAT, -6.2); lon = store.get(Store.LON, 106.8)
-        asarH = store.get(Store.ASAR, "syafii") == "hanafi"
-        corrTxt = store.get(Store.CORR, "0,0,0,0,0,0")
-        recompute()
-    }
+
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Jadwal Sholat — metode Kemenag", style = MaterialTheme.typography.titleLarge)
-        Text("Subuh −20° • Isya −18° • Asar ${if (asarH) "Hanafi (2)" else "Syafi'i (1)"} • ihtiyat +2 mnt. Verifikasi: sihat.kemenag.dev",
-            style = MaterialTheme.typography.labelMedium)
-        var drop by remember { mutableStateOf(false) }
-        OutlinedButton(onClick = { drop = !drop }) { Text("Kota: $city ▾") }
-        if (drop) kota.forEach { k ->
-            TextButton(onClick = {
-                city = k.nama; lat = k.lat; lon = k.lon; drop = false; recompute()
-                scope.launch { store.set(Store.CITY, city); store.set(Store.LAT, lat); store.set(Store.LON, lon) }
-            }) { Text(k.nama) }
+        Text("Jadwal Sholat", style = MaterialTheme.typography.titleLarge)
+        Text(
+            "Metode: ${s.method.label} • Fajr ${s.method.fajr}° / Isya ${if (s.method.ishaIntervalMin != null) "Magrib+${s.method.ishaIntervalMin}mnt" else "${s.method.isha}°"} • Asar ${if (s.asarHanafi) "Hanafi (2)" else "Syafi'i (1)"}",
+            style = MaterialTheme.typography.labelMedium,
+        )
+
+        // Metode perhitungan
+        OutlinedButton(onClick = { methodDrop = !methodDrop; tzDrop = false; drop = false }) {
+            Text("Metode: ${s.method.label} ▾")
         }
+        if (methodDrop) PrayerCalc.Method.entries.forEach { m ->
+            TextButton(onClick = { vm.setMethod(m); methodDrop = false }) { Text(m.label) }
+        }
+
+        // Kota
+        OutlinedButton(onClick = { drop = !drop; methodDrop = false; tzDrop = false }) { Text("Kota: ${s.city} ▾") }
+        if (drop) vm.kota.forEach { k ->
+            TextButton(onClick = { vm.selectCity(k); drop = false }) { Text(k.nama) }
+        }
+        OutlinedButton(onClick = {
+            if (vm.hasLocationPermission() && vm.useGps()) {
+                needPermission = false
+            } else {
+                needPermission = true
+                permLauncher.launch(arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ))
+            }
+        }) { Text("Pakai lokasi GPS") }
+        if (needPermission) Text(
+            "Izinkan lokasi agar jadwal memakai koordinat GPS perangkat; bila tidak, pilih kota secara manual.",
+            style = MaterialTheme.typography.labelSmall,
+        )
+
+        // Zona waktu
+        OutlinedButton(onClick = { tzDrop = !tzDrop; methodDrop = false; drop = false }) {
+            val label = JadwalViewModel.TZ_OPTIONS.firstOrNull { it.first == s.tzId }?.second ?: s.tzId
+            Text("Zona waktu: $label ▾")
+        }
+        if (tzDrop) JadwalViewModel.TZ_OPTIONS.forEach { (id, label) ->
+            TextButton(onClick = { vm.setTimezone(id); tzDrop = false }) { Text(label) }
+        }
+
+        // Mazhab Asar
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(!asarH, { asarH = false; recompute(); scope.launch { store.set(Store.ASAR, "syafii") } }, { Text("Asar Syafi'i") })
-            FilterChip(asarH, { asarH = true; recompute(); scope.launch { store.set(Store.ASAR, "hanafi") } }, { Text("Asar Hanafi") })
+            FilterChip(!s.asarHanafi, { vm.setAsarHanafi(false) }, { Text("Asar Syafi'i") })
+            FilterChip(s.asarHanafi, { vm.setAsarHanafi(true) }, { Text("Asar Hanafi") })
         }
-        OutlinedTextField(corrTxt, {
-            corrTxt = it; scope.launch { store.set(Store.CORR, corrTxt) }
-        }, label = { Text("Koreksi menit (subuh,terbit,zuhur,asar,magrib,isya)") },
-            modifier = Modifier.fillMaxWidth())
-        Button(onClick = { recompute() }) { Text("Hitung ulang") }
-        times?.let { t ->
+
+        Text("Koreksi menit per waktu", style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(top = 8.dp))
+        val names = listOf("Subuh", "Terbit", "Zuhur", "Asar", "Magrib", "Isya")
+        names.forEachIndexed { i, n ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Text(n)
+                Row {
+                    OutlinedButton(onClick = { vm.setCorrection(i, -1) }) { Text("−") }
+                    Text("  ${if (s.corr[i] > 0) "+" else ""}${s.corr[i]}  ",
+                        style = MaterialTheme.typography.titleMedium)
+                    OutlinedButton(onClick = { vm.setCorrection(i, +1) }) { Text("+") }
+                }
+            }
+        }
+
+        s.times?.let { t ->
+            Divider(Modifier.padding(vertical = 8.dp))
             val rows = listOf("Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
                 "Asar" to t.asar, "Magrib" to t.magrib, "Isya" to t.isya)
-            rows.forEach { (n, j) -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(n, style = MaterialTheme.typography.titleMedium); Text(j, style = MaterialTheme.typography.titleMedium)
-            } }
-            val (berikut, sisa) = PrayerCalc.next(nowMin, t)
+            rows.forEach { (n, j) ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(n, style = MaterialTheme.typography.titleMedium)
+                    Text(j, style = MaterialTheme.typography.titleMedium)
+                }
+            }
+            val (berikut, sisa) = PrayerCalc.next(s.nowMin, t)
             Text("Berikutnya: $berikut dalam ${sisa / 60} jam ${sisa % 60} mnt",
                 color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
-            Text("Cache offline: jadwal dihitung di perangkat, tetap tersedia tanpa internet.",
-                style = MaterialTheme.typography.labelSmall)
         }
+        Text(
+            "Jadwal dihitung di perangkat (algoritma Meeus) — tetap tersedia tanpa internet. Verifikasi: sihat.kemenag.dev",
+            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp),
+        )
     }
 }

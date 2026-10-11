@@ -7,50 +7,53 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import id.or.kemenag.yasintahlil.navigation.Routes
-import id.or.kemenag.yasintahlil.core.data.Store
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
-import kotlinx.coroutines.launch
+import id.or.kemenag.yasintahlil.navigation.Routes
 
 @Composable
-fun FavoritScreen(go: (String) -> Unit) {
-    val store = rememberStore()
-    val scope = rememberCoroutineScope()
-    var fav by remember { mutableStateOf(setOf<String>()) }
-    var hist by remember { mutableStateOf("") }
-    var last by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        fav = store.get(Store.FAV, emptySet())
-        hist = store.get(Store.HIST, "")
-        last = store.get(Store.LAST, "")
-    }
-    fun rute(id: String) = when {
-        id.startsWith("yasin") -> Routes.YASIN
-        id.startsWith("tahlil") -> Routes.TAHLIL
-        id.startsWith("dzikir") || id.startsWith("doa") || id.startsWith("jawab") -> Routes.DZIKIR
-        id.startsWith("bacaan") || id.startsWith("niat") || id.startsWith("langkah") || id.startsWith("ghaib") || id.startsWith("jenazah") -> Routes.SHOLAT
-        id.startsWith("adzan") || id.startsWith("iqomah") -> Routes.ADZAN
-        else -> Routes.HOME
-    }
+fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) {
+    val s by vm.state.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Favorit, Riwayat & Terakhir dibaca", style = MaterialTheme.typography.titleLarge)
-        if (last.isNotBlank()) {
-            Text("Terakhir dibaca: $last")
-            Button(onClick = { go(rute(last)) }) { Text("Lanjutkan") }
+        if (s.last.isNotBlank()) {
+            Text("Terakhir dibaca: ${s.last}")
+            Button(onClick = { go(ruteOf(s.last.substringBefore(':'))) }) { Text("Lanjutkan") }
         }
-        Text("Favorit (${fav.size}):", style = MaterialTheme.typography.titleMedium,
+        Text("Favorit (${s.favorites.size}):", style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
+        if (s.favorites.isEmpty()) Text("Belum ada favorit. Tandai dengan tombol ☆ di tiap bacaan.",
+            style = MaterialTheme.typography.labelSmall)
         LazyColumn(Modifier.weight(1f)) {
-            items(fav.toList()) { id ->
+            items(s.favorites, key = { "${it.kind}:${it.refId}" }) { f ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(id, modifier = Modifier.weight(1f))
-                    TextButton(onClick = { go(rute(id)) }) { Text("Buka") }
-                    TextButton(onClick = { scope.launch { store.toggleFav(id); fav = store.get(Store.FAV, emptySet()) } }) { Text("Hapus") }
+                    Text(f.title.ifBlank { "${f.kind}:${f.refId}" }, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { go(ruteOf(f.kind)) }) { Text("Buka") }
+                    TextButton(onClick = { vm.remove(f) }) { Text("Hapus") }
                 }
             }
         }
-        Text("Riwayat terbaru:", style = MaterialTheme.typography.titleMedium)
-        hist.split(";").filter { it.isNotBlank() }.take(10).forEach { Text(it) }
-        if (hist.isBlank()) Text("Belum ada riwayat.", style = MaterialTheme.typography.labelMedium)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Riwayat terbaru:", style = MaterialTheme.typography.titleMedium)
+            if (s.history.isNotEmpty()) TextButton(onClick = { vm.clearHistory() }) { Text("Bersihkan") }
+        }
+        if (s.history.isEmpty()) Text("Belum ada riwayat.", style = MaterialTheme.typography.labelMedium)
+        s.history.take(12).forEach { h ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(1f))
+                TextButton(onClick = { go(ruteOf(h.kind)) }) { Text("Buka") }
+            }
+        }
     }
+}
+
+private fun ruteOf(kind: String) = when (kind) {
+    "yasin" -> Routes.YASIN
+    "tahlil" -> Routes.TAHLIL
+    "dzikir", "doa", "jawab" -> Routes.DZIKIR
+    "bacaan", "niat", "langkah", "ghaib", "jenazah" -> Routes.SHOLAT
+    "adzan", "iqomah" -> Routes.ADZAN
+    else -> Routes.HOME
 }

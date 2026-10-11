@@ -14,12 +14,13 @@ object HijriCalc {
         "Zulkaidah", "Zulhijah"
     )
 
-    fun from(date: Calendar = Calendar.getInstance()): Triple<Int, Int, Int> {
+    fun from(date: Calendar = Calendar.getInstance(), corrDays: Int = 0): Triple<Int, Int, Int> {
         var y = date.get(Calendar.YEAR); var m = date.get(Calendar.MONTH) + 1
         val d = date.get(Calendar.DAY_OF_MONTH)
         var jd = (1461 * (y + 4800 + (m - 14) / 12)) / 4 +
             (367 * (m - 2 - 12 * ((m - 14) / 12))) / 12 -
             (3 * ((y + 4900 + (m - 14) / 12) / 100)) / 4 + d - 32075
+        jd += corrDays
         var l = jd - 1948440 + 10632
         val n = (l - 1) / 10631
         l = l - 10631 * n + 354
@@ -31,8 +32,9 @@ object HijriCalc {
         return Triple(hd, hm, hy)
     }
 
-    fun format(date: Calendar = Calendar.getInstance()): String {
-        val (d, m, y) = from(date)
-        return "$d ${bulan[m - 1]} $y H (perkiraan — ikuti Kemenag)"
+    fun format(date: Calendar = Calendar.getInstance(), corrDays: Int = 0): String {
+        val (d, m, y) = from(date, corrDays)
+        val koreksi = if (corrDays == 0) "" else " (koreksi ${if (corrDays > 0) "+" else ""}$corrDays hari)"
+        return "$d ${bulan[m - 1]} $y H$koreksi — perkiraan, ikuti isbat Kemenag"
     }
 }

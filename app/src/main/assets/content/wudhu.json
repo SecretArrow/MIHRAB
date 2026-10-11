@@ -1,0 +1,38 @@
+{
+  "modul": "wudhu",
+  "sumber_url": "https://www.kemenag.go.id/",
+  "edisi": "Kerangka wudhu & tayamum mengikuti program Fasolatan/Ngaji Fasolatan Ditjen Bimas Islam Kemenag; urutan rukun mengikuti mazhab Syafi'i (umum di Indonesia).",
+  "catatan_mazhab": "Urutan dan jumlah basuhan mengikuti mazhab Syafi'i. Perbedaan mazhab (mis. menyapu telinga, batas membasuh) dicatat apa adanya tanpa dicampuradukkan.",
+  "catatan_lafaz": "Lafaz niat dan doa berbahasa Arab tidak dicantumkan di sini karena belum diverifikasi dari sumber resmi (aturan proyek: dilarang menyusun teks Arab tanpa sumber). Niat cukup dihadirkan di dalam hati; teks doa akan ditambahkan setelah verifikasi.",
+  "rukun": ["niat", "membasuh muka", "membasuh kedua tangan sampai siku", "mengusap sebagian kepala", "membasuh kedua kaki sampai mata kaki", "tertib (berurutan)"],
+  "wudhu": {
+    "judul": "Tata cara wudhu",
+    "langkah": [
+      { "no": 1, "judul": "Niat", "keterangan": "Niat di dalam hati bersamaan dengan basuhan pertama pada wajah. Cukup menghadirkan maksud bersuci untuk sholat." },
+      { "no": 2, "judul": "Membasuh kedua telapak tangan", "keterangan": "Membasuh kedua tangan hingga pergelangan, tiga kali, dimulai dengan membaca basmalah." },
+      { "no": 3, "judul": "Berkumur (madhmadhah)", "keterangan": "Memasukkan air ke mulut lalu memutarkannya dan membuangnya, tiga kali." },
+      { "no": 4, "judul": "Menghirup air ke hidung (istinsyaq)", "keterangan": "Menghirup air ke hidung lalu mengeluarkannya (istintsar), tiga kali. Tidak berlebihan saat berpuasa." },
+      { "no": 5, "judul": "Membasuh muka", "keterangan": "Membasuh seluruh wajah dari dahi hingga dagu dan dari telinga ke telinga, tiga kali." },
+      { "no": 6, "judul": "Membasuh kedua tangan sampai siku", "keterangan": "Tangan kanan dahulu sampai siku, lalu tangan kiri, masing-masing tiga kali." },
+      { "no": 7, "judul": "Mengusap kepala", "keterangan": "Mengusap sebagian kepala dengan air, sekali." },
+      { "no": 8, "judul": "Mengusap kedua telinga", "keterangan": "Mengusap telinga bagian dalam dan belakang, sekali, dengan air sisa usapan kepala." },
+      { "no": 9, "judul": "Membasuh kedua kaki sampai mata kaki", "keterangan": "Kaki kanan dahulu sampai mata kaki, lalu kaki kiri, masing-masing tiga kali, dengan menyela sela jari." },
+      { "no": 10, "judul": "Tertib", "keterangan": "Menjalankan seluruh urutan di atas secara berurutan tanpa jeda lama." }
+    ]
+  },
+  "tayamum": {
+    "judul": "Tata cara tayamum (pengganti wudhu saat tidak ada air / sakit)",
+    "langkah": [
+      { "no": 1, "judul": "Niat", "keterangan": "Niat di dalam hati untuk bersuci dengan tayamum karena tidak ada air atau ada uzur syar'i." },
+      { "no": 2, "judul": "Menyapu muka dengan debu", "keterangan": "Menepukkan kedua telapak tangan ke debu suci, lalu menyapu seluruh wajah sekali." },
+      { "no": 3, "judul": "Menyapu kedua tangan sampai siku", "keterangan": "Menepukkan kembali kedua telapak tangan ke debu, lalu menyapu tangan kanan sampai siku, kemudian tangan kiri, sekali." },
+      { "no": 4, "judul": "Tertib", "keterangan": "Urutan muka lebih dahulu, lalu kedua tangan, tanpa jeda lama." }
+    ]
+  },
+  "pembatal": [
+    "Keluar sesuatu dari qubul atau dubur (termasuk buang air, angin, dan cairan menurut mazhab Syafi'i).",
+    "Hilang akal karena tidur nyenyak, mabuk, atau gila.",
+    "Bersentuhan kulit antara laki-laki dan perempuan yang bukan mahram (mazhab Syafi'i).",
+    "Menyentuh kemaluan atau lubang dubur dengan telapak tangan tanpa penghalang."
+  ]
+}

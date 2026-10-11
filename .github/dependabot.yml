@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Dependensi Gradle (Compose, Hilt, Room, WorkManager, Media3, dll.)
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      gradle-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Versi action di .github/workflows (checkout, setup-java, gradle/actions, dsb.)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-patch:
+        update-types: ["minor", "patch"]

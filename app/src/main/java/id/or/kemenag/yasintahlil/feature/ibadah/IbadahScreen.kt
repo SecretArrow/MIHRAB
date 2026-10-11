@@ -18,6 +18,7 @@ fun IbadahScreen(go: (String) -> Unit) {
         Button(onClick = { go(Routes.YASIN) }) { Text("Yasin (83 ayat, MSI Kemenag)") }
         Button(onClick = { go(Routes.TAHLIL) }) { Text("Tahlil + counter") }
         Button(onClick = { go(Routes.SHOLAT) }) { Text("Sholat Wajib & Sunnah") }
+        Button(onClick = { go(Routes.WUDHU) }) { Text("Wudhu & Tayamum") }
         Button(onClick = { go(Routes.GHAIB) }) { Text("Sholat Ghaib") }
         Button(onClick = { go(Routes.JENAZAH) }) { Text("Sholat Jenazah") }
         Button(onClick = { go(Routes.DZIKIR) }) { Text("Dzikir & Doa") }

@@ -1,1 +1,36 @@
-{"surah": "Al-Ikhlas", "ayat_count": 4, "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)", "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)", "sumber_latin": "api.quran.com word transliteration (English)", "verses": [{"nomor": 1, "arab": "قُلْ هُوَ ٱللَّهُ أَحَدٌ", "latin": "qul huwa l-lahu aḥadun", "terjemahan": "Katakanlah: \"Dialah Allah, Yang Maha Esa."}, {"nomor": 2, "arab": "ٱللَّهُ ٱلصَّمَدُ", "latin": "al-lahu l-ṣamadu", "terjemahan": "Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu."}, {"nomor": 3, "arab": "لَمْ يَلِدْ وَلَمْ يُولَدْ", "latin": "lam yalid walam yūlad", "terjemahan": "Dia tiada beranak dan tidak pula diperanakkan,"}, {"nomor": 4, "arab": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ", "latin": "walam yakun lahu kufuwan aḥadun", "terjemahan": "dan tidak ada seorangpun yang setara dengan Dia\"."}]}
+{
+ "surah": "Al-Ikhlas",
+ "ayat_count": 4,
+ "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
+ "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
+ "sumber_latin": "api.quran.com word transliteration (English)",
+ "verses": [
+  {
+   "nomor": 1,
+   "arab": "قُلْ هُوَ ٱللَّهُ أَحَدٌ",
+   "latin": "qul huwa l-lahu aḥadun",
+   "terjemahan": "Katakanlah: \"Dialah Allah, Yang Maha Esa."
+  },
+  {
+   "nomor": 2,
+   "arab": "ٱللَّهُ ٱلصَّمَدُ",
+   "latin": "al-lahu l-ṣamadu",
+   "terjemahan": "Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu."
+  },
+  {
+   "nomor": 3,
+   "arab": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+   "latin": "lam yalid walam yūlad",
+   "terjemahan": "Dia tiada beranak dan tidak pula diperanakkan,"
+  },
+  {
+   "nomor": 4,
+   "arab": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
+   "latin": "walam yakun lahu kufuwan aḥadun",
+   "terjemahan": "dan tidak ada seorangpun yang setara dengan Dia\"."
+  }
+ ],
+ "sumber_url": "https://quran.kemenag.go.id/",
+ "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
+ "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+}

@@ -1,36 +1,59 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import android.content.Context
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.json.JSONArray
+import org.json.JSONObject
 
 private val Context.ds by preferencesDataStore("yasin_tahlil")
 
-/** Penyimpanan lokal: pengaturan, favorit, riwayat, bookmark, progres. */
+/** Preferensi aplikasi (DataStore). Data terstruktur (favorit/progres) kini di Room. */
 class Store(private val ctx: Context) {
     companion object {
         val DARK = stringPreferencesKey("theme") // terang|gelap|sistem
         val ARAB_SIZE = floatPreferencesKey("arab_size")
         val LATIN_SIZE = floatPreferencesKey("latin_size")
+        val LINE_HEIGHT = floatPreferencesKey("line_height")
         val SHOW_LATIN = booleanPreferencesKey("show_latin")
         val SHOW_TRANS = booleanPreferencesKey("show_trans")
+        val SHOW_ARAB = booleanPreferencesKey("show_arab")
         val ASAR = stringPreferencesKey("asar") // syafii|hanafi
+        val METHOD = stringPreferencesKey("method") // kemenag|mwl|umm_al_qura|egyptian|makkah
         val CITY = stringPreferencesKey("city")
         val LAT = doublePreferencesKey("lat")
         val LON = doublePreferencesKey("lon")
         val USE_GPS = booleanPreferencesKey("use_gps")
+        val TZ = stringPreferencesKey("tz") // id zona waktu, kosong = default perangkat
         val CORR = stringPreferencesKey("corr") // koreksi menit csv 6 angka
+        val SOURCE = stringPreferencesKey("source") // lokal|online
         val ADZAN_ON = stringPreferencesKey("adzan_on") // csv 5 bool
         val ADZAN_URI = stringPreferencesKey("adzan_uri")
         val ADZAN_VOL = floatPreferencesKey("adzan_vol")
+        val ADZAN_PRE_MIN = intPreferencesKey("adzan_pre_min")
+        val DND_OVERRIDE = booleanPreferencesKey("dnd_override")
         val IQOMAH_MIN = intPreferencesKey("iqomah_min")
-        val FAV = stringSetPreferencesKey("fav")
-        val HIST = stringPreferencesKey("hist") // csv id|waktu
+        val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
+        val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
+        val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
+        val LANG = stringPreferencesKey("lang") // id|en
+        val INFO_CARD = booleanPreferencesKey("info_card")
+        val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
+        val FAV = stringSetPreferencesKey("fav") // warisan (legacy) — migrasi ke Room
+        val HIST = stringPreferencesKey("hist") // warisan (legacy)
         val LAST = stringPreferencesKey("last") // mis. yasin:58
-        val YASIN_MARK = intPreferencesKey("yasin_mark")
-        val TAHLIL_PROG = stringPreferencesKey("tahlil_prog") // idx:count
+        val YASIN_MARK = intPreferencesKey("yasin_mark") // warisan
+        val TAHLIL_PROG = stringPreferencesKey("tahlil_prog") // warisan idx:count
         val NOTIF = booleanPreferencesKey("notif")
     }
 
@@ -40,6 +63,10 @@ class Store(private val ctx: Context) {
     suspend fun <T> set(key: Preferences.Key<T>, v: T) {
         ctx.ds.edit { it[key] = v }
     }
+
+    /** Aliran reaktif untuk ViewModel. */
+    fun <T> flow(key: Preferences.Key<T>, def: T): Flow<T> =
+        ctx.ds.data.map { it[key] ?: def }
 
     suspend fun toggleFav(id: String) {
         val cur = get(FAV, emptySet())
@@ -52,23 +79,42 @@ class Store(private val ctx: Context) {
         set(HIST, items.joinToString(";"))
     }
 
-    suspend fun exportAll(): String {
+    /** Backup penuh seluruh preferensi sebagai JSON. */
+    suspend fun exportJson(): String {
         val d = ctx.ds.data.first()
-        return d.asMap().entries.joinToString("\n") { (k, v) -> "${k.name}=$v" }
+        val o = JSONObject()
+        d.asMap().forEach { (k, v) ->
+            when (v) {
+                is Set<*> -> o.put(k.name, JSONArray(v.toList()))
+                else -> o.put(k.name, v)
+            }
+        }
+        return o.toString()
     }
 
-    suspend fun importAll(text: String) {
+    /** Pulihkan preferensi dari JSON backup. */
+    suspend fun importJson(text: String) {
+        val o = runCatching { JSONObject(text) }.getOrNull() ?: return
         ctx.ds.edit { p ->
-            text.lines().forEach { line ->
-                val i = line.indexOf('=')
-                if (i > 0) {
-                    val k = line.substring(0, i); val v = line.substring(i + 1)
-                    when (k) {
-                        "theme" -> p[DARK] = v
-                        "city" -> p[CITY] = v
-                        "last" -> p[LAST] = v
-                        "hist" -> p[HIST] = v
-                    }
+            fun str(k: Preferences.Key<String>) { if (o.has(k.name)) p[k] = o.optString(k.name) }
+            fun bool(k: Preferences.Key<Boolean>) { if (o.has(k.name)) p[k] = o.optBoolean(k.name) }
+            fun flt(k: Preferences.Key<Float>) { if (o.has(k.name)) p[k] = o.optDouble(k.name).toFloat() }
+            fun dbl(k: Preferences.Key<Double>) { if (o.has(k.name)) p[k] = o.optDouble(k.name) }
+            fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
+            str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
+            str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
+            str(LANG); str(HIST); str(LAST); str(TAHLIL_PROG)
+            flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
+            dbl(LAT); dbl(LON)
+            bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS)
+            bool(DND_OVERRIDE); bool(INFO_CARD); bool(NOTIF)
+            int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
+            if (o.has(FAV.name)) {
+                val arr = o.optJSONArray(FAV.name)
+                if (arr != null) {
+                    val set = mutableSetOf<String>()
+                    for (i in 0 until arr.length()) set += arr.optString(i)
+                    p[FAV] = set
                 }
             }
         }
