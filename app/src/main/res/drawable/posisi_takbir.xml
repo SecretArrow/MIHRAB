@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Skema posisi takbiratul ihram / berdiri mengangkat tangan (juga doa qunut):
+  berdiri tegak, kedua tangan diangkat sejajar bahu/telinga.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- kepala -->
+    <path
+        android:pathData="M42,20 a8,8 0 1 0 16,0 a8,8 0 1 0 -16,0 z"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- badan -->
+    <path
+        android:pathData="M50,28 L50,60"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- kedua tangan terangkat sejajar telinga -->
+    <path
+        android:pathData="M50,34 L33,17 M50,34 L67,17"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- kaki -->
+    <path
+        android:pathData="M50,60 L42,88 M50,60 L58,88"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- garis lantai -->
+    <path
+        android:pathData="M14,88 L86,88"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

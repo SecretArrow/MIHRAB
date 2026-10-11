@@ -6,6 +6,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
+  Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
+  `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
+  terkalibrasi. Bujur di-*unwrap* agar rute yang melewati garis tanggal tetap benar.
+- **Ilustrasi gerakan sholat**: setiap langkah panduan sholat kini menampilkan skema posisi
+  tubuh (`res/drawable/posisi_*.xml` — garis geometris, tanpa penggambaran figuratif dan tanpa
+  teks Arab) beserta deskripsi posisi yang prosedural; pemetaan bacaan→posisi dijaga oleh uji
+  (`PostureTest`).
 - **Jadwal sholat**: pemilihan metode hisab (Kemenag/SIHAT, MWL, Umm al-Qura, Egyptian,
   Makkah), mazhab Asar (Syafi'i/Hanafi), zona waktu, dan koreksi menit per waktu
   (`JadwalViewModel` + `JadwalScreen`).
@@ -43,6 +51,12 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Penjelasan khusus sholat**: daftar ketentuan untuk Jumat (siapa yang wajib, khutbah)
   dan keringanan safar (qashar & jamak) kini tampil di panduan sholat. Lafaz niat Jumat
   ditandai belum dicantumkan — menunggu verifikasi sumber resmi.
+- **Identitas visual**: ikon peluncur adaptif (bulan sabit & bintang, latar gradasi zamrud),
+  termasuk lapisan *monochrome* untuk ikon bertema Android 13+. Nama aplikasi dipindahkan
+  ke `strings.xml`.
+- **Tema jendela terang/gelap** (`values`/`values-night`): latar jendela disamakan dengan
+  palet aplikasi sehingga tidak ada kedipan putih saat dibuka dalam mode gelap; warna bilah
+  status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)
@@ -58,6 +72,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   konten; tidak ada lagi teks Arab hardcoded di layar.
 
 ### Dihapus
+- Berkas `assets/content/yasin.json` yang yatim (metadata Yasin tak dibaca kode mana pun —
+  aplikasi memakai `yasin_full.json`, yang juga sudah memuat metadata surat). Rujukan di
+  `SOURCES.md` dan `docs/CONTENT_SOURCES.md` disesuaikan.
 - Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);
   pemeriksaan tetap dilakukan oleh lint & unit test di `ci.yml`.
 - Izin `INTERNET` dan `ACCESS_NETWORK_STATE` dari manifes: tidak ada kode jaringan sama sekali,

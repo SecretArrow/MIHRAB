@@ -6,7 +6,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
@@ -90,6 +92,21 @@ fun SholatDetailScreen(id: String) {
         }
         Text(b.judul, style = MaterialTheme.typography.titleMedium)
         if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
+        // Ilustrasi skematik posisi tubuh + deskripsi (plan: tiap gerakan punya visual yang sopan).
+        Postures.of(b.id)?.let { p ->
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                Icon(
+                    painter = painterResource(p.gambar),
+                    contentDescription = "Ilustrasi posisi: ${p.label}",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(64.dp),
+                )
+                Column(Modifier.padding(start = 8.dp)) {
+                    Text(p.label, style = MaterialTheme.typography.titleSmall)
+                    Text(p.deskripsi, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
         BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }

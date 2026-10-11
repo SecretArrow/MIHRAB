@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Bulan sabit: lingkaran luar dikurangi lingkaran dalam lewat fillType evenOdd,
+         sehingga rongganya tembus pandang (latar gradasi tetap terlihat). -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M52,31 a23,23 0 1 0 0,46 a23,23 0 1 0 0,-46 z M62,26 a20,20 0 1 0 0,40 a20,20 0 1 0 0,-40 z" />
+    <!-- Bintang lima sudut, diletakkan di rongga sabit. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M68,29 L69.05,33.77 L72.7,30.53 L70.75,35 L75.61,34.53 L71.4,37 L75.61,39.47 L70.75,39 L72.7,43.47 L69.05,40.23 L68,45 L66.95,40.23 L63.3,43.47 L65.25,39 L60.39,39.47 L64.6,37 L60.39,34.53 L65.25,35 L63.3,30.53 L66.95,33.77 Z" />
+</vector>

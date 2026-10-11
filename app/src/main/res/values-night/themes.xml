@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Varian gelap: tanpa ini jendela memakai latar terang dan berkedip putih
+         saat aplikasi dibuka dalam mode gelap. -->
+    <style name="Theme.YasinTahlil" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/latar_gelap</item>
+        <item name="android:statusBarColor">@color/latar_gelap</item>
+        <item name="android:navigationBarColor">@color/latar_gelap</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

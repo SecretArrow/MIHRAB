@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palet aplikasi. Harus sama dengan Palette di core/designsystem/Theme.kt
+         (dijaga oleh IconAndThemeResourcesTest). -->
+    <color name="zamrud">#0B7A55</color>
+    <color name="zamrud_gelap">#063D2B</color>
+    <color name="gading">#FFFBF0</color>
+    <color name="latar_gelap">#1C1B1F</color>
+</resources>
