@@ -67,7 +67,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   bersamaan dengan emulator di runner 2-vCPU membuat emulator tak responsif →
   "Unknown API Level" → 0 perangkat, dan seluruh uji dilewati). Emulator diberi `-memory 4096`,
   dan uji diulang **sekali** hanya bila log memuat tanda-tangan kegagalan infrastruktur —
-  uji yang benar-benar gagal tetap langsung dinyatakan gagal.
+  uji yang benar-benar gagal tetap langsung dinyatakan gagal. Logikanya diletakkan di
+  `.github/scripts/e2e-instrumented.sh` karena aksi emulator menjalankan setiap baris `script`
+  sebagai `sh -c` terpisah, sehingga loop/fungsi multi-baris tidak akan utuh.
 - **Kejujuran izin**: izin `SCHEDULE_EXACT_ALARM` dihapus dari manifes karena pengingat memakai
   WorkManager dan tidak ada pemakaian `AlarmManager` sama sekali; tombol "Alarm tepat waktu"
   (yang membuka pengaturan izin tak terpakai) ikut dihapus, dan teks di menu Adzan kini
