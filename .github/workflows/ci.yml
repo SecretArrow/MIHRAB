@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Validasi konten JSON (sumber resmi — SOURCES.md)
         run: python3 tools/validate_content.py
       - name: Lint debug (hemat, tanpa emulator)
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Unit test (jadwal, kiblat, hijriah, konten, repo)
         run: ./gradlew :app:testDebugUnitTest --parallel --build-cache
       - uses: actions/upload-artifact@v7
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Assemble debug
         run: ./gradlew :app:assembleDebug --parallel --build-cache
       - name: Build release (validasi R8/ProGuard; unsigned bila tanpa keystore)
