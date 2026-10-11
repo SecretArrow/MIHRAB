@@ -9,7 +9,7 @@ panduan sholat mengacu Fasolatan Kemenag + verifikasi `sunnah.com`.
 Jangan commit token/API key. Pakai GitHub Secrets.
 
 ## Struktur
-- `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
+- `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
 - `app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
 - `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*)
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
@@ -19,7 +19,12 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - main: sama seperti PR.
 - tag `v*.*.*`: release AAB/APK + GitHub Release otomatis. **Signed** bila Secrets keystore tersedia; bila tidak, APK release bersifat *unsigned* (hanya untuk memvalidasi build R8).
 
-Secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`. Opsional (bila fitur sumber online dipakai): `SIHAT_TOKEN`.
+Secrets (hanya untuk rilis bertanda tangan): `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
+
+Aplikasi **100% offline**: tidak meminta izin Internet dan tidak mengirim data ke mana pun.
+Sumber jadwal/kalender *online* resmi belum diaktifkan karena SIHAT Bimas Islam tidak
+menyediakan API publik untuk aplikasi pihak ketiga; izin Internet akan ditambahkan hanya bila
+fitur itu benar-benar ada.
 
 ## Jalankan lokal (opsional)
 Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.
