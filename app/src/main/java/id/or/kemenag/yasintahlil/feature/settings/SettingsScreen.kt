@@ -28,6 +28,7 @@ fun SettingsScreen() {
     var city by remember { mutableStateOf("Jakarta") }
     var notif by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
+    var compassUnit by remember { mutableStateOf("derajat") }
     var backup by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         theme = store.get(Store.DARK, "sistem")
@@ -36,6 +37,7 @@ fun SettingsScreen() {
         asar = store.get(Store.ASAR, "syafii"); city = store.get(Store.CITY, "Jakarta")
         notif = store.get(Store.NOTIF, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
+        compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Pengaturan", style = MaterialTheme.typography.titleLarge)
@@ -92,9 +94,25 @@ fun SettingsScreen() {
         Text("Kota: $city (ubah di menu Jadwal). Susunan Tahlil: lazim Indonesia (lihat modul Tahlil).",
             style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(vertical = 8.dp))
 
-        Text("Tentang & sumber", style = MaterialTheme.typography.titleMedium)
-        Text("Versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+        Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(compassUnit == "derajat",
+                { compassUnit = "derajat"; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
+                { Text("Derajat") })
+            FilterChip(compassUnit == "mil",
+                { compassUnit = "mil"; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
+                { Text("Mil (6400)") })
+        }
+        Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
+            style = MaterialTheme.typography.labelSmall)
+
+        Text("Tentang & sumber", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
-        Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.")
+        Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
+            style = MaterialTheme.typography.labelSmall)
+        Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
+            style = MaterialTheme.typography.labelSmall)
     }
 }

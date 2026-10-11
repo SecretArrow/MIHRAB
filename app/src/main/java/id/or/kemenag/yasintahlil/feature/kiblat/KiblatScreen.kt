@@ -60,11 +60,14 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
 
     val kiblat = s.bearing
     val arah = listOf("U", "TL", "T", "TG", "S", "BD", "B", "BL")[(kiblat / 45.0).roundToInt() % 8]
+    val azimutTeks =
+        if (s.unit == "mil") "${(kiblat * MIL_PER_DEG).roundToInt()} mil"
+        else "%.1f°".format(kiblat)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Arah Kiblat (SIHAT Kemenag)", style = MaterialTheme.typography.titleLarge)
-        Text("Azimut: %.1f° %s dari (%.4f, %.4f)%s".format(
-            kiblat, arah, s.lat, s.lon, if (s.liveFix) " • GPS live" else ""))
+        Text("Azimut: $azimutTeks $arah dari (%.4f, %.4f)%s".format(
+            s.lat, s.lon, if (s.liveFix) " • GPS live" else ""))
         Text(
             if (s.useGps) "Sumber lokasi: GPS perangkat."
             else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
@@ -136,7 +139,12 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
                 }
             }, { Text("Pakai GPS") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            FilterChip(s.unit == "derajat", { vm.setUnit("derajat") }, { Text("Derajat") })
+            FilterChip(s.unit == "mil", { vm.setUnit("mil") }, { Text("Mil") })
             OutlinedButton(onClick = { vm.refreshLocation() }, enabled = s.hasPermission) { Text("Perbarui lokasi") }
         }
     }
 }
+
+/** 1 derajat = 17,7778 mil (lingkaran penuh 6400 mil). */
+private const val MIL_PER_DEG = 17.7778

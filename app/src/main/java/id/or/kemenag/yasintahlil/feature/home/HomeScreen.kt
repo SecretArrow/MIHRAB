@@ -6,19 +6,25 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun HomeScreen(go: (String) -> Unit) {
     val store = rememberStore()
+    val userData = rememberUserData()
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
     var city by remember { mutableStateOf("Jakarta") }
     var lat by remember { mutableStateOf(-6.2) }
     var lon by remember { mutableStateOf(106.8) }
@@ -29,6 +35,9 @@ fun HomeScreen(go: (String) -> Unit) {
     var last by remember { mutableStateOf("") }
     var infoOn by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
+    var notif by remember { mutableStateOf(true) }
+    var favCount by remember { mutableStateOf(0) }
+    var histCount by remember { mutableStateOf(0) }
     var tick by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     LaunchedEffect(Unit) {
@@ -41,7 +50,11 @@ fun HomeScreen(go: (String) -> Unit) {
         last = store.get(Store.LAST, "")
         infoOn = store.get(Store.INFO_CARD, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
+        notif = store.get(Store.NOTIF, true)
     }
+    // Ringkasan favorit & riwayat (Room) — ikut terbarui saat berubah di layar lain.
+    LaunchedEffect(Unit) { userData.favorites().collect { favCount = it.size } }
+    LaunchedEffect(Unit) { userData.recentHistory(50).collect { histCount = it.size } }
     // Hitung mundur live (perbarui tiap detik).
     LaunchedEffect(Unit) { while (true) { delay(1_000); tick = System.currentTimeMillis() } }
 
@@ -83,6 +96,28 @@ fun HomeScreen(go: (String) -> Unit) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { (label, r) -> Button(onClick = { go(r) }, modifier = Modifier.weight(1f)) { Text(label) } }
                 if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Column(Modifier.padding(12.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Pengingat waktu sholat", style = MaterialTheme.typography.titleMedium)
+                    Switch(notif, {
+                        notif = it
+                        scope.launch {
+                            store.set(Store.NOTIF, notif)
+                            PrayerScheduler.scheduleAll(ctx.applicationContext)
+                        }
+                    })
+                }
+                Text("Pengingat memakai lokasi & metode hisab dari menu Jadwal. Atur suara adzan di menu Adzan.",
+                    style = MaterialTheme.typography.labelSmall)
+            }
+        }
+        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Column(Modifier.padding(12.dp)) {
+                Text("Favorit: $favCount • Riwayat: $histCount", style = MaterialTheme.typography.titleMedium)
+                Button(onClick = { go(Routes.FAVORIT) }) { Text("Buka favorit & riwayat") }
             }
         }
         if (last.isNotBlank()) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {

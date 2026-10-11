@@ -34,6 +34,8 @@ data class KiblatUiState(
     val calibrated: Boolean = true,
     /** True bila koordinat berasal dari perbaikan GPS live, bukan lokasi manual/kota. */
     val liveFix: Boolean = false,
+    /** Satuan tampilan azimut: "derajat" atau "mil". */
+    val unit: String = "derajat",
 )
 
 /**
@@ -65,6 +67,7 @@ class KiblatViewModel @Inject constructor(
                     useGps = useGps, lat = lat, lon = lon,
                     hasPermission = LocationProvider.hasPermission(ctx),
                     bearing = QiblaCalc.bearing(lat, lon),
+                    unit = store.get(Store.COMPASS_UNIT, "derajat"),
                 )
             }
             if (useGps) refreshLocation()
@@ -122,6 +125,12 @@ class KiblatViewModel @Inject constructor(
                 PrayerScheduler.scheduleAll(ctx)
             }
         }
+    }
+
+    /** Satuan tampilan azimut. */
+    fun setUnit(u: String) {
+        _state.update { it.copy(unit = u) }
+        viewModelScope.launch { store.set(Store.COMPASS_UNIT, u) }
     }
 
     private fun startCompass() {
