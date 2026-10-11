@@ -69,7 +69,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   dan uji diulang **sekali** hanya bila log memuat tanda-tangan kegagalan infrastruktur —
   uji yang benar-benar gagal tetap langsung dinyatakan gagal. Logikanya diletakkan di
   `.github/scripts/e2e-instrumented.sh` karena aksi emulator menjalankan setiap baris `script`
-  sebagai `sh -c` terpisah, sehingga loop/fungsi multi-baris tidak akan utuh.
+  sebagai `sh -c` terpisah, sehingga loop/fungsi multi-baris tidak akan utuh. Setelah uji hijau,
+  buffer crash/ANR diperiksa agar proses yang sempat mati tidak lolos diam-diam.
 - **Kejujuran izin**: izin `SCHEDULE_EXACT_ALARM` dihapus dari manifes karena pengingat memakai
   WorkManager dan tidak ada pemakaian `AlarmManager` sama sekali; tombol "Alarm tepat waktu"
   (yang membuka pengaturan izin tak terpakai) ikut dihapus, dan teks di menu Adzan kini
