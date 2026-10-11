@@ -26,11 +26,17 @@ jobs:
           api-level: 29
           target: default
           arch: x86_64
-          disable-animations: false
+          disable-animations: true
           emulator-boot-timeout: 900
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
           script: |
+            # Nyalakan & tunggu daemon adb; kegagalan "Unable to connect to adb daemon"
+            # membuat connectedAndroidTest melihat 0 perangkat.
+            adb start-server
             adb wait-for-device
             # Tunggu boot selesai (bukan sleep tetap) agar tidak membuang waktu.
-            adb shell 'while [ "$(getprop sys.boot_completed)" != "1" ]; do sleep 1; done'
+            until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 2; done
+            # Pastikan adb sudah bisa membaca properti sebelum Gradle berjalan —
+            # jika tidak, AGP melewati perangkat dengan "Unknown API Level".
+            until [ -n "$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')" ]; do sleep 2; done
             ./gradlew :app:connectedDebugAndroidTest --parallel --build-cache
