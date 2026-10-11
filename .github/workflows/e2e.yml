@@ -20,6 +20,14 @@ jobs:
       - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v6
+
+      # Bangun APK uji SEBELUM emulator menyala. Kompilasi (Kotlin/KSP/Hilt) di runner
+      # 2-vCPU berebut CPU dengan emulator dan membuat emulator mendadak tak responsif
+      # (ShellCommandUnresponsiveException → "Unknown API Level" → 0 perangkat cocok).
+      # Dengan membangun lebih dulu, tugas emulator hanya memasang & menjalankan uji.
+      - name: Bangun APK uji (tanpa emulator)
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --build-cache
+
       - name: Instrumented test di emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -28,15 +36,53 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-boot-timeout: 900
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
+          # -memory 4096: RAM bawaan AVD (1,5 GB) membuat emulator tertekan saat Gradle
+          # berjalan berdampingan, dan itulah yang memicu kegagalan "Unknown API Level".
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics -memory 4096 -camera-back none -camera-front none
           script: |
+            set -u
             # Nyalakan & tunggu daemon adb; kegagalan "Unable to connect to adb daemon"
             # membuat connectedAndroidTest melihat 0 perangkat.
             adb start-server
             adb wait-for-device
             # Tunggu boot selesai (bukan sleep tetap) agar tidak membuang waktu.
             until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 2; done
-            # Pastikan adb sudah bisa membaca properti sebelum Gradle berjalan —
-            # jika tidak, AGP melewati perangkat dengan "Unknown API Level".
-            until [ -n "$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')" ]; do sleep 2; done
-            ./gradlew :app:connectedDebugAndroidTest --parallel --build-cache
+            # Pastikan adb benar-benar bisa membaca properti: jika tidak, AGP melewati
+            # perangkat dengan "Unknown API Level" dan seluruh uji dilewati tanpa dijalankan.
+            api=""
+            for _ in $(seq 1 90); do
+              api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')"
+              [ -n "$api" ] && break
+              sleep 2
+            done
+            echo "Perangkat: $(adb devices | tr '\n' ' ') | API='$api'"
+            [ -n "$api" ] || { echo "::error::Emulator tidak melaporkan API level"; exit 1; }
+
+            run_tests() {
+              ./gradlew :app:connectedDebugAndroidTest --build-cache > /tmp/e2e.log 2>&1
+            }
+
+            if run_tests; then
+              tail -n 15 /tmp/e2e.log
+              exit 0
+            fi
+            tail -n 60 /tmp/e2e.log
+
+            # Emulator di runner bisa mendadak tak responsif — itu masalah infrastruktur,
+            # bukan uji merah. Hanya kegagalan ber-tanda-tangan itulah yang diulang; uji
+            # yang benar-benar gagal (mis. assertion) tetap langsung dinyatakan gagal.
+            if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible devices connected|Unable to connect to adb daemon" /tmp/e2e.log; then
+              echo "::warning::Emulator tak responsif (bukan kegagalan uji) — mengulang sekali"
+              adb kill-server || true
+              adb start-server
+              adb wait-for-device
+              until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 2; done
+              sleep 15
+              if run_tests; then
+                tail -n 15 /tmp/e2e.log
+                exit 0
+              fi
+              tail -n 60 /tmp/e2e.log
+            fi
+            echo "::error::Uji instrumented gagal"
+            exit 1
