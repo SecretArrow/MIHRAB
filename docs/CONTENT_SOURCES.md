@@ -10,10 +10,10 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 
 | File | Isi | Sumber resmi | Status |
 |---|---|---|---|
-| `yasin_full.json` | Yasin 83 ayat (Arab, latin, terjemahan) | Terjemahan: **Kemenag 2019** (resmi). Arab: Utsmani. Latin: **non-resmi** | ⚠️ perlu cocokkan MSI & ganti latin |
-| `surah_001/112/113/114.json` | Al-Fatihah, Al-Ikhlas, Al-Falaq, An-Nas | idem | ⚠️ perlu cocokkan MSI & ganti latin |
-| `ayat_kursi.json` | Ayat Kursi (Al-Baqarah 255) | idem | ⚠️ perlu cocokkan MSI & ganti latin |
-| `tahlil_full.json` | 15 bagian susunan tahlil | Qur'an Kemenag + hadis sunnah.com | ⚠️ sebagian Arab perlu cocokkan MSI |
+| `yasin_full.json` | Yasin 83 ayat (Arab, latin, terjemahan) | **MSI LPMQ Kemenag** + transliterasi & terjemah Kemenag | ✅ resmi |
+| `surah_001/112/113/114.json` | Al-Fatihah, Al-Ikhlas, Al-Falaq, An-Nas | idem | ✅ resmi |
+| `ayat_kursi.json` | Ayat Kursi (Al-Baqarah 255) | idem | ✅ resmi |
+| `tahlil_full.json` | 15 bagian susunan tahlil | Qur'an Kemenag (MSI) + hadis sunnah.com | ✅ resmi |
 | `tahlil.json` | Deskriptor susunan (id merujuk `tahlil_full`) | — | ✅ metadata |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
 | `dzikir.json` | Dzikir & doa harian | **sunnah.com** + Qur'an Kemenag | ✅ resmi |
@@ -22,15 +22,24 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |
 
-## Yang WAJIB dibereskan agar 100% sumber resmi
+## Teks Al-Qur'an: MSI + transliterasi resmi (selesai)
 
-1. **Teks Arab Al-Qur'an** — saat ini memakai standar Utsmani (via Tanzil/alquran.cloud),
-   bukan **Mushaf Standar Indonesia (MSI) LPMQ Kemenag**. Tindakan: unduh MSI resmi dari
-   `lajnah.kemenag.go.id` / `quran.kemenag.go.id` lalu ganti `arab` tiap ayat.
-2. **Transliterasi Latin** — saat ini dari `api.quran.com` (**berbahasa Inggris**, non-resmi).
-   `plan.txt` meminta transliterasi Latin Indonesia. Tindakan: ganti dengan transliterasi
-   Indonesia yang tepercaya (mis. terbitan LPMQ/Fasolatan) — **jangan** hasil generate AI.
-3. **Terjemahan** — sudah Kemenag 2019 (resmi). Pertahankan.
+Seluruh teks Al-Qur'an kini berasal dari layanan resmi **Qur'an Kemenag**
+(`quran.kemenag.go.id`), bukan lagi dari cermin non-resmi:
+
+- **Teks Arab** memakai **Mushaf Standar Indonesia (MSI) LPMQ Kemenag** (bukan standar
+  Utsmani/Tanzil). Ciri MSI antara lain `الْقُرْاٰنِ` (alif khanjariyah), bukan `ٱلْقُرْءَانِ`.
+- **Transliterasi Latin** memakai transliterasi resmi Kemenag berbahasa Indonesia
+  (mis. `Bismillāhir-raḥmānir-raḥīm(i).`), menggantikan transliterasi Inggris dari
+  `api.quran.com`.
+- **Terjemahan** memakai terjemah Kemenag edisi 2019 dari sumber yang sama (penanda
+  catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki).
+
+Penyegaran dilakukan lewat `tools/fetch_quran_kemenag.py` (alat pengembang, **tidak**
+dijalankan di CI) sehingga jejak pengambilan data dapat diaudit dan diulang. Invarian
+"sumber teks harus MSI Kemenag dan tidak boleh merujuk cermin non-resmi" dijaga oleh
+uji `ContentSourceTest.quranTextUsesMsiAndOfficialTransliteration` dan
+`ContentSourceTest.noContentFileCitesNonOfficialTextSource`.
 
 ## Kekurangan yang masih menunggu sumber resmi
 

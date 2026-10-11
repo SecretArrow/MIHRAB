@@ -134,8 +134,7 @@ class ContentSourceTest {
 
     /** Penjelasan Jumat & safar harus prosedural (tanpa teks Arab) dan benar-benar ada. */
     @Test
-    fun jumatAndSafarHaveProceduralKetentuan() {
-        val text = File(contentDir(), "sholat_daftar.json").readText()
+    fun jumatAndSafarHaveProceduralKetentuan() {        val text = File(contentDir(), "sholat_daftar.json").readText()
         val arabic = Regex("[\\u0600-\\u06FF]")
         listOf("jumat", "safar").forEach { id ->
             val start = text.indexOf("\"id\": \"$id\"")
@@ -148,5 +147,38 @@ class ContentSourceTest {
             val ket = block.substring(ketStart, ketEnd)
             assertTrue("Ketentuan $id memuat teks Arab tanpa sumber", !arabic.containsMatchIn(ket))
         }
+    }
+
+    /**
+     * Teks Al-Qur'an wajib memakai Mushaf Standar Indonesia (MSI) LPMQ Kemenag beserta
+     * transliterasi Latin resmi Kemenag — bukan teks Utsmani dari Tanzil maupun transliterasi
+     * Inggris dari api.quran.com. Lihat SOURCES.md §1 dan tools/fetch_quran_kemenag.py.
+     */
+    @Test
+    fun quranTextUsesMsiAndOfficialTransliteration() {
+        val quranFiles = listOf(
+            "yasin_full.json", "surah_001.json", "surah_112.json",
+            "surah_113.json", "surah_114.json", "ayat_kursi.json",
+        )
+        quranFiles.forEach { name ->
+            val text = File(contentDir(), name).readText()
+            assertTrue("$name: sumber_arab bukan MSI LPMQ Kemenag",
+                text.contains("\"sumber_arab\": \"Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI"))
+            assertTrue("$name: sumber_latin bukan transliterasi resmi Kemenag",
+                text.contains("\"sumber_latin\": \"Transliterasi resmi Kemenag RI"))
+        }
+    }
+
+    /** Tidak boleh ada berkas konten yang masih merujuk sumber teks non-resmi. */
+    @Test
+    fun noContentFileCitesNonOfficialTextSource() {
+        val terlarang = listOf("api.quran.com", "api.alquran.cloud", "Tanzil")
+        val files = contentDir().listFiles { f -> f.extension == "json" }.orEmpty()
+        val problems = mutableListOf<String>()
+        files.forEach { f ->
+            val text = f.readText()
+            terlarang.forEach { m -> if (text.contains(m)) problems += "${f.name}: '$m'" }
+        }
+        assertTrue("Sumber teks non-resmi masih dirujuk: $problems", problems.isEmpty())
     }
 }
