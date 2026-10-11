@@ -60,6 +60,51 @@ def walk_entries(node, inherited_source=None, out=None):
     return out
 
 
+def check_schema(name: str, data) -> list[str]:
+    """Validasi struktur per jenis file konten. Kembalikan daftar galat."""
+    errs: list[str] = []
+    if not isinstance(data, dict):
+        return errs
+
+    if "verses" in data:  # surat/ayat Al-Qur'an
+        verses = data["verses"]
+        if not isinstance(verses, list) or not verses:
+            errs.append(f"{name}: 'verses' kosong")
+            return errs
+        nums = []
+        for i, v in enumerate(verses):
+            for k in ("nomor", "arab", "terjemahan"):
+                if not v.get(k) and v.get(k) != 0:
+                    errs.append(f"{name}: ayat[{i}] tanpa '{k}'")
+            if v.get("arab") is not None:
+                nums.append(v.get("nomor"))
+        if data.get("ayat_count") and data["ayat_count"] != len(verses):
+            errs.append(f"{name}: ayat_count={data['ayat_count']} != jumlah verses={len(verses)}")
+        if nums and len(set(nums)) != len(nums):
+            errs.append(f"{name}: nomor ayat duplikat")
+
+    if "bagian" in data:  # tahlil
+        bagian = data["bagian"]
+        if not isinstance(bagian, list) or not bagian:
+            errs.append(f"{name}: 'bagian' kosong")
+        for i, b in enumerate(bagian):
+            for k in ("id", "judul"):
+                if not b.get(k):
+                    errs.append(f"{name}: bagian[{i}] tanpa '{k}'")
+
+    if "susunan" in data:  # deskriptor susunan tahlil
+        for i, s in enumerate(data["susunan"]):
+            if not s.get("id") or not isinstance(s.get("bagian"), list):
+                errs.append(f"{name}: susunan[{i}] butuh 'id' dan 'bagian' (list)")
+
+    if "kota" in data:  # koordinat
+        for i, k in enumerate(data["kota"]):
+            if not k.get("nama") or k.get("lat") is None or k.get("lon") is None:
+                errs.append(f"{name}: kota[{i}] butuh nama/lat/lon")
+
+    return errs
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CONTENT_DIR.exists():
@@ -102,6 +147,9 @@ def main() -> int:
                     scan_urls(v, f"{where}[{i}]")
 
         scan_urls(data, rel.name)
+
+        # --- Pemeriksaan skema struktur per jenis file ---
+        errors.extend(check_schema(rel.name, data))
 
     for w in warnings:
         print(f"[peringatan] {w}")
