@@ -36,6 +36,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   Lafaz Arab sengaja belum dicantumkan — menunggu verifikasi sumber resmi.
 - **Backup/pemulihan penuh**: satu berkas memuat preferensi (DataStore) sekaligus favorit,
   bookmark, riwayat, dan progres (Room); tetap kompatibel dengan backup lama.
+- **Pemilihan mazhab panduan** (Syafi'i/Hanafi/Maliki/Hambali) yang benar-benar mengubah
+  bacaan: entri bertanda mazhab (mis. doa qunut — Syafi'i) hanya tampil bila mazhab cocok;
+  dapat diubah di Pengaturan maupun langsung di layar panduan sholat.
 
 ### Diubah
 - **Perhitungan jadwal** memakai algoritma Meeus (deklinasi matahari + *equation of time*)

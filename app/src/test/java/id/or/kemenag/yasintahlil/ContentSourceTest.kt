@@ -99,4 +99,24 @@ class ContentSourceTest {
         }
         assertTrue("Teks Arab hardcoded di kode (pindahkan ke assets): $problems", problems.isEmpty())
     }
+
+    /**
+     * Pemilihan mazhab mengubah bacaan yang tampil. Uji ini memastikan entri yang memang
+     * khusus satu mazhab (mis. qunut = Syafi'i) ditandai dengan benar dan tag-nya dikenal.
+     */
+    @Test
+    fun mazhabTaggedRecitationsAreValid() {
+        val text = File(contentDir(), "sholat_bacaan.json").readText()
+
+        val start = text.indexOf("\"id\": \"qunut\"")
+        assertTrue("Entri qunut tidak ditemukan", start >= 0)
+        val next = text.indexOf("\"id\":", start + 1)
+        val qunutBlock = if (next > start) text.substring(start, next) else text.substring(start)
+        assertTrue("qunut tidak ditandai mazhab syafii", qunutBlock.contains("\"mazhab\": \"syafii\""))
+
+        val allowed = setOf("syafii", "hanafi", "maliki", "hambali")
+        Regex("\"mazhab\"\\s*:\\s*\"([^\"]+)\"").findAll(text).forEach {
+            assertTrue("Tag mazhab tak dikenal: ${it.groupValues[1]}", it.groupValues[1] in allowed)
+        }
+    }
 }

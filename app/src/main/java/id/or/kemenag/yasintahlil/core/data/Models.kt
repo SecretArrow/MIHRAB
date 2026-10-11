@@ -20,7 +20,9 @@ data class SholatInfo(
 data class Bacaan(
     val id: String, val judul: String, val kapan: String = "",
     val arab: String = "", val latin: String = "", val terjemahan: String = "",
-    val sumber: String = "", val rujukanFile: String? = null, val catatan: String = ""
+    val sumber: String = "", val rujukanFile: String? = null, val catatan: String = "",
+    /** Bila terisi (mis. "syafii"), bacaan hanya tampil untuk mazhab itu. null = semua mazhab. */
+    val mazhab: String? = null
 )
 
 data class DzikirItem(

@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.settings
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +28,7 @@ fun SettingsScreen() {
     var showL by remember { mutableStateOf(true) }
     var showT by remember { mutableStateOf(true) }
     var asar by remember { mutableStateOf("syafii") }
+    var mazhab by remember { mutableStateOf("syafii") }
     var city by remember { mutableStateOf("Jakarta") }
     var notif by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
@@ -37,6 +39,7 @@ fun SettingsScreen() {
         arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
         showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
         asar = store.get(Store.ASAR, "syafii"); city = store.get(Store.CITY, "Jakarta")
+        mazhab = store.get(Store.MADHAB, "syafii")
         notif = store.get(Store.NOTIF, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
@@ -60,6 +63,15 @@ fun SettingsScreen() {
             FilterChip(asar == "syafii", { asar = "syafii"; scope.launch { store.set(Store.ASAR, asar) } }, { Text("Syafi'i") })
             FilterChip(asar == "hanafi", { asar = "hanafi"; scope.launch { store.set(Store.ASAR, asar) } }, { Text("Hanafi") })
         }
+
+        Text("Mazhab panduan ibadah", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
+            listOf("syafii" to "Syafi'i", "hanafi" to "Hanafi", "maliki" to "Maliki", "hambali" to "Hambali").forEach { (key, label) ->
+                FilterChip(mazhab == key, { mazhab = key; scope.launch { store.set(Store.MADHAB, key) } }, { Text(label) })
+            }
+        }
+        Text("Menentukan bacaan yang ditampilkan di panduan sholat — mis. doa qunut hanya muncul untuk mazhab Syafi'i. Perbedaan mazhab dicatat, tidak dicampuradukkan.",
+            style = MaterialTheme.typography.labelSmall)
 
         Text("Sumber jadwal sholat", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

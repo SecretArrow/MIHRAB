@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,13 +25,24 @@ fun SholatDetailScreen(id: String) {
     var ringkas by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
     var selesai by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { arabSize = store.get(Store.ARAB_SIZE, 22f) }
+    var mazhab by remember { mutableStateOf("syafii") }
+    LaunchedEffect(Unit) {
+        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        mazhab = store.get(Store.MADHAB, "syafii")
+    }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
     LaunchedEffect(id) { userData.progress(KIND, id).collect { selesai = (it?.value ?: 0) > 0 } }
-    val steps = remember(ringkas) {
-        if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
+    // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i).
+    val steps = remember(ringkas, mazhab) {
+        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
         else bacaan
+        base.filter { it.mazhab == null || it.mazhab == mazhab }
     }
+    val mazhabLabel = when (mazhab) {
+        "hanafi" -> "Hanafi"; "maliki" -> "Maliki"; "hambali" -> "Hambali"; else -> "Syafi'i"
+    }
+    // Jaga indeks langkah tetap sah bila daftar menyusut setelah ganti mazhab.
+    LaunchedEffect(steps.size) { if (step > steps.size - 1) step = (steps.size - 1).coerceAtLeast(0) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(info?.nama ?: id, style = MaterialTheme.typography.titleLarge)
         Text("${info?.rakaat.orEmpty()} • ${info?.waktu.orEmpty()}")
@@ -41,6 +53,16 @@ fun SholatDetailScreen(id: String) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
+        }
+        Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 4.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
+            MAZHAB_OPTIONS.forEach { (key, label) ->
+                FilterChip(mazhab == key, {
+                    mazhab = key
+                    scope.launch { store.set(Store.MADHAB, key) }
+                }, { Text(label) })
+            }
         }
         Text("Langkah ${step + 1} dari ${steps.size}")
         LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
@@ -67,9 +89,18 @@ fun SholatDetailScreen(id: String) {
                 Text("Batalkan tanda")
             }
         }
-        Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Lihat SOURCES.md.",
+        Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Bacaan bertanda mazhab " +
+            "tertentu hanya tampil bila mazhab panduan cocok — perbedaan dicatat, tidak dicampuradukkan. Lihat SOURCES.md.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
     }
 }
 
 private const val KIND = "sholat"
+
+/** Pilihan mazhab panduan yang mengubah bacaan yang ditampilkan. */
+private val MAZHAB_OPTIONS = listOf(
+    "syafii" to "Syafi'i",
+    "hanafi" to "Hanafi",
+    "maliki" to "Maliki",
+    "hambali" to "Hambali",
+)

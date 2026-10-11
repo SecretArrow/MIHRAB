@@ -115,7 +115,8 @@ class ContentRepo(private val ctx: Context) {
             Bacaan(o.getString("id"), o.getString("judul"), o.optString("kapan"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() })
         }
     }
 
