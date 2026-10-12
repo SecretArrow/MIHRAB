@@ -380,6 +380,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Aturan prosa penunjuk di dokumen kedua ikut dijaga**: `docs/CONTENT_SOURCES.md` mengulang aturan
+  yang sama dalam bentuk **prosa** — *"menolak **placeholder** di field `arab`/`latin`"* beserta
+  contohnya (`"— lihat rujukan file —"`) — dan tak ada apa pun yang membandingkannya dengan kode.
+  Prosa lebih mudah menyimpang daripada tabel karena tak ada bentuk yang memaksa: `FIELD_TEKS` yang
+  bertambah field membuat dokumen mengecilkan cakupan pemeriksaan, dan contoh prosa yang sudah tidak
+  ditolak lagi mengajarkan gaya penulisan yang justru lolos ke layar. Dua uji baru di
+  `AturanBundelSatuTempatTest` menuntut dokumen menyebut field yang persis dibaca gate (dengan
+  lookahead, supaya *"`arab`/`latin`"* tidak lolos hanya karena menjadi awalan dari daftar yang lebih
+  panjang) dan contoh prosanya benar-benar ada di daftar yang ditolak. Tujuh mutasi terverifikasi
+  tertangkap.
 - **Field tempat prosa penunjuk dicari tidak lagi dapat menyimpang dari gate dan dokumen**: aturan
   *"prosa penunjuk di `arab`/`latin`"* hidup di tiga tempat — badan `fieldTeks` di `BundelKonten`,
   pemeriksa `check_placeholders` di `tools/validate_content.py` yang menyimpan `("arab", "latin")`

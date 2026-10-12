@@ -259,6 +259,60 @@ class AturanBundelSatuTempatTest {
 
     // --- Dokumen yang mengulang aturan ini ------------------------------------------------------
 
+    /** Isi `docs/CONTENT_SOURCES.md` — dokumen kedua yang mengulang kosakata aturan bundel ini. */
+    private fun dokumenSumber(): String = File(repoRoot(), "docs/CONTENT_SOURCES.md").readText()
+
+    /**
+     * `docs/CONTENT_SOURCES.md` menyebut aturan yang sama dalam bentuk prosa: *"menolak
+     * **placeholder** di field `arab`/`latin`"*.
+     *
+     * Prosa lebih mudah menyimpang daripada tabel, sebab tak ada bentuk yang memaksa. Yang dituntut
+     * di sini bukan kesamaan gaya, melainkan bahwa **kosakata fieldnya** sama: dokumen harus
+     * menyebut field yang persis dibaca gate. Bila `FIELD_TEKS` bertambah field dan baris ini tidak
+     * ikut disunting, dokumen mengecilkan cakupan pemeriksaan yang sebenarnya lebih luas — pembaca
+     * menyimpulkan field barunya tak diperiksa.
+     */
+    @Test
+    fun fieldProsaPenunjukDiDokumenSumberSelarasDenganYangDiperiksa() {
+        val diharapkan = BundelKonten.FIELD_TEKS.joinToString("/") { "`$it`" }
+        // Daftar field boleh diikuti tanda baca, tetapi **bukan** lanjutan daftarnya: tanpa
+        // lookahead ini, dokumen yang menyebut field ketiga (`…`/`terjemahan`) tetap lolos, sebab
+        // sebutan lamanya hanyalah awalan dari yang baru.
+        val pola = Regex(Regex.escape("**placeholder** di field $diharapkan") + """(?![/`\w])""")
+        assertTrue(
+            "docs/CONTENT_SOURCES.md tidak lagi menyebut field prosa penunjuk persis sebagai " +
+                "$diharapkan",
+            pola.containsMatchIn(dokumenSumber()),
+        )
+    }
+
+    /**
+     * Contoh prosa pada dokumen kedua itu harus benar-benar ditolak aplikasi.
+     *
+     * `docs/CONTENT_SOURCES.md` mencontohkan bentuk yang ditolak (`"— lihat rujukan file —"`) supaya
+     * penulis konten tahu apa yang dimaksud. Contoh yang sudah tidak ditolak lagi membuat dokumen
+     * mengajarkan gaya penulisan yang justru lolos ke layar — persis yang hendak dicegah aturan ini.
+     */
+    @Test
+    fun contohProsaDiDokumenSumberMasihDitolakAplikasi() {
+        val isi = dokumenSumber()
+        val penanda = "**placeholder** di field"
+        assertTrue("docs/CONTENT_SOURCES.md tidak lagi memuat aturan prosa penunjuk", isi.contains(penanda))
+        // Dicari setelah penandanya: dokumen ini memakai "(mis. …)" juga di tempat lain (mis. contoh
+        // transliterasi), dan contoh pertama yang ditemukan belum tentu contoh prosanya.
+        val ekor = isi.substringAfter(penanda)
+        val contoh = Regex("""\(mis\.\s*`([^`]+)`""").find(ekor)?.groupValues?.get(1)
+            ?: error("docs/CONTENT_SOURCES.md tidak lagi mencontohkan prosa penunjuk setelah penandanya")
+        val bersih = contoh.trim().trim('"').trim('—', '-', ' ').trim()
+        assertTrue(
+            "contoh prosa '$bersih' di docs/CONTENT_SOURCES.md bukan prosa penunjuk yang ditolak " +
+                "aplikasi: $contoh",
+            bersih in BundelKonten.PLACEHOLDER,
+        )
+    }
+
+    // --- Dokumen yang mengulang aturan ini ------------------------------------------------------
+
     /**
      * Sel aturan pada baris tabel `docs/CONTENT_UPDATE.md` yang memuat [penanda].
      *
