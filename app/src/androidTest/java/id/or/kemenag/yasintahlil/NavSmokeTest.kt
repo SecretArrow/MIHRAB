@@ -42,7 +42,7 @@ class NavSmokeTest {
     @Test
     fun opensYasinFromIbadahMenu() {
         rule.onNodeWithText("Ibadah").performClick()
-        rule.onNodeWithText("Yasin (83 ayat, MSI Kemenag)").performClick()
+        rule.onNodeWithText("Yasin").performClick()
         // Penanda khas layar Yasin.
         rule.onNodeWithText("Ke ayat").assertIsDisplayed()
     }

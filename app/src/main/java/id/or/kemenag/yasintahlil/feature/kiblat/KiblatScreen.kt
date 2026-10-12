@@ -73,9 +73,19 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         else "%.1f°".format(kiblat)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Arah Kiblat (SIHAT Kemenag)", style = MaterialTheme.typography.titleLarge)
+        Text("Arah Kiblat", style = MaterialTheme.typography.titleLarge)
         Text("Azimut: $azimutTeks $arah dari (%.4f, %.4f)%s".format(
             s.lat, s.lon, if (s.liveFix) " • GPS live" else ""))
+        // Judul dahulu berbunyi "(SIHAT Kemenag)" — melekatkan nama lembaga pada angka yang justru
+        // dihitung sendiri di perangkat. Yang benar-benar berasal dari SIHAT adalah **koordinat
+        // Ka'bah** yang dipakai sebagai titik acuan, jadi itulah yang disebut; dan disebutkan pula
+        // bahwa aplikasi tidak menghubungi server, agar klaimnya dapat diperiksa.
+        Text(
+            "Azimut dihitung di perangkat dari koordinat Ka'bah yang diterbitkan SIHAT Bimas Islam " +
+                "(E-Kiblat); aplikasi tidak menghubungi server. Ketelitiannya bergantung pada " +
+                "ketelitian lokasi dan sensor perangkat.",
+            style = MaterialTheme.typography.labelSmall,
+        )
         Text(
             if (s.useGps) "Sumber lokasi: GPS perangkat."
             else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
