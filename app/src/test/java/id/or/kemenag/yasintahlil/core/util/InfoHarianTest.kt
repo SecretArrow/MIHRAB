@@ -133,6 +133,10 @@ class InfoHarianTest {
             layar.contains("b.judul"))
         assertTrue("kegagalan membaca butir harian tidak diberitahukan di beranda",
             layar.contains("s.infoGagal"))
+        // Chip "Arab" di Pengaturan harus tetap menguasai kartu ini; tanpa `showArab` ia menjadi
+        // kontrol mati lagi — persis kelas cacat yang dijaga `ReadingDisplayPrefsTest`.
+        assertTrue("kartu harian menampilkan Arab tanpa memeriksa preferensi showArab",
+            layar.contains("s.showArab"))
         // Kalimat anjuran Jumat tinggal di aturan, bukan di layar, supaya tidak ada dua salinan.
         assertTrue("anjuran Jumat tidak ada lagi di InfoHarian", KodeSumber.sumber(
             "src/main/java/id/or/kemenag/yasintahlil/core/util/InfoHarian.kt")

@@ -127,7 +127,9 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
                         Text(b.judul, style = MaterialTheme.typography.titleSmall)
                         // Ukuran Arab di kartu ini tetap: kartu beranda adalah ringkasan, bukan
                         // permukaan bacaan — ukuran pilihan pengguna berlaku di pustaka dzikirnya.
-                        if (b.arab.isNotBlank()) ArabText(b.arab, sizeSp = 20f)
+                        // Namun chip "Arab" di Pengaturan tetap dihormati: bila dimatikan, teks Arab
+                        // disembunyikan di sini juga, agar preferensi itu tak menjadi kontrol mati.
+                        if (s.showArab && b.arab.isNotBlank()) ArabText(b.arab, sizeSp = 20f)
                         if (b.teks.isNotBlank()) Text(b.teks)
                         if (b.sumber.isNotBlank()) Text("Sumber: ${b.sumber}",
                             style = MaterialTheme.typography.labelSmall)

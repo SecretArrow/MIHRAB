@@ -41,6 +41,8 @@ data class HomeUiState(
     val corr: List<Int> = JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT),
     val last: String = BawaanPreferensi.TERAKHIR_DIBACA,
     val infoCard: Boolean = BawaanPreferensi.KARTU_INFO,
+    /** Preferensi "Arab" dari Pengaturan — kartu harian ikut menyembunyikan Arab bila dimatikan. */
+    val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
     /** Butir "Info Islami harian" untuk hari ini; `null` bila belum ada butir yang layak. */
     val info: InfoHarian.Butir? = null,
     /** Sebab butir harian tidak dapat dibaca dari bundel konten, atau `null` bila normal. */
@@ -76,6 +78,7 @@ class HomeViewModel @Inject constructor(
         alir(Store.CORR, JadwalHariIni.CORR_DEFAULT) { s, v -> s.copy(corr = JadwalHariIni.parseCorr(v)) }
         alir(Store.LAST, BawaanPreferensi.TERAKHIR_DIBACA) { s, v -> s.copy(last = v) }
         alir(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO) { s, v -> s.copy(infoCard = v) }
+        alir(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB) { s, v -> s.copy(showArab = v) }
         alir(Store.HIJRI_CORR, BawaanPreferensi.KOREKSI_HIJRIAH) { s, v -> s.copy(hijriCorr = v) }
         alir(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU) { s, v -> s.copy(notif = v) }
 
