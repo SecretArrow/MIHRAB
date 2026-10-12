@@ -380,6 +380,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Patokan toolchain di README tidak lagi dapat menua diam-diam**: `README.md` menyatakan satu
+  baris yang justru dibaca lebih dulu oleh siapa pun yang hendak membangun — *"Toolchain dipatok
+  (AGP 8.5.x, Kotlin 2.0.20, `compileSdk`/`targetSdk` 34)"* — dan "Butuh Android Studio + JDK 17".
+  Nilainya hidup di berkas lain (`gradle/libs.versions.toml` untuk AGP dan Kotlin,
+  `app/build.gradle.kts` untuk tingkat SDK dan Java), dan tak ada apa pun yang membandingkannya.
+  Setelah toolchain naik, baris itu tetap menuliskan versi lama, dan kontributor yang membangun
+  dengan toolchain berbeda mengejar galat yang tak ada di proyek. Kini `ReadmeToolchainTest`
+  membandingkan keduanya: major.minor AGP (patch-nya bebas naik, sebab `README` memang menulis
+  `8.5.x`), versi Kotlin, angka `compileSdk`/`targetSdk`, dan tingkat JDK. Satu angka SDK di README
+  juga dituntut hanya sah selama `compileSdk` dan `targetSdk` benar-benar sama. Sepuluh mutasi
+  terverifikasi tertangkap.
 - **Kosakata mazhab Asar tidak lagi dapat lepas dari kosakata mazhab panduan**: kunci mazhab
   (`syafii`, `hanafi`) dan namanya (`Syafi'i`, `Hanafi`) hidup di dua tempat — `Mazhab` untuk
   pilihan mazhab panduan sholat, dan `JadwalHariIni.ASAR_*` untuk perhitungan jam Asar. Layar
