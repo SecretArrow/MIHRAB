@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -50,8 +52,17 @@ fun KiblatMap(lat: Double, lon: Double, bearing: Double, modifier: Modifier = Mo
     val ink = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = TextStyle(color = ink, fontSize = 10.sp)
     val strongStyle = TextStyle(color = route, fontSize = 11.sp)
+    // Label digambar di kanvas (bukan teks Compose), jadi ringkasannya diumumkan lewat
+    // contentDescription agar pembaca layar tetap dapat memahami peta.
+    val deskripsi = "Peta arah kiblat: rute dari posisi Anda ke Ka'bah, " +
+        "jarak ≈ $jarakKm km, azimut ${"%.1f".format(bearing)} derajat"
 
-    Canvas(modifier.fillMaxWidth().height(240.dp)) {
+    Canvas(
+        modifier
+            .fillMaxWidth()
+            .height(240.dp)
+            .semantics { contentDescription = deskripsi }
+    ) {
         val pad = 30f
         val availW = (size.width - 2 * pad).coerceAtLeast(1f)
         val availH = (size.height - 2 * pad).coerceAtLeast(1f)

@@ -12,6 +12,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   (HR Bukhari 3370) yang kini tampil di layar Doa Adzan. Semuanya dari sunnah.com, tanpa teks
   yang dikarang. Lafaz menjawab adzan dipindahkan dari kode Kotlin ke `adzan.json`, dan uji baru
   menjaga agar **tidak ada teks Arab hardcoded di seluruh kode aplikasi**.
+- **Uji instrumented lengkap** (`app/src/androidTest`) menutup kriteria pengujian `plan.txt`:
+  penyimpanan bookmark/progres/favorit/riwayat beserta backup–pulih (Room), mode offline
+  (seluruh modul konten terbaca dari aset + aplikasi terbukti tidak meminta izin `INTERNET`),
+  izin lokasi dan kiblat tanpa izin, penjadwalan pengingat (jumlah pekerjaan WorkManager per
+  saklar waktu & pra-adzan, pembatalan saat pengingat dimatikan, `BootReceiver` terdaftar),
+  serta tema terang/gelap dan lebar layar ponsel kecil maupun tablet.
+- **Aksesibilitas peta kiblat**: ringkasan peta (rute, jarak, azimut) diumumkan lewat
+  `contentDescription` karena labelnya digambar di kanvas — pembaca layar kini memahami peta.
 - **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
   Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
   `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
@@ -84,6 +92,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   diulang lewat `tools/fetch_quran_kemenag.py` (alat pengembang, tidak dijalankan di CI);
   invarian sumber dijaga `ContentSourceTest`. Perbaikan sampingan: BOM tersembunyi di ayat
   pertama Al-Fatihah ikut hilang.
+- **`e2e.yml`**: grup `concurrency` kini per-ref (`e2e-${{ github.ref }}`), bukan global
+  `e2e-main`. Sebelumnya `workflow_dispatch` pada branch membatalkan run `main` yang sedang
+  berjalan, sehingga verifikasi `main` bisa hilang tanpa disadari.
 - **Gate konten diperketat**: `ci.yml` kini menjalankan `tools/validate_content.py --strict`
   pada **setiap PR** (sebelumnya hanya di rilis), sehingga entri tanpa sumber resmi tidak dapat
   masuk ke `main`. Pemeriksaan dependensi dilakukan Dependabot (Gradle + GitHub Actions), jadi

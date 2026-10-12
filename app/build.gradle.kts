@@ -110,6 +110,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.espresso)
     androidTestImplementation(libs.uiautomator)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    // Kerangka uji WorkManager: memeriksa pekerjaan yang benar-benar diantrekan penjadwal pengingat.
+    androidTestImplementation(libs.androidx.work.testing)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)
