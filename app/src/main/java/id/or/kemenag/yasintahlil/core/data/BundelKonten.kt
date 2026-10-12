@@ -28,7 +28,9 @@ import org.json.JSONObject
  * - berkas ber-Arab wajib menyatakan `kategori` sumber ([SumberKategori]) yang dikenal;
  * - teks Arab wajib berharakat — teks mentah yang belum divokalkan ditolak;
  * - tidak boleh ada prosa penunjuk (placeholder) di field `arab`/`latin`;
- * - nama berkas tidak boleh menunjuk ke luar direktori konten.
+ * - nama berkas tidak boleh menunjuk ke luar direktori konten;
+ * - setiap rujukan berkas (`rujukan_file`, `rujukanFile`, larik `rujukan`) harus menunjuk berkas
+ *   yang benar-benar ada — lihat [periksaRujukan].
  *
  * Sebuah bundel diterima **utuh atau tidak sama sekali**: satu berkas yang gagal membatalkan
  * seluruh pemasangan, sehingga konten yang sudah diverifikasi tidak pernah tercampur setengah
@@ -44,6 +46,12 @@ object BundelKonten {
 
     /** Kunci peta nama-berkas → dokumen konten. */
     const val KUNCI_BERKAS = "berkas"
+
+    /** Kunci rujukan berkas yang nilainya satu teks — sama dengan yang dibaca `ContentRepo`. */
+    private val KUNCI_RUJUKAN = listOf("rujukan_file", "rujukanFile")
+
+    /** Kunci rujukan berkas yang nilainya larik teks (beberapa lafaz dari satu entri dzikir). */
+    private const val KUNCI_RUJUKAN_DAFTAR = "rujukan"
 
     /**
      * Prosa penunjuk yang tidak boleh muncul di field `arab`/`latin` — sama persis dengan
@@ -162,6 +170,100 @@ object BundelKonten {
         }
         galat += placeholder(doc).map { "field $it berisi prosa penunjuk, bukan bacaan" }
         return galat
+    }
+
+    /**
+     * Periksa setiap **rujukan berkas** pada bundel yang sudah lolos [baca] — `rujukan_file`,
+     * `rujukanFile`, dan larik `rujukan`, sama persis dengan kunci yang dibaca `ContentRepo`.
+     *
+     * Rujukan itu menunjuk berkas lain (`berkas.json` atau `berkas.json#id`) alih-alih menyalin
+     * teksnya, sehingga satu lafaz terverifikasi dapat dipakai beberapa modul tanpa salinan yang
+     * bisa menyimpang. Harganya: rujukan yang mati tidak menghasilkan teks kosong, melainkan
+     * `FileNotFoundException` dari `ContentRepo.doc` — dan karena pembacaannya ada di dalam
+     * `remember { repo.dzikir() }` pada layar, satu rujukan mati **menghentikan seluruh layar**
+     * (Dzikir, Tahlil, Panduan Sholat) tanpa satu pun petunjuk sebabnya. Pemeriksaan di sini
+     * memindahkan kegagalan itu ke tempat yang benar: bundelnya ditolak saat dipasang, dengan
+     * alasan yang dapat dibaca pengguna, bukan saat layarnya dibuka.
+     *
+     * [berkasAset] adalah nama berkas konten bawaan aplikasi (`assets/content`). Rujukan yang
+     * menunjuk berkas di dalam bundel ini **atau** di antara berkas bawaan itu dianggap sah;
+     * rujukan yang tidak ada di keduanya ditolak. Isi berkas bawaan tidak diperiksa di sini
+     * (aplikasi tidak membacanya saat memasang), melainkan oleh gerbang konten di CI.
+     */
+    fun periksaRujukan(hasil: Hasil, berkasAset: Set<String>): List<String> {
+        val galat = mutableListOf<String>()
+        hasil.berkas.forEach { (nama, doc) ->
+            telusuriRujukan(doc) { kunci, nilai ->
+                val daftar = when {
+                    // Larik `rujukan` dibaca `ContentRepo` dengan `getJSONArray`, jadi teks di sini
+                    // bukan sekadar tidak berguna — ia melempar saat layar membacanya.
+                    kunci == KUNCI_RUJUKAN_DAFTAR && nilai !is JSONArray -> {
+                        galat += "$nama: '$kunci' harus berupa larik teks"
+                        emptyList()
+                    }
+                    nilai is String -> listOf(nilai)
+                    nilai is JSONArray -> (0 until nilai.length()).map { i ->
+                        val satu = nilai.opt(i)
+                        if (satu is String) satu
+                        else null.also { galat += "$nama: '$kunci[$i]' bukan teks" }
+                    }
+                    else -> {
+                        galat += "$nama: '$kunci' harus berupa teks"
+                        emptyList()
+                    }
+                }
+                daftar.filterNotNull().forEach { periksaSatuRujukan(nama, kunci, it, hasil, berkasAset, galat) }
+            }
+        }
+        return galat
+    }
+
+    /** Satu nilai rujukan: berkasnya harus ada, dan id setelah `#` harus ada di berkas itu. */
+    private fun periksaSatuRujukan(
+        nama: String,
+        kunci: String,
+        nilai: String,
+        hasil: Hasil,
+        berkasAset: Set<String>,
+        galat: MutableList<String>,
+    ) {
+        val rujukan = nilai.trim()
+        if (rujukan.isEmpty()) {
+            galat += "$nama: '$kunci' kosong"
+            return
+        }
+        val berkas = rujukan.substringBefore('#').trim()
+        val id = rujukan.substringAfter('#', "").trim()
+        when {
+            berkas.isEmpty() -> galat += "$nama: rujukan '$rujukan' tidak menyebut berkas"
+            berkas in hasil.berkas -> {
+                // Target di dalam bundel yang sama: id-nya dapat diperiksa langsung.
+                val target = hasil.berkas.getValue(berkas)
+                if (id.isNotEmpty() && entriRujukan(target, id) == null) {
+                    galat += "$nama: rujukan '$rujukan' menunjuk entri yang tidak ada di $berkas"
+                }
+            }
+            berkas in berkasAset -> Unit
+            else -> galat += "$nama: rujukan '$rujukan' menunjuk berkas yang tidak ada"
+        }
+    }
+
+    /**
+     * Panggil [terima] untuk setiap kemunculan kunci rujukan berkas pada [node], rekursif.
+     *
+     * Nilainya diteruskan apa adanya (bukan hanya yang berupa teks) supaya bentuk yang salah pun
+     * dapat ditolak di sini — `ContentRepo` membaca larik `rujukan` dengan `getJSONArray`, jadi
+     * `"rujukan": "berkas.json"` bukan sekadar tidak berguna melainkan melempar saat dibaca.
+     */
+    private fun telusuriRujukan(node: Any?, terima: (kunci: String, nilai: Any?) -> Unit) {
+        when (node) {
+            is JSONObject -> node.keys().asSequence().forEach { k ->
+                val v = node.get(k)
+                if (k in KUNCI_RUJUKAN || k == KUNCI_RUJUKAN_DAFTAR) terima(k, v)
+                else telusuriRujukan(v, terima)
+            }
+            is JSONArray -> (0 until node.length()).forEach { telusuriRujukan(node.get(it), terima) }
+        }
     }
 
     /** Semua nilai string (rekursif) di bawah [kunci] — mis. seluruh `kategori` di berkas. */

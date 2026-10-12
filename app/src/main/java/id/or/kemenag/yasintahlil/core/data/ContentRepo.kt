@@ -33,6 +33,13 @@ class ContentRepo(private val ctx: Context) {
         }
     }
 
+    /** Dokumen bila dapat dibaca, `null` bila tidak — untuk rujukan yang belum tentu ada. */
+    private fun docAtauNull(file: String): JSONObject? =
+        runCatching { doc(file) }.getOrElse {
+            Log.w("ContentRepo", "Rujukan konten '$file' tidak dapat dibaca", it)
+            null
+        }
+
     /** Dokumen dari lapisan pembaruan, atau null bila tak ada / tak lagi layak dipakai. */
     private fun dariPembaruan(file: String): JSONObject? {
         val f = File(updateDir, file)
@@ -89,13 +96,21 @@ class ContentRepo(private val ctx: Context) {
      * `sholat_mayit.json#doa_mayit`. Dengan begitu teks yang sama dapat dipakai di beberapa modul
      * tanpa disalin ulang — salinan yang menyimpang adalah cara paling halus untuk membuat dua
      * bacaan berbeda dari satu sumber yang sama.
+     *
+     * Rujukan yang tidak dapat ditelusuri mengembalikan teks kosong, **bukan** melempar: berkasnya
+     * dibaca lewat [docAtauNull], dan pemanggil sudah punya jalan mundur ke teks milik entrinya
+     * sendiri (`o.optString("arab", a)`). Sebelumnya `doc` dipanggil langsung, sehingga satu
+     * rujukan mati menaikkan `FileNotFoundException` sampai ke `remember { repo.dzikir() }` pada
+     * layar dan menghentikan seluruh layar. Bundel yang memuat rujukan mati sudah ditolak saat
+     * dipasang ([BundelKonten.periksaRujukan]); jalan mundur ini menjaga berkas bawaan yang
+     * kehilangan sasarannya karena satu berkas dihapus, tanpa menjatuhkan layar.
      */
     fun resolveArabLatinTerjemah(rujukanFile: String?): Triple<String, String, String> {
         if (rujukanFile.isNullOrBlank()) return Triple("", "", "")
         val pisah = rujukanFile.split("#", limit = 2)
         val nama = pisah[0].trim()
         if (nama.isBlank()) return Triple("", "", "")
-        val d = doc(nama)
+        val d = docAtauNull(nama) ?: return Triple("", "", "")
         val id = pisah.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }
         if (id != null) {
             val o = entriRujukan(d, id) ?: return Triple("", "", "")
