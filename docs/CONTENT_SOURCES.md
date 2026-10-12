@@ -77,6 +77,7 @@ manusia dari sumber resmi.
 | Doa **masuk rumah** | ✅ ada di `dzikir.json` — **diberi catatan derajat hadis** | HR Abu Dawud 5096 (**daif** menurut Al-Albani) — sunnah.com |
 | Doa **bepergian (safar)** | ✅ ada di `dzikir.json` | HR Muslim 1342 — sunnah.com |
 | **Lafaz sholawat setelah adzan** | ✅ ada di `adzan.json` (`sholawat_setelah_adzan`) & tampil di layar Doa Adzan | HR Bukhari 3370 — sunnah.com |
+| **Penjelasan waktu membaca tiap bacaan adzan** | ✅ setiap entri di `adzan.json` (`menjawab_adzan`, `sholawat_setelah_adzan`, `doa_setelah_adzan`) punya field `waktu`, dan gate konten menolak entri yang kehilangannya | mengikuti urutan yang diperintahkan pada hadis yang **sudah dikutip entri itu sendiri** (menjawab → sholawat → doa; HR Bukhari & Muslim — sunnah.com). Field `waktu` hanya keterangan berbahasa Indonesia, **bukan lafaz atau hadis baru** |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
 | **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu, di modul Tahlil **dan** di Pengaturan (`PreferensiSusunan`) | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
 

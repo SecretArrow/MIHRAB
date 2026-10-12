@@ -56,6 +56,7 @@ pembaruan).
 | Teks Arab wajib berharakat | `plan.txt`: "Verifikasi harakat, ejaan, nomor ayat, transliterasi, dan terjemahan" |
 | Tidak ada prosa penunjuk di `arab`/`latin` (`lihat rujukan file`, `dibaca penuh dari mushaf`, `todo`, …) | `plan.txt`: "Jangan menghasilkan teks Arab secara acak atau merekonstruksi bacaan yang belum diverifikasi" |
 | Nama berkas tidak menunjuk ke luar folder konten | mencegah path traversal menimpa berkas lain di penyimpanan aplikasi |
+| Bacaan setelah adzan menyatakan `waktu` (kapan dibaca) | `plan.txt`: "Penjelasan waktu membacanya" — tanpa itu pengguna hanya tahu urutannya, bukan bacaan mana yang berlaku sekarang |
 | Skema bundel sama dengan yang dipahami aplikasi | bundel format lama tidak dipasang setengah jalan |
 
 Aturan ini **sama** dengan gate konten CI: `tools/validate_content.py` untuk konten bawaan, dan

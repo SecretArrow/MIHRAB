@@ -6,6 +6,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Penjelasan waktu membaca tiap bacaan adzan** (`plan.txt` §"Bacaan Setelah Adzan": *"Penjelasan
+  waktu membacanya"*): layar Doa Adzan hanya menyebut urutannya dalam satu kalimat, sehingga
+  pengguna yang membukanya saat adzan sedang berkumandang tidak tahu bacaan mana yang berlaku
+  **sekarang**. Kini tiap entri di `adzan.json` (`menjawab_adzan`, `sholawat_setelah_adzan`,
+  `doa_setelah_adzan`) menyatakan sendiri kapan dibacanya, dan layar menampilkannya sebagai baris
+  "Kapan dibaca: …" di bawah judulnya. Waktunya mengikuti urutan yang diperintahkan pada hadis yang
+  **sudah dikutip entri itu sendiri** (menjawab → sholawat → doa); yang ditambahkan hanyalah
+  keterangan berbahasa Indonesia, bukan lafaz atau hadis baru, dan itu dicatat di
+  `docs/CONTENT_SOURCES.md`. Sekaligus, ketiga bacaan itu kini dirender lewat **satu jalur yang
+  sama**: sebelumnya catatan hanya dirender untuk sebagian entri, sehingga catatan pada entri lain
+  akan hilang tanpa jejak begitu bundel menambahkannya — kelas kerusakan sunyi yang sama dengan
+  kunci JSON ganda. Gate konten (`tools/validate_content.py`, dan lewatnya juga
+  `tools/validate_bundle.py`) menolak bacaan adzan yang kehilangan `waktu`, fixture `cacat.json`
+  ikut memuat contohnya, dan `WaktuBacaanAdzanTest` menjaganya.
 - **Indikator status kalibrasi kompas** (`plan.txt` §"Arah Kiblat": *"Indikator status kalibrasi
   sensor"*, *"Petunjuk menggerakkan perangkat membentuk pola angka delapan jika sensor memerlukan
   kalibrasi"*, dan *"Jangan mengklaim arah kompas selalu akurat"*): layar Kiblat dulu hanya

@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.AdzanDoa
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -127,21 +128,9 @@ fun DoaAdzanScreen() {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
-        BacaanCard("doa:menjawab_adzan", menjawab.judul,
-            menjawab.arab, menjawab.latin, menjawab.terjemahan,
-            true, true, arabSize, 15f, sumber = menjawab.sumber, showArab = showArab, kategori = menjawab.kategori)
-        if (menjawab.catatan.isNotBlank()) {
-            Text(menjawab.catatan, style = MaterialTheme.typography.labelSmall)
-        }
-        BacaanCard("doa:sholawat_adzan", sholawat.judul,
-            sholawat.arab, sholawat.latin, sholawat.terjemahan,
-            true, true, arabSize, 15f, sumber = sholawat.sumber, showArab = showArab, kategori = sholawat.kategori)
-        BacaanCard("doa:adzan", doa.judul, doa.arab, doa.latin, doa.terjemahan,
-            true, true, arabSize, 15f, sumber = doa.sumber,
-            showArab = showArab, kategori = doa.kategori)
-        if (doa.catatan.isNotBlank()) {
-            Text(doa.catatan, style = MaterialTheme.typography.labelSmall)
-        }
+        KartuDoa("doa:menjawab_adzan", menjawab, arabSize, showArab)
+        KartuDoa("doa:sholawat_adzan", sholawat, arabSize, showArab)
+        KartuDoa("doa:adzan", doa, arabSize, showArab)
         Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
@@ -153,4 +142,21 @@ fun DoaAdzanScreen() {
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }
+}
+
+/**
+ * Satu bacaan adzan beserta **waktu membacanya** dan catatannya.
+ *
+ * `plan.txt` §"Bacaan Setelah Adzan" meminta *"Penjelasan waktu membacanya"*. Catatan dahulu
+ * dirender hanya untuk sebagian entri, sehingga catatan pada entri lain akan hilang tanpa jejak
+ * begitu bundel menambahkannya — satu jalur render untuk semuanya menutup celah itu.
+ */
+@Composable
+private fun KartuDoa(id: String, entri: AdzanDoa, arabSize: Float, showArab: Boolean) {
+    BacaanCard(id, entri.judul, entri.arab, entri.latin, entri.terjemahan,
+        true, true, arabSize, 15f, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
+    if (entri.waktu.isNotBlank()) Text(
+        "Kapan dibaca: ${entri.waktu}", style = MaterialTheme.typography.labelMedium)
+    if (entri.catatan.isNotBlank()) Text(
+        entri.catatan, style = MaterialTheme.typography.labelSmall)
 }

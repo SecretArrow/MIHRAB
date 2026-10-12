@@ -65,7 +65,10 @@ data class AdzanDoa(
     val arab: String,
     val latin: String,
     val terjemahan: String = "",
+    /** Keterangan tambahan yang menyertai bacaan (mis. pengecualian dua seruan hayya). */
     val catatan: String = "",
+    /** Kapan bacaan ini dibaca — `plan.txt` §"Bacaan Setelah Adzan": *"Penjelasan waktu membacanya."* */
+    val waktu: String = "",
     val sumber: String = "",
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",

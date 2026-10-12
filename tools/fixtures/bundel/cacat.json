@@ -3,9 +3,33 @@
     "skema": 1,
     "dibuat": "2026-02-19",
     "penerbit": "Contoh format (bukan konten asli)",
-    "catatan": "Fixture CI: bundel yang harus DITOLAK — sumber tak resmi, kategori asing, teks Arab tanpa harakat, kunci ganda"
+    "catatan": "Fixture CI: bundel yang harus DITOLAK — sumber tak resmi, kategori asing, teks Arab tanpa harakat, kunci ganda, bacaan adzan tanpa waktu"
   },
   "berkas": {
+    "adzan.json": {
+      "sumber_url": "https://sunnah.com/",
+      "kategori": "hadis",
+      "menjawab_adzan": {
+        "judul": "Menjawab adzan",
+        "arab": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
+        "latin": "La haula wa la quwwata illa billah.",
+        "terjemahan": "Tidak ada daya dan kekuatan kecuali dengan Allah.",
+        "waktu": "Dibaca ketika adzan sedang dikumandangkan."
+      },
+      "sholawat_setelah_adzan": {
+        "judul": "Sholawat setelah adzan",
+        "arab": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ",
+        "latin": "Allahumma shalli 'ala Muhammad.",
+        "terjemahan": "Ya Allah, limpahkanlah rahmat kepada Muhammad.",
+        "waktu": "Dibaca setelah adzan selesai dijawab."
+      },
+      "doa_setelah_adzan": {
+        "judul": "Doa setelah adzan",
+        "arab": "اَللّٰهُمَّ رَبَّ هٰذِهِ الدَّعْوَةِ التَّامَّةِ",
+        "latin": "Allahumma rabba hadzihid da'watit tammah.",
+        "terjemahan": "Ya Allah Tuhan panggilan yang sempurna."
+      }
+    },
     "dzikir.json": {
       "sumber_url": "https://blog-contoh.example/doa",
       "kategori": "hadits",

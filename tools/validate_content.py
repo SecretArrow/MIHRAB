@@ -113,6 +113,14 @@ def check_schema(name: str, data) -> list[str]:
                 if not str(it.get("sumber", "")).strip():
                     errs.append(f"{name}: kelompok[{gi}] entri '{label}' tanpa 'sumber' per-entri")
 
+    # Bacaan setelah adzan: setiap entri wajib menyatakan **kapan** dibaca — plan.txt §"Bacaan
+    # Setelah Adzan": "Penjelasan waktu membacanya". Tanpa `waktu`, pengguna hanya tahu urutannya,
+    # bukan kapan tiap bacaan dikerjakan — dan urutan saja tidak menjawab "sekarang baca yang mana".
+    for k in ("menjawab_adzan", "sholawat_setelah_adzan", "doa_setelah_adzan"):
+        entri = data.get(k)
+        if isinstance(entri, dict) and not str(entri.get("waktu", "")).strip():
+            errs.append(f"{name}: '{k}' tanpa 'waktu' (penjelasan kapan bacaan ini dibaca)")
+
     return errs
 
 

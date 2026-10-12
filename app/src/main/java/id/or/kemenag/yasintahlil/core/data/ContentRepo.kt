@@ -260,8 +260,8 @@ class ContentRepo(private val ctx: Context) {
         val d = doc("adzan.json")
         val o = d.getJSONObject(key)
         return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
-            o.optString("terjemahan"), o.optString("catatan"), o.optString("sumber"),
-            o.optString("kategori", d.optString("kategori", "")))
+            o.optString("terjemahan"), o.optString("catatan"), o.optString("waktu"),
+            o.optString("sumber"), o.optString("kategori", d.optString("kategori", "")))
     }
 
     /** Lafaz menjawab adzan beserta catatan kapan lafaz ini dibaca. */
