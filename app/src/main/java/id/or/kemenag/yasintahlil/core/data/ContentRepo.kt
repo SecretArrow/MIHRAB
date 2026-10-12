@@ -331,4 +331,22 @@ class ContentRepo(private val ctx: Context) {
             langkah = stringList("langkah"),
         )
     }
+
+    /**
+     * Domain resmi yang **benar-benar dipakai** bundel konten, untuk layar Tentang.
+     *
+     * Dibaca dari `sumber_url` setiap berkas konten, bukan dari daftar tetap di kode: berkas yang
+     * ditambahkan kemudian dengan domain resmi lain akan ikut tampil, dan domain yang tak lagi
+     * dipakai tidak lagi diklaim. Berkas yang rusak dilewati tanpa membuat layar Tentang gagal.
+     */
+    fun sumberDipakai(): List<String> {
+        val berkas = runCatching { ctx.assets.list("content")?.toList() }.getOrNull() ?: return emptyList()
+        return berkas.asSequence()
+            .filter { it.endsWith(".json") }
+            .mapNotNull { f -> runCatching { doc(f).optString("sumber_url") }.getOrNull() }
+            .mapNotNull { ContentValidator.hostOf(it) }
+            .distinct()
+            .sorted()
+            .toList()
+    }
 }

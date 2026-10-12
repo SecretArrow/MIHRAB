@@ -43,6 +43,7 @@ import id.or.kemenag.yasintahlil.feature.sholat.SholatDetailScreen
 import id.or.kemenag.yasintahlil.feature.sholat.SholatScreen
 import id.or.kemenag.yasintahlil.feature.sholat.WudhuScreen
 import id.or.kemenag.yasintahlil.feature.tahlil.TahlilScreen
+import id.or.kemenag.yasintahlil.feature.tentang.TentangScreen
 import id.or.kemenag.yasintahlil.feature.yasin.YasinScreen
 
 @Composable
@@ -103,6 +104,7 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
+                composable(Routes.TENTANG) { TentangScreen() }
             }
         }
     }

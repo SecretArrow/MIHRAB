@@ -290,6 +290,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             modifier = Modifier.padding(top = 8.dp))
         Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
+        // Ringkasannya tetap di sini supaya terlihat tanpa membuka apa pun; dokumen lengkapnya
+        // (kebijakan privasi, daftar izin beserta alasannya, dan lisensi) ada di layar Tentang —
+        // sebelumnya hanya ada di berkas `docs/` yang tak dapat dibaca pengguna aplikasi.
+        OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka Tentang & privasi") }
         Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
             style = MaterialTheme.typography.labelSmall)
         Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",

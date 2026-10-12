@@ -21,6 +21,7 @@ object Routes {
     const val SEARCH = "search"
     const val FAVORIT = "favorit"
     const val KONTEN_UPDATE = "settings/konten"
+    const val TENTANG = "settings/tentang"
 
     /**
      * Rute yang boleh dituju langsung dari luar layar (mis. ketukan notifikasi pengingat).
@@ -32,5 +33,6 @@ object Routes {
     val LANGSUNG: Set<String> = setOf(
         HOME, IBADAH, ALAT, SETTINGS, YASIN, TAHLIL, SHOLAT, WUDHU, GHAIB, JENAZAH,
         ADZAN, DOA_ADZAN, IQOMAH, KIBLAT, JADWAL, DZIKIR, SEARCH, FAVORIT, KONTEN_UPDATE,
+        TENTANG,
     )
 }

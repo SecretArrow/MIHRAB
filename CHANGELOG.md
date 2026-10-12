@@ -6,6 +6,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Layar Tentang: kebijakan privasi, izin, lisensi, dan sumber konten** (`plan.txt` §"Pengaturan
+  Aplikasi": *"Tentang aplikasi, sumber konten, lisensi, serta kebijakan privasi"*; §"Keamanan dan
+  Privasi": *"Dokumentasikan izin Android dan alasan penggunaannya"*): Pengaturan dulu hanya
+  memuat satu paragraf ringkas di dalam kode, sedangkan kebijakan privasi dan daftar izin yang
+  lengkap hanya ada di berkas `docs/` — **tidak dapat dibaca pengguna aplikasi**. Kini ada layar
+  **Tentang** yang memuat identitas aplikasi beserta versinya, **daftar sumber konten**, kebijakan
+  privasi, tabel izin beserta alasan dan akibat bila ditolak, dan lisensi. Dokumennya **tidak
+  ditulis ulang**: `docs/PRIVACY.md`, `docs/PERMISSIONS.md`, dan `LICENSE` disalin apa adanya ke
+  `assets/legal/` dan dijaga tetap identik byte per byte oleh uji, sehingga apa yang dibaca
+  pengguna tidak dapat menyimpang dari apa yang didokumentasikan. Sumber konten pun dibaca dari
+  `sumber_url` bundel, bukan dari daftar tetap, sehingga layar ini tidak dapat mengklaim sumber
+  yang tidak dipakai — dan uji menuntut setiap domain resmi punya keterangan pemiliknya. Markdown
+  sederhana (judul, butir, paragraf, tabel) diurai oleh `MarkdownRingkas` agar mengikuti tema
+  aplikasi; tabel izin ditampilkan per baris karena empat kolom tidak terbaca di layar ponsel.
 - **Bookmark terlihat di layar Favorit** (`plan.txt` §"Pencarian": *"Sediakan favorit, riwayat
   terakhir dibaca, bookmark, dan pencarian terbaru"*; §"Yasin": *"Bookmark ayat"*): bookmark memang
   sudah disimpan di Room sejak lama, tetapi **tidak pernah tampil di satu pun layar daftar** —
