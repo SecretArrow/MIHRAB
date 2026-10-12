@@ -21,21 +21,41 @@ enum class CaraKelompok(val label: String) {
  *
  * Setiap entri harus jatuh ke salah satu rentang yang bernama; [LAIN] menandai entri yang tidak
  * terbaca dan ujinya menolak kehadirannya, sehingga entri baru tak bisa diam-diam tak terkelompok.
+ *
+ * **Nama rentang ditulis sekali.** Sebelumnya setiap nama hidup dua kali — sekali sebagai literal
+ * pada cabang [waktu], sekali lagi pada [URUTAN_WAKTU]. Keduanya adalah daftar teks yang sama, jadi
+ * tak ada yang menjaga keduanya tetap sejalan: mengubah nama di salah satu sisi sudah cukup membuat
+ * kelompok itu **hilang dari urutan** tanpa satu pun pesan galat, karena `indexOf` yang gagal
+ * mengembalikan −1 dan kelompok itu diam-diam terlempar ke urutan paling akhir. Kini [waktu]
+ * mengembalikan konstanta di bawah, dan [URUTAN_WAKTU] menyusun dirinya dari konstanta yang sama.
  */
 object KelompokSholat {
 
     /** Rentang waktu yang tidak terbaca — kehadirannya berarti aturan di bawah perlu ditambah. */
     const val LAIN = "Waktu lain"
 
-    /** Urutan tampil rentang waktu, dari pagi ke malam lalu yang tak terikat waktu. */
-    private val URUTAN_WAKTU = listOf(
-        "Pagi hingga sebelum Zuhur",
-        "Malam",
-        "Mengiringi sholat wajib",
-        "Kapan saja selain waktu terlarang",
-        "Peristiwa tertentu",
-        LAIN,
-    )
+    /** Setelah matahari terbit hingga sebelum Zuhur. */
+    const val PAGI = "Pagi hingga sebelum Zuhur"
+
+    /** Sepertiga malam terakhir, rawatib malam, dan tarawih. */
+    const val MALAM = "Malam"
+
+    /** Rawatib: sebelum/sesudah sholat wajib. */
+    const val MENGIRINGI = "Mengiringi sholat wajib"
+
+    /** Sholat sunnah yang tak terikat waktu tertentu. */
+    const val KAPAN_SAJA = "Kapan saja selain waktu terlarang"
+
+    /** Terikat peristiwa: masuk masjid, gerhana, dan sejenisnya. */
+    const val PERISTIWA = "Peristiwa tertentu"
+
+    /**
+     * Urutan tampil rentang waktu, dari pagi ke malam lalu yang tak terikat waktu.
+     *
+     * Disusun dari konstanta di atas — bukan salinan teksnya — sehingga setiap nama yang keluar dari
+     * [waktu] pasti punya tempat di urutan ini.
+     */
+    val URUTAN_WAKTU: List<String> = listOf(PAGI, MALAM, MENGIRINGI, KAPAN_SAJA, PERISTIWA, LAIN)
 
     /**
      * Rentang waktu dari teks `waktu` entri.
@@ -47,12 +67,11 @@ object KelompokSholat {
     fun waktu(waktu: String): String {
         val w = waktu.lowercase()
         return when {
-            w.contains("kapan saja") -> "Kapan saja selain waktu terlarang"
-            w.contains("sholat wajib") -> "Mengiringi sholat wajib"
-            w.contains("malam") || w.contains("isya") || w.contains("subuh") -> "Malam"
-            w.contains("terbit") || w.contains("pagi") || w.contains("zuhur") ->
-                "Pagi hingga sebelum Zuhur"
-            w.contains("masjid") || w.contains("gerhana") -> "Peristiwa tertentu"
+            w.contains("kapan saja") -> KAPAN_SAJA
+            w.contains("sholat wajib") -> MENGIRINGI
+            w.contains("malam") || w.contains("isya") || w.contains("subuh") -> MALAM
+            w.contains("terbit") || w.contains("pagi") || w.contains("zuhur") -> PAGI
+            w.contains("masjid") || w.contains("gerhana") -> PERISTIWA
             else -> LAIN
         }
     }
