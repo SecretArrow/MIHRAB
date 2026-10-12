@@ -30,7 +30,8 @@ class ContentRepo(private val ctx: Context) {
         return Surah(
             d.optString("surah", file), d.optInt("ayat_count", arr.length()),
             (0 until arr.length()).map { verse(arr.getJSONObject(it)) },
-            d.optString("sumber_terjemahan", "")
+            d.optString("sumber_terjemahan", ""),
+            d.optString("kategori", ""),
         )
     }
 
@@ -53,7 +54,9 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun tahlil(susunanId: String? = null): List<TahlilItem> {
-        val arr = doc("tahlil_full.json").getJSONArray("bagian")
+        val d = doc("tahlil_full.json")
+        val arr = d.getJSONArray("bagian")
+        val def = d.optString("kategori", "")
         val all = (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
@@ -62,7 +65,8 @@ class ContentRepo(private val ctx: Context) {
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optInt("ulangi", 1),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
-                o.optString("sumber", "")
+                o.optString("sumber", ""),
+                o.optString("kategori", def)
             )
         }
         if (susunanId == null) return all
@@ -88,7 +92,9 @@ class ContentRepo(private val ctx: Context) {
     fun sholatSunnah(): List<SholatInfo> = sholatList("sunnah")
 
     private fun sholatList(key: String): List<SholatInfo> {
-        val arr = doc("sholat_daftar.json").getJSONArray(key)
+        val d = doc("sholat_daftar.json")
+        val defKategori = d.optString("kategori", "")
+        val arr = d.getJSONArray(key)
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val n = o.optJSONObject("niat")
@@ -96,7 +102,10 @@ class ContentRepo(private val ctx: Context) {
             SholatInfo(
                 o.getString("id"), o.getString("nama"), o.getString("rakaat"),
                 o.getString("waktu"), o.getString("deskripsi"),
-                n?.let { Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan")) },
+                n?.let {
+                    Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan"),
+                        it.optString("kategori", defKategori))
+                },
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 ketentuan = ket,
                 niatCatatan = o.optString("niat_catatan", "")
@@ -111,7 +120,9 @@ class ContentRepo(private val ctx: Context) {
     fun sholatMayitBacaan(): List<Bacaan> = parseBacaan("sholat_mayit.json")
 
     private fun parseBacaan(file: String): List<Bacaan> {
-        val arr = doc(file).getJSONArray("bacaan")
+        val d = doc(file)
+        val defKategori = d.optString("kategori", "")
+        val arr = d.getJSONArray("bacaan")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
@@ -122,12 +133,15 @@ class ContentRepo(private val ctx: Context) {
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
-                sholatScope = scope)
+                sholatScope = scope,
+                kategori = o.optString("kategori", defKategori))
         }
     }
 
     fun dzikir(): List<DzikirGroup> {
-        val arr = doc("dzikir.json").getJSONArray("kelompok")
+        val d = doc("dzikir.json")
+        val defKategori = d.optString("kategori", "")
+        val arr = d.getJSONArray("kelompok")
         return (0 until arr.length()).map { gi ->
             val g = arr.getJSONObject(gi)
             val items = g.getJSONArray("items")
@@ -147,16 +161,20 @@ class ContentRepo(private val ctx: Context) {
                     DzikirItem(o.getString("judul"), o.optString("arab", ja),
                         o.optString("latin", jl), o.optString("terjemahan", jt),
                         o.optInt("ulangi", 1), o.optString("sumber"),
-                        all.firstOrNull(), all.drop(1))
+                        all.firstOrNull(), all.drop(1),
+                        o.optString("kategori", defKategori))
                 })
         }
     }
 
     fun adzan(): List<AdzanLafaz> {
-        val arr = doc("adzan.json").getJSONObject("adzan").getJSONArray("daftar")
+        val d = doc("adzan.json")
+        val def = d.optString("kategori", "")
+        val arr = d.getJSONObject("adzan").getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
-            AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"), o.optInt("ulangi", 1))
+            AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
+                o.optInt("ulangi", 1), o.optString("kategori", def))
         }
     }
 
@@ -166,35 +184,32 @@ class ContentRepo(private val ctx: Context) {
     fun iqomahCatatan(): String = doc("adzan.json").optString("catatan_mazhab")
 
     fun iqomah(): List<AdzanLafaz> {
-        val arr = doc("adzan.json").getJSONObject("iqomah").getJSONArray("daftar")
+        val d = doc("adzan.json")
+        val def = d.optString("kategori", "")
+        val arr = d.getJSONObject("iqomah").getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
-            AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"), o.optInt("ulangi", 1))
+            AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
+                o.optInt("ulangi", 1), o.optString("kategori", def))
         }
     }
 
-    fun doaAdzan(): Triple<String, String, String> {
-        val o = doc("adzan.json").getJSONObject("doa_setelah_adzan")
-        return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
+    fun doaAdzan(): AdzanDoa = adzanDoa("doa_setelah_adzan")
+
+    /** Entri adzan.json sebagai [AdzanDoa] — kategori disimpulkan dari tingkat berkas bila kosong. */
+    private fun adzanDoa(key: String): AdzanDoa {
+        val d = doc("adzan.json")
+        val o = d.getJSONObject(key)
+        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
+            o.optString("terjemahan"), o.optString("catatan"), o.optString("sumber"),
+            o.optString("kategori", d.optString("kategori", "")))
     }
 
     /** Lafaz menjawab adzan beserta catatan kapan lafaz ini dibaca. */
-    fun menjawabAdzan(): AdzanDoa {
-        val o = doc("adzan.json").getJSONObject("menjawab_adzan")
-        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
-            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
-    }
+    fun menjawabAdzan(): AdzanDoa = adzanDoa("menjawab_adzan")
 
     /** Sholawat yang dibaca setelah menjawab adzan (sebelum doa setelah adzan). */
-    fun sholawatAdzan(): AdzanDoa {
-        val o = doc("adzan.json").getJSONObject("sholawat_setelah_adzan")
-        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
-            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
-    }
-
-    /** Sumber tertulis entri adzan.json (mis. `doa_setelah_adzan`) — dibaca dari assets, bukan di kode. */
-    fun adzanSumber(key: String): String =
-        doc("adzan.json").getJSONObject(key).optString("sumber")
+    fun sholawatAdzan(): AdzanDoa = adzanDoa("sholawat_setelah_adzan")
 
     fun kota(): List<Kota> {
         val arr = doc("kota.json").getJSONArray("kota")
@@ -235,6 +250,7 @@ class ContentRepo(private val ctx: Context) {
             return (0 until arr.length()).map { arr.getString(it) }
         }
         val niatArr = d.optJSONArray("niat") ?: org.json.JSONArray()
+        val defKategori = d.optString("kategori", "")
         val niat = (0 until niatArr.length()).map { i ->
             val o = niatArr.getJSONObject(i)
             Bacaan(
@@ -242,6 +258,7 @@ class ContentRepo(private val ctx: Context) {
                 o.optString("kapan"), o.optString("arab"), o.optString("latin"),
                 o.optString("terjemahan"), o.optString("sumber"),
                 catatan = o.optString("catatan"),
+                kategori = o.optString("kategori", defKategori),
             )
         }
         return SholatKhusus(

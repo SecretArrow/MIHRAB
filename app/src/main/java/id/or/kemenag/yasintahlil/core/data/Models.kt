@@ -1,18 +1,28 @@
 package id.or.kemenag.yasintahlil.core.data
 
 data class Verse(val nomor: Int, val arab: String, val latin: String, val terjemahan: String)
-data class Surah(val nama: String, val ayatCount: Int, val verses: List<Verse>, val sumber: String)
+data class Surah(
+    val nama: String, val ayatCount: Int, val verses: List<Verse>, val sumber: String,
+    /** Kategori sumber isi surat (mis. [SumberKategori.QURAN]) — lihat `assets/content`. */
+    val kategori: String = "",
+)
 
 data class TahlilItem(
     val id: String, val judul: String,
     val arab: String = "", val latin: String = "", val terjemahan: String = "",
-    val ulangi: Int = 1, val rujukanFile: String? = null, val sumber: String = ""
+    val ulangi: Int = 1, val rujukanFile: String? = null, val sumber: String = "",
+    /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
+    val kategori: String = ""
 )
 
 /** Susunan rangkaian tahlil (urut) — merujuk id pada daftar bagian tahlil. */
 data class TahlilSusunan(val id: String, val nama: String, val bagian: List<String>)
 
-data class Niat(val arab: String, val latin: String, val terjemahan: String)
+data class Niat(
+    val arab: String, val latin: String, val terjemahan: String,
+    /** Kategori sumber lafaz niat ([SumberKategori]) — lafaz niat Indonesia umumnya `tradisi`. */
+    val kategori: String = "",
+)
 data class SholatInfo(
     val id: String, val nama: String, val rakaat: String, val waktu: String,
     val deskripsi: String, val niat: Niat? = null, val rujukanFile: String? = null,
@@ -28,18 +38,26 @@ data class Bacaan(
     /** Bila terisi (mis. "syafii"), bacaan hanya tampil untuk mazhab itu. null = semua mazhab. */
     val mazhab: String? = null,
     /** Bila terisi (mis. ["subuh"]), bacaan hanya tampil untuk sholat itu. kosong = semua sholat. */
-    val sholatScope: List<String> = emptyList()
+    val sholatScope: List<String> = emptyList(),
+    /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
+    val kategori: String = ""
 )
 
 data class DzikirItem(
     val judul: String, val arab: String = "", val latin: String = "",
     val terjemahan: String = "", val ulangi: Int = 1,
     val sumber: String = "", val rujukanFile: String? = null,
-    val rujukan: List<String> = emptyList()
+    val rujukan: List<String> = emptyList(),
+    /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
+    val kategori: String = ""
 )
 data class DzikirGroup(val id: String, val judul: String, val items: List<DzikirItem>)
 
-data class AdzanLafaz(val arab: String, val latin: String, val terjemahan: String = "", val ulangi: Int = 1)
+data class AdzanLafaz(
+    val arab: String, val latin: String, val terjemahan: String = "", val ulangi: Int = 1,
+    /** Kategori sumber lafaz ([SumberKategori]); kosong = tidak diklaim. */
+    val kategori: String = "",
+)
 
 /** Doa/lafaz seputar adzan yang tampil di layar Doa Adzan (mis. menjawab adzan, sholawat). */
 data class AdzanDoa(
@@ -49,6 +67,8 @@ data class AdzanDoa(
     val terjemahan: String = "",
     val catatan: String = "",
     val sumber: String = "",
+    /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
+    val kategori: String = "",
 )
 
 data class Kota(val nama: String, val lat: Double, val lon: Double)

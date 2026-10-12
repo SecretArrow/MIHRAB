@@ -1,8 +1,10 @@
 {
+ "kategori": "hadis",
  "bacaan": [
   {
    "arab": "",
    "id": "niat",
+   "kategori": "tradisi",
    "judul": "Niat",
    "kapan": "Di dalam hati bersamaan takbiratul ihram",
    "latin": "",
@@ -30,6 +32,7 @@
   },
   {
    "id": "fatihah",
+   "kategori": "quran",
    "judul": "Surat Al-Fatihah",
    "kapan": "Setiap rakaat",
    "rujukan_file": "surah_001.json",
@@ -37,6 +40,7 @@
   },
   {
    "id": "surat_setelah_fatihah",
+   "kategori": "quran",
    "judul": "Surat atau ayat setelah Al-Fatihah",
    "kapan": "Rakaat pertama dan kedua",
    "rujukan_file": "surah_112.json",

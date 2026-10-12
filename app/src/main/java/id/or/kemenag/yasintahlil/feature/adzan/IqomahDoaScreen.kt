@@ -97,7 +97,7 @@ fun IqomahScreen() {
         items.forEach { l ->
             BacaanCard("iqomah:${l.arab.take(10)}", "Iqomah", l.arab, l.latin, l.terjemahan,
                 true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi,
-                showArab = showArab)
+                showArab = showArab, kategori = l.kategori)
         }
     }
 }
@@ -107,7 +107,7 @@ fun DoaAdzanScreen() {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
-    val (arab, latin, trans) = remember { repo.doaAdzan() }
+    val doa = remember { repo.doaAdzan() }
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(22f) }
@@ -136,16 +136,19 @@ fun DoaAdzanScreen() {
         }
         BacaanCard("doa:menjawab_adzan", menjawab.judul,
             menjawab.arab, menjawab.latin, menjawab.terjemahan,
-            true, true, arabSize, 15f, sumber = menjawab.sumber, showArab = showArab)
+            true, true, arabSize, 15f, sumber = menjawab.sumber, showArab = showArab, kategori = menjawab.kategori)
         if (menjawab.catatan.isNotBlank()) {
             Text(menjawab.catatan, style = MaterialTheme.typography.labelSmall)
         }
         BacaanCard("doa:sholawat_adzan", sholawat.judul,
             sholawat.arab, sholawat.latin, sholawat.terjemahan,
-            true, true, arabSize, 15f, sumber = sholawat.sumber, showArab = showArab)
-        BacaanCard("doa:adzan", "Doa setelah adzan", arab, latin, trans,
-            true, true, arabSize, 15f, sumber = repo.adzanSumber("doa_setelah_adzan"),
-            showArab = showArab)
+            true, true, arabSize, 15f, sumber = sholawat.sumber, showArab = showArab, kategori = sholawat.kategori)
+        BacaanCard("doa:adzan", doa.judul, doa.arab, doa.latin, doa.terjemahan,
+            true, true, arabSize, 15f, sumber = doa.sumber,
+            showArab = showArab, kategori = doa.kategori)
+        if (doa.catatan.isNotBlank()) {
+            Text(doa.catatan, style = MaterialTheme.typography.labelSmall)
+        }
         Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }

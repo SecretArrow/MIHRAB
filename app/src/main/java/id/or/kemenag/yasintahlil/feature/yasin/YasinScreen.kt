@@ -109,7 +109,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                     Column(Modifier.weight(1f)) {
                         BacaanCard("yasin:${v.nomor}", "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
                             s.showLatin, s.showTrans, s.arabSize, s.latinSize,
-                            lineHeightFactor = s.lineHeight, showArab = s.showArab)
+                            lineHeightFactor = s.lineHeight, showArab = s.showArab, kategori = surah.kategori)
                         Row {
                             TextButton(onClick = { vm.markRead(v.nomor) }) {
                                 Text(if (s.mark == v.nomor) "✓ Penanda terakhir" else "Tandai terakhir dibaca")

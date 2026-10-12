@@ -176,6 +176,67 @@ def check_harakat(name: str, node, where="") -> list[str]:
     return errs
 
 
+# Kategori sumber bacaan — plan.txt: "Bedakan bacaan yang bersumber dari Al-Qur'an, hadis,
+# dzikir umum, dan tradisi lokal." Dinyatakan sekali di tingkat berkas dan boleh ditimpa
+# per entri (mis. `sholat_bacaan.json` mayoritas hadis, tetapi lafaz niatnya tradisi).
+KATEGORI = ("quran", "hadis", "dzikir", "tradisi")
+
+
+def kategori_dari(node) -> str:
+    """Nilai `kategori` sebuah objek, atau "" bila tidak ada."""
+    k = node.get("kategori") if isinstance(node, dict) else None
+    return k.strip() if isinstance(k, str) else ""
+
+
+def entri_ber_arab(node, path=""):
+    """(path, objek) untuk setiap objek yang memuat teks Arab non-kosong."""
+    if isinstance(node, dict):
+        if str(node.get("arab", "")).strip():
+            yield path, node
+        for k, v in node.items():
+            yield from entri_ber_arab(v, f"{path}.{k}")
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            yield from entri_ber_arab(v, f"{path}[{i}]")
+
+
+def check_kategori(name: str, data) -> list[str]:
+    """Berkas yang memuat bacaan ber-Arab wajib menyatakan kategori sumbernya.
+
+    Tanpa kategori, pengguna tak dapat membedakan ayat Al-Qur'an, hadis, dzikir umum, dan
+    tradisi lokal — pembedaan yang diminta eksplisit oleh plan.txt. Kategori diambil dari
+    tingkat berkas, atau dari tiap entri bila berkasnya bercampur.
+    """
+    errs: list[str] = []
+    if not isinstance(data, dict):
+        return errs
+
+    # Seluruh nilai `kategori` di berkas ini (di kedalaman mana pun), sekali per lokasi.
+    salah: dict[str, str] = {}
+
+    def scan_nilai(node, path=""):
+        if isinstance(node, dict):
+            k = kategori_dari(node)
+            if k and k not in KATEGORI:
+                salah.setdefault(path.lstrip("."), k)
+            for key, v in node.items():
+                scan_nilai(v, f"{path}.{key}")
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                scan_nilai(v, f"{path}[{i}]")
+
+    scan_nilai(data)
+    for path, k in salah.items():
+        errs.append(f"{name}: {path} kategori '{k}' tidak dikenal "
+                    f"(pilihan: {', '.join(KATEGORI)})")
+
+    berarab = list(entri_ber_arab(data))
+    if berarab and not kategori_dari(data) and not any(kategori_dari(n) for _, n in berarab):
+        errs.append(f"{name}: memuat bacaan ber-Arab tetapi tanpa 'kategori' sumber "
+                    f"(pilihan: {', '.join(KATEGORI)})")
+    return errs
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CONTENT_DIR.exists():
@@ -225,6 +286,9 @@ def main() -> int:
 
         # --- Semua teks Arab wajib berharakat ---
         errors.extend(check_harakat(rel.name, data))
+
+        # --- Kategori sumber bacaan wajib dinyatakan ---
+        errors.extend(check_kategori(rel.name, data))
 
     for w in warnings:
         print(f"[peringatan] {w}")

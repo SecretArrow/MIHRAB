@@ -56,7 +56,7 @@ fun SholatDetailScreen(id: String) {
         Text("${info?.rakaat.orEmpty()} • ${info?.waktu.orEmpty()}")
         info?.niat?.let { n ->
             BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f,
-                showArab = showArab)
+                showArab = showArab, kategori = n.kategori)
         }
         if (info?.niat == null) {
             info?.niatCatatan?.takeIf { it.isNotBlank() }?.let {
@@ -115,7 +115,7 @@ fun SholatDetailScreen(id: String) {
             }
         }
         BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber,
-            showArab = showArab)
+            showArab = showArab, kategori = b.kategori)
         if (b.catatan.isNotBlank()) {
             Text(b.catatan, style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(top = 4.dp))

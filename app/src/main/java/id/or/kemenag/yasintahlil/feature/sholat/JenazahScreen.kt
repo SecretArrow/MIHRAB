@@ -63,7 +63,7 @@ fun JenazahScreen() {
         }
         info.niat.forEach { n ->
             BacaanCard("jenazah:niat:${n.id}", "Niat (${n.judul})", n.arab, n.latin, n.terjemahan,
-                true, true, arabSize, 15f, sumber = n.sumber, showArab = showArab)
+                true, true, arabSize, 15f, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
             if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
         }
         steps.forEachIndexed { i, (judul, b) ->
@@ -75,7 +75,7 @@ fun JenazahScreen() {
                 }
                 BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true,
                     if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber,
-                    showArab = showArab)
+                    showArab = showArab, kategori = b.kategori)
             }
         }
         if (info.catatanMazhab.isNotBlank()) {

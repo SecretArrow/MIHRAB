@@ -77,6 +77,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Bacaan kini dibedakan menurut sumbernya** (`plan.txt`: *"Bedakan bacaan yang bersumber dari
+  Al-Qur'an, hadis, dzikir umum, dan tradisi lokal"*): setiap berkas konten ber-Arab menyatakan
+  `kategori` — di tingkat berkas, atau per entri bila berkasnya bercampur (`sholat_bacaan.json`
+  mayoritas hadis, tetapi lafaz niatnya tradisi; `tahlil_full.json` mayoritas dzikir, doa jenazah
+  hadis, dan ayat Qur'annya quran). Layar menampilkan labelnya di kartu bacaan
+  (`SumberKategoriLabel`), dan kunci yang tak dikenal **tidak** ditampilkan sama sekali agar tidak
+  ada klaim yang belum diverifikasi. Nilai sah hanya `quran`, `hadis`, `dzikir`, `tradisi`;
+  invariannya dijaga di dua sisi yang harus tetap sepakat — gate CI
+  (`tools/validate_content.py`: berkas ber-Arab tanpa `kategori` = galat) dan uji
+  `SumberKategoriTest` (membandingkan `SumberKategori.SEMUA` dengan konstanta `KATEGORI` di gate).
 - **Plafon Dependabot diperbaiki**: batas versi kini diambil dari catatan rilis resmi, bukan
   tebakan. Rilis **Dagger/Hilt 2.59** adalah yang pertama mewajibkan AGP >= 9.0.0, jadi plafon
   dipasang di 2.59 (sebelumnya 2.60 — akibatnya PR dependabot mengusulkan Hilt 2.60.1 dan

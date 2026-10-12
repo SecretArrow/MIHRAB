@@ -22,6 +22,29 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |
 
+## Kategori sumber bacaan (wajib)
+
+`plan.txt` meminta bacaan **dibedakan menurut sumbernya**. Setiap berkas yang memuat teks Arab
+karena itu wajib menyatakan `kategori`:
+
+| Kunci | Arti | Label di layar |
+|---|---|---|
+| `quran` | Ayat Al-Qur'an (MSI LPMQ Kemenag) | Al-Qur'an |
+| `hadis` | Hadis/atsar dari kitab hadis (sunnah.com) | Hadis |
+| `dzikir` | Dzikir & doa umum tanpa nisbah ayat/hadis tertentu | Dzikir umum |
+| `tradisi` | Rumusan yang lazim di Indonesia (mis. lafaz niat, susunan tahlil) | Tradisi lokal |
+
+Kategori boleh dinyatakan **sekali di tingkat berkas**, dan **ditimpa per entri** bila berkasnya
+bercampur. Contohnya `sholat_bacaan.json` bertingkat berkas `hadis`, tetapi entri `niat`-nya
+`tradisi` dan `fatihah`/`surat_setelah_fatihah` `quran`; `tahlil_full.json` bertingkat `dzikir`
+dengan `doa_mayit` = `hadis` dan `doa_penutup` = `quran`.
+
+Kunci di luar daftar di atas **gagal di gate CI**. Di aplikasi, `SumberKategori.dikenal()`
+menyaringnya sehingga kunci tak dikenal **tidak ditampilkan sama sekali** — lebih baik tanpa label
+daripada label yang belum diverifikasi. Dua sisi ini (gate Python dan `SumberKategori.kt`) harus
+tetap sepakat; `SumberKategoriTest` membandingkan daftarnya dan gagal bila salah satu berubah
+sendiri.
+
 ## Teks Al-Qur'an: MSI + transliterasi resmi (selesai)
 
 Seluruh teks Al-Qur'an kini berasal dari layanan resmi **Qur'an Kemenag**
@@ -88,3 +111,7 @@ tak punya tanda baris). Teks berharakat wajib agar pemula dapat membaca; teks me
 divokalkan hampir pasti salah tempel. Invarian ini dijaga pula oleh uji `ArabicTextTest`, yang
 sekaligus memastikan tidak ada teks Arab yang ditulis langsung di kode Kotlin — seluruh lafaz
 harus berasal dari `assets/content` agar sumbernya dapat ditelusuri.
+
+Terakhir, gate **menuntut `kategori`** pada setiap berkas ber-Arab (nilai tak dikenal = galat),
+dan **menolak nilai `kategori` di luar** `quran`/`hadis`/`dzikir`/`tradisi`. Lihat bagian
+"Kategori sumber bacaan (wajib)" di atas; pasangan ujinya adalah `SumberKategoriTest`.
