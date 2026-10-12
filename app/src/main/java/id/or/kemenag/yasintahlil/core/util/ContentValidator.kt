@@ -24,6 +24,45 @@ object ContentValidator {
     }
 
     /**
+     * Ejaan kunci **sumber tingkat berkas** yang diterima skema, berurutan menurut prioritas.
+     *
+     * Satu tempat, karena kunci yang sama dibaca di tiga peran: pemeriksa bundel
+     * (`BundelKonten.periksaBerkas`), ringkasan berkas yang ditampilkan layar
+     * (`BundelKonten.ringkasan`), dan pembaca konten yang benar-benar memakainya
+     * (`ContentRepo.dariPembaruan`/`dariAset`). Gerbang konten di `tools/` juga mengenal keduanya.
+     *
+     * Dahulu ketiga peran Kotlin itu menuliskan daftar ini sendiri-sendiri, dan justru pembaca
+     * kontenlah yang tidak mengenal ejaan kedua — sehingga bundel ber-`sumberUrl` **lolos**
+     * pemasangan dan dilaporkan *"terpasang"*, tetapi setiap berkasnya ditolak pembaca saat dibuka
+     * (tanpa `sumber_url`, berkas pembaruan dianggap tidak bersumber) dan aplikasi diam-diam kembali
+     * memakai konten bawaan. Pembaruan yang tampak berhasil tetapi tidak mengubah apa pun — dan tak
+     * ada satu pun pesan yang menyebut sebabnya.
+     */
+    val KUNCI_SUMBER = listOf("sumber_url", "sumberUrl")
+
+    /**
+     * Ejaan yang **ditulis** aplikasi sendiri — yang pertama pada [KUNCI_SUMBER].
+     *
+     * Dipakai `ContentUpdateManager.metaJson` saat mencatat sumber tiap berkas yang dipasang.
+     * Menulis lewat konstanta ini menjaga agar tak ada ejaan kunci yang ditulis di luar berkas ini,
+     * sekaligus aman: pembacanya ([sumberBerkas]) menerima kedua ejaan, jadi mengubah urutan
+     * prioritas tidak membuat metadata lama tak terbaca.
+     */
+    val KUNCI_SUMBER_UTAMA: String get() = KUNCI_SUMBER.first()
+
+    /**
+     * Sumber tingkat berkas pada [dokumen]: ejaan pertama pada [KUNCI_SUMBER] yang terisi, atau
+     * `""` bila tidak ada yang menyatakan sumber.
+     *
+     * Dipakai pemeriksa **dan** pembaca konten, supaya ejaan yang lolos pemeriksaan adalah ejaan
+     * yang benar-benar dibaca.
+     */
+    fun sumberBerkas(dokumen: JSONObject): String =
+        KUNCI_SUMBER.firstNotNullOfOrNull { k ->
+            dokumen.optString(k).takeIf { it.isNotBlank() }
+        }.orEmpty()
+
+    /**
      * Seluruh URL yang dinyatakan sebagai **sumber** di dalam [node], di kedalaman mana pun.
      *
      * Bukan hanya `sumber_url` tingkat berkas: berkas konten juga mencantumkan `sumber_tambahan`

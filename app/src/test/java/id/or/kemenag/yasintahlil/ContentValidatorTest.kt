@@ -39,4 +39,26 @@ class ContentValidatorTest {
         assertEquals("quran.kemenag.go.id", ContentValidator.hostOf("https://quran.kemenag.go.id/x?y=1"))
         assertNull(ContentValidator.hostOf("bukan-url"))
     }
+
+    /**
+     * Sumber tingkat berkas punya dua ejaan yang diterima skema. Pembacanya harus mengenal
+     * keduanya: pemeriksa bundel (`BundelKonten`) dan gerbang CI memang mengenal `sumberUrl`,
+     * sehingga bundel dengan ejaan itu lolos pemasangan dan dilaporkan *"terpasang"* — tetapi
+     * `ContentRepo` dahulu hanya membaca `sumber_url`, menolak setiap berkasnya saat dibuka, dan
+     * aplikasi diam-diam kembali ke konten bawaan. Pembaruan yang tampak berhasil tanpa mengubah
+     * apa pun, tanpa satu pun pesan yang menyebut sebabnya.
+     */
+    @Test
+    fun sumberBerkasMenerimaKeduaEjaan() {
+        assertEquals("https://sunnah.com/muslim:591",
+            ContentValidator.sumberBerkas(org.json.JSONObject("""{"sumber_url":"https://sunnah.com/muslim:591"}""")))
+        assertEquals("https://sunnah.com/muslim:591",
+            ContentValidator.sumberBerkas(org.json.JSONObject("""{"sumberUrl":"https://sunnah.com/muslim:591"}""")))
+    }
+
+    @Test
+    fun sumberBerkasKosongBilaTidakMenyatakanSumber() {
+        assertEquals("", ContentValidator.sumberBerkas(org.json.JSONObject("""{"judul":"x"}""")))
+        assertEquals("", ContentValidator.sumberBerkas(org.json.JSONObject("""{"sumber_url":"   "}""")))
+    }
 }
