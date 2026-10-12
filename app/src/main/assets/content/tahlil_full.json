@@ -1,4 +1,5 @@
 {
+ "kategori": "dzikir",
  "catatan_tradisi": "Susunan tahlil dapat berbeda menurut tradisi dan rujukan. Ini salah satu susunan yang lazim di Indonesia, bukan satu-satunya yang benar.",
  "modul": "tahlil",
  "sumber_umum": "Bacaan Qur'an dari Mushaf Standar Indonesia LPMQ Kemenag (quran.kemenag.go.id); doa dari khazanah sunnah (sunnah.com)",
@@ -92,6 +93,7 @@
   {
    "arab": "اَللّٰهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ",
    "id": "doa_mayit",
+   "kategori": "hadis",
    "judul": "Doa untuk jenazah (laki-laki; untuk perempuan: لَهَا / وَارْحَمْهَا / وَعَافِهَا / وَاعْفُ عَنْهَا)",
    "latin": "Allahummaghfir lahu warhamhu wa 'afihi wa'fu 'anhu.",
    "sumber": "HR Muslim (doa jenazah) — sunnah.com",
@@ -100,6 +102,7 @@
   {
    "arab": "وَمِنْهُمْ مَّنْ يَّقُوْلُ رَبَّنَآ اٰتِنَا فِى الدُّنْيَا حَسَنَةً وَّفِى الْاٰخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ",
    "id": "doa_penutup",
+   "kategori": "quran",
    "judul": "Doa penutup (QS Al-Baqarah 201)",
    "latin": "Wa minhum may yaqūlu rabbanā ātinā fid-dun-yā ḥasanataw wa fil-ākhirati ḥasanataw wa qinā ‘ażāban-nār(i).",
    "sumber": "QS Al-Baqarah 201 (MSI Kemenag)",

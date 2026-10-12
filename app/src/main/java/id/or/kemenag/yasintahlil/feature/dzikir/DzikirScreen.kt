@@ -44,7 +44,7 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 val c = s.counts[key] ?: 0
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
                     s.showLatin, s.showTrans, s.arabSize, 15f, it.ulangi, it.sumber,
-                    showArab = s.showArab)
+                    showArab = s.showArab, kategori = it.kategori)
                 if (it.ulangi > 1) {
                     CounterRow(c, it.ulangi,
                         onPlus = { vm.setCount(key, (c + 1).coerceAtMost(it.ulangi)) },

@@ -69,6 +69,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Bacaan kini dibedakan menurut sumbernya** (`plan.txt`: *"Bedakan bacaan yang bersumber dari
+  Al-Qur'an, hadis, dzikir umum, dan tradisi lokal"*): setiap berkas konten ber-Arab menyatakan
+  `kategori` — di tingkat berkas, atau per entri bila berkasnya bercampur (`sholat_bacaan.json`
+  mayoritas hadis, tetapi lafaz niatnya tradisi; `tahlil_full.json` mayoritas dzikir, doa jenazah
+  hadis, dan ayat Qur'annya quran). Layar menampilkan labelnya di kartu bacaan
+  (`SumberKategoriLabel`), dan kunci yang tak dikenal **tidak** ditampilkan sama sekali agar tidak
+  ada klaim yang belum diverifikasi. Nilai sah hanya `quran`, `hadis`, `dzikir`, `tradisi`;
+  invariannya dijaga di dua sisi yang harus tetap sepakat — gate CI
+  (`tools/validate_content.py`: berkas ber-Arab tanpa `kategori` = galat) dan uji
+  `SumberKategoriTest` (membandingkan `SumberKategori.SEMUA` dengan konstanta `KATEGORI` di gate).
 - **Provenans per-entri dzikir**: setiap entri di `dzikir.json` kini mencantumkan sumbernya sendiri
   — Istighfar (HR Muslim 591), tasbih/tahmid/takbir (HR Bukhari 843 & Muslim 597), Ayat Kursi
   (QS Al-Baqarah 255), doa masuk masjid (HR Muslim 713), doa keluar rumah (HR Abu Dawud 5095,

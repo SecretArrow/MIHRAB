@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.SumberKategori
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,6 +51,19 @@ fun Context.shareText(text: String) {
     }, "Bagikan"))
 }
 
+/**
+ * Label kecil kategori sumber bacaan (Al-Qur'an / Hadis / Dzikir umum / Tradisi lokal).
+ * `plan.txt` meminta bacaan dibedakan menurut sumbernya; kunci yang tak dikenal tidak
+ * ditampilkan sama sekali agar tidak ada klaim yang tak terverifikasi.
+ */
+@Composable
+fun SumberKategoriLabel(kategori: String, modifier: Modifier = Modifier) {
+    if (SumberKategori.dikenal(kategori)) {
+        Text(SumberKategori.label(kategori), style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary, modifier = modifier)
+    }
+}
+
 @Composable
 fun BacaanCard(
     id: String, judul: String,
@@ -60,6 +74,7 @@ fun BacaanCard(
     lineHeightFactor: Float = 1.9f,
     onOpen: (() -> Unit)? = null,
     showArab: Boolean = true,
+    kategori: String = "",
 ) {
     val ctx = LocalContext.current
     val userData = rememberUserData()
@@ -80,6 +95,7 @@ fun BacaanCard(
                 color = MaterialTheme.colorScheme.secondary)
             if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)
             if (sumber.isNotBlank()) Text("Sumber: $sumber", style = MaterialTheme.typography.labelSmall)
+            SumberKategoriLabel(kategori)
             Row {
                 TextButton(onClick = {
                     ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")

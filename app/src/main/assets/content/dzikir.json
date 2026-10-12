@@ -1,4 +1,5 @@
 {
+ "kategori": "hadis",
  "kelompok": [
   {
    "id": "setelah_sholat",
@@ -51,6 +52,7 @@
     },
     {
      "judul": "Ayat Kursi",
+     "kategori": "quran",
      "rujukan_file": "ayat_kursi.json",
      "sumber": "QS Al-Baqarah 255 — MSI Kemenag"
     },
@@ -76,6 +78,7 @@
    "items": [
     {
      "judul": "Ayat Kursi + Al-Ikhlas, Al-Falaq, An-Nas (3x)",
+     "kategori": "quran",
      "rujukan": [
       "ayat_kursi.json",
       "surah_112.json",
@@ -173,6 +176,7 @@
     {
      "arab": "رَبِّ اغْفِرْ لِيْ وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِيْ صَغِيْرًا",
      "judul": "Doa untuk orang tua",
+     "kategori": "quran",
      "latin": "Rabbighfirli waliwalidayya warhamhuma kama rabbayani shaghira.",
      "sumber": "QS Al-Isra 24 (makna) — MSI Kemenag",
      "terjemahan": "Wahai Tuhanku, ampunilah aku dan kedua orang tuaku, dan rahmatilah keduanya sebagaimana mereka mendidikku sewaktu kecil."

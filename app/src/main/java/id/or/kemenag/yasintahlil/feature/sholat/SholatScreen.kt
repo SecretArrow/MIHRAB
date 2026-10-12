@@ -82,7 +82,7 @@ fun SholatScreen(go: (String) -> Unit) {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }
                     BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f,
-                        sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab)
+                        sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab, kategori = b.kategori)
                     if (b.catatan.isNotBlank()) {
                         Text(b.catatan, style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(bottom = 4.dp))

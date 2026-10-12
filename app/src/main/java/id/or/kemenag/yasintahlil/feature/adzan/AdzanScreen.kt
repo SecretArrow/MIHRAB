@@ -149,7 +149,7 @@ fun AdzanScreen() {
             valueRange = 16f..40f)
         lafaz.forEach { l ->
             BacaanCard("adzan:${l.arab.take(10)}", "Adzan", l.arab, l.latin, l.terjemahan,
-                true, true, arabSize, 15f, l.ulangi, showArab = showArab)
+                true, true, arabSize, 15f, l.ulangi, showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
     }
