@@ -67,6 +67,124 @@ ALLOWED_HOSTS = load_allowed_hosts()
 ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 
 
+# --- Aturan bundel yang dibaca dari sumber Kotlin -------------------------------------------
+#
+# Sebagian aturan bundel dipakai dua kali: oleh aplikasi saat memasang bundel yang dipilih pengguna
+# sendiri, dan oleh gate CI. Dahulu keduanya menyimpan salinannya masing-masing — satu di Kotlin,
+# satu di Python — dan tak ada apa pun yang membandingkannya. Dua salinan berarti dua kebijakan,
+# dan bedanya sunyi: bundel yang lolos gate dapat ditolak aplikasi saat dipasang (pembaruan tampak
+# berhasil tetapi tidak mengubah apa pun), atau sebaliknya prosa penunjuk yang seharusnya ditolak
+# lolos sampai **ditampilkan kepada pengguna sebagai bacaan** — tepat yang dilarang aturan
+# "jangan karang teks agama".
+#
+# Karena itu gate **membaca** nilainya dari `BundelKonten.kt` alih-alih menyimpannya. Pola
+# pengambilnya ditulis persis sama di penjaga Kotlin (`AturanBundelSatuTempatTest`), sehingga pola
+# yang berbeda antar-keduanya tidak dapat lolos tanpa ketahuan.
+
+BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+                 / "yasintahlil" / "core" / "data" / "BundelKonten.kt")
+
+# Aturan teks Arab (rentang blok, rentang huruf, tanda harakat, panjang kata minimum) dipakai tiga
+# kali dengan nilai yang sama: `BundelKonten` saat memasang bundel, `ArabicTextTest` saat memeriksa
+# assets, dan gate ini. Rentang Unicode tidak dapat dibaca sekilas, sehingga salinan yang tertinggal
+# tidak pernah tampak salah bagi peninjau — karena itu nilainya dibaca dari satu tempat.
+TEKS_ARAB = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+             / "yasintahlil" / "core" / "util" / "TeksArab.kt")
+
+# Literal string Kotlin, termasuk escape di dalamnya (`"\\"`), supaya `PEMISAH_NAMA_DILARANG`
+# yang memuat garis miring terbalik pun terbaca utuh.
+_TEKS_KOTLIN = r'"((?:[^"\\]|\\.)*)"'
+_ESCAPE_KOTLIN = {"\\": "\\", '"': '"', "n": "\n", "t": "\t", "r": "\r"}
+
+# Rentang dan kode Unicode Kotlin: `0x0600 to 0x06FF` dan `0x0670`.
+_RENTANG_KOTLIN = r"0x([0-9A-Fa-f]+)\s+to\s+0x([0-9A-Fa-f]+)"
+_KODE_KOTLIN = r"0x([0-9A-Fa-f]+)"
+
+
+def _unescape_kotlin(teks: str) -> str:
+    """Isi literal string Kotlin → teks sebenarnya (`\\\\` → `\\`, `\\"` → `"`)."""
+    keluar: list[str] = []
+    i = 0
+    while i < len(teks):
+        if teks[i] == "\\" and i + 1 < len(teks):
+            keluar.append(_ESCAPE_KOTLIN.get(teks[i + 1], teks[i + 1]))
+            i += 2
+        else:
+            keluar.append(teks[i])
+            i += 1
+    return "".join(keluar)
+
+
+def _cari(sumber: str, pola: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> str:
+    m = re.search(pola, sumber)
+    if not m:
+        raise SystemExit(f"[validate_content] '{nama}' tidak ditemukan di {berkas}")
+    return m.group(1)
+
+
+def baca_teks(sumber: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> str:
+    """Nilai `const val <nama> = "…"` pada sumber Kotlin."""
+    return _unescape_kotlin(_cari(sumber, rf"\b{nama}\s*=\s*{_TEKS_KOTLIN}", nama, berkas))
+
+
+def baca_angka(sumber: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> int:
+    """Nilai `const val <nama> = 1` pada sumber Kotlin."""
+    return int(_cari(sumber, rf"\b{nama}\s*=\s*(\d+)", nama, berkas))
+
+
+def baca_daftar_teks(sumber: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> list[str]:
+    """Nilai `val <nama> = listOf("a", "b")` pada sumber Kotlin."""
+    isi = _cari(sumber, rf"\b{nama}\s*=\s*listOf\(([^)]*)\)", nama, berkas)
+    return [_unescape_kotlin(t) for t in re.findall(_TEKS_KOTLIN, isi)]
+
+
+def baca_rentang(sumber: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> list[tuple[int, int]]:
+    """Nilai `val <nama> = listOf(0x0600 to 0x06FF, …)` pada sumber Kotlin."""
+    isi = _cari(sumber, rf"\b{nama}\s*=\s*listOf\(([^)]*)\)", nama, berkas)
+    rentang = [(int(a, 16), int(b, 16)) for a, b in re.findall(_RENTANG_KOTLIN, isi)]
+    if not rentang:
+        raise SystemExit(
+            f"[validate_content] '{nama}' tidak memuat rentang '0x… to 0x…' di {berkas}")
+    return rentang
+
+
+def baca_kode(sumber: str, nama: str, berkas: Path = BUNDEL_KONTEN) -> list[int]:
+    """Nilai `val <nama> = listOf(0x0670, 0x0653, …)` pada sumber Kotlin."""
+    isi = _cari(sumber, rf"\b{nama}\s*=\s*listOf\(([^)]*)\)", nama, berkas)
+    kode = [int(x, 16) for x in re.findall(_KODE_KOTLIN, isi)]
+    if not kode:
+        raise SystemExit(f"[validate_content] '{nama}' tidak memuat kode '0x…' di {berkas}")
+    return kode
+
+
+def _sumber(berkas: Path) -> str:
+    """Isi sebuah berkas sumber Kotlin. Sengaja **gagal keras** bila tidak terbaca: gate yang
+    diam-diam memakai nilai bawaan akan meloloskan berkas yang seharusnya ditolak."""
+    try:
+        return berkas.read_text(encoding="utf-8")
+    except OSError as e:
+        raise SystemExit(f"[validate_content] tidak dapat membaca {berkas}: {e}")
+
+
+SUMBER_BUNDEL = _sumber(BUNDEL_KONTEN)
+
+# Aturan nama berkas konten — dipakai `tools/validate_bundle.py` lewat modul ini.
+PANJANG_NAMA_MIN = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MIN")
+PANJANG_NAMA_MAKS = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MAKS")
+AKHIRAN_NAMA = baca_teks(SUMBER_BUNDEL, "AKHIRAN_NAMA")
+AWALAN_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "AWALAN_NAMA_DILARANG")
+PEMISAH_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "PEMISAH_NAMA_DILARANG")
+PLACEHOLDER_MARKERS = tuple(baca_daftar_teks(SUMBER_BUNDEL, "PLACEHOLDER"))
+
+# Aturan teks Arab — dipakai `unvocalized_words` di bawah, dan dibaca dari `TeksArab.kt`.
+SUMBER_TEKS_ARAB = _sumber(TEKS_ARAB)
+RENTANG_ARAB = baca_rentang(SUMBER_TEKS_ARAB, "RENTANG_ARAB", TEKS_ARAB)
+RENTANG_HURUF = baca_rentang(SUMBER_TEKS_ARAB, "RENTANG_HURUF", TEKS_ARAB)
+RENTANG_HARAKAT = baca_rentang(SUMBER_TEKS_ARAB, "RENTANG_HARAKAT", TEKS_ARAB)
+HARAKAT_TUNGGAL = baca_kode(SUMBER_TEKS_ARAB, "HARAKAT_TUNGGAL", TEKS_ARAB)
+MIN_HURUF = baca_angka(SUMBER_TEKS_ARAB, "MIN_HURUF", TEKS_ARAB)
+
+
 def host_allowed(host: str) -> bool:
     host = (host or "").lower()
     return any(host == h or host.endswith("." + h) for h in ALLOWED_HOSTS)
@@ -160,16 +278,13 @@ def check_schema(name: str, data) -> list[str]:
     return errs
 
 
-PLACEHOLDER_MARKERS = (
-    "lihat rujukan file", "lihat rujukan berkas", "dibaca penuh dari mushaf",
-    "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
-)
-
-
 def check_placeholders(name: str, node, where="") -> list[str]:
     """Teks Arab/Latin tidak boleh berisi prosa penunjuk (placeholder) — lihat plan.txt:
     'Jangan menghasilkan teks Arab secara acak atau merekonstruksi bacaan yang belum
-    diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya."""
+    diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya.
+
+    Daftar prosanya ada di `PLACEHOLDER_MARKERS`, dibaca dari `BundelKonten.PLACEHOLDER` — lihat
+    catatan di bagian atas berkas ini."""
     errs: list[str] = []
     if isinstance(node, dict):
         for k, v in node.items():
@@ -185,22 +300,29 @@ def check_placeholders(name: str, node, where="") -> list[str]:
     return errs
 
 
-# Harakat/baris: fathatan..sukun + alef khanjariyah dan tanda maddah.
-HARAKAT = set(range(0x064B, 0x0653)) | {0x0670, 0x0653, 0x0654, 0x0655, 0x0656}
-ARABIC_RUN = re.compile("[\u0600-\u06FF\u0750-\u077F]+")
+# Harakat/baris dan blok Arab \u2014 nilainya dibaca dari `TeksArab.kt` (lihat catatan di atas),
+# bukan disimpan di sini.
+HARAKAT = set(HARAKAT_TUNGGAL)
+for _awal, _akhir in RENTANG_HARAKAT:
+    HARAKAT |= set(range(_awal, _akhir + 1))
+
+ARABIC_RUN = re.compile("[" + "".join(
+    f"\\u{awal:04x}-\\u{akhir:04x}" for awal, akhir in RENTANG_ARAB) + "]+")
 
 
 def unvocalized_words(text: str) -> list[str]:
-    """Kata Arab (>= 3 huruf) yang sama sekali tanpa harakat.
+    """Kata Arab (>= `MIN_HURUF` huruf) yang sama sekali tanpa harakat.
 
-    Teks Arab pada aplikasi harus berharakat agar dapat dibaca pemula; kata
-    tanpa satu pun tanda baris hampir pasti salah ketik atau teks mentah yang
-    belum divokalkan. Huruf mad (ا و ي ى) tidak dihitung sebagai penanda.
+    Teks Arab pada aplikasi harus berharakat agar dapat dibaca pemula; kata tanpa satu pun tanda
+    baris hampir pasti salah ketik atau teks mentah yang belum divokalkan. Huruf mad tidak dihitung
+    sebagai penanda \u2014 kata yang hanya memuat huruf mad tetap dianggap tanpa harakat.
+
+    Aturannya dipakai bersama `BundelKonten` dan `ArabicTextTest`; lihat catatan di atas berkas ini.
     """
     out: list[str] = []
     for run in ARABIC_RUN.findall(text):
-        letters = [c for c in run if 0x0621 <= ord(c) <= 0x064A or 0x0671 <= ord(c) <= 0x06D3]
-        if len(letters) >= 3 and not any(ord(c) in HARAKAT for c in run):
+        letters = [c for c in run if any(a <= ord(c) <= b for a, b in RENTANG_HURUF)]
+        if len(letters) >= MIN_HURUF and not any(ord(c) in HARAKAT for c in run):
             out.append(run)
     return out
 

@@ -26,22 +26,18 @@ class ArabicTextTest {
 
     private fun root(): File = listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
 
-    private companion object {
-        /** Fathatan..sukun + alef khanjariyah dan tanda maddah. */
-        val HARAKAT: Set<Char> = (0x064B..0x0652).map { it.toChar() }.toSet() +
-            listOf(0x0670, 0x0653, 0x0654, 0x0655, 0x0656).map { it.toChar() }
-
-        val ARABIC_RUN = Regex("[\\u0600-\\u06FF\\u0750-\\u077F]+")
-    }
-
-    /** Kata Arab (>= 3 huruf) tanpa satu pun tanda harakat. */
-    private fun unvocalized(text: String): List<String> =
-        ARABIC_RUN.findAll(text).map { it.value }.filter { run ->
-            val letters = run.count { c ->
-                c.code in 0x0621..0x064A || c.code in 0x0671..0x06D3
-            }
-            letters >= 3 && run.none { it in HARAKAT }
-        }.toList()
+    /**
+     * Kata Arab tanpa harakat, memakai aturan bersama [TeksArab].
+     *
+     * Uji ini dahulu mengeja sendiri rentang Unicode-nya — blok Arab, rentang huruf, tanda harakat,
+     * dan panjang kata minimum — persis seperti `BundelKonten` dan `tools/validate_content.py`.
+     * Ketiganya bernilai sama tetapi tak ada yang membandingkannya, sehingga aturan yang diperbaiki
+     * di satu tempat tetap salah di dua tempat lainnya. Kini ketiganya membaca [TeksArab].
+     *
+     * Yang tetap khas uji ini hanyalah **bagian mana yang diperiksa**: setiap nilai string JSON,
+     * bukan hanya field `arab`/`latin`.
+     */
+    private fun unvocalized(text: String): List<String> = TeksArab.tanpaHarakat(text)
 
     @Test
     fun semuaTeksArabDiAssetsBerharakat() {
@@ -68,7 +64,7 @@ class ArabicTextTest {
             .walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
         assertTrue("Tidak ada sumber Kotlin ditemukan", screens.isNotEmpty())
 
-        val arabic = Regex("[\\u0600-\\u06FF\\u0750-\\u077F]")
+        val arabic = TeksArab.regexArab
         val problems = screens.mapNotNull { f ->
             arabic.find(f.readText())?.let { "${f.name}: '${it.value}'" }
         }
