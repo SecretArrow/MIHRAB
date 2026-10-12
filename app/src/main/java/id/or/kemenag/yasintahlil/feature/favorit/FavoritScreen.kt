@@ -3,7 +3,6 @@ package id.or.kemenag.yasintahlil.feature.favorit
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -72,9 +71,10 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         if (s.history.isEmpty()) item {
             Text("Belum ada riwayat.", style = MaterialTheme.typography.labelMedium)
         }
-        // Tanpa kunci: satu bacaan bisa muncul berkali-kali di riwayat, dan kunci ganda akan
-        // membuat Compose mengeluh soal item yang sama.
-        itemsIndexed(s.history.take(12)) { _, h ->
+        // Kunci `kind:refId`: `FavoritViewModel` sudah menyaring riwayat agar satu bacaan hanya
+        // menempati satu baris, sehingga kuncinya pasti unik — bukan lagi sekadar menghindari
+        // keluhan Compose, tetapi memang satu baris per bacaan.
+        items(s.history.take(12), key = { "h:${it.kind}:${it.refId}" }) { h ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))

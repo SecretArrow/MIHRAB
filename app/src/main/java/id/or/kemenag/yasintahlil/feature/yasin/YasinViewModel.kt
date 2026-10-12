@@ -73,6 +73,12 @@ class YasinViewModel @Inject constructor(
     fun markRead(n: Int) {
         _state.update { it.copy(mark = n) }
         save { store.set(Store.YASIN_MARK, n); store.set(Store.LAST, "yasin:$n") }
+        // Riwayat "terakhir dibaca" (`plan.txt` §"Pencarian, Favorit, dan Riwayat"). Sebelumnya
+        // modul Yasin tidak pernah menulis riwayat sama sekali: satu-satunya penulis riwayat adalah
+        // tombol "Salin" pada kartu bacaan, sehingga daftar "Riwayat terbaru" tidak memuat bacaan
+        // yang benar-benar dibuka. Ditulis di sini — bukan pada tiap gulir — karena `markRead`
+        // hanya dipanggil saat pengguna memang menandai posisi bacaannya.
+        save { userData.pushHistory("yasin", n.toString(), "Yasin ayat $n") }
     }
 
     fun toggleBookmark(n: Int) {

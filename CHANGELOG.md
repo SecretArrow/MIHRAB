@@ -282,6 +282,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Riwayat "terakhir dibaca" akhirnya terisi oleh bacaan yang benar-benar dibaca** (`plan.txt`
+  §"Pencarian, Favorit, dan Riwayat": *"Sediakan favorit, riwayat terakhir dibaca, bookmark, dan
+  pencarian terbaru"*): satu-satunya penulis riwayat adalah tombol **"Salin"** pada kartu bacaan
+  (serta riwayat pencarian), sedangkan modul **Yasin** dan **Tahlil** — dua layar baca utama —
+  **tidak pernah menulisnya sama sekali**. Daftar "Riwayat terbaru" karena itu memuat bacaan yang
+  *disalin*, bukan yang *dibaca*, dan membaca Yasin dari ayat 1 sampai 83 tidak meninggalkan jejak
+  apa pun. Kini `markRead` di Yasin dan perpindahan bagian di Tahlil (Berikutnya/Sebelumnya/lompat)
+  mencatat posisinya. Pencatatan **tidak** ditempelkan pada `persist()` Tahlil maupun pada
+  penghitung dzikir: menghitung tasbih juga memanggil keduanya, dan mencatat tiap ketukan akan
+  membanjiri riwayat dengan satu bagian yang sama. Karena pengulangan kini jauh lebih mungkin,
+  satu bacaan disaring agar hanya menempati satu baris — dan pengambilan riwayat dilakukan lebih
+  longgar (60) sebelum disaring, sebab bila 20 baris terbaru semuanya bacaan yang sama,
+  penyaringan setelah batas akan menyembunyikan bacaan lain yang sebenarnya ada.
 - **Doa qunut terletak setelah i'tidal pada daftar langkah**: entri qunut berdiri di antara sholawat
   Ibrahimiyah dan salam — bertentangan dengan keterangan waktunya sendiri ("Rakaat kedua Subuh
   setelah i'tidal"), sehingga pembaca yang menekan "Berikutnya" sampai ke qunut justru setelah
