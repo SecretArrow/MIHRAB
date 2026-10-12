@@ -360,6 +360,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Teks Surat Yasin kini menyebut asal teks Arab, transliterasi, dan terjemahannya**: berkas Qur'an
+  di `assets/content` mencatat **tiga** sumber secara terpisah — `sumber_arab` (Mushaf Standar
+  Indonesia LPMQ Kemenag), `sumber_latin` (transliterasi resmi Kemenag), dan `sumber_terjemahan`
+  (terjemah edisi 2019) — tetapi `Surah` hanya membawa yang terakhir, dan **tidak satu pun**
+  ditampilkan di layar: judul Yasin hanya menulis "(MSI Kemenag)" sebagai teks hardcode yang tak
+  menyebut asal transliterasi maupun terjemahan, dan tidak ikut berubah bila bundelnya diperbarui.
+  `Surah` kini membawa `sumberArab`/`sumberLatin`, dan baris atribusi disusun `AtribusiTeks` (murni,
+  tanpa Android, sehingga dapat diuji langsung): hanya bagian yang benar-benar diklaim yang tampil,
+  dan bila tidak ada keterangan sama sekali hasilnya kosong — bukan kalimat karangan. Dijaga
+  `AtribusiTeksQuranTest`.
+- **Lafaz adzan & iqomah kini menyebut sumbernya, dan urutannya bernomor**: `assets/content/adzan.json`
+  sudah mencatat rujukan tiap bagian (`adzan.sumber` = *"HR Bukhari-Muslim — sunnah.com"*,
+  `iqomah.sumber` = *"HR Abu Dawud, Tirmidzi — sunnah.com"*), tetapi `AdzanLafaz` tidak punya kolom
+  sumber sehingga keterangan itu tak pernah dibaca kode — layar Adzan dan Iqomah menampilkan lafaz
+  telanjang tanpa asal-usulnya, padahal permintaan tetapnya adalah *"pastikan semuanya berasal dari
+  sumber resmi"*. Kini rujukan dibaca per-entri dengan cadangan keterangan tingkat bagian (tidak ada
+  teks baru yang dikarang) dan ditampilkan di kartu tiap lafaz. Sekalian, tiap lafaz diberi nomor
+  urut: sebelumnya judulnya sama-sama "Adzan"/"Iqomah" dan id kartunya memakai 10 huruf Arab pertama
+  — yang **berulang** untuk lafaz yang sama (`اللهُ أَكْبَرُ`, `أَشْهَدُ أَنْ …`, `حَيَّ عَلَى …`), jadi
+  dua lafaz berbeda berbagi satu id dan menandai satu lafaz sebagai favorit ikut menandai lafaz
+  lainnya. Dijaga `AtribusiLafazAdzanTest`.
 - **Susunan Tahlil kini menyebut sumbernya di layar** (`plan.txt` §"Fitur Tahlil Lengkap":
   *"Sediakan beberapa susunan Tahlil berdasarkan sumber atau tradisi yang jelas"*): layar Tahlil
   hanya mencetak **nama** susunan (*"Susunan tahlil lazim Indonesia; susunan dapat berbeda menurut

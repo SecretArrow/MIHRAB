@@ -72,6 +72,10 @@ class ContentRepo(private val ctx: Context) {
             (0 until arr.length()).map { verse(arr.getJSONObject(it)) },
             d.optString("sumber_terjemahan", ""),
             d.optString("kategori", ""),
+            // Asal teks Arab & transliterasi dicatat terpisah dari terjemahan di berkasnya; tanpa
+            // keduanya, hanya asal terjemahan yang dapat ditampilkan.
+            d.optString("sumber_arab", ""),
+            d.optString("sumber_latin", ""),
         )
     }
 
@@ -237,11 +241,14 @@ class ContentRepo(private val ctx: Context) {
     fun adzan(): List<AdzanLafaz> {
         val d = doc("adzan.json")
         val def = d.optString("kategori", "")
-        val arr = d.getJSONObject("adzan").getJSONArray("daftar")
+        val bagian = d.getJSONObject("adzan")
+        val defSumber = bagian.optString("sumber", "")
+        val arr = bagian.getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
-                o.optInt("ulangi", 1), o.optString("kategori", def))
+                o.optInt("ulangi", 1), o.optString("sumber", defSumber),
+                o.optString("kategori", def))
         }
     }
 
@@ -253,11 +260,14 @@ class ContentRepo(private val ctx: Context) {
     fun iqomah(): List<AdzanLafaz> {
         val d = doc("adzan.json")
         val def = d.optString("kategori", "")
-        val arr = d.getJSONObject("iqomah").getJSONArray("daftar")
+        val bagian = d.getJSONObject("iqomah")
+        val defSumber = bagian.optString("sumber", "")
+        val arr = bagian.getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
-                o.optInt("ulangi", 1), o.optString("kategori", def))
+                o.optInt("ulangi", 1), o.optString("sumber", defSumber),
+                o.optString("kategori", def))
         }
     }
 

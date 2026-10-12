@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
@@ -74,7 +75,16 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         if (!focus) {
-            Text("Surat Yasin — ${surah.ayatCount} ayat (MSI Kemenag)", style = MaterialTheme.typography.titleLarge)
+            Text("Surat Yasin — ${surah.ayatCount} ayat", style = MaterialTheme.typography.titleLarge)
+            // Sumber teks ditampilkan apa adanya dari bundel: teks Arab, transliterasi, dan
+            // terjemahan dicatat terpisah di berkasnya (MSI LPMQ Kemenag / transliterasi resmi
+            // Kemenag / terjemah edisi 2019). Sebelumnya layar hanya menuliskan "(MSI Kemenag)"
+            // di judul — hardcode yang tidak menyebut asal transliterasi maupun terjemahan, dan
+            // tidak berubah bila bundelnya berubah.
+            val atribusi = remember(surah) { AtribusiTeks.surah(surah) }
+            if (atribusi.isNotBlank()) {
+                Text(atribusi, style = MaterialTheme.typography.labelSmall)
+            }
             Text("Terakhir dibaca: ${if (s.mark in 1..surah.ayatCount) "ayat ${s.mark}" else "belum ada"}",
                 style = MaterialTheme.typography.labelMedium)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

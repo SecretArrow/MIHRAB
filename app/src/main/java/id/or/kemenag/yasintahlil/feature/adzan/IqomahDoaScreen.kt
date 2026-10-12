@@ -131,10 +131,16 @@ fun IqomahScreen() {
                 modifier = Modifier.padding(top = 4.dp))
         }
 
-        items.forEach { l ->
-            BacaanCard("iqomah:${l.arab.take(10)}", "Iqomah", l.arab, l.latin, l.terjemahan,
+        // `plan.txt` §"Fitur Iqomah" meminta *"urutan bacaan yang jelas"* dan sumber yang dapat
+        // diperiksa. Tiap lafaz karena itu diberi nomor urut dan menyebut `sumber` bagiannya
+        // ("HR Abu Dawud, Tirmidzi — sunnah.com"), bukan tampil sebagai rangkaian telanjang.
+        // Nomor urut juga membuat id kartu unik: sebelumnya id memakai 10 huruf Arab pertama,
+        // yang sama untuk lafaz berulang, sehingga favorit satu lafaz menandai lafaz lain juga.
+        items.forEachIndexed { i, l ->
+            BacaanCard("iqomah:${i + 1}", "Lafaz iqomah ${i + 1} dari ${items.size}",
+                l.arab, l.latin, l.terjemahan,
                 true, true, if (fullscreen) arabSize + 8 else arabSize, ulangi = l.ulangi,
-                showArab = showArab, kategori = l.kategori)
+                sumber = l.sumber, showArab = showArab, kategori = l.kategori)
         }
     }
 

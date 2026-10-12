@@ -5,6 +5,17 @@ data class Surah(
     val nama: String, val ayatCount: Int, val verses: List<Verse>, val sumber: String,
     /** Kategori sumber isi surat (mis. [SumberKategori.QURAN]) — lihat `assets/content`. */
     val kategori: String = "",
+    /**
+     * Asal teks Arab dan transliterasi Latin — terpisah dari [sumber] yang menyebut terjemahan.
+     *
+     * Berkas Qur'an di `assets/content` mencatat ketiganya sendiri-sendiri (`sumber_arab`,
+     * `sumber_latin`, `sumber_terjemahan`): teks Arab dari Mushaf Standar Indonesia (MSI) LPMQ
+     * Kemenag, transliterasi Latin resmi Kemenag, terjemahan edisi 2019. Hanya [sumber] yang
+     * dahulu dibaca kode, dan itu pun tidak pernah ditampilkan — jadi pengguna tidak dapat
+     * memeriksa dari mana teks Arab dan transliterasi yang ia baca berasal.
+     */
+    val sumberArab: String = "",
+    val sumberLatin: String = "",
 )
 
 data class TahlilItem(
@@ -71,6 +82,15 @@ data class DzikirGroup(val id: String, val judul: String, val items: List<Dzikir
 
 data class AdzanLafaz(
     val arab: String, val latin: String, val terjemahan: String = "", val ulangi: Int = 1,
+    /**
+     * Rujukan lafaz ini (mis. *"HR Bukhari-Muslim — sunnah.com"*).
+     *
+     * `adzan.json` sudah mencantumkan `sumber` pada tingkat bagian (`adzan`/`iqomah`) maupun
+     * per-entri, tetapi nilainya dahulu tidak pernah dibaca kode — jadi layar Adzan dan Iqomah
+     * menampilkan lafaz telanjang tanpa asal-usulnya. Kolom ini meneruskannya ke [BacaanCard],
+     * yang sudah punya baris "Sumber: …". Kosong = tidak diklaim.
+     */
+    val sumber: String = "",
     /** Kategori sumber lafaz ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",
 )
