@@ -11,13 +11,19 @@ updates:
         update-types: ["minor", "patch"]
     # Proyek sengaja dipatok pada compileSdk 34 + AGP 8.5.x (lihat app/build.gradle.kts).
     # Sejumlah rilis "minor" di bawah ini menuntut compileSdk 35/36 atau AGP 9, sehingga
-    # PR-nya merah di CI (contoh: PR #20 — Hilt 2.60.1 menolak AGP < 9.0.0). Diabaikan
-    # sampai upgrade toolchain direncanakan, agar Dependabot tetap berguna.
+    # PR-nya merah di CI (contoh: PR #20 dan #22 — plugin Hilt menolak AGP < 9.0.0).
+    # Diabaikan sampai upgrade toolchain direncanakan, agar Dependabot tetap berguna.
+    #
+    # Batas versi diambil dari catatan rilis resmi, bukan tebakan:
+    #  - Dagger 2.59: "AGP 9 is now a requirement" untuk plugin Hilt (2.58 masih menahan
+    #    dukungan AGP 9). Jadi plafonnya 2.59, bukan 2.60.
+    #  - androidx.* di bawah ini dibangun terhadap SDK 35/36 sehingga menuntut compileSdk
+    #    yang lebih tinggi saat dikonsumsi.
     ignore:
-      - dependency-name: "com.google.dagger.hilt.android"        # butuh AGP >= 9.0.0
-        versions: [">= 2.60"]
-      - dependency-name: "com.google.dagger:hilt-android*"       # idem (runtime artifact)
-        versions: [">= 2.60"]
+      - dependency-name: "com.google.dagger*"                     # butuh AGP >= 9.0.0 (sejak 2.59)
+        versions: [">= 2.59"]
+      - dependency-name: "androidx.hilt:*"                        # mengikuti androidx.navigation/compileSdk 35
+        versions: [">= 1.3"]
       - dependency-name: "androidx.core:core-ktx"                # butuh compileSdk 35
         versions: [">= 1.15"]
       - dependency-name: "androidx.navigation:navigation-compose" # butuh compileSdk 35
@@ -28,6 +34,12 @@ updates:
         versions: [">= 2.10"]
       - dependency-name: "androidx.media3:*"                     # butuh compileSdk 35
         versions: [">= 1.5"]
+      - dependency-name: "androidx.test*"                        # dibangun terhadap SDK 35
+        versions: [">= 1.7"]
+      - dependency-name: "androidx.test.espresso:*"              # dibangun terhadap SDK 35
+        versions: [">= 3.7"]
+      - dependency-name: "androidx.test.uiautomator:*"           # dibangun terhadap SDK 35
+        versions: [">= 2.4"]
 
   # Versi action di .github/workflows (checkout, setup-java, gradle/actions, dsb.)
   - package-ecosystem: github-actions
