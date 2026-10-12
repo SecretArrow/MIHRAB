@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama saklar pengingat kini satu tempat**: satu saklar dapat dinyalakan/dimatikan dari beberapa
+  layar, dan tiap layar menuliskan namanya sendiri. Kalimat penjelasnya sudah lama disatukan di
+  `PengingatAdzan`, tetapi **namanya** belum — dan salah satunya sudah berkembang menjadi dua:
+  saklar utama `Store.NOTIF` bernama *"Pengingat waktu sholat"* di beranda tetapi *"Pengingat
+  ibadah"* di Pengaturan. Pengguna yang mematikan pengingat di beranda lalu membuka Pengaturan
+  menemukan saklar yang sama dengan nama lain, atau mengira keduanya pengaturan yang berbeda.
+  Nama saklar *"Pengingat membaca doa setelah adzan"* (`Store.DOA_ADZAN_REMINDER`) juga ditulis
+  lengkap di dua layar (Adzan dan Iqomah) yang sama-sama mengaturnya. Keduanya kini tinggal di
+  `PengingatAdzan` (`NAMA_PENGINGAT_WAKTU`, `NAMA_PENGINGAT_DOA`), dan ujinya menuntut lebih dari
+  sekadar "memakai konstanta": tiap tempat saklar harus menyebut nama miliknya **dan tidak
+  menyebut nama saklar yang lain**, karena nama yang tertukar sama menyesatkannya dengan saklar
+  tanpa nama. Dijaga `PengingatAdzanTest` (4 uji baru), dengan enam mutasi terverifikasi.
 - **Rujukan baris progres kini satu tempat**: baris progres bacaan disimpan sebagai pasangan
   `(jenis, rujukan)`. Jenisnya sudah lama datang dari `JenisBacaan`, tetapi **rujukannya** masih
   diketik ulang di tempat pemakaian: `"idx"` dan `"count"` muncul sepuluh kali di

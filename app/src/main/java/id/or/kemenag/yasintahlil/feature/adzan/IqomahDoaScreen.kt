@@ -195,7 +195,7 @@ fun DoaAdzanScreen() {
         // membaca doa setelah adzan."* Saklar yang sama juga ada di menu Adzan; keduanya menulis
         // kunci `Store.DOA_ADZAN_REMINDER` yang sama, jadi tidak ada dua sumber kebenaran.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Pengingat membaca doa setelah adzan")
+            Text(PengingatAdzan.NAMA_PENGINGAT_DOA)
             Switch(ingatkan, {
                 ingatkan = it
                 scope.launch {

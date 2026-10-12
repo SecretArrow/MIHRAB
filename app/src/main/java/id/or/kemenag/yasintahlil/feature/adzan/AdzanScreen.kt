@@ -249,7 +249,7 @@ fun AdzanScreen() {
         )
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Pengingat membaca doa setelah adzan")
+            Text(PengingatAdzan.NAMA_PENGINGAT_DOA)
             Switch(doaReminder, {
                 doaReminder = it
                 scope.launch {
