@@ -15,18 +15,25 @@ import id.or.kemenag.yasintahlil.navigation.RuteKonten
 @Composable
 fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
-    val repo = rememberRepo()
-    // Id kelompok dzikir dibaca dari bundel konten, bukan ditulis tetap di sini: kelompok yang
-    // ditambahkan bundel otomatis dikenali sehingga favoritnya tidak lagi jatuh ke Beranda.
-    val grupDzikir = remember(repo) {
-        runCatching { repo.dzikir().map { it.id }.toSet() }.getOrDefault(emptySet())
-    }
+    // Id kelompok dzikir datang dari keadaan layar (dibaca `FavoritViewModel` dari bundel konten),
+    // bukan dari pembacaan di sini yang kegagalannya ditelan menjadi himpunan kosong: dahulu itu
+    // membuat tiap baris dzikir menampilkan "Layar tujuan tidak dikenal" seolah tujuannya memang
+    // tidak ada, padahal yang gagal adalah membaca bundelnya.
+    val grupDzikir = s.grupDzikir
     // Satu daftar bergulir untuk seluruh bagian: favorit, bookmark, dan riwayat bisa panjang,
     // sehingga tak satu pun bagian boleh mendorong bagian lain keluar layar.
     LazyColumn(Modifier.fillMaxSize().padding(12.dp)) {
         item {
             Text("Favorit, Bookmark, Riwayat & Terakhir dibaca",
                 style = MaterialTheme.typography.titleLarge)
+        }
+        // Kegagalan membaca bundel konten diberitahukan di atas daftar: tanpa ini baris dzikir di
+        // bawah tampak seperti bacaan yang tujuannya memang tak dikenal, bukan bundel yang rusak.
+        s.dzikirGagal?.let { pesan ->
+            item {
+                Text(pesan, style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error)
+            }
         }
         if (s.last.isNotBlank()) {
             item {

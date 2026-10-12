@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.ContentRepo
+import id.or.kemenag.yasintahlil.core.data.DzikirGroup
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
@@ -21,15 +23,45 @@ data class FavoritUiState(
     val bookmarks: List<BookmarkItem> = emptyList(),
     val history: List<HistItem> = emptyList(),
     val last: String = "",
+    /**
+     * Id kelompok dzikir pada bundel konten — dipakai [id.or.kemenag.yasintahlil.navigation.RuteKonten]
+     * untuk mengenali favorit/riwayat dzikir, yang `kind`-nya adalah id kelompok, bukan `"dzikir"`.
+     */
+    val grupDzikir: Set<String> = emptySet(),
+    /** Sebab daftar kelompok dzikir tidak terbaca, atau `null` bila bundel konten normal. */
+    val dzikirGagal: String? = null,
 )
 
 @HiltViewModel
 class FavoritViewModel @Inject constructor(
     private val store: Store,
     private val userData: UserDataRepository,
+    private val repo: ContentRepo,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(FavoritUiState())
+    /**
+     * Id kelompok dzikir dibaca dari bundel konten, bukan ditulis tetap di layar: kelompok yang
+     * ditambahkan bundel otomatis dikenali sehingga favoritnya tidak lagi jatuh ke Beranda.
+     *
+     * Dahulu pembacaan ini ada di dalam `FavoritScreen` dan kegagalannya ditelan
+     * (`runCatching { … }.getOrDefault(emptySet())`). Akibatnya bundel konten yang bermasalah
+     * membuat setiap baris favorit/riwayat **dzikir** menampilkan *"Layar tujuan tidak dikenal"* —
+     * padahal tujuannya memang dikenal (layar Dzikir & Doa); yang gagal adalah mengenali id
+     * kelompoknya. Pengguna menyimpulkan isinya hilang. Sebabnya kini dibawa ke layar lewat
+     * [FavoritUiState.dzikirGagal], sama seperti `kotaGagal` pada layar Jadwal.
+     */
+    private val hasilDzikir: Result<List<DzikirGroup>> = runCatching { repo.dzikir() }
+
+    private val _state = MutableStateFlow(
+        FavoritUiState(
+            grupDzikir = hasilDzikir.getOrDefault(emptyList()).map { it.id }.toSet(),
+            dzikirGagal = hasilDzikir.exceptionOrNull()?.let { e ->
+                "Daftar kelompok dzikir tidak dapat dibaca dari bundel konten " +
+                    "(${e.message ?: e::class.java.simpleName}); sebagian baris dzikir di bawah " +
+                    "dapat menampilkan \"Layar tujuan tidak dikenal\"."
+            },
+        ),
+    )
     val state: StateFlow<FavoritUiState> = _state.asStateFlow()
 
     init {

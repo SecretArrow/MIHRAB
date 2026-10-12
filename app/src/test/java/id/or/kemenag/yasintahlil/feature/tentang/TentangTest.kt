@@ -1,8 +1,10 @@
 package id.or.kemenag.yasintahlil.feature.tentang
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import id.or.kemenag.yasintahlil.core.legal.SumberKonten
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONObject
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -68,6 +70,37 @@ class TentangTest {
         val s = sumber(layarRel)
         assertTrue("layar tidak membaca sumber dari bundel", s.contains("repo.sumberDipakai()"))
         assertTrue("domain resmi tidak diberi keterangan", s.contains("SumberKonten.label(host)"))
+    }
+
+    /**
+     * Bundel konten yang rusak tidak boleh membuat daftar sumber **menyusut** tanpa keterangan.
+     *
+     * Layar ini menjanjikan bahwa daftar sumbernya *"tidak dapat bertambah diam-diam"*, tetapi
+     * `sumberDipakai()` dahulu melewati berkas yang gagal diurai (`mapNotNull { runCatching { doc(f) }
+     * … }`) dan tetap mengembalikan daftar yang tampak utuh. Bagi pengguna, daftar yang kehilangan
+     * satu domain karena berkasnya rusak tidak dapat dibedakan dari daftar yang memang lengkap —
+     * janji "tidak bertambah diam-diam" karena itu hanya bermakna bila daftar itu juga tidak dapat
+     * menyusut diam-diam. Sebab kegagalan kini dibawa keluar lewat `SumberBundel.gagal` dan
+     * ditampilkan di atas daftar.
+     */
+    @Test
+    fun berkasKontenYangGagalDibacaTidakMenyembunyikanDomainnya() {
+        val repo = KodeSumber.kodeTanpaKomentar(sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/core/data/ContentRepo.kt"))
+        assertTrue("kegagalan membaca berkas konten tidak dicatat sebagai hasil",
+            repo.contains("SumberBundel("))
+        assertTrue("berkas yang gagal dibaca tidak dikumpulkan sebabnya",
+            repo.contains("gagal += "))
+        assertFalse("berkas konten yang gagal dibaca masih dilewati diam-diam",
+            repo.contains("mapNotNull { f -> runCatching { doc(f) }.getOrNull() }"))
+
+        val layar = KodeSumber.kodeTanpaKomentar(sumber(layarRel))
+        assertTrue("layar tidak memakai hasil yang membawa kegagalan",
+            layar.contains("SumberBundel"))
+        assertTrue("layar tidak menampilkan berkas konten yang gagal dibaca",
+            layar.contains("bundel.gagal"))
+        assertFalse("layar masih menelan kegagalan menjadi daftar kosong",
+            layar.contains("getOrDefault(emptyList())"))
     }
 
     @Test

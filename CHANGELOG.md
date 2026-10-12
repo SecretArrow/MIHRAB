@@ -380,6 +380,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Berkas konten yang gagal dibaca tidak lagi menyembunyikan domainnya dari layar Tentang**:
+  layar Tentang menjanjikan bahwa daftar sumbernya *"tidak dapat bertambah diam-diam"*, tetapi
+  `ContentRepo.sumberDipakai()` melewati berkas konten yang gagal diurai
+  (`mapNotNull { runCatching { doc(f) }.getOrNull() }`) dan tetap mengembalikan daftar yang tampak
+  utuh — sehingga daftar itu justru dapat **menyusut** tanpa satu pun tanda, dan bagi pengguna
+  daftar yang kehilangan satu domain tidak dapat dibedakan dari daftar yang memang lengkap.
+  Kegagalannya kini dibawa keluar sebagai `SumberBundel(host, gagal)`: berkas yang tak terbaca
+  beserta sebabnya dicatat, dan layar Tentang menampilkannya di atas daftar agar janji
+  "tidak bertambah diam-diam" tidak berhenti pada satu arah saja. Kegagalan membaca direktori
+  aset pun tidak lagi menyamar sebagai "tidak ada sumber". Dijaga `TentangTest`.
+- **Kegagalan membaca kelompok dzikir tidak lagi menyamar sebagai "Layar tujuan tidak dikenal"**:
+  `FavoritScreen` membaca id kelompok dzikir dari bundel konten dengan
+  `runCatching { repo.dzikir() … }.getOrDefault(emptySet())`. Kegagalan membaca bundel karena itu
+  menjadi himpunan kosong, dan setiap baris favorit/riwayat **dzikir** — yang `kind`-nya adalah id
+  kelompok, bukan `"dzikir"` — jatuh ke keterangan *"Layar tujuan tidak dikenal"*. Padahal tujuannya
+  memang dikenal (layar Dzikir & Doa); yang gagal adalah mengenali id kelompoknya, sehingga pengguna
+  menyimpulkan bacaannya hilang dan menandainya ulang. Id kelompok kini dibaca `FavoritViewModel`
+  dan sebab kegagalannya dibawa ke layar lewat `dzikirGagal` — ditampilkan di atas daftar, sama
+  seperti `kotaGagal` pada layar Jadwal — bukan disamarkan. Dijaga `RuteKontenTest`.
 - **URL sumber di dalam daftar JSON tidak lagi luput dari pemeriksaan**: aturan `SOURCES.md`
   mengharuskan setiap URL yang dinyatakan sebagai **sumber** berasal dari domain resmi, dan layar
   Tentang menjanjikan kepada pengguna bahwa *"berkas konten yang menyebut domain lain ditolak saat
