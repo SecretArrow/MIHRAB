@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.core.util
 
 import id.or.kemenag.yasintahlil.core.data.PrayerTimes
+import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import java.time.ZoneId
 import java.util.TimeZone
 
@@ -195,25 +196,31 @@ object JadwalHariIni {
      */
     val METODE_DEFAULT: String = PrayerCalc.Method.KEMENAG.name
 
-    /** Kunci mazhab Asar yang dikenali. Jumhur (Syafi'i, Maliki, Hambali) memakai faktor 1. */
-    const val ASAR_SYAFII = "syafii"
-    const val ASAR_HANAFI = "hanafi"
+    /**
+     * Kunci mazhab Asar yang dikenali — **dipinjam** dari kosakata mazhab panduan ([Mazhab]),
+     * bukan dieja ulang di sini. Jumhur (Syafi'i, Maliki, Hambali) memakai faktor 1, jadi hanya dua
+     * mazhab yang menghasilkan jam Asar berbeda.
+     */
+    const val ASAR_SYAFII = Mazhab.SYAFII
+    const val ASAR_HANAFI = Mazhab.HANAFI
     const val ASAR_DEFAULT = ASAR_SYAFII
 
     /**
      * Pilihan mazhab Asar sebagai pasangan kunci → nama tampilan, urut untuk ditampilkan.
      *
-     * Namanya dahulu dituliskan sendiri-sendiri di **dua** layar yang keduanya mengatur nilai yang
-     * sama (`Store.ASAR`): menu Jadwal menamainya *"Asar Syafi'i"* / *"Asar Hanafi"*, menu
-     * Pengaturan *"Syafi'i"* / *"Hanafi"*. Awalan *"Asar"* memang milik layar Jadwal — chip di sana
-     * berdiri tanpa judul bagian — jadi yang dibagi di sini hanyalah **namanya**, dan tiap layar
-     * menempelkan awalannya sendiri bila perlu. Yang tidak boleh berbeda adalah nama mazhabnya:
-     * pengguna yang berpindah layar harus membaca pilihan yang sama untuk nilai yang sama.
+     * Namanya dahulu dituliskan sendiri-sendiri di **tiga** tempat. Dua di antaranya layar yang
+     * keduanya mengatur nilai yang sama (`Store.ASAR`): menu Jadwal menamainya *"Asar Syafi'i"* /
+     * *"Asar Hanafi"*, menu Pengaturan *"Syafi'i"* / *"Hanafi"*. Yang ketiga adalah daftar mazhab
+     * **panduan** ([Mazhab.SEMUA]) — dan layar Pengaturan menampilkan kedua daftar itu berdampingan
+     * di halaman yang sama. Salinan ketiga itulah yang paling mudah lepas: mengubah nama di [Mazhab]
+     * tak menyentuh apa pun di sini, sehingga satu layar menawarkan *"Syafi'i"* untuk mazhab panduan
+     * dan nama lain untuk mazhab Asar — dua sebutan untuk satu mazhab, tepat bersebelahan. Karena
+     * itu daftar ini kini **diturunkan** dari [Mazhab.SEMUA]: hanya nama yang sudah dikenal panduan
+     * yang dapat muncul, dan ejaannya dijamin sama. Awalan *"Asar"* tetap milik layar Jadwal — chip
+     * di sana berdiri tanpa judul bagian — jadi tiap layar menempelkan awalannya sendiri bila perlu.
      */
-    val ASAR_SEMUA: List<Pair<String, String>> = listOf(
-        ASAR_SYAFII to "Syafi'i",
-        ASAR_HANAFI to "Hanafi",
-    )
+    val ASAR_SEMUA: List<Pair<String, String>> =
+        Mazhab.SEMUA.filter { it.first == ASAR_SYAFII || it.first == ASAR_HANAFI }
 
     /** Kunci mazhab Asar untuk faktor bayangan [hanafi] — kebalikan dari [asarHanafi]. */
     fun asarKey(hanafi: Boolean): String = if (hanafi) ASAR_HANAFI else ASAR_SYAFII

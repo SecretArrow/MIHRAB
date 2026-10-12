@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kosakata mazhab Asar tidak lagi dapat lepas dari kosakata mazhab panduan**: kunci mazhab
+  (`syafii`, `hanafi`) dan namanya (`Syafi'i`, `Hanafi`) hidup di dua tempat — `Mazhab` untuk
+  pilihan mazhab panduan sholat, dan `JadwalHariIni.ASAR_*` untuk perhitungan jam Asar. Layar
+  Pengaturan menampilkan **kedua daftar itu berdampingan** di halaman yang sama, tetapi tak ada
+  apa pun yang membandingkannya: mengubah nama di `Mazhab` tak menyentuh `JadwalHariIni`, sehingga
+  satu layar dapat menawarkan *"Syafi'i"* untuk mazhab panduan dan nama lain untuk mazhab Asar —
+  dua sebutan untuk satu mazhab, bersebelahan, tanpa satu pun galat. Kini `JadwalHariIni` **tidak
+  mengeja ulang** kosakata itu: `ASAR_SYAFII`/`ASAR_HANAFI` meminjam konstanta `Mazhab`, dan
+  `ASAR_SEMUA` diturunkan dari `Mazhab.SEMUA` — hanya nama yang sudah dikenal panduan yang dapat
+  muncul, dan ejaannya dijamin sama. `SebutanSatuTempatTest` menjaga dua arah: daftar Asar harus
+  tetap bagian dari daftar panduan (dan tepat dua, sebab hanya dua mazhab yang jam Asarnya
+  berbeda), dan `JadwalHariIni` tidak boleh mengeja kembali kunci maupun namanya. Enam mutasi
+  terverifikasi tertangkap.
 - **Kunci entri bacaan adzan tidak lagi dapat menyimpang dari bundel, pembaca, dan gate**: tiga
   bacaan setelah adzan — menjawab adzan, sholawat, dan doa setelah adzan — punya kunci yang ditulis
   di **empat** tempat: `adzan.json`, pembaca `ContentRepo.adzanDoa("…")`, daftar kunci di gate
