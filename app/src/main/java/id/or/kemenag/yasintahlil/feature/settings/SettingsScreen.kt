@@ -23,6 +23,7 @@ import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
@@ -187,7 +188,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            Text("Pengingat ibadah"); Switch(notif, {
+            Text(PengingatAdzan.NAMA_PENGINGAT_WAKTU); Switch(notif, {
                 notif = it
                 scope.launch {
                     store.set(Store.NOTIF, notif)

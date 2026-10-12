@@ -113,4 +113,27 @@ object PengingatAdzan {
 
     /** Batas tanggung jawab aplikasi: waktunya anjuran, bukan ketetapan syariat. */
     const val DOA_BUKAN_SYARIAT = "Waktunya pengingat pribadi, bukan ketentuan syariat."
+
+    // ---- Nama saklar yang muncul di lebih dari satu layar -------------------------------------
+    //
+    // Saklar pengingat dapat dinyalakan/dimatikan dari beberapa layar, dan tiap layar menuliskan
+    // namanya sendiri. Kalimat penjelasnya sudah lama disatukan di atas; **namanya** belum, dan
+    // salah satunya sudah berkembang menjadi dua: saklar utama `Store.NOTIF` bernama "Pengingat
+    // waktu sholat" di beranda tetapi "Pengingat ibadah" di Pengaturan. Pengguna yang mematikan
+    // pengingat di beranda lalu membuka Pengaturan menemukan saklar yang sama dengan nama lain —
+    // atau mengira keduanya pengaturan yang berbeda.
+
+    /**
+     * Nama saklar utama pengingat waktu sholat (`Store.NOTIF`) — dibaca beranda dan Pengaturan.
+     *
+     * "Waktu sholat" disebut eksplisit: saklar ini mematikan pengingat adzan, bukan seluruh
+     * pengingat aplikasi.
+     */
+    const val NAMA_PENGINGAT_WAKTU = "Pengingat waktu sholat"
+
+    /**
+     * Nama saklar pengingat doa setelah adzan (`Store.DOA_ADZAN_REMINDER`) — dibaca layar Adzan dan
+     * layar Iqomah, yang keduanya menuliskannya lengkap sendiri-sendiri.
+     */
+    const val NAMA_PENGINGAT_DOA = "Pengingat membaca doa setelah adzan"
 }

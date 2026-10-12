@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.util
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -159,6 +160,83 @@ class PengingatAdzanTest {
                 pola.forEach { p -> p.findAll(isi).forEach { pelanggar += "${f.name}: ${it.value}" } }
             }
         assertTrue("Bawaan pengingat ditulis ulang di luar PengingatAdzan: $pelanggar", pelanggar.isEmpty())
+    }
+
+    // ---- Nama saklar yang muncul di lebih dari satu layar -------------------------------------
+
+    private fun berkasMain(): List<File> =
+        File(root(), "src/main/java/id/or/kemenag/yasintahlil")
+            .walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
+
+    /** Kode tanpa komentar: KDoc yang menjelaskan pola lama memuat tulisan yang sama persis. */
+    private fun kode(f: File): String = KodeSumber.kodeTanpaKomentar(f.readText())
+
+    private fun layar(relatif: String): String =
+        KodeSumber.kodeTanpaKomentar(KodeSumber.sumber("src/main/java/id/or/kemenag/yasintahlil/$relatif"))
+
+    @Test
+    fun namaSaklarTidakKosongDanTidakSama() {
+        assertTrue("nama saklar pengingat waktu kosong", PengingatAdzan.NAMA_PENGINGAT_WAKTU.isNotBlank())
+        assertTrue("nama saklar pengingat doa kosong", PengingatAdzan.NAMA_PENGINGAT_DOA.isNotBlank())
+        assertFalse("dua saklar berbeda memakai nama yang sama",
+            PengingatAdzan.NAMA_PENGINGAT_WAKTU == PengingatAdzan.NAMA_PENGINGAT_DOA)
+    }
+
+    /**
+     * Nama kedua saklar itu hanya boleh hidup di `PengingatAdzan`. Menyalinnya ke layar berarti
+     * layar itu dapat menyebut saklar yang sama dengan kata yang berbeda — persis yang terjadi pada
+     * saklar utama, yang dahulu bernama "Pengingat ibadah" di Pengaturan sementara beranda
+     * menyebutnya "Pengingat waktu sholat".
+     */
+    @Test
+    fun namaSaklarTidakDisalinKeLayar() {
+        val nama = listOf(PengingatAdzan.NAMA_PENGINGAT_WAKTU, PengingatAdzan.NAMA_PENGINGAT_DOA)
+        val penyalin = berkasMain()
+            .filter { it.name != "PengingatAdzan.kt" }
+            .filter { f -> nama.any { kode(f).contains("\"$it\"") } }
+            .map { it.name }
+        assertTrue("nama saklar disalin ke luar `PengingatAdzan`: $penyalin", penyalin.isEmpty())
+    }
+
+    /** Nama lama yang berbeda untuk saklar utama tidak boleh kembali. */
+    @Test
+    fun namaSaklarUtamaYangBerbedaTidakKembali() {
+        val pelanggar = berkasMain().filter { kode(it).contains("\"Pengingat ibadah\"") }.map { it.name }
+        assertTrue("saklar `Store.NOTIF` disebut dengan nama lain: $pelanggar", pelanggar.isEmpty())
+    }
+
+    /**
+     * Setiap tempat yang menyalakan/mematikan saklar menyebut namanya dari kosakata bersama, nama
+     * itu menempel pada kunci `Store` yang benar, dan **nama saklar yang lain tidak ikut hadir** di
+     * layar itu. Nama yang tertukar sama menyesatkannya dengan saklar tanpa nama: pengguna membaca
+     * "Pengingat membaca doa setelah adzan" sementara saklar yang bergerak adalah pengingat waktu.
+     */
+    @Test
+    fun tiapTempatSaklarMemakaiNamaDanKunciYangBenar() {
+        data class Harapan(val ada: List<String>, val tidakAda: List<String>)
+        val harapan = mapOf(
+            "feature/home/HomeScreen.kt" to Harapan(
+                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU", "vm.setNotif"),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA")),
+            "feature/settings/SettingsScreen.kt" to Harapan(
+                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU", "Store.NOTIF"),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA")),
+            "feature/adzan/AdzanScreen.kt" to Harapan(
+                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA", "Store.DOA_ADZAN_REMINDER"),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU")),
+            "feature/adzan/IqomahDoaScreen.kt" to Harapan(
+                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA", "Store.DOA_ADZAN_REMINDER"),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU")),
+        )
+        harapan.forEach { (berkas, h) ->
+            val k = layar(berkas)
+            h.ada.forEach { potongan ->
+                assertTrue("$berkas tidak memuat `$potongan`", k.contains(potongan))
+            }
+            h.tidakAda.forEach { potongan ->
+                assertFalse("$berkas menyebut saklar yang bukan miliknya: `$potongan`", k.contains(potongan))
+            }
+        }
     }
 
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */
