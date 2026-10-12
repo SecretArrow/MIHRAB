@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.navigation
 
 import id.or.kemenag.yasintahlil.KodeSumber
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -36,26 +37,47 @@ class RuteKontenTest {
 
     /**
      * Setiap `kind` yang benar-benar ditulis aplikasi harus mengarah ke layar yang memuatnya.
-     * Daftar ini mengikuti `BacaanCard(...)` dan `pushHistory("search", …)`.
+     *
+     * Kuncinya diambil dari [JenisBacaan.BERPETA] — kosakata yang sama dengan yang dipakai layar
+     * saat menulis id kartunya — sehingga jenis baru tidak dapat masuk ke kosakata tanpa sekaligus
+     * diberi layar tujuan.
      */
     @Test
     fun setiapJenisKontenTersimpanMengarahKeLayarYangMemuatnya() {
         val harapan = mapOf(
-            "yasin" to Routes.YASIN,
-            "tahlil" to Routes.TAHLIL,
-            "bacaan" to Routes.SHOLAT,
-            "niat" to Routes.SHOLAT,
-            "langkah" to Routes.SHOLAT,
-            "ghaib" to Routes.GHAIB,
-            "jenazah" to Routes.JENAZAH,
-            "adzan" to Routes.ADZAN,
-            "iqomah" to Routes.IQOMAH,
-            // Lafaz pada layar Doa Adzan memakai kind "doa" — bukan layar Dzikir.
-            "doa" to Routes.DOA_ADZAN,
-            "search" to Routes.SEARCH,
+            JenisBacaan.YASIN to Routes.YASIN,
+            JenisBacaan.TAHLIL to Routes.TAHLIL,
+            JenisBacaan.DZIKIR to Routes.DZIKIR,
+            JenisBacaan.BACAAN to Routes.SHOLAT,
+            JenisBacaan.NIAT to Routes.SHOLAT,
+            JenisBacaan.LANGKAH to Routes.SHOLAT,
+            JenisBacaan.GHAIB to Routes.GHAIB,
+            JenisBacaan.JENAZAH to Routes.JENAZAH,
+            JenisBacaan.ADZAN to Routes.ADZAN,
+            JenisBacaan.IQOMAH to Routes.IQOMAH,
+            // Lafaz pada layar Doa Adzan memakai jenis "doa" — bukan layar Dzikir.
+            JenisBacaan.DOA to Routes.DOA_ADZAN,
+            JenisBacaan.SEARCH to Routes.SEARCH,
         )
+        assertEquals("daftar jenis di uji ini berbeda dari kosakata bersama `JenisBacaan.BERPETA`",
+            JenisBacaan.BERPETA.toSet(), harapan.keys)
         val salah = harapan.filterKeys { RuteKonten.rute(it) != harapan[it] }
         assertTrue("jenis konten tersimpan menuju layar yang salah: $salah", salah.isEmpty())
+    }
+
+    /**
+     * Jenis progres dan id rusak sengaja tidak punya layar tujuan: rincian sholat butuh argumen id,
+     * langkah wudhu tinggal di satu layar bersama tayamum, dan id tanpa pemisah tidak menunjuk apa
+     * pun. Menawarkan tombol "Buka" untuk ketiganya berarti mengirim pengguna ke tempat yang salah.
+     */
+    @Test
+    fun jenisProgresDanIdRusakTidakPunyaTujuan() {
+        JenisBacaan.HANYA_PROGRES.forEach { jenis ->
+            assertNull("jenis progres '$jenis' seharusnya tidak punya layar tujuan",
+                RuteKonten.rute(jenis))
+        }
+        assertNull("id rusak seharusnya tidak punya layar tujuan",
+            RuteKonten.rute(JenisBacaan.LAIN))
     }
 
     /**
@@ -98,10 +120,7 @@ class RuteKontenTest {
     /** Setiap rute yang dikembalikan harus punya nama layar — tombol tanpa keterangan tujuan itu menyesatkan. */
     @Test
     fun setiapRutePunyaNamaTujuan() {
-        val kinds = listOf(
-            "yasin", "tahlil", "bacaan", "niat", "langkah", "ghaib", "jenazah",
-            "adzan", "iqomah", "doa", "search",
-        ) + kelompokDzikir()
+        val kinds = JenisBacaan.BERPETA + kelompokDzikir()
         val tanpaNama = kinds.filter { RuteKonten.namaTujuan(it, kinds.toSet()) == null }
         assertTrue("rute tanpa nama tujuan: $tanpaNama", tanpaNama.isEmpty())
     }
@@ -212,10 +231,7 @@ class RuteKontenTest {
      */
     @Test
     fun tujuanSelaluMembawaNamaLayarnya() {
-        val kinds = listOf(
-            "yasin", "tahlil", "bacaan", "niat", "langkah", "ghaib", "jenazah",
-            "adzan", "iqomah", "doa", "search", "dzikir",
-        ) + kelompokDzikir()
+        val kinds = JenisBacaan.BERPETA + kelompokDzikir()
         kinds.forEach { kind ->
             val tujuan = RuteKonten.tujuan(kind, kinds.toSet())
             assertTrue("tujuan '$kind' tidak dikenali", tujuan != null)

@@ -8,6 +8,7 @@ import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.DzikirGroup
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,5 +76,8 @@ class DzikirViewModel @Inject constructor(
 
     private fun save(block: suspend () -> Unit) { viewModelScope.launch { block() } }
 
-    companion object { const val KIND = "dzikir" }
+    // Jenis progres hitungan dzikir datang dari kosakata bersama `JenisBacaan`. Hitungan tiap bacaan
+    // memakai rujukan `id kelompok:judul` (lihat `DzikirScreen`), jadi jenisnya tetap satu untuk
+    // seluruh kelompok — bukan id kelompoknya.
+    companion object { const val KIND = JenisBacaan.DZIKIR }
 }

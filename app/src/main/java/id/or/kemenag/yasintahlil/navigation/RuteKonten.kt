@@ -1,5 +1,7 @@
 package id.or.kemenag.yasintahlil.navigation
 
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+
 /**
  * Pemetaan "jenis konten tersimpan" (favorit & riwayat) ke rute layar tujuannya.
  *
@@ -51,19 +53,25 @@ object RuteKonten {
      * @param grupDzikir id kelompok dzikir pada bundel konten (lihat `ContentRepo.dzikir()`).
      */
     fun rute(kind: String, grupDzikir: Set<String> = emptySet()): String? = when (kind) {
-        "yasin" -> Routes.YASIN
-        "tahlil" -> Routes.TAHLIL
-        "dzikir" -> Routes.DZIKIR
-        // Bacaan di layar Doa Adzan memakai kind "doa"; lafaz Iqomah memakai "iqomah".
-        "doa" -> Routes.DOA_ADZAN
-        "iqomah" -> Routes.IQOMAH
-        "adzan" -> Routes.ADZAN
+        // Ejaan setiap jenis datang dari `JenisBacaan` — kosakata yang sama dengan yang dipakai
+        // layar saat menulis id kartunya. Sebelumnya kedua sisi mengejanya sendiri-sendiri, jadi
+        // satu huruf yang berubah di salah satu sisi sudah cukup membuat favorit terbuka ke layar
+        // yang salah tanpa satu pun pesan galat.
+        JenisBacaan.YASIN -> Routes.YASIN
+        JenisBacaan.TAHLIL -> Routes.TAHLIL
+        JenisBacaan.DZIKIR -> Routes.DZIKIR
+        // Bacaan di layar Doa Adzan memakai jenis "doa"; lafaz Iqomah memakai "iqomah".
+        JenisBacaan.DOA -> Routes.DOA_ADZAN
+        JenisBacaan.IQOMAH -> Routes.IQOMAH
+        JenisBacaan.ADZAN -> Routes.ADZAN
         // Bacaan sholat, lafaz niat, dan langkah panduan hidup di modul sholat; rincian per-sholat
         // (Routes.SHOLAT_DETAIL) butuh argumen id sehingga tidak dapat dituju dari sini.
-        "bacaan", "niat", "langkah" -> Routes.SHOLAT
-        "ghaib" -> Routes.GHAIB
-        "jenazah" -> Routes.JENAZAH
-        "search" -> Routes.SEARCH
+        JenisBacaan.BACAAN, JenisBacaan.NIAT, JenisBacaan.LANGKAH -> Routes.SHOLAT
+        JenisBacaan.GHAIB -> Routes.GHAIB
+        JenisBacaan.JENAZAH -> Routes.JENAZAH
+        JenisBacaan.SEARCH -> Routes.SEARCH
+        // Jenis progres ([JenisBacaan.HANYA_PROGRES]) dan id rusak ([JenisBacaan.LAIN]) sengaja
+        // tidak punya layar: keduanya bukan alamat yang dapat dituju.
         else -> if (kind in grupDzikir) Routes.DZIKIR else null
     }
 
@@ -83,7 +91,7 @@ object RuteKonten {
      *   [rute]; tanpa itu bacaan dzikir terbaca seolah tidak punya tujuan.
      */
     fun ruteTerakhir(last: String, grupDzikir: Set<String> = emptySet()): String? =
-        rute(last.substringBefore(':'), grupDzikir)
+        rute(JenisBacaan.jenisDari(last), grupDzikir)
 
     /**
      * Tujuan lengkap untuk nilai `Store.LAST` — rute **dan** nama layarnya sekaligus, sehingga
@@ -91,7 +99,7 @@ object RuteKonten {
      * dengan yang lain (atau tanpa sama sekali).
      */
     fun tujuanTerakhir(last: String, grupDzikir: Set<String> = emptySet()): TujuanKonten? =
-        tujuan(last.substringBefore(':'), grupDzikir)
+        tujuan(JenisBacaan.jenisDari(last), grupDzikir)
 
     /**
      * Nama layar tujuan, untuk memberi tahu pengguna ke mana tombol "Buka" akan membawanya.

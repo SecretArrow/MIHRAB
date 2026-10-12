@@ -16,6 +16,7 @@ import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         // Sholat wajib tidak punya kolom tujuan, jadi baris ini hanya muncul untuk sholat sunnah.
         info?.tujuan?.takeIf { it.isNotBlank() }?.let { Text("Tujuan: $it") }
         info?.niat?.let { n ->
-            BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize,
+            BacaanCard(JenisBacaan.id(JenisBacaan.NIAT, id), "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize,
                 showArab = showArab, kategori = n.kategori)
         }
         if (info?.niat == null) {
@@ -200,7 +201,10 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                     }
                 }
             }
-            BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
+            // Rujukannya `<id sholat>:<id bacaan>`: langkah yang sama (mis. rukuk) muncul di banyak
+            // sholat, dan tanpa id sholat di depannya favorit satu langkah akan menandai langkah
+            // yang sama di sholat lain.
+            BacaanCard(JenisBacaan.id(JenisBacaan.LANGKAH, "$id:${b.id}"), b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
                 showArab = showArab, kategori = b.kategori)
             if (b.catatan.isNotBlank()) {
                 Text(b.catatan, style = MaterialTheme.typography.labelSmall,
@@ -243,7 +247,10 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     }
 }
 
-private const val KIND = "sholat"
+// Jenis progres panduan sholat per-sholat (rujukannya id sholat) — dari kosakata bersama
+// `JenisBacaan`. Jenis ini hanya menyimpan progres: rincian sholat butuh argumen id, jadi tidak
+// dapat dituju dari daftar favorit/riwayat.
+private const val KIND = JenisBacaan.SHOLAT
 
 /**
  * Satu bagian daftar syarat/persiapan. Bagian kosong tidak digambar sama sekali — judul tanpa isi

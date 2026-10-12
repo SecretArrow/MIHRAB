@@ -12,6 +12,7 @@ import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
@@ -57,7 +58,10 @@ fun JenazahScreen() {
             OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         info.niat.forEach { n ->
-            BacaanCard("jenazah:niat:${n.id}", "Niat (${n.judul})", n.arab, n.latin, n.terjemahan,
+            // Varian niat diberi rujukan `niat:<id varian>` supaya tidak bertabrakan dengan id
+            // langkah takbir di bawah (`jenazah:<id bacaan>`).
+            BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, JenisBacaan.id(JenisBacaan.NIAT, n.id)),
+                "Niat (${n.judul})", n.arab, n.latin, n.terjemahan,
                 true, true, arabSize, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
             if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
         }
@@ -68,7 +72,7 @@ fun JenazahScreen() {
                 val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
-                BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true,
+                BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, b.id), b.judul, a, l, t, true, true,
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }

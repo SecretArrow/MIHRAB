@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -72,7 +73,9 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
         )
         LazyColumn(Modifier.fillMaxSize()) {
             items(tersaring) { it ->
-                val key = "${group.id}:${it.judul}"
+                // Id kartu dzikir memakai id kelompoknya sebagai jenis — daftar kelompok datang dari
+                // bundel konten, jadi jenisnya tidak dapat ditulis tetap di sini.
+                val key = JenisBacaan.id(group.id, it.judul)
                 val c = s.counts[key] ?: 0
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
                     s.showLatin, s.showTrans, s.arabSize,

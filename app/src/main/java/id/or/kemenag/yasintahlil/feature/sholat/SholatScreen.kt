@@ -16,6 +16,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
 import id.or.kemenag.yasintahlil.core.sholat.KelompokSholat
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
@@ -154,7 +155,7 @@ fun SholatScreen(go: (String) -> Unit) {
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }
-                    BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize,
+                    BacaanCard(JenisBacaan.id(JenisBacaan.BACAAN, b.id), b.judul, a, l, t, true, true, arabSize,
                         sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab, kategori = b.kategori)
                     if (b.catatan.isNotBlank()) {
                         Text(b.catatan, style = MaterialTheme.typography.labelSmall,

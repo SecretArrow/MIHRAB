@@ -9,6 +9,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.Surah
 import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +56,7 @@ class YasinViewModel @Inject constructor(
         }
         // Bookmark tersimpan di Room (tahan rotasi & process-death).
         viewModelScope.launch {
-            userData.bookmarks("yasin").collect { list -> _state.update { s -> s.copy(bookmarks = list) } }
+            userData.bookmarks(JenisBacaan.YASIN).collect { list -> _state.update { s -> s.copy(bookmarks = list) } }
         }
     }
 
@@ -69,17 +70,17 @@ class YasinViewModel @Inject constructor(
 
     fun markRead(n: Int) {
         _state.update { it.copy(mark = n) }
-        save { store.set(Store.YASIN_MARK, n); store.set(Store.LAST, "yasin:$n") }
+        save { store.set(Store.YASIN_MARK, n); store.set(Store.LAST, JenisBacaan.id(JenisBacaan.YASIN, n.toString())) }
         // Riwayat "terakhir dibaca" (`plan.txt` §"Pencarian, Favorit, dan Riwayat"). Sebelumnya
         // modul Yasin tidak pernah menulis riwayat sama sekali: satu-satunya penulis riwayat adalah
         // tombol "Salin" pada kartu bacaan, sehingga daftar "Riwayat terbaru" tidak memuat bacaan
         // yang benar-benar dibuka. Ditulis di sini — bukan pada tiap gulir — karena `markRead`
         // hanya dipanggil saat pengguna memang menandai posisi bacaannya.
-        save { userData.pushHistory("yasin", n.toString(), JudulBacaan.yasinAyat(n)) }
+        save { userData.pushHistory(JenisBacaan.YASIN, n.toString(), JudulBacaan.yasinAyat(n)) }
     }
 
     fun toggleBookmark(n: Int) {
-        viewModelScope.launch { userData.toggleBookmark("yasin", n.toString(), JudulBacaan.yasinAyat(n)) }
+        viewModelScope.launch { userData.toggleBookmark(JenisBacaan.YASIN, n.toString(), JudulBacaan.yasinAyat(n)) }
     }
 
     private fun save(block: suspend () -> Unit) { viewModelScope.launch { block() } }

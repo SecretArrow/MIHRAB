@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +46,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
 
     LaunchedEffect(Unit) {
         userData.recentHistory(50).collect { list ->
-            recent = list.filter { it.kind == "search" }.map { it.title }.distinct()
+            recent = list.filter { it.kind == JenisBacaan.SEARCH }.map { it.title }.distinct()
         }
     }
 
@@ -63,7 +64,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
     /** Catat kata kunci ke riwayat supaya "pencarian terbaru" terisi meski hasilnya tak dibuka. */
     fun catat() {
         val kata = q.trim()
-        if (kata.isNotBlank()) scope.launch { userData.pushHistory("search", kata, kata) }
+        if (kata.isNotBlank()) scope.launch { userData.pushHistory(JenisBacaan.SEARCH, kata, kata) }
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
@@ -102,7 +103,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
                 LazyColumn(Modifier.fillMaxSize()) {
                     items(hits) { h ->
                         KartuHasil(h) {
-                            scope.launch { userData.pushHistory("search", h.id, q.trim()) }
+                            scope.launch { userData.pushHistory(JenisBacaan.SEARCH, h.id, q.trim()) }
                             go(h.rute)
                         }
                     }
@@ -149,7 +150,7 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
     yasin.verses.forEach { v ->
         add(
             SearchDoc(
-                id = "yasin:${v.nomor}",
+                id = JenisBacaan.id(JenisBacaan.YASIN, v.nomor.toString()),
                 judul = JudulBacaan.yasinAyat(v.nomor),
                 teks = listOf(v.terjemahan, v.latin, v.arab),
                 rute = Routes.YASIN,
@@ -160,13 +161,13 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
 
     // Bagian Tahlil — termasuk surat Al-Fatihah/Al-Ikhlas/Al-Falaq/An-Nas yang dibaca di dalamnya.
     repo.tahlil().forEach { t ->
-        add(SearchDoc("tahlil:${t.id}", "Tahlil: ${t.judul}", listOf(t.judul, t.terjemahan, t.latin, t.arab), Routes.TAHLIL))
+        add(SearchDoc(JenisBacaan.id(JenisBacaan.TAHLIL, t.id), "Tahlil: ${t.judul}", listOf(t.judul, t.terjemahan, t.latin, t.arab), Routes.TAHLIL))
     }
 
     // Pustaka doa & dzikir.
     repo.dzikir().forEach { grup ->
         grup.items.forEach { d ->
-            add(SearchDoc("dzikir:${d.judul}", "Doa: ${d.judul}", listOf(d.judul, d.terjemahan, d.latin, d.arab), Routes.DZIKIR))
+            add(SearchDoc(JenisBacaan.id(JenisBacaan.DZIKIR, d.judul), "Doa: ${d.judul}", listOf(d.judul, d.terjemahan, d.latin, d.arab), Routes.DZIKIR))
         }
     }
 
@@ -177,7 +178,7 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
 
     // Bacaan sholat (lafaz, kapan dibaca, dan terjemahannya).
     repo.sholatBacaan().forEach { b ->
-        add(SearchDoc("bacaan:${b.id}", "Bacaan: ${b.judul}", listOf(b.judul, b.kapan, b.terjemahan, b.latin, b.arab), Routes.SHOLAT))
+        add(SearchDoc(JenisBacaan.id(JenisBacaan.BACAAN, b.id), "Bacaan: ${b.judul}", listOf(b.judul, b.kapan, b.terjemahan, b.latin, b.arab), Routes.SHOLAT))
     }
 
     // Panduan bersuci: wudhu, tayamum, rukun, dan pembatal wudhu.
@@ -222,9 +223,9 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
 
     // Doa seputar adzan dan lafaz iqomah.
     listOf(repo.doaAdzan(), repo.menjawabAdzan(), repo.sholawatAdzan()).forEach { doa ->
-        add(SearchDoc("adzan:${doa.judul}", doa.judul, listOf(doa.judul, doa.terjemahan, doa.latin, doa.arab), Routes.DOA_ADZAN))
+        add(SearchDoc(JenisBacaan.id(JenisBacaan.ADZAN, doa.judul), doa.judul, listOf(doa.judul, doa.terjemahan, doa.latin, doa.arab), Routes.DOA_ADZAN))
     }
     repo.iqomah().forEachIndexed { i, lafaz ->
-        add(SearchDoc("iqomah:$i", "Iqomah — lafaz ${i + 1}", listOf(lafaz.terjemahan, lafaz.latin, lafaz.arab), Routes.IQOMAH))
+        add(SearchDoc(JenisBacaan.id(JenisBacaan.IQOMAH, i.toString()), "Iqomah — lafaz ${i + 1}", listOf(lafaz.terjemahan, lafaz.latin, lafaz.arab), Routes.IQOMAH))
     }
 }

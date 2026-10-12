@@ -65,7 +65,8 @@ class RiwayatBacaanTest {
     fun yasinMencatatAyatYangDibaca() {
         val b = badan(sumber(yasinVm), "markRead")
         assertTrue("markRead tidak ditemukan di YasinViewModel", b.isNotBlank())
-        assertTrue("Yasin tidak menulis riwayat saat menandai bacaan", b.contains("pushHistory(\"yasin\""))
+        assertTrue("Yasin tidak menulis riwayat saat menandai bacaan",
+            b.contains("pushHistory(JenisBacaan.YASIN"))
         assertTrue("riwayat Yasin tidak menyebut nomor ayatnya", b.contains("n.toString()"))
     }
 

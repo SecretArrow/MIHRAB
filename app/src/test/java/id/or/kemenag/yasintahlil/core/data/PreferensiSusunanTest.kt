@@ -133,10 +133,12 @@ class PreferensiSusunanTest {
     @Test
     fun pengaturanMengosongkanPenandaPosisiBacaSaatSusunanDiganti() {
         val s = settingsScreen()
+        // Jenisnya kini datang dari kosakata bersama `JenisBacaan` — sama dengan yang dipakai
+        // pemetaan tujuan tombol "Buka", sehingga penandanya tidak dapat menyimpan ke jenis lain.
         assertTrue("posisi baca lama tidak dikosongkan saat susunan diganti",
-            s.contains("userData.setProgress(PreferensiSusunan.KIND_PROGRES, \"idx\", 0)"))
+            s.contains("userData.setProgress(JenisBacaan.TAHLIL, \"idx\", 0)"))
         assertTrue("hitungan bacaan lama tidak dikosongkan saat susunan diganti",
-            s.contains("userData.setProgress(PreferensiSusunan.KIND_PROGRES, \"count\", 0)"))
+            s.contains("userData.setProgress(JenisBacaan.TAHLIL, \"count\", 0)"))
     }
 
     /** Modul Tahlil memakai aturan yang sama, supaya keduanya tak berbeda pendapat. */
@@ -148,7 +150,7 @@ class PreferensiSusunanTest {
         assertTrue("ViewModel Tahlil tidak memakai PreferensiSusunan.idAktif",
             vm.contains("PreferensiSusunan.idAktif("))
         assertTrue("Kind progres Tahlil tidak lagi berasal dari satu sumber",
-            vm.contains("PreferensiSusunan.KIND_PROGRES"))
+            vm.contains("JenisBacaan.TAHLIL"))
     }
 
     @Test
