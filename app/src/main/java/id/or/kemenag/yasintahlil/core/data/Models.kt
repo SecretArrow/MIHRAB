@@ -41,6 +41,16 @@ data class DzikirGroup(val id: String, val judul: String, val items: List<Dzikir
 
 data class AdzanLafaz(val arab: String, val latin: String, val terjemahan: String = "", val ulangi: Int = 1)
 
+/** Doa/lafaz seputar adzan yang tampil di layar Doa Adzan (mis. menjawab adzan, sholawat). */
+data class AdzanDoa(
+    val judul: String,
+    val arab: String,
+    val latin: String,
+    val terjemahan: String = "",
+    val catatan: String = "",
+    val sumber: String = "",
+)
+
 data class Kota(val nama: String, val lat: Double, val lon: Double)
 
 /** Satu langkah panduan (wudhu/tayamum) — keterangan prosedural, bukan teks ibadah. */
