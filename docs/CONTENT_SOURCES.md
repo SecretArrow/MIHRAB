@@ -57,5 +57,8 @@ manusia dari sumber resmi.
 
 ```bash
 python3 tools/validate_content.py          # peringatan (non-blocking) — untuk pengembangan
-python3 tools/validate_content.py --strict # CI rilis: gagal bila ada entri tanpa sumber resmi
+python3 tools/validate_content.py --strict # gate: gagal bila ada entri tanpa sumber resmi
 ```
+
+Mode `--strict` dijalankan di **setiap PR** (`ci.yml`) dan di rilis (`release.yml`), sehingga
+entri tanpa sumber resmi tidak dapat masuk ke `main`.

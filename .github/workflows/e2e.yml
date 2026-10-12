@@ -20,6 +20,14 @@ jobs:
       - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v6
+
+      # Bangun APK uji SEBELUM emulator menyala. Kompilasi (Kotlin/KSP/Hilt) di runner
+      # 2-vCPU berebut CPU dengan emulator dan membuat emulator mendadak tak responsif
+      # (ShellCommandUnresponsiveException → "Unknown API Level" → 0 perangkat cocok).
+      # Dengan membangun lebih dulu, tugas emulator hanya memasang & menjalankan uji.
+      - name: Bangun APK uji (tanpa emulator)
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --build-cache
+
       - name: Instrumented test di emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -28,15 +36,10 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-boot-timeout: 900
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: |
-            # Nyalakan & tunggu daemon adb; kegagalan "Unable to connect to adb daemon"
-            # membuat connectedAndroidTest melihat 0 perangkat.
-            adb start-server
-            adb wait-for-device
-            # Tunggu boot selesai (bukan sleep tetap) agar tidak membuang waktu.
-            until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 2; done
-            # Pastikan adb sudah bisa membaca properti sebelum Gradle berjalan —
-            # jika tidak, AGP melewati perangkat dengan "Unknown API Level".
-            until [ -n "$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')" ]; do sleep 2; done
-            ./gradlew :app:connectedDebugAndroidTest --parallel --build-cache
+          # -memory 4096: RAM bawaan AVD (1,5 GB) membuat emulator tertekan saat Gradle
+          # berjalan berdampingan, dan itulah yang memicu kegagalan "Unknown API Level".
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics -memory 4096 -camera-back none -camera-front none
+          # Aksi ini menjalankan SETIAP BARIS script sebagai `sh -c` terpisah, jadi
+          # loop/fungsi multi-baris tidak akan utuh. Seluruh logika ada di berkas
+          # .github/scripts/e2e-instrumented.sh dan dipanggil sebagai satu baris.
+          script: bash .github/scripts/e2e-instrumented.sh
