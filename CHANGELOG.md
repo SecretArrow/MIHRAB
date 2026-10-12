@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Field tempat prosa penunjuk dicari tidak lagi dapat menyimpang dari gate dan dokumen**: aturan
+  *"prosa penunjuk di `arab`/`latin`"* hidup di tiga tempat — badan `fieldTeks` di `BundelKonten`,
+  pemeriksa `check_placeholders` di `tools/validate_content.py` yang menyimpan `("arab", "latin")`
+  tersendiri, dan baris aturan `docs/CONTENT_UPDATE.md` yang menyebut field yang sama kepada
+  pembaca. Menambah satu field di satu sisi saja menyempitkan pemeriksaan **tanpa galat apa pun**:
+  prosa penunjuk di field baru lolos ke layar sebagai bacaan, atau dokumen menjanjikan pemeriksaan
+  yang tak pernah dijalankan. Daftar field kini dinyatakan sebagai data (`BundelKonten.FIELD_TEKS`)
+  dan **dibaca** gate dari sana, sama seperti daftar prosanya; `AturanBundelSatuTempatTest` menuntut
+  gate tidak mengeja ulang daftarnya, `fieldTeks` benar-benar memakainya, dan baris dokumen menyebut
+  field yang persis sama — sekaligus memastikan tiap prosa yang dicontohkan dokumen masih benar-benar
+  ditolak aplikasi (daftarnya boleh tetap disingkat dengan *"…"*, tetapi begitu berhenti menyingkat
+  ia justru harus lengkap). Sembilan mutasi terverifikasi tertangkap.
 - **Angka isi konten di dokumen tidak lagi dapat menua sendiri**: tabel provenans
   `docs/CONTENT_SOURCES.md` menyatakan **banyaknya** isi tiap berkas — *"Yasin 83 ayat"*,
   *"15 bagian susunan tahlil"*, *"5 kelompok"* dzikir — dan angka itulah yang dibaca orang untuk
