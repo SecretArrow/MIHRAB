@@ -71,7 +71,7 @@ manusia dari sumber resmi.
 
 ```bash
 python3 tools/validate_content.py          # peringatan (non-blocking) — untuk pengembangan
-python3 tools/validate_content.py --strict # CI rilis: gagal bila ada entri tanpa sumber resmi
+python3 tools/validate_content.py --strict # gate: gagal bila ada entri tanpa sumber resmi
 ```
 
 Selain `sumber_url` tingkat berkas, gate ini juga menuntut **sumber per-entri** pada
@@ -79,3 +79,6 @@ Selain `sumber_url` tingkat berkas, gate ini juga menuntut **sumber per-entri** 
 lihat doa masuk rumah dan doa sesudah makan) serta menolak **placeholder** di field `arab`/`latin`
 (mis. `"— lihat rujukan file —"`). Bila teks asli diambil dari berkas rujukan (`rujukan`), field
 inline-nya dibiarkan kosong alih-alih diisi prosa penunjuk.
+
+Mode `--strict` dijalankan di **setiap PR** (`ci.yml`) dan di rilis (`release.yml`), sehingga
+entri tanpa sumber resmi tidak dapat masuk ke `main`.
