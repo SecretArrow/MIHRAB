@@ -84,7 +84,7 @@ fun IqomahScreen() {
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.IQOMAH, style = MaterialTheme.typography.titleLarge)
-        Text("Timer opsional setelah masuk waktu (± $mins mnt). Ini pengingat pribadi — waktu iqomah tiap masjid berbeda.",
+        Text("Timer opsional setelah masuk waktu (± $mins mnt). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
             style = MaterialTheme.typography.labelMedium)
 
         Text("%02d:%02d".format(mm, ss), style = MaterialTheme.typography.displayMedium)
@@ -127,13 +127,12 @@ fun IqomahScreen() {
         }
         Text(if (ingatkan) {
             "Bila aktif: notifikasi $mins menit setelah pengingat masuk waktu sholat, berjalan " +
-                "walau layar ini tertutup. Ketukannya membuka layar ini. Waktu iqomah tiap masjid " +
-                "berbeda, jadi ini perkiraan pribadi — bukan ketentuan syariat. Mengikuti saklar " +
-                "per waktu di menu Adzan: waktu yang dimatikan tidak ikut mengingatkan."
+                "walau layar ini tertutup. Ketukannya membuka layar ini. " +
+                "${PengingatAdzan.IQOMAH_PERKIRAAN} Mengikuti saklar per waktu di menu Adzan: " +
+                "waktu yang dimatikan tidak ikut mengingatkan."
         } else {
             "Bila diaktifkan: notifikasi $mins menit setelah pengingat masuk waktu sholat, " +
-                "berjalan walau layar ini tertutup. Waktu iqomah tiap masjid berbeda, jadi ini " +
-                "perkiraan pribadi — bukan ketentuan syariat."
+                "berjalan walau layar ini tertutup. ${PengingatAdzan.IQOMAH_PERKIRAAN}"
         }, style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

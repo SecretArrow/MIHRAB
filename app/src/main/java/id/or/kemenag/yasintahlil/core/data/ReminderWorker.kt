@@ -169,13 +169,15 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
      *
      * Teksnya sengaja menyebut "perkiraan" dan jumlah menit yang dipilih pengguna: waktu iqomah
      * berbeda di tiap masjid, jadi notifikasi ini tidak boleh terdengar seperti ketentuan syariat
-     * atau jadwal masjid tempat pengguna sholat.
+     * atau jadwal masjid tempat pengguna sholat. Kalimat keterangannya kini kalimat yang **sama**
+     * dengan yang dibaca pengguna di layar Iqomah (`PengingatAdzan.IQOMAH_PERKIRAAN`), bukan versi
+     * pendek yang hanya hidup di notifikasi ini.
      */
     private fun notifyIqomah(nama: String, menit: Int) {
         val notif = NotificationCompat.Builder(applicationContext, NotifChannels.PRE)
             .setContentTitle("Perkiraan waktu iqomah $nama")
-            .setContentText("Sekitar $menit menit setelah adzan $nama. Waktu iqomah tiap masjid " +
-                "berbeda — ini pengingat pribadi.")
+            .setContentText("Sekitar $menit menit setelah adzan $nama. " +
+                PengingatAdzan.IQOMAH_PERKIRAAN)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentIntent(contentIntent(Routes.IQOMAH))
             .setAutoCancel(true)

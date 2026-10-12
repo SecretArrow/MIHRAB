@@ -239,6 +239,81 @@ class PengingatAdzanTest {
         }
     }
 
+    // ---- Keterangan batas tanggung jawab timer iqomah ------------------------------------------
+
+    /**
+     * Kalimat ini dibaca pengguna di layar Iqomah **dan** di notifikasi yang berbunyi saat perkiraan
+     * waktunya habis. Isinya bukan pilihan gaya bahasa melainkan batas tanggung jawab aplikasi —
+     * waktu iqomah tiap masjid berbeda, jadi angka ini tidak boleh dibaca sebagai jadwal masjid
+     * tempat pengguna sholat. Karena itu ejaannya dipaku.
+     */
+    @Test
+    fun ejaanKeteranganIqomahTidakBerubah() {
+        assertEquals(
+            "Waktu iqomah tiap masjid berbeda, jadi ini perkiraan pribadi — bukan ketentuan syariat.",
+            PengingatAdzan.IQOMAH_PERKIRAAN,
+        )
+        // Kedua faktanya harus hadir: sebabnya (waktu berbeda tiap masjid) **dan** batasnya
+        // (perkiraan pribadi, bukan ketentuan syariat). Salinan lama di notifikasi hanya menyebut
+        // yang kedua, sehingga pengguna tak tahu mengapa angkanya tidak sama dengan masjidnya.
+        assertTrue("keterangan iqomah tak menyebut sebabnya",
+            PengingatAdzan.IQOMAH_PERKIRAAN.contains("masjid berbeda"))
+        assertTrue("keterangan iqomah tak menyebut batasnya",
+            PengingatAdzan.IQOMAH_PERKIRAAN.contains("bukan ketentuan syariat"))
+    }
+
+    /**
+     * Potongan kalimat yang khas. Menyalin keterangan ini ke layar atau notifikasi akan menghadirkan
+     * salah satunya — termasuk bila salinannya bukan kalimat yang sama persis, melainkan versi yang
+     * dieja sedikit berbeda (yang justru paling sering terjadi).
+     */
+    private val potonganKeteranganIqomah = listOf(
+        "masjid berbeda",
+        "pengingat pribadi",
+        "perkiraan pribadi",
+        "bukan ketentuan syariat",
+    )
+
+    @Test
+    fun keteranganIqomahTidakDisalinKeLuarPengingatAdzan() {
+        val penyalin = mutableListOf<String>()
+        berkasMain().filter { it.name != "PengingatAdzan.kt" }.forEach { f ->
+            val k = kode(f)
+            potonganKeteranganIqomah.filter { k.contains(it) }.forEach { penyalin += "${f.name}: \"$it\"" }
+        }
+        assertTrue("keterangan iqomah disalin ke luar `PengingatAdzan`: $penyalin", penyalin.isEmpty())
+    }
+
+    /** Kedua tempat yang membacanya benar-benar memakai kalimat bersama itu, bukan menggantinya. */
+    @Test
+    fun layarDanNotifikasiMemakaiKeteranganBersama() {
+        listOf(
+            "feature/adzan/IqomahDoaScreen.kt",
+            "core/data/ReminderWorker.kt",
+        ).forEach { berkas ->
+            assertTrue("$berkas tidak memakai keterangan iqomah bersama",
+                layar(berkas).contains("PengingatAdzan.IQOMAH_PERKIRAAN"))
+        }
+    }
+
+    /**
+     * Penjaga di atas hanya berarti bila pemindai komentarnya bekerja: KDoc di `ReminderWorker.kt`
+     * menjelaskan mengapa notifikasi ini tidak boleh terdengar seperti ketentuan syariat, dan
+     * penjelasan itu memuat tulisan yang sama dengan yang dilarang. Kalau komentar tidak dibuang,
+     * penjaganya akan menuduh berkas yang justru menjelaskan alasannya.
+     */
+    @Test
+    fun pemindaiKomentarBenarBenarMembuangPenjelasan() {
+        val berkas = File(
+            root(),
+            "src/main/java/id/or/kemenag/yasintahlil/core/data/ReminderWorker.kt",
+        )
+        assertTrue("prasyarat: ReminderWorker.kt tidak lagi menjelaskan batas ini di komentarnya",
+            berkas.readText().contains("ketentuan syariat"))
+        assertFalse("pemindai tidak membuang komentar sehingga menuduh penjelasan yang benar",
+            kode(berkas).contains("ketentuan syariat"))
+    }
+
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */
     @Test
     fun aturanPengingatTidakMenyentuhAndroid() {
