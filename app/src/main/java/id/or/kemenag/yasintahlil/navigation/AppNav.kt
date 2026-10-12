@@ -87,7 +87,7 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
             // dipasang sekali di sini agar setiap layar ikut, tanpa pengkabelan per layar.
             KolomKonten(Modifier.padding(pad)) {
             NavHost(nav, Routes.HOME, Modifier.fillMaxSize()) {
-                composable(Routes.HOME) { HomeScreen { nav.navigate(it) } }
+                composable(Routes.HOME) { HomeScreen(go = { nav.navigate(it) }) }
                 composable(Routes.IBADAH) { IbadahScreen { nav.navigate(it) } }
                 composable(Routes.ALAT) { AlatScreen { nav.navigate(it) } }
                 composable(Routes.SETTINGS) { SettingsScreen { nav.navigate(it) } }

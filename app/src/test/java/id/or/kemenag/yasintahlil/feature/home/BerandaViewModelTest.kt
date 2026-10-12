@@ -78,4 +78,16 @@ class BerandaViewModelTest {
         assertFalse("beranda masih membaca Store langsung", s.contains("rememberStore()"))
         assertFalse("beranda masih membaca data pengguna langsung", s.contains("rememberUserData()"))
     }
+
+    /**
+     * `HomeScreen` punya dua parameter, dan yang **terakhir** adalah `vm` — bukan `go`. Lambda
+     * penutup (`HomeScreen { … }`) karena itu mengikat ke `vm` dan gagal dikompilasi. Panggilannya
+     * harus memakai argumen bernama, seperti `FavoritScreen`/`SearchScreen` yang sudah begitu.
+     */
+    @Test
+    fun navigasiMemanggilBerandaDenganArgumenBernama() {
+        val nav = sumber("src/main/java/id/or/kemenag/yasintahlil/navigation/AppNav.kt")
+        assertTrue("panggilan HomeScreen tidak memakai go = (lambda penutup akan mengikat ke vm)",
+            nav.contains("HomeScreen(go ="))
+    }
 }
