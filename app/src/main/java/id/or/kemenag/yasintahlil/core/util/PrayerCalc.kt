@@ -113,15 +113,4 @@ object PrayerCalc {
         val (h, m) = hhmm.split(":").map { it.toInt() }
         return h * 60 + m
     }
-
-    /** Nama sholat berikutnya + menit menuju. */
-    fun next(nowMin: Int, t: PrayerTimes): Pair<String, Int> {
-        val order = listOf("Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
-            "Asar" to t.asar, "Magrib" to t.magrib, "Isya" to t.isya)
-        for ((name, hhmm) in order) {
-            val d = toMinutes(hhmm) - nowMin
-            if (d > 0) return name to d
-        }
-        return "Subuh" to (toMinutes(t.subuh) + 1440 - nowMin)
-    }
 }

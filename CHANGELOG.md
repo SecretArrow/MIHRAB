@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Urutan nama waktu sholat punya satu tempat**: pasangan nama→jam sholat (`"Subuh"` ↔
+  `t.subuh`, …) ditulis di **tiga** tempat. `JadwalHariIni` adalah pemiliknya, tetapi
+  `PrayerCalc.next` menyalinnya sendiri lalu mengembalikan **nama saja**, dan baris jam beranda
+  menyalinnya sekali lagi. Ketiganya harus sepakat tanpa apa pun yang menjaganya: bila salah satu
+  bergeser, hitung mundur beranda menunjuk satu waktu sementara baris jam di bawahnya menampilkan
+  jam waktu lain — tanpa satu pun pesan galat. Pemanggil `next` pun harus mencarikan jamnya
+  sendiri lewat `JadwalHariIni.jam(...)` dengan cabang cadangan `?: times.isya`, cabang yang
+  diam-diam menampilkan jam sholat lain daripada tak ada. `PrayerCalc.next` kini dihapus;
+  `JadwalHariIni.berikutnya()` mengembalikan **nama, jam, dan sisa menitnya sekaligus** (tipe
+  `JadwalHariIni.Berikutnya`) dengan urutan dari `ENAM_WAKTU` yang sama dengan `jam()`, `semua()`,
+  dan `adzan()` — sehingga nama dan jamnya tak dapat dipisahkan lagi, dan tak ada cabang cadangan
+  yang perlu ditebak. Baris jam beranda memakai `LIMA_WAKTU.zip(adzan(times))`. Penjaga
+  `pasanganNamaJamHanyaDitulisDiJadwalHariIni` gagal bila medan `PrayerTimes` diakses langsung dari
+  berkas lain, dan `PrayerCalcTest` kini mengambil urutan field dari `JadwalHariIni.semua()`.
 - **Zona waktu tampilan punya satu aturan, dan tak ada layar yang menyusunnya sendiri**: `Store.TZ`
   menyimpan id zona waktu pilihan pengguna, dan dua bentuk zona dipakai di seluruh aplikasi —
   `TimeZone` untuk jam beranda, penjadwal pengingat, menu Adzan, dan layar Jadwal; `ZoneId` untuk

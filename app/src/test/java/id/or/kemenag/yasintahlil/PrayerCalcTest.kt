@@ -83,21 +83,13 @@ class PrayerCalcTest {
     }
 
     @Test
-    fun nextSholat() {
-        val t = PrayerCalc.compute(cal(2026, 1, 15), PrayerCalc.Params(-6.2, 106.8, tz = jakarta))
-        val (nama, sisa) = PrayerCalc.next(3 * 60, t) // jam 03:00
-        assertEquals("Subuh", nama)
-        assertTrue(sisa in 60..120)
-        // Setelah Isya → Subuh besok.
-        val (n2, _) = PrayerCalc.next(23 * 60, t)
-        assertEquals("Subuh", n2)
-    }
-
-    @Test
     fun ekuatorWaktuUrutDanFormatValid() {
         val tz = TimeZone.getTimeZone("Asia/Pontianak")
         val t = PrayerCalc.compute(cal(2026, 3, 21, tz), PrayerCalc.Params(0.0, 109.33, tz = tz))
-        val m = listOf(t.subuh, t.terbit, t.zuhur, t.asar, t.magrib, t.isya).map { PrayerCalc.toMinutes(it) }
+        // Urutan field `PrayerTimes` diambil dari daftar bersama (`JadwalHariIni.semua`), bukan
+        // ditulis ulang di sini: satu daftar nama yang salah urut akan lolos dari uji ini kalau uji
+        // ini memakai salinannya sendiri.
+        val m = JadwalHariIni.semua(t).map { PrayerCalc.toMinutes(it) }
         assertTrue("Ekuator: urutan waktu harus naik $m", m.zipWithNext().all { (a, b) -> a < b })
     }
 

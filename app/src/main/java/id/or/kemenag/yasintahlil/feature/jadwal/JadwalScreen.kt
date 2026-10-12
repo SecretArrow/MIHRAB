@@ -168,8 +168,11 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
                         Text(j, style = MaterialTheme.typography.titleMedium)
                     }
                 }
-                val (berikut, sisa) = PrayerCalc.next(s.nowMin, t)
-                Text("Berikutnya: $berikut dalam ${sisa / 60} jam ${sisa % 60} mnt",
+                // Nama dan jamnya datang bersama dari aturan bersama — sama dengan hitung mundur di
+                // beranda, sehingga kedua layar tak dapat menunjuk waktu yang berlainan.
+                val berikut = JadwalHariIni.berikutnya(s.nowMin, t)
+                Text("Berikutnya: ${berikut.nama} dalam ${berikut.sisaMenit / 60} jam " +
+                    "${berikut.sisaMenit % 60} mnt",
                     color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
             }
 

@@ -46,10 +46,12 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         ))
     }
     val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-    val (berikut, sisa) = PrayerCalc.next(nowMin, times)
-    // Nama→jam dari aturan bersama, bukan rangkaian `when` yang menutup dengan `else -> isya`:
-    // cabang cadangan yang diam-diam menampilkan jam sholat lain lebih buruk daripada tak ada.
-    val berikutJam = JadwalHariIni.jam(times, berikut) ?: times.isya
+    // Nama berikutnya dan jamnya datang sebagai satu nilai dari aturan bersama (`JadwalHariIni`),
+    // sehingga hitung mundur ini tidak dapat menunjuk waktu yang berlainan daripada baris jam di
+    // bawahnya. Dahulu `PrayerCalc.next` menuliskan pasangan nama→jamnya sendiri dan jamnya dicari
+    // ulang di sini dengan cabang cadangan `?: times.isya` — cabang yang diam-diam menampilkan jam
+    // sholat lain lebih buruk daripada tak ada.
+    val berikut = JadwalHariIni.berikutnya(nowMin, times)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         // Ornamen geometris Islami halus (`plan.txt` §"Konsep dan Identitas Aplikasi"). Digambar di
@@ -65,9 +67,15 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         }
         Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
-                Text("${s.city} — Berikutnya: $berikut $berikutJam (${sisa / 60}j ${sisa % 60}m lagi)",
+                Text("${s.city} — Berikutnya: ${berikut.nama} ${berikut.jam} " +
+                    "(${berikut.sisaMenit / 60}j ${berikut.sisaMenit % 60}m lagi)",
                     style = MaterialTheme.typography.titleMedium)
-                Text("Subuh ${times.subuh} • Zuhur ${times.zuhur} • Asar ${times.asar} • Magrib ${times.magrib} • Isya ${times.isya}")
+                // Baris jam memakai daftar nama & jam yang sama dengan hitung mundur di atas dan
+                // dengan penjadwal pengingat (`LIMA_WAKTU`/`adzan`), bukan pasangan nama→field yang
+                // ditulis ulang di sini — dahulu baris ini menyalinnya, dan salinan itu dapat
+                // menampilkan jam yang berbeda dari waktu yang sedang dihitung mundurnya.
+                Text(JadwalHariIni.LIMA_WAKTU.zip(JadwalHariIni.adzan(times))
+                    .joinToString(" • ") { (nama, jamnya) -> "$nama $jamnya" })
                 Text("Metode: ${s.method.label}", style = MaterialTheme.typography.labelSmall)
                 Button(onClick = { go(Routes.JADWAL) }) { Text("Jadwal lengkap / ganti lokasi") }
             }

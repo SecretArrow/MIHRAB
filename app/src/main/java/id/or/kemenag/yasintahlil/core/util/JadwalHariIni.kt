@@ -104,6 +104,35 @@ object JadwalHariIni {
         return "%02d:%02d".format(total / 60, total % 60)
     }
 
+    /**
+     * Waktu sholat berikutnya pada [t] setelah menit ke-[nowMin], **beserta jamnya**.
+     *
+     * Nama dan jam sengaja dibawa bersama dalam satu nilai, bukan sebagai nama saja yang pemanggilnya
+     * harus mencarikan jamnya sendiri. Dahulu `PrayerCalc.next` mengembalikan nama saja dan menuliskan
+     * pasangan nama→jamnya sendiri (`"Subuh" to t.subuh`, …), lalu pemanggilnya mencari jamnya lewat
+     * [jam] dengan cabang cadangan `?: times.isya`. Dua daftar enam nama harus sepakat tanpa apa pun
+     * yang menjaganya — dan ketika tidak sepakat, hitung mundur beranda menunjuk satu waktu sementara
+     * baris jam di bawahnya menampilkan jam waktu lain, tanpa satu pun pesan galat.
+     *
+     * Urutannya mengikuti [ENAM_WAKTU], daftar yang sama dengan [jam], [semua], [adzan], dan koreksi
+     * menit. Terbit ikut karena yang dihitung adalah waktu berikutnya, bukan hanya waktu beradzan.
+     *
+     * Setelah Isya tak ada lagi waktu pada hari itu, jadi jawabannya Subuh **besok** — dengan putaran
+     * melewati tengah malam yang sama seperti [geser].
+     */
+    fun berikutnya(nowMin: Int, t: PrayerTimes): Berikutnya {
+        val berurut = ENAM_WAKTU.zip(semua(t))
+        for ((nama, hhmm) in berurut) {
+            val sisa = PrayerCalc.toMinutes(hhmm) - nowMin
+            if (sisa > 0) return Berikutnya(nama, hhmm, sisa)
+        }
+        val (nama, hhmm) = berurut.first()
+        return Berikutnya(nama, hhmm, PrayerCalc.toMinutes(hhmm) + 1440 - nowMin)
+    }
+
+    /** Satu waktu berikutnya: [nama], [jam] tampilannya, dan [sisaMenit] menuju waktunya. */
+    data class Berikutnya(val nama: String, val jam: String, val sisaMenit: Int)
+
     /** Jam tiap waktu, dikenali dari namanya — sehingga urutan daftar nama yang menentukan. */
     private fun jamPerNama(t: PrayerTimes): Map<String, String> = mapOf(
         "Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
@@ -134,8 +163,8 @@ object JadwalHariIni {
 
     /**
      * Jam untuk satu [nama] waktu, atau `null` bila namanya bukan salah satu dari [ENAM_WAKTU].
-     * Pemanggil yang menerima nama dari [PrayerCalc.next] memakainya agar pemetaan nama→jam tidak
-     * ditulis ulang sebagai rangkaian `when` yang dapat menyesatkan ke waktu yang salah.
+     * Pemanggil yang sudah memegang **nama** waktu memakainya agar pemetaan nama→jam tidak ditulis
+     * ulang sebagai rangkaian `when` yang dapat menyesatkan ke waktu lain.
      */
     fun jam(t: PrayerTimes, nama: String): String? = jamPerNama(t)[nama]
 
