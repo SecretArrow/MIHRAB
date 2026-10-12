@@ -145,5 +145,5 @@ fun ContentUpdateScreen() {
     }
 }
 
-/** MIME yang diminta dari pemilih berkas; `*/*` sebagai cadangan untuk penyedia yang tak menandai JSON. */
+/** MIME yang diminta dari pemilih berkas sistem: hanya berkas JSON yang ditampilkan. */
 private const val MIME_JSON = "application/json"

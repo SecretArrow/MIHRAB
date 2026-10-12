@@ -92,15 +92,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
-- **Berkas workflow kini diperiksa dapat dijalankan** (`tools/check_workflows.py`): GitHub tidak
-  melaporkan berkas workflow yang salah parse sebagai kesalahan yang jelas — ia langsung
-  menggagalkan run **tanpa membuat satu pun job**, sehingga pemeriksaan yang seharusnya menjaga PR
-  hilang tanpa jejak di daftar check. Itu nyata terjadi: satu nama langkah yang memuat `": "` tanpa
-  tanda kutip membuat seluruh `ci.yml` tidak sah dan PR tidak punya check sama sekali. Gate baru
-  memvalidasi setiap berkas di `.github/workflows/` (YAML terbaca, ada `jobs`, tiap job punya
-  `runs-on` + `steps`) dan menyebut baris/kolom galatnya. Ia dijalankan workflow **terpisah**
-  (`workflow-lint.yml`) karena `ci.yml` yang rusak tidak bisa memberi tahu siapa pun, dan sekali lagi
-  dari job `lint` di `ci.yml` agar tetap terjaga bila berkas terpisah itu sendiri hilang.
+- **Dua gate cepat sebelum kompilasi**, keduanya menangkap galat yang tadinya baru ketahuan setelah
+  satu siklus CI terbuang:
+  - `tools/check_workflows.py` — GitHub tidak melaporkan berkas workflow yang salah parse sebagai
+    kesalahan yang jelas: ia langsung menggagalkan run **tanpa membuat satu pun job**, sehingga
+    pemeriksaan yang seharusnya menjaga PR hilang tanpa jejak di daftar check. Itu nyata terjadi:
+    satu nama langkah yang memuat `": "` tanpa tanda kutip membuat seluruh `ci.yml` tidak sah dan
+    PR tidak punya check sama sekali. Gate ini memvalidasi setiap berkas di `.github/workflows/`
+    (YAML terbaca, ada `jobs`, tiap job punya `runs-on` + `steps`) dan menyebut baris/kolom
+    galatnya; ia dijalankan workflow **terpisah** (`workflow-lint.yml`) karena `ci.yml` yang rusak
+    tidak bisa memberi tahu siapa pun, dan sekali lagi dari job `lint` agar tetap terjaga bila
+    berkas terpisah itu sendiri hilang.
+  - `tools/check_kotlin_lex.py` — blok komentar Kotlin berakhir pada `*/` **pertama**, jadi
+    menuliskan `*/` di dalam komentar (mis. saat menyebut pola MIME `` `*/*` ``) menutup komentar
+    lebih awal dan sisa teksnya menjadi kode; itu pun nyata terjadi dan menggagalkan kompilasi
+    seluruh modul. Gate ini menolak baris ber-`*/` ganda, `/*` ganda, `*/` tanpa pembuka, dan
+    komentar yang tidak tertutup — tanpa perlu membangun proyek.
 - **Pengaturan tampilan bacaan kini satu bottom sheet** (`plan.txt`: *"Gunakan bottom sheet untuk
   pengaturan singkat"*): chip Arab/Latin/Terjemahan dan slider ukuran yang tadinya berserakan di
   badan sepuluh layar bacaan (Yasin, Tahlil, Dzikir, Adzan, Iqomah, Doa Adzan, Sholat, Tata Cara,
