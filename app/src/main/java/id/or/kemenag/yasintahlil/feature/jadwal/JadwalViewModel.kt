@@ -259,10 +259,11 @@ class JadwalViewModel @Inject constructor(
 
     fun setAsarHanafi(hanafi: Boolean) {
         _state.value = _state.value.copy(asarHanafi = hanafi); recompute()
-        // Kunci disimpan lewat konstanta bersama: `"syafii"` yang diketik ulang di sini dahulu
-        // menjadi salinan kelima dari nilai yang sama, dan salah ketik satu huruf membuat
-        // pilihannya jatuh ke faktor jumhur tanpa pesan galat.
-        val kunci = if (hanafi) JadwalHariIni.ASAR_HANAFI else JadwalHariIni.ASAR_SYAFII
+        // Kunci disimpan lewat aturan bersama: `"syafii"` yang diketik ulang di sini dahulu menjadi
+        // salinan kelima dari nilai yang sama, dan salah ketik satu huruf membuat pilihannya jatuh
+        // ke faktor jumhur tanpa pesan galat. Pasangan boolean→kunci pun kini tinggal di
+        // `JadwalHariIni.asarKey`, tempat yang sama dengan kebalikannya (`asarHanafi`).
+        val kunci = JadwalHariIni.asarKey(hanafi)
         viewModelScope.launch { store.set(Store.ASAR, kunci); PrayerScheduler.scheduleAll(ctx) }
     }
 

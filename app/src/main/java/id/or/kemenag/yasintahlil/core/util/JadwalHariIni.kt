@@ -201,6 +201,37 @@ object JadwalHariIni {
     const val ASAR_DEFAULT = ASAR_SYAFII
 
     /**
+     * Pilihan mazhab Asar sebagai pasangan kunci → nama tampilan, urut untuk ditampilkan.
+     *
+     * Namanya dahulu dituliskan sendiri-sendiri di **dua** layar yang keduanya mengatur nilai yang
+     * sama (`Store.ASAR`): menu Jadwal menamainya *"Asar Syafi'i"* / *"Asar Hanafi"*, menu
+     * Pengaturan *"Syafi'i"* / *"Hanafi"*. Awalan *"Asar"* memang milik layar Jadwal — chip di sana
+     * berdiri tanpa judul bagian — jadi yang dibagi di sini hanyalah **namanya**, dan tiap layar
+     * menempelkan awalannya sendiri bila perlu. Yang tidak boleh berbeda adalah nama mazhabnya:
+     * pengguna yang berpindah layar harus membaca pilihan yang sama untuk nilai yang sama.
+     */
+    val ASAR_SEMUA: List<Pair<String, String>> = listOf(
+        ASAR_SYAFII to "Syafi'i",
+        ASAR_HANAFI to "Hanafi",
+    )
+
+    /** Kunci mazhab Asar untuk faktor bayangan [hanafi] — kebalikan dari [asarHanafi]. */
+    fun asarKey(hanafi: Boolean): String = if (hanafi) ASAR_HANAFI else ASAR_SYAFII
+
+    /** Nama mazhab Asar untuk faktor bayangan [hanafi], tanpa awalan *"Asar"*. */
+    fun asarLabel(hanafi: Boolean): String =
+        ASAR_SEMUA.first { it.first == asarKey(hanafi) }.second
+
+    /**
+     * Nama mazhab Asar beserta **faktor bayangannya**, mis. `Syafi'i (1)` — keterangan di kepala
+     * layar Jadwal. Angka faktornya dibaca dari [asarFactor], bukan diketik di layar: dahulu kepala
+     * layar menuliskan `(1)`/`(2)` langsung, sehingga mengubah faktor bayangan akan membuat
+     * keterangan itu menyebut angka yang tidak lagi dipakai perhitungan.
+     */
+    fun asarLabelFaktor(hanafi: Boolean): String =
+        "${asarLabel(hanafi)} (${asarFactor(asarKey(hanafi)).toInt()})"
+
+    /**
      * Koreksi menit bawaan: tanpa koreksi. Panjangnya wajib sepanjang [ENAM_WAKTU].
      *
      * Rentang [KOREKSI_MIN_MENIT]..[KOREKSI_MAKS_MENIT] adalah satu-satunya rentang yang sah; ia
