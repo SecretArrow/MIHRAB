@@ -132,15 +132,24 @@ class ContentRepo(private val ctx: Context) {
         return order.mapNotNull { byId[it] }.ifEmpty { all }
     }
 
-    /** Daftar susunan tahlil yang tersedia (mis. "lazim Indonesia"). */
+    /**
+     * Daftar susunan tahlil yang tersedia (mis. "lazim Indonesia").
+     *
+     * Setiap susunan menyebut sumbernya sendiri bila berkasnya mencantumkan `sumber`; bila tidak,
+     * dipakai keterangan `edisi` tingkat modul — supaya susunan yang tersedia tidak tampil sebagai
+     * rangkaian tanpa asal-usul (`plan.txt` §"Fitur Tahlil Lengkap").
+     */
     fun tahlilSusunan(): List<TahlilSusunan> {
-        val arr = doc("tahlil.json").optJSONArray("susunan") ?: return emptyList()
+        val d = doc("tahlil.json")
+        val arr = d.optJSONArray("susunan") ?: return emptyList()
+        val edisiModul = d.optString("edisi", "")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val b = o.optJSONArray("bagian") ?: org.json.JSONArray()
             TahlilSusunan(
                 o.getString("id"), o.optString("nama", o.getString("id")),
-                (0 until b.length()).map { b.getString(it) }
+                (0 until b.length()).map { b.getString(it) },
+                o.optString("sumber", edisiModul),
             )
         }
     }

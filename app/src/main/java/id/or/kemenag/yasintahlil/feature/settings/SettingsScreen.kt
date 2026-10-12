@@ -276,6 +276,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     " Susunan dapat berbeda menurut tradisi dan rujukan — tidak ada susunan yang " +
                     "diklaim paling benar.",
                 style = MaterialTheme.typography.labelSmall)
+            // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan *"berdasarkan sumber atau tradisi
+            // yang jelas"*; sumbernya harus terlihat di sini juga, bukan hanya di modul Tahlil.
+            val sumberAktif = PreferensiSusunan.sumberAktif(susunanAktif, susunanTersedia)
+            Text(if (sumberAktif.isNotBlank()) "Sumber susunan aktif: $sumberAktif"
+                    else "Sumber susunan aktif: tidak diklaim — susunan ini disusun sendiri oleh Anda.",
+                style = MaterialTheme.typography.labelSmall)
         }
 
         Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)

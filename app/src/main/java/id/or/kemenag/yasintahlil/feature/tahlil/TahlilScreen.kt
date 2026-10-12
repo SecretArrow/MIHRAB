@@ -42,6 +42,13 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         Text("Tahlil — bagian ${s.idx + 1} dari ${s.items.size}", style = MaterialTheme.typography.titleLarge)
         Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}; susunan dapat berbeda menurut tradisi.",
             style = MaterialTheme.typography.labelMedium)
+        // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan yang *"berdasarkan sumber atau tradisi
+        // yang jelas"*. Menampilkan nama susunan saja tidak cukup: nama bukan sumber. Bila susunan
+        // itu tidak mengklaim sumber apa pun (mis. "Susunan saya"), hal itu dikatakan terus terang —
+        // bukan diisi rujukan karangan.
+        Text(if (s.sumberSusunan.isNotBlank()) "Sumber: ${s.sumberSusunan}"
+                else "Sumber: susunan ini disusun sendiri oleh Anda, bukan rangkaian dari rujukan atau tradisi tertentu.",
+            style = MaterialTheme.typography.labelSmall)
 
         if (s.susunan.size > 1) {
             ScrollableTabRow(s.susunan.indexOfFirst { it.id == s.susunanId }.coerceAtLeast(0)) {
