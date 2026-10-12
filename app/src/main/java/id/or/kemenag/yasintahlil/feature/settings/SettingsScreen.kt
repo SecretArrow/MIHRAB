@@ -32,6 +32,8 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var theme by remember { mutableStateOf("sistem") }
     var arab by remember { mutableStateOf(24f) }
     var latin by remember { mutableStateOf(16f) }
+    var lineHeight by remember { mutableStateOf(1.9f) }
+    var pageTheme by remember { mutableStateOf(TemaHalaman.IKUT) }
     var showL by remember { mutableStateOf(true) }
     var showT by remember { mutableStateOf(true) }
     var showA by remember { mutableStateOf(true) }
@@ -54,6 +56,8 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     LaunchedEffect(Unit) {
         theme = store.get(Store.DARK, "sistem")
         arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
+        lineHeight = store.get(Store.LINE_HEIGHT, 1.9f)
+        pageTheme = store.get(Store.PAGE_THEME, TemaHalaman.IKUT)
         showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
         showA = store.get(Store.SHOW_ARAB, true); infoCard = store.get(Store.INFO_CARD, true)
         asar = store.get(Store.ASAR, "syafii"); city = store.get(Store.CITY, "Jakarta")
@@ -88,6 +92,24 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         // Rentangnya dipakai bersama bottom sheet pengaturan bacaan (satu sumber kebenaran).
         Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = ARAB_SIZE_RANGE)
         Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = LATIN_SIZE_RANGE)
+        // "Jarak antarbaris" dan "tema halaman" juga preferensi bacaan global (`plan.txt`
+        // §"Fitur Surat Yasin": *"Pengaturan jarak antarbaris dan tema halaman"*). Keduanya sudah
+        // ada di sheet pengaturan bacaan, tetapi sebelumnya tidak ada di layar Pengaturan — padahal
+        // "Ukuran Arab" dan "Ukuran Latin" ada di sini. Menaruhnya di sini membuat keempat
+        // preferensi bacaan dapat ditemukan di satu tempat, menulis kunci yang sama.
+        Text("Jarak antarbaris: ${"%.1f".format(lineHeight)}")
+        Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = LINE_HEIGHT_RANGE)
+        Text("Tema halaman bacaan:", style = MaterialTheme.typography.titleMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TemaHalaman.SEMUA.forEach { t ->
+                FilterChip(pageTheme == t,
+                    { pageTheme = t; scope.launch { store.set(Store.PAGE_THEME, t) } },
+                    { Text(TemaHalaman.label(t)) })
+            }
+        }
+        Text("Tema halaman hanya mengubah warna kertas bacaan (krem/gelap), tanpa menyentuh teks " +
+                "atau sumbernya. Berlaku juga di sheet pengaturan bacaan.",
+            style = MaterialTheme.typography.labelSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text("Arab") })
             FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text("Latin") })

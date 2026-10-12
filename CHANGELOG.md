@@ -381,6 +381,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   pekerja latar dari ViewModel, dan jam beranda berdetak di sana — bukan membangun ulang layar tiap
   detik. Layar hanya menggambar `HomeUiState`. Dijaga `BerandaViewModelTest`, yang juga menolak
   kembalinya `mutableStateOf`/`rememberStore()` di layar beranda.
+- **Layar Pengaturan kini memuat keempat preferensi bacaan** (`plan.txt` §"Fitur Surat Yasin":
+  *"Pengaturan jarak antarbaris dan tema halaman"*, dan §"Pengaturan Aplikasi": *"Ukuran teks Arab
+  dan Latin"*): layar Pengaturan menyediakan "Ukuran Arab" dan "Ukuran Latin", tetapi **tidak**
+  "jarak antarbaris" maupun "tema halaman" — keduanya hanya ada di bottom sheet pengaturan bacaan.
+  Jadi pengguna yang mencarinya di Pengaturan tidak menemukannya, meski keempatnya preferensi
+  global yang sama-sama dipakai setiap kartu bacaan. Kini keduanya ada di Pengaturan, menulis kunci
+  `Store.LINE_HEIGHT`/`Store.PAGE_THEME` yang **sama** dengan sheet (bukan salinan kedua) dan
+  memakai rentang bersama `LINE_HEIGHT_RANGE` serta daftar `TemaHalaman.SEMUA`. Dijaga
+  `PengaturanBacaanTest`.
 - **"Ukuran Latin" dan "Jarak antarbaris" kini benar-benar global** (`plan.txt` §"Pengaturan
   Aplikasi" meminta pengaturan *"Ukuran teks Arab dan Latin"*, dan §"Pustaka Doa dan Dzikir"
   meminta setiap bacaan mendukung transliterasi): hanya layar Yasin yang membaca
