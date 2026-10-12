@@ -29,7 +29,15 @@ data class SholatInfo(
     /** Ketentuan khusus (mis. Jumat, qashar/jamak safar) — prosedural, tanpa teks Arab. */
     val ketentuan: List<String> = emptyList(),
     /** Catatan bila niat sengaja belum disertakan (menunggu verifikasi sumber resmi). */
-    val niatCatatan: String = ""
+    val niatCatatan: String = "",
+    /**
+     * Maksud sholat sunnah (mis. "Ampunan dosa", "Penghormatan masjid").
+     *
+     * `plan.txt` §"Sholat Sunnah": *"Kelompokkan sholat berdasarkan waktu pelaksanaan, jumlah
+     * rakaat, dan tujuan."* Sebelumnya kolom ini ada di bundel tetapi tak pernah dibaca kode —
+     * data yang ditulis, divalidasi gerbang konten, lalu tak sampai ke pengguna sama sekali.
+     */
+    val tujuan: String = "",
 )
 data class Bacaan(
     val id: String, val judul: String, val kapan: String = "",
@@ -65,7 +73,10 @@ data class AdzanDoa(
     val arab: String,
     val latin: String,
     val terjemahan: String = "",
+    /** Keterangan tambahan yang menyertai bacaan (mis. pengecualian dua seruan hayya). */
     val catatan: String = "",
+    /** Kapan bacaan ini dibaca — `plan.txt` §"Bacaan Setelah Adzan": *"Penjelasan waktu membacanya."* */
+    val waktu: String = "",
     val sumber: String = "",
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",
@@ -85,6 +96,37 @@ data class PanduanBersuci(
     val catatanMazhab: String = "",
     val catatanLafaz: String = "",
 )
+
+/** Batas aurat menurut mazhab yang dipilih panduan. */
+data class Aurat(
+    val judul: String = "",
+    val lakiLaki: String = "",
+    val perempuan: String = "",
+    val catatan: String = "",
+)
+
+/**
+ * Syarat dan persiapan sholat — kerangka berbahasa Indonesia tanpa teks Arab.
+ *
+ * `plan.txt` §"Tata Cara Sholat Langkah demi Langkah" menempatkan syarat wajib/sah, persiapan,
+ * wudhu, penutup aurat, dan penentuan kiblat **di dalam** panduan langkah demi langkah. Model ini
+ * membawa bagian yang berbentuk daftar; wudhu dan kiblat punya layarnya sendiri dan ditautkan dari
+ * layar detail.
+ */
+data class SholatSyarat(
+    val syaratWajib: List<String> = emptyList(),
+    val syaratSah: List<String> = emptyList(),
+    val persiapan: List<String> = emptyList(),
+    val penutupAurat: Aurat = Aurat(),
+    val kebersihanTempat: List<String> = emptyList(),
+    val catatanMazhab: String = "",
+    val catatanVerifikasi: String = "",
+) {
+    /** Jumlah butir yang ditampilkan, untuk label ringkasan pada tombol pembuka. */
+    val jumlah: Int
+        get() = syaratWajib.size + syaratSah.size + persiapan.size + kebersihanTempat.size +
+            listOf(penutupAurat.lakiLaki, penutupAurat.perempuan).count { it.isNotBlank() }
+}
 
 /** Konten sholat khusus (ghaib/jenazah): metadata + varian niat, dibaca dari assets. */
 data class SholatKhusus(

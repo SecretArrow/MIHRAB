@@ -12,15 +12,31 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.AdzanDoa
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private fun vibrate(ctx: Context) {
     val v = ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator ?: return
     runCatching { v.vibrate(VibrationEffect.createOneShot(900, VibrationEffect.DEFAULT_AMPLITUDE)) }
+}
+
+/**
+ * Simpan panjang timer, lalu susun ulang pengingat.
+ *
+ * Tanpa penjadwalan ulang, mengubah menit hanya memengaruhi timer di layar sementara notifikasi
+ * latar tetap memakai jeda lama — dua angka berbeda untuk hal yang sama.
+ */
+private fun simpanMins(store: Store, scope: CoroutineScope, mins: Int, ctx: Context) {
+    scope.launch {
+        store.set(Store.IQOMAH_MIN, mins)
+        PrayerScheduler.scheduleAll(ctx.applicationContext)
+    }
 }
 
 @Composable
@@ -36,10 +52,12 @@ fun IqomahScreen() {
     var arabSize by remember { mutableStateOf(24f) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
+    var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         mins = store.get(Store.IQOMAH_MIN, 10)
         arabSize = store.get(Store.ARAB_SIZE, 24f)
         showArab = store.get(Store.SHOW_ARAB, true)
+        ingatkan = store.get(Store.IQOMAH_ON, false)
     }
     FullscreenEffect(fullscreen)
 
@@ -76,10 +94,34 @@ fun IqomahScreen() {
             style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            OutlinedButton(onClick = { mins = (mins - 1).coerceAtLeast(1); remaining = -1; scope.launch { store.set(Store.IQOMAH_MIN, mins) } }) { Text("−") }
+            OutlinedButton(onClick = { mins = (mins - 1).coerceAtLeast(1); remaining = -1; simpanMins(store, scope, mins, ctx) }) { Text("−") }
             Text("$mins mnt", style = MaterialTheme.typography.titleMedium)
-            OutlinedButton(onClick = { mins = (mins + 1).coerceAtMost(60); remaining = -1; scope.launch { store.set(Store.IQOMAH_MIN, mins) } }) { Text("+") }
+            OutlinedButton(onClick = { mins = (mins + 1).coerceAtMost(60); remaining = -1; simpanMins(store, scope, mins, ctx) }) { Text("+") }
         }
+
+        // `plan.txt` §"Fitur Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat
+        // masuk waktu sholat."* Timer di atas hanya hidup selama layar terbuka; saklar inilah yang
+        // menambatkannya ke pengingat masuk waktu, sehingga tetap berbunyi saat aplikasi ditutup.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Ingatkan saat perkiraan iqomah habis")
+            Switch(ingatkan, {
+                ingatkan = it
+                scope.launch {
+                    store.set(Store.IQOMAH_ON, ingatkan)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            })
+        }
+        Text(if (ingatkan) {
+            "Bila aktif: notifikasi $mins menit setelah pengingat masuk waktu sholat, berjalan " +
+                "walau layar ini tertutup. Ketukannya membuka layar ini. Waktu iqomah tiap masjid " +
+                "berbeda, jadi ini perkiraan pribadi — bukan ketentuan syariat. Mengikuti saklar " +
+                "per waktu di menu Adzan: waktu yang dimatikan tidak ikut mengingatkan."
+        } else {
+            "Bila diaktifkan: notifikasi $mins menit setelah pengingat masuk waktu sholat, " +
+                "berjalan walau layar ini tertutup. Waktu iqomah tiap masjid berbeda, jadi ini " +
+                "perkiraan pribadi — bukan ketentuan syariat."
+        }, style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
@@ -91,7 +133,7 @@ fun IqomahScreen() {
 
         items.forEach { l ->
             BacaanCard("iqomah:${l.arab.take(10)}", "Iqomah", l.arab, l.latin, l.terjemahan,
-                true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi,
+                true, true, if (fullscreen) arabSize + 8 else arabSize, ulangi = l.ulangi,
                 showArab = showArab, kategori = l.kategori)
         }
     }
@@ -127,21 +169,9 @@ fun DoaAdzanScreen() {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
-        BacaanCard("doa:menjawab_adzan", menjawab.judul,
-            menjawab.arab, menjawab.latin, menjawab.terjemahan,
-            true, true, arabSize, 15f, sumber = menjawab.sumber, showArab = showArab, kategori = menjawab.kategori)
-        if (menjawab.catatan.isNotBlank()) {
-            Text(menjawab.catatan, style = MaterialTheme.typography.labelSmall)
-        }
-        BacaanCard("doa:sholawat_adzan", sholawat.judul,
-            sholawat.arab, sholawat.latin, sholawat.terjemahan,
-            true, true, arabSize, 15f, sumber = sholawat.sumber, showArab = showArab, kategori = sholawat.kategori)
-        BacaanCard("doa:adzan", doa.judul, doa.arab, doa.latin, doa.terjemahan,
-            true, true, arabSize, 15f, sumber = doa.sumber,
-            showArab = showArab, kategori = doa.kategori)
-        if (doa.catatan.isNotBlank()) {
-            Text(doa.catatan, style = MaterialTheme.typography.labelSmall)
-        }
+        KartuDoa("doa:menjawab_adzan", menjawab, arabSize, showArab)
+        KartuDoa("doa:sholawat_adzan", sholawat, arabSize, showArab)
+        KartuDoa("doa:adzan", doa, arabSize, showArab)
         Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
@@ -153,4 +183,21 @@ fun DoaAdzanScreen() {
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }
+}
+
+/**
+ * Satu bacaan adzan beserta **waktu membacanya** dan catatannya.
+ *
+ * `plan.txt` §"Bacaan Setelah Adzan" meminta *"Penjelasan waktu membacanya"*. Catatan dahulu
+ * dirender hanya untuk sebagian entri, sehingga catatan pada entri lain akan hilang tanpa jejak
+ * begitu bundel menambahkannya — satu jalur render untuk semuanya menutup celah itu.
+ */
+@Composable
+private fun KartuDoa(id: String, entri: AdzanDoa, arabSize: Float, showArab: Boolean) {
+    BacaanCard(id, entri.judul, entri.arab, entri.latin, entri.terjemahan,
+        true, true, arabSize, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
+    if (entri.waktu.isNotBlank()) Text(
+        "Kapan dibaca: ${entri.waktu}", style = MaterialTheme.typography.labelMedium)
+    if (entri.catatan.isNotBlank()) Text(
+        entri.catatan, style = MaterialTheme.typography.labelSmall)
 }

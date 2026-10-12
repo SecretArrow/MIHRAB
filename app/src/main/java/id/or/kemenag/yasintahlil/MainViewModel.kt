@@ -16,4 +16,8 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val theme: StateFlow<String> =
         store.flow(Store.DARK, "sistem").stateIn(viewModelScope, SharingStarted.Eagerly, "sistem")
+
+    /** Tema halaman bacaan (`ikut`/`krem`/`gelap`) — dibaca di akar agar berlaku untuk semua layar. */
+    val pageTheme: StateFlow<String> =
+        store.flow(Store.PAGE_THEME, "ikut").stateIn(viewModelScope, SharingStarted.Eagerly, "ikut")
 }

@@ -42,9 +42,12 @@
         android:theme="@style/Theme.YasinTahlil"
         android:allowBackup="true"
         android:supportsRtl="true">
+        <!-- singleTop: ketukan notifikasi saat aplikasi sudah terbuka diteruskan lewat onNewIntent,
+             sehingga rute tujuan dibuka pada instance yang sama (bukan menumpuk layar). -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

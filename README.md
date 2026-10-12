@@ -11,8 +11,13 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 ## Struktur
 - `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
 - `app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
-- `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*)
+- `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*),
+  workflow-lint (memastikan berkas workflow sendiri dapat dibaca — lihat `tools/check_workflows.py`)
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
+- `tools/` gate konten & gate cepat: `validate_content.py` (konten wajib bersumber resmi),
+  `validate_bundle.py` (bundel pembaruan), `check_workflows.py` (workflow dapat dibaca),
+  `check_kotlin_lex.py` (higiene komentar Kotlin). Ketiganya di luar `validate_content.py`
+  dapat dijalankan lokal tanpa membangun proyek.
 
 ## Build (via GitHub Actions, bukan lokal)
 - PR: validasi konten + lint + unit test + build debug/release (R8) (3-6 mnt).

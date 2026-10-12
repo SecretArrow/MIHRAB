@@ -15,14 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import id.or.kemenag.yasintahlil.core.audio.AdzanPreview
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.launch
 
 /**
@@ -41,24 +39,22 @@ fun AdzanScreen() {
     var uri by remember { mutableStateOf("") }
     var vol by remember { mutableStateOf(0.8f) }
     var preMin by remember { mutableStateOf(0) }
+    var doaReminder by remember { mutableStateOf(false) }
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
+    // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
+    // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
+    // memilih metode lain di menu Jadwal.
+    var metode by remember { mutableStateOf(PrayerCalc.Method.KEMENAG) }
     // Berkas audio pengguna bisa saja tak terbaca (URI dicabut, format tak didukung, izin hilang).
     // Sebelumnya pratinjau diam saja saat gagal; kini sebabnya ditampilkan + tombol coba lagi.
+    // Pemutarannya sendiri ada di lapisan `core.audio`, bukan di layar (plan.txt: lapisan audio
+    // terpisah) — layar hanya memanggil play/stop/volume.
     var putarGagal by remember { mutableStateOf<String?>(null) }
-    val player = remember { ExoPlayer.Builder(ctx.applicationContext).build() }
-    DisposableEffect(player) {
-        val listener = object : Player.Listener {
-            override fun onPlayerError(error: PlaybackException) {
-                putarGagal = "Berkas audio tidak dapat diputar (${error.errorCodeName}). " +
-                    "Pilih berkas lain atau pastikan aplikasi masih punya izin membaca berkas itu."
-            }
-        }
-        player.addListener(listener)
-        onDispose { player.removeListener(listener); player.release() }
-    }
+    val player = remember { AdzanPreview(ctx) { putarGagal = it } }
+    DisposableEffect(player) { onDispose { player.release() } }
 
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { u: Uri? ->
         u?.let {
@@ -81,9 +77,11 @@ fun AdzanScreen() {
         uri = store.get(Store.ADZAN_URI, "")
         vol = store.get(Store.ADZAN_VOL, 0.8f)
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
+        doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
+        metode = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
     }
 
     val names = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
@@ -111,8 +109,7 @@ fun AdzanScreen() {
             Button(onClick = {
                 if (uri.isNotBlank()) {
                     putarGagal = null
-                    player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
-                    player.volume = vol; player.prepare(); player.play()
+                    player.play(uri, vol)
                 }
             }, enabled = uri.isNotBlank()) { Text("Pratinjau") }
             OutlinedButton(onClick = { player.stop() }) { Text("Stop") }
@@ -120,14 +117,11 @@ fun AdzanScreen() {
         putarGagal?.let { pesan ->
             ErrorState(pesan, onRetry = {
                 putarGagal = null
-                runCatching {
-                    player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
-                    player.volume = vol; player.prepare(); player.play()
-                }
+                player.play(uri, vol)
             })
         }
         Text("Volume: ${(vol * 100).toInt()}%")
-        Slider(vol, { vol = it; player.volume = it; scope.launch { store.set(Store.ADZAN_VOL, vol) } })
+        Slider(vol, { vol = it; player.setVolume(it); scope.launch { store.set(Store.ADZAN_VOL, vol) } })
 
         Text("Pengingat sebelum adzan: ${if (preMin == 0) "nonaktif" else "$preMin menit"}")
         Slider(
@@ -137,6 +131,22 @@ fun AdzanScreen() {
             steps = 29,
             onValueChangeFinished = { scope.launch { store.set(Store.ADZAN_PRE_MIN, preMin); PrayerScheduler.scheduleAll(ctx.applicationContext) } },
         )
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Pengingat membaca doa setelah adzan")
+            Switch(doaReminder, {
+                doaReminder = it
+                scope.launch {
+                    store.set(Store.DOA_ADZAN_REMINDER, doaReminder)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            })
+        }
+        Text("Bila aktif: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu masuk, " +
+                "berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung membuka " +
+                "layar Doa Adzan. Mengikuti saklar per waktu di atas — waktu yang dimatikan tidak " +
+                "ikut mengingatkan. Waktunya pengingat pribadi, bukan ketentuan syariat.",
+            style = MaterialTheme.typography.labelSmall)
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Tembus mode senyap/DND")
@@ -164,8 +174,11 @@ fun AdzanScreen() {
         }
         Text("Pengingat dijadwalkan lewat WorkManager (tanpa izin alarm tepat waktu): waktu dapat " +
                 "bergeser beberapa menit saat perangkat tidur (Doze) atau dibatasi optimasi baterai — " +
-                "buka \"Optimasi baterai\" di atas agar lebih tepat. Metode jadwal: Kemenag/SIHAT; " +
-                "koreksi & zona waktu di Pengaturan.",
+                "buka \"Optimasi baterai\" di atas agar lebih tepat. Jadwal dihitung di perangkat " +
+                "dengan metode ${metode.label} (Fajr ${metode.fajr}°, " +
+                (if (metode.ishaIntervalMin != null) "Isya Magrib+${metode.ishaIntervalMin} menit"
+                 else "Isya ${metode.isha}°") +
+                "); ubah metode, koreksi menit, dan zona waktu di menu Jadwal.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
@@ -178,7 +191,7 @@ fun AdzanScreen() {
         }
         lafaz.forEach { l ->
             BacaanCard("adzan:${l.arab.take(10)}", "Adzan", l.arab, l.latin, l.terjemahan,
-                true, true, arabSize, 15f, l.ulangi, showArab = showArab, kategori = l.kategori)
+                true, true, arabSize, ulangi = l.ulangi, showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
     }

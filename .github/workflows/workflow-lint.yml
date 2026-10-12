@@ -1,0 +1,23 @@
+name: Workflow YAML
+
+# Gate kecil tapi penting: GitHub tidak melaporkan berkas workflow yang salah parse sebagai
+# kesalahan yang jelas — ia langsung menggagalkan run tanpa membuat satu pun job, sehingga
+# pemeriksaan yang seharusnya menjaga PR hilang tanpa jejak. Karena itu pemeriksaan ini ditaruh
+# di workflow **terpisah**: kalau `ci.yml` sendiri yang rusak, `ci.yml` tak bisa memberi tahu.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: workflow-yaml-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  yaml:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: "Periksa seluruh berkas workflow dapat dibaca"
+        run: python3 tools/check_workflows.py

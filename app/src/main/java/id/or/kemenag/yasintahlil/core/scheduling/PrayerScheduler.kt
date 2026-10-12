@@ -9,6 +9,7 @@ import id.or.kemenag.yasintahlil.core.data.ReminderWorker
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
@@ -27,10 +28,20 @@ object PrayerScheduler {
     const val TAG = "sholat"
     private val NAMES = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
 
+    /** Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa & iqomah (sesudah). */
+    const val JENIS_ADZAN = "adzan"
+    const val JENIS_PRA = "pra"
+    const val JENIS_DOA = "doa"
+    const val JENIS_IQOMAH = "iqomah"
+
+    /** Jeda pengingat "baca doa setelah adzan" dari waktu masuk, dalam menit. */
+    const val DOA_DELAY_MIN = 5
+
     private data class Cfg(
         val lat: Double, val lon: Double, val method: PrayerCalc.Method,
         val asarFactor: Double, val corr: List<Int>, val tz: TimeZone,
-        val on: List<Boolean>, val preMin: Int,
+        val on: List<Boolean>, val preMin: Int, val doaReminder: Boolean,
+        val iqomahOn: Boolean, val iqomahMin: Int,
     )
 
     private suspend fun loadCfg(ctx: Context): Cfg {
@@ -45,6 +56,9 @@ object PrayerScheduler {
             tz = if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId),
             on = (store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" } + List(5) { true }).take(5),
             preMin = store.get(Store.ADZAN_PRE_MIN, 0),
+            doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
+            iqomahOn = store.get(Store.IQOMAH_ON, false),
+            iqomahMin = store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60),
         )
     }
 
@@ -82,18 +96,47 @@ object PrayerScheduler {
         val target = PrayerCalc.toMinutes(map.getValue(nama))
         var delta = target - nowMin
         if (delta <= 0) delta += 1440
-        enqueue(ctx, "sholat_$nama", nama, delta.toLong(), adzan = true)
+        enqueue(ctx, "sholat_$nama", nama, delta.toLong(), JENIS_ADZAN)
         if (cfg.preMin > 0) {
             var d = delta - cfg.preMin
             if (d <= 0) d += 1440
-            enqueue(ctx, "pre_$nama", nama, d.toLong(), adzan = false)
+            enqueue(ctx, "pre_$nama", nama, d.toLong(), JENIS_PRA)
+        }
+        // Pekerjaan yang berbunyi SESUDAH waktu masuk memakai kunci bertanggal.
+        //
+        // Alasannya bukan kerapian: pekerja adzan, begitu berbunyi, menjadwalkan ulang dirinya untuk
+        // kemunculan berikutnya (besok), dan penjadwalan ulang itu juga mengantrekan pekerjaan
+        // susulan. Dengan nama tetap, `ExistingWorkPolicy.REPLACE` akan **membatalkan** pekerjaan
+        // susulan hari ini yang tinggal beberapa menit lagi berbunyi — sehingga pengingat doa (dan
+        // iqomah) tak pernah terdengar sama sekali. Pembeda tanggal memisahkan keduanya: susulan
+        // hari ini tetap berjalan, susulan besok memakai nama lain.
+        val hari = kunciHari(now, delta.toLong())
+        if (cfg.doaReminder) {
+            enqueue(ctx, "doa_${nama}_$hari", nama, (delta + DOA_DELAY_MIN).toLong(), JENIS_DOA)
+        }
+        if (cfg.iqomahOn) {
+            enqueue(ctx, "iqomah_${nama}_$hari", nama, (delta + cfg.iqomahMin).toLong(), JENIS_IQOMAH)
         }
     }
 
-    private fun enqueue(ctx: Context, unique: String, nama: String, delayMin: Long, adzan: Boolean) {
+    /**
+     * Tanggal kemunculan yang sedang dijadwalkan (zona waktu pengguna), sebagai pembeda nama
+     * pekerjaan susulan. Memakai [Locale.US] agar angkanya selalu 0–9 — pada lokal berangka lain
+     * `%d` dapat menghasilkan angka yang berbeda-beda bentuk dan nama pekerjaan jadi tak terduga.
+     */
+    private fun kunciHari(now: Calendar, deltaMenit: Long): String {
+        val c = now.clone() as Calendar
+        c.add(Calendar.MINUTE, deltaMenit.toInt())
+        return String.format(
+            Locale.US, "%04d%02d%02d",
+            c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH),
+        )
+    }
+
+    private fun enqueue(ctx: Context, unique: String, nama: String, delayMin: Long, jenis: String) {
         val req = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMin, TimeUnit.MINUTES)
-            .setInputData(workDataOf("nama" to nama, "adzan" to adzan))
+            .setInputData(workDataOf("nama" to nama, "jenis" to jenis))
             .addTag(TAG)
             .build()
         WorkManager.getInstance(ctx).enqueueUniqueWork(unique, ExistingWorkPolicy.REPLACE, req)

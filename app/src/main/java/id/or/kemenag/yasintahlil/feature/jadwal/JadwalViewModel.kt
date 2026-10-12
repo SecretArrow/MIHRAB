@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.feature.jadwal
 
 import android.content.Context
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +13,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,8 @@ data class JadwalUiState(
     val corr: List<Int> = List(6) { 0 },
     val times: PrayerTimes? = null,
     val nowMin: Int = 0,
+    /** Koordinat GPS sedang diikuti: jadwal dihitung ulang saat pengguna berpindah tempat. */
+    val followGps: Boolean = false,
     /** Preferensi sedang dibaca dari penyimpanan — layar menampilkan kerangka, bukan angka kosong. */
     val memuat: Boolean = true,
     /** Pesan bila preferensi gagal dibaca; layar menampilkan keadaan gagal + tombol coba lagi. */
@@ -50,6 +54,9 @@ class JadwalViewModel @Inject constructor(
     private val _state = MutableStateFlow(JadwalUiState())
     val state: StateFlow<JadwalUiState> = _state.asStateFlow()
 
+    /** Pekerjaan yang mengikuti pembaruan lokasi live; dibatalkan saat lokasi manual dipilih. */
+    private var locationJob: Job? = null
+
     init { muatUlang() }
 
     /**
@@ -69,11 +76,16 @@ class JadwalViewModel @Inject constructor(
                 val asarH = store.get(Store.ASAR, "syafii") == "hanafi"
                 val tzId = store.get(Store.TZ, "")
                 val corr = parseCorr(store.get(Store.CORR, "0,0,0,0,0,0"))
+                val ikut = store.get(Store.JADWAL_IKUT, false)
                 _state.value = _state.value.copy(
                     city = city, lat = lat, lon = lon, method = method,
-                    asarHanafi = asarH, tzId = tzId, corr = corr,
+                    asarHanafi = asarH, tzId = tzId, corr = corr, followGps = ikut,
                 )
                 recompute()
+                // "Pembaruan jadwal saat lokasi berubah" (plan.txt): bila pengguna dahulu memilih
+                // mengikuti GPS, ikuti lagi setelah aplikasi dibuka ulang — tanpa ini pilihannya
+                // hanya berlaku sampai proses aplikasi mati.
+                if (ikut && LocationProvider.hasPermission(ctx)) mulaiIkutiLokasi()
             }.onFailure { e ->
                 _state.value = _state.value.copy(
                     gagalMuat = e.message ?: e::class.simpleName ?: "penyebab tidak diketahui",
@@ -115,19 +127,95 @@ class JadwalViewModel @Inject constructor(
             _state.value = _state.value.copy(pesanLokasi = PESAN_TANPA_FIX)
             return false
         }
+        terapkanKoordinat(loc.latitude, loc.longitude, pesan = null)
+        simpanDanJadwalkan(loc.latitude, loc.longitude)
+        return true
+    }
+
+    /**
+     * Ikuti (atau berhenti mengikuti) pembaruan lokasi live.
+     *
+     * `plan.txt` §"Jadwal Sholat dan Pengaturan Adzan" meminta *"Pembaruan jadwal saat lokasi
+     * berubah"*. Sebelumnya layar ini hanya membaca satu perbaikan terakhir dan diam sesudahnya,
+     * sehingga jadwal tetap memakai koordinat lama sampai pengguna menekan tombol GPS lagi.
+     */
+    fun setFollowGps(on: Boolean) {
+        if (!on) {
+            hentikanIkutiLokasi()
+            viewModelScope.launch { store.set(Store.JADWAL_IKUT, false) }
+            return
+        }
+        _state.value = _state.value.copy(followGps = true, pesanLokasi = null)
+        viewModelScope.launch { store.set(Store.JADWAL_IKUT, true) }
+        // Perbaikan terakhir dipakai lebih dahulu agar angka berubah seketika, lalu aliran live
+        // menyusul — menunggu satelit tanpa menampilkan apa pun membuat layar tampak beku.
+        LocationProvider.lastKnown(ctx)?.let {
+            terapkanKoordinat(it.latitude, it.longitude, pesan = null)
+            simpanDanJadwalkan(it.latitude, it.longitude)
+        }
+        mulaiIkutiLokasi()
+    }
+
+    /**
+     * Ikuti pembaruan lokasi live. Perhitungan hanya diulang bila perpindahan melewati
+     * [AMBANG_PINDAH_METER]: GPS bergoyang beberapa meter saat perangkat diam, dan menghitung
+     * ulang (serta menjadwalkan ulang pengingat) pada setiap goyangan hanya membuang baterai.
+     */
+    private fun mulaiIkutiLokasi() {
+        locationJob?.cancel()
+        locationJob = viewModelScope.launch {
+            var pernahAdaFix = false
+            LocationProvider.updates(ctx).collect { loc ->
+                pernahAdaFix = true
+                val s = _state.value
+                if (jarakMeter(s.lat, s.lon, loc.latitude, loc.longitude) >= AMBANG_PINDAH_METER) {
+                    terapkanKoordinat(loc.latitude, loc.longitude, pesan = null)
+                    simpanDanJadwalkan(loc.latitude, loc.longitude)
+                }
+            }
+            // Aliran berakhir sendiri saat tak ada penyedia lokasi aktif (mis. GPS dimatikan).
+            // Mengikuti lokasi tak lagi mungkin, jadi saklarnya dikembalikan — lebih jujur
+            // daripada tetap menyala sementara tak ada yang diperbarui. State diubah langsung,
+            // bukan lewat hentikanIkutiLokasi(), supaya koroutine ini tidak membatalkan dirinya
+            // sendiri sebelum sempat menyimpan pilihannya.
+            locationJob = null
+            _state.value = _state.value.copy(
+                followGps = false,
+                pesanLokasi = if (pernahAdaFix) null else PESAN_TANPA_FIX,
+            )
+            store.set(Store.JADWAL_IKUT, false)
+        }
+    }
+
+    private fun hentikanIkutiLokasi() {
+        locationJob?.cancel()
+        locationJob = null
+        _state.value = _state.value.copy(followGps = false)
+    }
+
+    /** Set koordinat pada state lalu hitung ulang jadwal. */
+    private fun terapkanKoordinat(lat: Double, lon: Double, pesan: String?) {
         _state.value = _state.value.copy(
-            city = LocationProvider.GPS_LABEL, lat = loc.latitude, lon = loc.longitude,
-            pesanLokasi = null,
+            city = LocationProvider.GPS_LABEL, lat = lat, lon = lon, pesanLokasi = pesan,
         )
         recompute()
+    }
+
+    private fun simpanDanJadwalkan(lat: Double, lon: Double) {
         viewModelScope.launch {
             store.set(Store.CITY, LocationProvider.GPS_LABEL)
-            store.set(Store.LAT, loc.latitude)
-            store.set(Store.LON, loc.longitude)
+            store.set(Store.LAT, lat)
+            store.set(Store.LON, lon)
             store.set(Store.USE_GPS, true)
             PrayerScheduler.scheduleAll(ctx)
         }
-        return true
+    }
+
+    /** Jarak antara dua koordinat dalam meter. */
+    private fun jarakMeter(aLat: Double, aLon: Double, bLat: Double, bLon: Double): Float {
+        val out = FloatArray(1)
+        Location.distanceBetween(aLat, aLon, bLat, bLon, out)
+        return out[0]
     }
 
     /** Buang pesan "belum ada perbaikan lokasi" (mis. setelah pengguna memilih kota manual). */
@@ -136,6 +224,9 @@ class JadwalViewModel @Inject constructor(
     }
 
     fun selectCity(k: Kota) {
+        // Lokasi manual menang atas GPS: berhenti mengikuti, supaya perbaikan GPS berikutnya
+        // tidak menimpa kota yang baru saja dipilih pengguna.
+        hentikanIkutiLokasi()
         _state.value = _state.value.copy(city = k.nama, lat = k.lat, lon = k.lon, pesanLokasi = null)
         recompute()
         viewModelScope.launch {
@@ -172,6 +263,13 @@ class JadwalViewModel @Inject constructor(
         const val PESAN_TANPA_FIX =
             "Belum ada perbaikan lokasi GPS. Pastikan GPS aktif dan berada di luar ruangan, " +
                 "lalu coba lagi — atau pilih kota secara manual."
+
+        /**
+         * Jarak minimum (meter) sebelum jadwal dihitung ulang saat mengikuti lokasi live.
+         * Satu kilometer jauh lebih kecil daripada jarak antarkota, tetapi cukup besar untuk
+         * menyerap goyangan GPS saat perangkat diam.
+         */
+        const val AMBANG_PINDAH_METER = 1_000f
 
         val TZ_OPTIONS = listOf(
             "" to "Perangkat (otomatis)",

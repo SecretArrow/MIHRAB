@@ -14,6 +14,9 @@ interface FavoriteDao {
     @Query("SELECT * FROM favorites")
     suspend fun getAll(): List<FavoriteEntity>
 
+    @Query("SELECT COUNT(*) FROM favorites")
+    suspend fun count(): Int
+
     @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE kind = :kind AND refId = :refId)")
     fun observeIsFavorite(kind: String, refId: String): Flow<Boolean>
 
@@ -38,8 +41,15 @@ interface BookmarkDao {
     @Query("SELECT * FROM bookmarks WHERE kind = :kind ORDER BY createdAt DESC")
     fun observeByKind(kind: String): Flow<List<BookmarkEntity>>
 
+    /** Seluruh bookmark, lintas jenis — dipakai layar Favorit & Riwayat (`plan.txt`: "bookmark"). */
+    @Query("SELECT * FROM bookmarks ORDER BY createdAt DESC")
+    fun observeAll(): Flow<List<BookmarkEntity>>
+
     @Query("SELECT * FROM bookmarks")
     suspend fun getAll(): List<BookmarkEntity>
+
+    @Query("SELECT COUNT(*) FROM bookmarks")
+    suspend fun count(): Int
 
     @Query("SELECT EXISTS(SELECT 1 FROM bookmarks WHERE kind = :kind AND refId = :refId)")
     fun observeIsBookmarked(kind: String, refId: String): Flow<Boolean>
@@ -68,6 +78,9 @@ interface HistoryDao {
     @Query("SELECT * FROM history ORDER BY openedAt DESC LIMIT :limit")
     suspend fun getAll(limit: Int): List<HistoryEntity>
 
+    @Query("SELECT COUNT(*) FROM history")
+    suspend fun count(): Int
+
     @Insert
     suspend fun insert(item: HistoryEntity)
 
@@ -88,6 +101,9 @@ interface ProgressDao {
 
     @Query("SELECT * FROM progress")
     suspend fun getAll(): List<ProgressEntity>
+
+    @Query("SELECT COUNT(*) FROM progress")
+    suspend fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(item: ProgressEntity)

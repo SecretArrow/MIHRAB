@@ -10,50 +10,113 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
-import id.or.kemenag.yasintahlil.navigation.Routes
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 
 @Composable
 fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
-    Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Favorit, Riwayat & Terakhir dibaca", style = MaterialTheme.typography.titleLarge)
-        if (s.last.isNotBlank()) {
-            Text("Terakhir dibaca: ${s.last}")
-            Button(onClick = { go(ruteOf(s.last.substringBefore(':'))) }) { Text("Lanjutkan") }
+    val repo = rememberRepo()
+    // Id kelompok dzikir dibaca dari bundel konten, bukan ditulis tetap di sini: kelompok yang
+    // ditambahkan bundel otomatis dikenali sehingga favoritnya tidak lagi jatuh ke Beranda.
+    val grupDzikir = remember(repo) {
+        runCatching { repo.dzikir().map { it.id }.toSet() }.getOrDefault(emptySet())
+    }
+    // Satu daftar bergulir untuk seluruh bagian: favorit, bookmark, dan riwayat bisa panjang,
+    // sehingga tak satu pun bagian boleh mendorong bagian lain keluar layar.
+    LazyColumn(Modifier.fillMaxSize().padding(12.dp)) {
+        item {
+            Text("Favorit, Bookmark, Riwayat & Terakhir dibaca",
+                style = MaterialTheme.typography.titleLarge)
         }
-        Text("Favorit (${s.favorites.size}):", style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
-        if (s.favorites.isEmpty()) Text("Belum ada favorit. Tandai dengan tombol ☆ di tiap bacaan.",
-            style = MaterialTheme.typography.labelSmall)
-        LazyColumn(Modifier.weight(1f)) {
-            items(s.favorites, key = { "${it.kind}:${it.refId}" }) { f ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(f.title.ifBlank { "${f.kind}:${f.refId}" }, modifier = Modifier.weight(1f))
-                    TextButton(onClick = { go(ruteOf(f.kind)) }) { Text("Buka") }
-                    TextButton(onClick = { vm.remove(f) }) { Text("Hapus") }
-                }
+        if (s.last.isNotBlank()) {
+            item {
+                Text("Terakhir dibaca: ${s.last}")
+                AksiBuka(s.last.substringBefore(':'), grupDzikir, "Lanjutkan", go)
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Riwayat terbaru:", style = MaterialTheme.typography.titleMedium)
-            if (s.history.isNotEmpty()) TextButton(onClick = { vm.clearHistory() }) { Text("Bersihkan") }
+
+        item {
+            Text("Favorit (${s.favorites.size}):", style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp))
         }
-        if (s.history.isEmpty()) Text("Belum ada riwayat.", style = MaterialTheme.typography.labelMedium)
-        s.history.take(12).forEach { h ->
+        if (s.favorites.isEmpty()) item {
+            Text("Belum ada favorit. Tandai dengan tombol ☆ di tiap bacaan.",
+                style = MaterialTheme.typography.labelSmall)
+        }
+        items(s.favorites, key = { "f:${it.kind}:${it.refId}" }) { f ->
+            BarisTersimpan(f.title.ifBlank { "${f.kind}:${f.refId}" }, f.kind, grupDzikir, go,
+                onHapus = { vm.remove(f) })
+        }
+
+        item {
+            Text("Bookmark (${s.bookmarks.size}):", style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp))
+        }
+        if (s.bookmarks.isEmpty()) item {
+            Text("Belum ada bookmark. Tandai ayat dengan tombol ☆ Bookmark di layar bacaan.",
+                style = MaterialTheme.typography.labelSmall)
+        }
+        items(s.bookmarks, key = { "b:${it.kind}:${it.refId}" }) { b ->
+            BarisTersimpan(b.label.ifBlank { "${b.kind}:${b.refId}" }, b.kind, grupDzikir, go,
+                onHapus = { vm.removeBookmark(b) })
+        }
+
+        item {
+            Row(Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Riwayat terbaru:", style = MaterialTheme.typography.titleMedium)
+                if (s.history.isNotEmpty()) TextButton(onClick = { vm.clearHistory() }) { Text("Bersihkan") }
+            }
+        }
+        if (s.history.isEmpty()) item {
+            Text("Belum ada riwayat.", style = MaterialTheme.typography.labelMedium)
+        }
+        // Kunci `kind:refId`: `FavoritViewModel` sudah menyaring riwayat agar satu bacaan hanya
+        // menempati satu baris, sehingga kuncinya pasti unik — bukan lagi sekadar menghindari
+        // keluhan Compose, tetapi memang satu baris per bacaan.
+        items(s.history.take(12), key = { "h:${it.kind}:${it.refId}" }) { h ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))
-                TextButton(onClick = { go(ruteOf(h.kind)) }) { Text("Buka") }
+                AksiBuka(h.kind, grupDzikir, "Buka", go)
             }
         }
     }
 }
 
-private fun ruteOf(kind: String) = when (kind) {
-    "yasin" -> Routes.YASIN
-    "tahlil" -> Routes.TAHLIL
-    "dzikir", "doa", "jawab" -> Routes.DZIKIR
-    "bacaan", "niat", "langkah", "ghaib", "jenazah" -> Routes.SHOLAT
-    "adzan", "iqomah" -> Routes.ADZAN
-    else -> Routes.HOME
+/** Satu baris favorit atau bookmark: judul, layar tujuannya, tombol buka dan hapus. */
+@Composable
+private fun BarisTersimpan(
+    judul: String,
+    kind: String,
+    grupDzikir: Set<String>,
+    go: (String) -> Unit,
+    onHapus: () -> Unit,
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Column(Modifier.weight(1f)) {
+            Text(judul)
+            Text(RuteKonten.namaTujuan(kind, grupDzikir) ?: "Layar tujuan tidak dikenal",
+                style = MaterialTheme.typography.labelSmall)
+        }
+        AksiBuka(kind, grupDzikir, "Buka", go)
+        TextButton(onClick = onHapus) { Text("Hapus") }
+    }
+}
+
+/**
+ * Tombol menuju layar asal sebuah jenis konten.
+ *
+ * Bila jenis itu tidak punya layar sendiri (lihat [RuteKonten]), yang tampil adalah keterangan —
+ * bukan tombol yang membuka layar lain. Tombol yang membawa pengguna ke tempat yang salah membuat
+ * isinya tampak hilang, dan itu lebih buruk daripada tidak ada tombol sama sekali.
+ */
+@Composable
+private fun AksiBuka(kind: String, grupDzikir: Set<String>, label: String, go: (String) -> Unit) {
+    val rute = RuteKonten.rute(kind, grupDzikir)
+    if (rute != null) {
+        TextButton(onClick = { go(rute) }) { Text(label) }
+    } else {
+        Text("Layar tujuan tidak dikenal", style = MaterialTheme.typography.labelSmall)
+    }
 }

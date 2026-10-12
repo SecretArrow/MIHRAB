@@ -17,8 +17,6 @@ import javax.inject.Inject
 
 data class YasinUiState(
     val arabSize: Float = 24f,
-    val latinSize: Float = 16f,
-    val lineHeight: Float = 1.9f,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
     val showArab: Boolean = true,
@@ -43,8 +41,6 @@ class YasinViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     arabSize = store.get(Store.ARAB_SIZE, 24f),
-                    latinSize = store.get(Store.LATIN_SIZE, 16f),
-                    lineHeight = store.get(Store.LINE_HEIGHT, 1.9f),
                     showLatin = store.get(Store.SHOW_LATIN, true),
                     showTrans = store.get(Store.SHOW_TRANS, true),
                     showArab = store.get(Store.SHOW_ARAB, true),
@@ -60,10 +56,6 @@ class YasinViewModel @Inject constructor(
 
     fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; save { store.set(Store.ARAB_SIZE, v) } }
 
-    fun setLatinSize(v: Float) { _state.update { it.copy(latinSize = v) }; save { store.set(Store.LATIN_SIZE, v) } }
-
-    fun setLineHeight(v: Float) { _state.update { it.copy(lineHeight = v) }; save { store.set(Store.LINE_HEIGHT, v) } }
-
     fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; save { store.set(Store.SHOW_LATIN, v) } }
 
     fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) } }
@@ -73,6 +65,12 @@ class YasinViewModel @Inject constructor(
     fun markRead(n: Int) {
         _state.update { it.copy(mark = n) }
         save { store.set(Store.YASIN_MARK, n); store.set(Store.LAST, "yasin:$n") }
+        // Riwayat "terakhir dibaca" (`plan.txt` §"Pencarian, Favorit, dan Riwayat"). Sebelumnya
+        // modul Yasin tidak pernah menulis riwayat sama sekali: satu-satunya penulis riwayat adalah
+        // tombol "Salin" pada kartu bacaan, sehingga daftar "Riwayat terbaru" tidak memuat bacaan
+        // yang benar-benar dibuka. Ditulis di sini — bukan pada tiap gulir — karena `markRead`
+        // hanya dipanggil saat pengguna memang menandai posisi bacaannya.
+        save { userData.pushHistory("yasin", n.toString(), "Yasin ayat $n") }
     }
 
     fun toggleBookmark(n: Int) {

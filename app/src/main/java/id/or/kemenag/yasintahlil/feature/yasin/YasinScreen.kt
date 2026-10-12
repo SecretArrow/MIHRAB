@@ -15,14 +15,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
-import kotlinx.coroutines.launch
 
 @Composable
 fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val surah = vm.surah
     val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
     var focus by remember { mutableStateOf(false) }
     var keepOn by remember { mutableStateOf(false) }
     var jump by remember { mutableStateOf("") }
@@ -46,6 +44,34 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
         }
     }
 
+    // Ayat yang sedang dituju tombol "Ke ayat" / daftar bookmark. Diselesaikan di efek ini, bukan
+    // langsung, karena indeksnya bergantung pada daftar yang sedang tampil.
+    var targetAyat by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(targetAyat, shown) {
+        val n = targetAyat ?: return@LaunchedEffect
+        val idx = shown.indexOfFirst { it.nomor == n }
+        when {
+            idx >= 0 -> { listState.animateScrollToItem(idx); targetAyat = null }
+            // Ayatnya tersaring oleh pencarian: buang penyaringnya, lalu ulangi.
+            query.isNotBlank() -> query = ""
+            // Ayat di luar surat ini (mis. bookmark dari bundel lain) — jangan menebak.
+            else -> targetAyat = null
+        }
+    }
+
+    /**
+     * Lompat ke ayat [n] pada daftar yang **sedang tampil**.
+     *
+     * Sebelumnya indeksnya langsung `n - 1`, yang hanya benar bila tak ada pencarian aktif: dengan
+     * penyaring pencarian, ayat ke-n bukan lagi item ke-(n-1), sehingga tombol "Ke ayat" dan daftar
+     * bookmark mendarat di ayat yang salah tanpa memberi tahu pengguna.
+     */
+    fun lompatKe(n: Int, tandai: Boolean = false) {
+        if (n !in 1..surah.ayatCount) return
+        if (tandai) vm.markRead(n)
+        targetAyat = n
+    }
+
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         if (!focus) {
             Text("Surat Yasin — ${surah.ayatCount} ayat (MSI Kemenag)", style = MaterialTheme.typography.titleLarge)
@@ -54,14 +80,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(jump, { jump = it.filter(Char::isDigit).take(2) },
                     label = { Text("Ayat") }, modifier = Modifier.weight(1f))
-                Button(onClick = {
-                    jump.toIntOrNull()?.let { n ->
-                        if (n in 1..surah.ayatCount) scope.launch {
-                            listState.animateScrollToItem((n - 1).coerceAtLeast(0))
-                            vm.markRead(n)
-                        }
-                    }
-                }) { Text("Ke ayat") }
+                Button(onClick = { jump.toIntOrNull()?.let { lompatKe(it, tandai = true) } }) { Text("Ke ayat") }
             }
             OutlinedTextField(query, { query = it }, label = { Text("Cari dalam Yasin (teks/ayat)") },
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
@@ -73,9 +92,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 FilterChip(showBookmarks, { showBookmarks = !showBookmarks }, { Text("Bookmark ${s.bookmarks.size}") })
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (s.mark in 1..surah.ayatCount) Button(onClick = {
-                    scope.launch { listState.animateScrollToItem((s.mark - 1).coerceAtLeast(0)) }
-                }) { Text("Lanjut ayat ${s.mark}") }
+                if (s.mark in 1..surah.ayatCount) Button(onClick = { lompatKe(s.mark) }) { Text("Lanjut ayat ${s.mark}") }
             }
             if (showBookmarks) {
                 Text("Bookmark:", style = MaterialTheme.typography.titleSmall)
@@ -83,10 +100,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.labelSmall)
                 s.bookmarks.forEach { b ->
                     TextButton(onClick = {
-                        b.refId.toIntOrNull()?.let { n ->
-                            scope.launch { listState.animateScrollToItem((n - 1).coerceAtLeast(0)) }
-                            showBookmarks = false
-                        }
+                        b.refId.toIntOrNull()?.let { n -> lompatKe(n); showBookmarks = false }
                     }) { Text(b.label.ifBlank { "Ayat ${b.refId}" }) }
                 }
             }
@@ -103,8 +117,8 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                         modifier = Modifier.padding(end = 8.dp, top = 12.dp))
                     Column(Modifier.weight(1f)) {
                         BacaanCard("yasin:${v.nomor}", "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
-                            s.showLatin, s.showTrans, s.arabSize, s.latinSize,
-                            lineHeightFactor = s.lineHeight, showArab = s.showArab, kategori = surah.kategori)
+                            s.showLatin, s.showTrans, s.arabSize,
+                            showArab = s.showArab, kategori = surah.kategori)
                         Row {
                             TextButton(onClick = { vm.markRead(v.nomor) }) {
                                 Text(if (s.mark == v.nomor) "✓ Penanda terakhir" else "Tandai terakhir dibaca")
@@ -126,8 +140,6 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
             showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
             showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
             arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
-            latinSize = s.latinSize, onLatinSize = { vm.setLatinSize(it) },
-            lineHeight = s.lineHeight, onLineHeight = { vm.setLineHeight(it) },
         )
     }
 }

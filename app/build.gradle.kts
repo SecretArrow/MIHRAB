@@ -81,6 +81,7 @@ dependencies {
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
+    implementation(libs.compose.animation)
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.material3)
@@ -105,6 +106,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+    // org.json asli untuk uji unit: android.jar hanya menyediakan stub yang melempar
+    // "not mocked", sedangkan validator bundel konten memang harus diuji sungguhan.
+    testImplementation(libs.org.json)
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.core)

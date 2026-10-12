@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
+import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
@@ -20,13 +21,22 @@ data class TahlilUiState(
     val susunan: List<TahlilSusunan> = emptyList(),
     val susunanId: String = "",
     val items: List<TahlilItem> = emptyList(),
+    /** Seluruh bagian yang tersedia, apa pun susunan yang aktif — bahan penyusun "Susunan saya". */
+    val semuaBagian: List<TahlilItem> = emptyList(),
+    /** Id bagian pilihan pengguna (urut) untuk "Susunan saya"; kosong = belum disusun. */
+    val pilihan: List<String> = emptyList(),
     val idx: Int = 0,
     val count: Int = 0,
     val arabSize: Float = 24f,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
     val showArab: Boolean = true,
-)
+) {
+    /** Nama susunan yang sedang aktif — dipakai layar agar tidak menyebut susunan yang keliru. */
+    val namaSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.nama.orEmpty()
+
+    val adaSusunanSaya: Boolean get() = susunanId == SusunanSaya.ID
+}
 
 @HiltViewModel
 class TahlilViewModel @Inject constructor(
@@ -42,16 +52,19 @@ class TahlilViewModel @Inject constructor(
 
     private fun load() {
         viewModelScope.launch {
-            val susunan = repo.tahlilSusunan()
-            val saved = store.get(Store.TAHLIL_SUSUNAN, "")
-            val id = susunan.firstOrNull { it.id == saved }?.id ?: susunan.firstOrNull()?.id ?: ""
-            val items = repo.tahlil(id.ifBlank { null })
+            val semua = repo.tahlil(null)
+            val pilihan = SusunanSaya.parse(store.get(Store.TAHLIL_CUSTOM, ""))
+            val susunan = PreferensiSusunan.tersedia(repo.tahlilSusunan(), SusunanSaya.susunan(pilihan))
+            val id = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), susunan)
+            val items = itemsUntuk(id, semua, pilihan)
             val idx = userData.progress(KIND, "idx").first()?.value ?: 0
             val count = userData.progress(KIND, "count").first()?.value ?: 0
             _state.value = TahlilUiState(
                 susunan = susunan,
                 susunanId = id,
                 items = items,
+                semuaBagian = semua,
+                pilihan = pilihan,
                 idx = idx.coerceIn(0, (items.size - 1).coerceAtLeast(0)),
                 count = count,
                 arabSize = store.get(Store.ARAB_SIZE, 24f),
@@ -62,8 +75,13 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
+    /** Bagian yang ditampilkan untuk sebuah susunan: susunan pengguna disusun lokal, lainnya dari berkas. */
+    private fun itemsUntuk(id: String, semua: List<TahlilItem>, pilihan: List<String>): List<TahlilItem> =
+        if (id == SusunanSaya.ID) SusunanSaya.susun(semua, pilihan) else repo.tahlil(id.ifBlank { null })
+
     fun setSusunan(id: String) {
-        val items = repo.tahlil(id.ifBlank { null })
+        val s = _state.value
+        val items = itemsUntuk(id, s.semuaBagian, s.pilihan)
         _state.update { it.copy(susunanId = id, items = items, idx = 0, count = 0) }
         viewModelScope.launch {
             store.set(Store.TAHLIL_SUSUNAN, id)
@@ -72,17 +90,63 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Simpan "Susunan saya" dari pilihan pengguna, lalu langsung pindah ke susunan itu. Daftar
+     * kosong tidak diizinkan (susunan tanpa bagian hanya akan membuat layar buntu), sehingga
+     * tombol simpan dimatikan sebelum ada bagian yang dipilih.
+     */
+    fun simpanSusunanSaya(ids: List<String>) {
+        val bersih = SusunanSaya.parse(SusunanSaya.serialize(ids))
+        if (bersih.isEmpty()) return
+        val s = _state.value
+        val items = SusunanSaya.susun(s.semuaBagian, bersih)
+        val lain = s.susunan.filterNot { it.id == SusunanSaya.ID }
+        _state.update {
+            it.copy(
+                susunan = lain + listOfNotNull(SusunanSaya.susunan(bersih)),
+                susunanId = SusunanSaya.ID,
+                pilihan = bersih,
+                items = items,
+                idx = 0,
+                count = 0,
+            )
+        }
+        viewModelScope.launch {
+            store.set(Store.TAHLIL_CUSTOM, SusunanSaya.serialize(bersih))
+            store.set(Store.TAHLIL_SUSUNAN, SusunanSaya.ID)
+            userData.setProgress(KIND, "idx", 0)
+            userData.setProgress(KIND, "count", 0)
+        }
+    }
+
+    /** Buang "Susunan saya" dan kembali ke susunan pertama dari berkas konten. */
+    fun hapusSusunanSaya() {
+        val s = _state.value
+        val lain = s.susunan.filterNot { it.id == SusunanSaya.ID }
+        val id = PreferensiSusunan.idAktif("", lain)
+        val items = itemsUntuk(id, s.semuaBagian, emptyList())
+        _state.update {
+            it.copy(susunan = lain, susunanId = id, pilihan = emptyList(), items = items, idx = 0, count = 0)
+        }
+        viewModelScope.launch {
+            store.set(Store.TAHLIL_CUSTOM, "")
+            store.set(Store.TAHLIL_SUSUNAN, id)
+            userData.setProgress(KIND, "idx", 0)
+            userData.setProgress(KIND, "count", 0)
+        }
+    }
+
     fun next() {
         val s = _state.value
-        if (s.idx < s.items.size - 1) { _state.update { it.copy(idx = it.idx + 1, count = 0) }; persist() }
+        if (s.idx < s.items.size - 1) { _state.update { it.copy(idx = it.idx + 1, count = 0) }; persist(); catat() }
     }
 
     fun prev() {
-        if (_state.value.idx > 0) { _state.update { it.copy(idx = it.idx - 1, count = 0) }; persist() }
+        if (_state.value.idx > 0) { _state.update { it.copy(idx = it.idx - 1, count = 0) }; persist(); catat() }
     }
 
     fun jumpTo(i: Int) {
-        if (i in _state.value.items.indices) { _state.update { it.copy(idx = i, count = 0) }; persist() }
+        if (i in _state.value.items.indices) { _state.update { it.copy(idx = i, count = 0) }; persist(); catat() }
     }
 
     fun setCount(v: Int) {
@@ -104,5 +168,21 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
-    companion object { const val KIND = "tahlil" }
+    /**
+     * Catat bagian yang sedang dibaca ke riwayat (`plan.txt` §"Pencarian, Favorit, dan Riwayat":
+     * *"riwayat terakhir dibaca"*).
+     *
+     * Dipanggil hanya saat **posisi baca berpindah** ([next], [prev], [jumpTo]) — bukan pada
+     * [setCount]. Menghitung tasbih juga memanggil [persist], dan mencatat riwayat tiap ketukan
+     * penghitung akan membanjiri daftar "Riwayat terbaru" dengan satu bagian yang sama.
+     */
+    private fun catat() {
+        val s = _state.value
+        val bagian = s.items.getOrNull(s.idx) ?: return
+        viewModelScope.launch {
+            userData.pushHistory(KIND, bagian.id, "Tahlil bagian ${s.idx + 1}: ${bagian.judul}")
+        }
+    }
+
+    companion object { const val KIND = PreferensiSusunan.KIND_PROGRES }
 }

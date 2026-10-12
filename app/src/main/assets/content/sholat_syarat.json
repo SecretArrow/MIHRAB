@@ -1,0 +1,44 @@
+{
+  "modul": "sholat_syarat",
+  "sumber_url": "https://www.kemenag.go.id/",
+  "edisi": "Kerangka syarat dan persiapan sholat mengikuti program Fasolatan/Ngaji Fasolatan Ditjen Bimas Islam Kemenag; rincian mengikuti mazhab Syafi'i yang umum di Indonesia.",
+  "catatan_verifikasi": "Daftar ini adalah kerangka ringkas berbahasa Indonesia tanpa teks Arab, disusun mengikuti kerangka program Fasolatan Ditjen Bimas Islam Kemenag. Rincian katanya masih menunggu pencocokan dengan modul Fasolatan resmi. Sesuai aturan proyek, tidak ada lafaz Arab atau hadis yang disusun di sini.",
+  "catatan_mazhab": "Beberapa syarat dan batas aurat di bawah mengikuti mazhab Syafi'i (umum di Indonesia). Mazhab lain berbeda pada beberapa rincian, misalnya batas aurat perempuan dan hal yang membatalkan. Perbedaan dicatat apa adanya tanpa dicampuradukkan.",
+  "syarat_wajib": [
+    "Beragama Islam.",
+    "Balig (dewasa) dan berakal.",
+    "Suci dari haid dan nifas bagi perempuan.",
+    "Telah sampai seruan kewajiban sholat."
+  ],
+  "syarat_sah": [
+    "Beragama Islam.",
+    "Mumayyiz, yaitu dapat membedakan yang baik dari yang buruk.",
+    "Suci dari hadas besar dan hadas kecil.",
+    "Suci badan, pakaian, dan tempat dari najis.",
+    "Menutup aurat.",
+    "Menghadap kiblat.",
+    "Sudah masuk waktu sholat.",
+    "Niat di dalam hati bersamaan dengan takbiratul ihram."
+  ],
+  "persiapan": [
+    "Memastikan waktu sholat telah masuk.",
+    "Bersuci dengan wudhu, atau tayamum bila tidak ada air atau ada uzur syar'i.",
+    "Membersihkan badan, pakaian, dan tempat sholat dari najis.",
+    "Menutup aurat dengan pakaian yang bersih dan pantas.",
+    "Menghadap kiblat.",
+    "Merapikan tempat agar tidak mengganggu orang di sekitar; bila berjamaah, meluruskan dan merapatkan shaf."
+  ],
+  "penutup_aurat": {
+    "judul": "Penutup aurat",
+    "laki_laki": "Bagi laki-laki, bagian yang wajib ditutup adalah antara pusar dan lutut.",
+    "perempuan": "Bagi perempuan, bagian yang wajib ditutup adalah seluruh badan kecuali wajah dan kedua telapak tangan.",
+    "catatan": "Batas di atas mengikuti mazhab Syafi'i. Mazhab lain memiliki batas yang berbeda, khususnya bagi perempuan, dan perbedaan itu dicatat apa adanya."
+  },
+  "kebersihan_tempat": [
+    "Tempat sholat suci dari najis, baik yang terlihat maupun yang membekas.",
+    "Tempat sholat bukan tempat yang diperoleh dengan cara yang tidak sah.",
+    "Permukaan tempat rata sehingga tidak mengganggu berdirinya badan.",
+    "Jauh dari gambar atau patung yang dapat mengganggu kekhusyukan.",
+    "Bersih dari kotoran dan bau yang mengganggu."
+  ]
+}

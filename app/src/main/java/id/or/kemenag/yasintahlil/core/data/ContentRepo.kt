@@ -4,20 +4,60 @@ import android.content.Context
 import android.util.Log
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONObject
+import java.io.File
 
-/** Repository offline-first: seluruh konten dibaca dari assets/content (sumber resmi). */
+/**
+ * Repository offline-first: konten dibaca dari assets/content (sumber resmi), dengan lapisan
+ * pembaruan opsional di `filesDir/content_update/` (lihat [ContentUpdateManager]).
+ *
+ * Lapisan pembaruan hanya dipakai bila berkasnya ada **dan** masih lolos pemeriksaan sumber:
+ * berkas yang rusak, hilang, atau kehilangan `sumber_url` resmi otomatis diabaikan sehingga
+ * aplikasi kembali membaca konten bawaan yang sudah diverifikasi.
+ */
 class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
-    private fun doc(file: String): JSONObject =
-        cache.getOrPut(file) {
-            val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
-            // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
-            val src = json.optString("sumber_url", "")
-            if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
-                Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
-            }
-            json
+    private val updateDir = File(ctx.filesDir, ContentUpdateManager.DIR)
+    private val metaPembaruan = File(updateDir, ContentUpdateManager.META)
+
+    /** Cap terakhir pembaruan; berubahnya cap membatalkan cache agar tak menyajikan teks lama. */
+    private var cap = metaPembaruan.lastModified()
+
+    private fun doc(file: String): JSONObject {
+        val capKini = metaPembaruan.lastModified()
+        if (capKini != cap) {
+            cache.clear()
+            cap = capKini
         }
+        return cache.getOrPut(file) {
+            dariPembaruan(file) ?: dariAset(file)
+        }
+    }
+
+    /** Dokumen dari lapisan pembaruan, atau null bila tak ada / tak lagi layak dipakai. */
+    private fun dariPembaruan(file: String): JSONObject? {
+        val f = File(updateDir, file)
+        if (!f.isFile) return null
+        val json = runCatching { JSONObject(f.readText()) }.getOrElse {
+            Log.w("ContentRepo", "Konten pembaruan $file rusak — memakai bawaan", it)
+            return null
+        }
+        val src = json.optString("sumber_url", "")
+        if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+            Log.w("ContentRepo", "Konten pembaruan $file tanpa sumber_url resmi — memakai bawaan")
+            return null
+        }
+        return json
+    }
+
+    private fun dariAset(file: String): JSONObject {
+        val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+        // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
+        val src = json.optString("sumber_url", "")
+        if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+            Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
+        }
+        return json
+    }
 
     private fun verse(o: JSONObject) = Verse(
         o.getInt("nomor"), o.getString("arab"),
@@ -37,9 +77,26 @@ class ContentRepo(private val ctx: Context) {
 
     val yasin: Surah get() = surah("yasin_full.json")
 
+    /**
+     * Teks Arab/Latin/terjemahan dari sebuah berkas rujukan.
+     *
+     * Nama berkas boleh diikuti `#id` untuk menunjuk **satu entri** di dalam berkas yang memuat
+     * daftar (`bagian` pada tahlil, `bacaan` pada bacaan sholat), mis.
+     * `sholat_mayit.json#doa_mayit`. Dengan begitu teks yang sama dapat dipakai di beberapa modul
+     * tanpa disalin ulang — salinan yang menyimpang adalah cara paling halus untuk membuat dua
+     * bacaan berbeda dari satu sumber yang sama.
+     */
     fun resolveArabLatinTerjemah(rujukanFile: String?): Triple<String, String, String> {
-        if (rujukanFile == null) return Triple("", "", "")
-        val d = doc(rujukanFile)
+        if (rujukanFile.isNullOrBlank()) return Triple("", "", "")
+        val pisah = rujukanFile.split("#", limit = 2)
+        val nama = pisah[0].trim()
+        if (nama.isBlank()) return Triple("", "", "")
+        val d = doc(nama)
+        val id = pisah.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }
+        if (id != null) {
+            val o = entriRujukan(d, id) ?: return Triple("", "", "")
+            return Triple(o.optString("arab"), o.optString("latin"), o.optString("terjemahan"))
+        }
         return if (d.has("verses")) {
             val arr = d.getJSONArray("verses")
             Triple(
@@ -108,7 +165,8 @@ class ContentRepo(private val ctx: Context) {
                 },
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 ketentuan = ket,
-                niatCatatan = o.optString("niat_catatan", "")
+                niatCatatan = o.optString("niat_catatan", ""),
+                tujuan = o.optString("tujuan"),
             )
         }
     }
@@ -201,8 +259,8 @@ class ContentRepo(private val ctx: Context) {
         val d = doc("adzan.json")
         val o = d.getJSONObject(key)
         return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
-            o.optString("terjemahan"), o.optString("catatan"), o.optString("sumber"),
-            o.optString("kategori", d.optString("kategori", "")))
+            o.optString("terjemahan"), o.optString("catatan"), o.optString("waktu"),
+            o.optString("sumber"), o.optString("kategori", d.optString("kategori", "")))
     }
 
     /** Lafaz menjawab adzan beserta catatan kapan lafaz ini dibaca. */
@@ -242,6 +300,36 @@ class ContentRepo(private val ctx: Context) {
         )
     }
 
+    /**
+     * Syarat dan persiapan sholat dari `sholat_syarat.json`.
+     *
+     * Berkasnya sengaja **tanpa teks Arab**: yang dibutuhkan pengguna di sini adalah daftar periksa
+     * berbahasa Indonesia (sudah wudhu? sudah menutup aurat? sudah masuk waktu?), bukan lafaz.
+     * Lafaznya ada di `sholat_bacaan.json` dan `wudhu.json` dengan sumbernya masing-masing.
+     */
+    fun sholatSyarat(): SholatSyarat {
+        val d = doc("sholat_syarat.json")
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        val aurat = d.optJSONObject("penutup_aurat")
+        return SholatSyarat(
+            syaratWajib = stringList("syarat_wajib"),
+            syaratSah = stringList("syarat_sah"),
+            persiapan = stringList("persiapan"),
+            penutupAurat = Aurat(
+                judul = aurat?.optString("judul").orEmpty(),
+                lakiLaki = aurat?.optString("laki_laki").orEmpty(),
+                perempuan = aurat?.optString("perempuan").orEmpty(),
+                catatan = aurat?.optString("catatan").orEmpty(),
+            ),
+            kebersihanTempat = stringList("kebersihan_tempat"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            catatanVerifikasi = d.optString("catatan_verifikasi"),
+        )
+    }
+
     /** Konten sholat khusus (ghaib/jenazah) dari assets — termasuk varian niat. */
     fun sholatKhusus(file: String): SholatKhusus {
         val d = doc(file)
@@ -271,5 +359,23 @@ class ContentRepo(private val ctx: Context) {
             niat = niat,
             langkah = stringList("langkah"),
         )
+    }
+
+    /**
+     * Domain resmi yang **benar-benar dipakai** bundel konten, untuk layar Tentang.
+     *
+     * Dibaca dari `sumber_url` setiap berkas konten, bukan dari daftar tetap di kode: berkas yang
+     * ditambahkan kemudian dengan domain resmi lain akan ikut tampil, dan domain yang tak lagi
+     * dipakai tidak lagi diklaim. Berkas yang rusak dilewati tanpa membuat layar Tentang gagal.
+     */
+    fun sumberDipakai(): List<String> {
+        val berkas = runCatching { ctx.assets.list("content")?.toList() }.getOrNull() ?: return emptyList()
+        return berkas.asSequence()
+            .filter { it.endsWith(".json") }
+            .mapNotNull { f -> runCatching { doc(f).optString("sumber_url") }.getOrNull() }
+            .mapNotNull { ContentValidator.hostOf(it) }
+            .distinct()
+            .sorted()
+            .toList()
     }
 }

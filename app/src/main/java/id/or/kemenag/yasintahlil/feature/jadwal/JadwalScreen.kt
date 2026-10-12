@@ -22,6 +22,9 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     var methodDrop by remember { mutableStateOf(false) }
     var tzDrop by remember { mutableStateOf(false) }
     var needPermission by remember { mutableStateOf(false) }
+    // Izin bisa diminta dari dua tombol berbeda (ambil sekali vs ikuti perubahan); yang terakhir
+    // ditekan menentukan tindakan setelah izin diberikan.
+    var mintaIkuti by remember { mutableStateOf(false) }
 
     val permLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -29,7 +32,10 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         needPermission = false
         // Setelah izin diberikan, langsung coba ambil perbaikan; bila belum ada, useGps() mengisi
         // pesanLokasi sehingga layar menampilkan penjelasan + tombol coba lagi.
-        if (result.values.any { it }) vm.useGps()
+        if (result.values.any { it }) {
+            if (mintaIkuti) vm.setFollowGps(true) else vm.useGps()
+        }
+        mintaIkuti = false
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
@@ -54,6 +60,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         }
         OutlinedButton(onClick = {
             if (!vm.hasLocationPermission()) {
+                mintaIkuti = false
                 needPermission = true
                 permLauncher.launch(arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -63,6 +70,33 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
                 vm.useGps()
             }
         }) { Text("Pakai lokasi GPS") }
+
+        // `plan.txt`: "Pembaruan jadwal saat lokasi berubah" — tanpa saklar ini jadwal hanya
+        // diperbarui saat tombol di atas ditekan, bukan saat pengguna benar-benar berpindah.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Ikuti perubahan lokasi")
+            Switch(s.followGps, { on ->
+                if (on && !vm.hasLocationPermission()) {
+                    mintaIkuti = true
+                    needPermission = true
+                    permLauncher.launch(arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ))
+                } else {
+                    vm.setFollowGps(on)
+                }
+            })
+        }
+        Text(
+            if (s.followGps) "Aktif: jadwal dihitung ulang saat Anda berpindah tempat " +
+                "(pergeseran ≥ ${(JadwalViewModel.AMBANG_PINDAH_METER / 1000).toInt()} km), " +
+                "tanpa perlu menekan tombol."
+            else "Nonaktif: jadwal hanya diperbarui saat Anda menekan \"Pakai lokasi GPS\" " +
+                "atau memilih kota secara manual.",
+            style = MaterialTheme.typography.labelSmall,
+        )
+
         if (needPermission) Text(
             "Izinkan lokasi agar jadwal memakai koordinat GPS perangkat; bila tidak, pilih kota secara manual.",
             style = MaterialTheme.typography.labelSmall,
@@ -138,7 +172,9 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             )
         }
         Text(
-            "Jadwal dihitung di perangkat (algoritma Meeus) — tetap tersedia tanpa internet. Verifikasi: sihat.kemenag.dev",
+            "Jadwal dihitung di perangkat (algoritma Meeus), bukan diambil dari server — jadi " +
+                "tidak ada cache daring yang bisa basi dan jadwal tetap tersedia tanpa internet. " +
+                "Verifikasi: sihat.kemenag.dev",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp),
         )
     }

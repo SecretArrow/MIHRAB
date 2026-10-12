@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -25,7 +28,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
+import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
+import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
+import id.or.kemenag.yasintahlil.core.sensor.StatusKompas
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -100,12 +106,36 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
             }
         }
 
-        if (!s.hasCompass) Text(
-            "⚠ Perangkat tanpa magnetometer — gunakan sudut azimut di atas dengan peta. Kompas langsung tidak tersedia.",
-            color = MaterialTheme.colorScheme.error)
-        if (!s.calibrated) Text(
-            "⚠ Sensor belum terkalibrasi / ada gangguan magnet. Gerakkan perangkat pola angka 8, jauhkan dari magnet & casing magnetik.",
-            color = MaterialTheme.colorScheme.error)
+        // Indikator status kalibrasi (plan.txt §"Arah Kiblat") — ditampilkan **selalu**, bukan hanya
+        // saat bermasalah. Layar yang hanya diam saat semuanya baik membuat pengguna tak tahu apakah
+        // jarum yang dilihatnya layak dipercaya; sebaliknya, "terkalibrasi" tidak boleh diklaim
+        // sebelum ada satu pun pembacaan sensor.
+        val status = KalibrasiKompas.status(s.hasCompass, s.calibrated)
+        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Column(Modifier.padding(12.dp)) {
+                Text("Status kalibrasi sensor", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "${KalibrasiKompas.tanda(status)} ${KalibrasiKompas.label(status)}",
+                    color = when {
+                        KalibrasiKompas.perluPerhatian(status) -> MaterialTheme.colorScheme.error
+                        status == StatusKompas.TERKALIBRASI -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+                if (KalibrasiKompas.perluPolaDelapan(status)) Text(
+                    "Gerakkan perangkat membentuk pola angka delapan, jauhkan dari magnet, casing " +
+                        "magnetik, dan benda logam, lalu ulangi sampai statusnya berubah.",
+                    style = MaterialTheme.typography.labelSmall)
+                if (status == StatusKompas.TANPA_SENSOR) Text(
+                    "Perangkat ini tidak punya magnetometer, jadi kompas langsung tidak tersedia. " +
+                        "Pakai angka azimut dan peta di bawah.",
+                    style = MaterialTheme.typography.labelSmall)
+                if (status == StatusKompas.TERKALIBRASI) Text(
+                    "Akurasi kompas tetap tidak dijamin: casing magnetik, benda logam, dan medan " +
+                        "magnet di sekitar dapat menyimpangkannya. Bandingkan dengan peta dan angka azimut.",
+                    style = MaterialTheme.typography.labelSmall)
+            }
+        }
 
         // Keadaan menunggu/gagal GPS: sebelumnya layar diam saja saat GPS tak kunjung memberi
         // perbaikan, sehingga pengguna mengira aplikasinya rusak.
@@ -116,25 +146,42 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
             ErrorState(pesan, onRetry = { vm.refreshLocation() })
         }
 
-        Box(Modifier.fillMaxWidth().height(280.dp), contentAlignment = Alignment.Center) {
-            Canvas(Modifier.size(240.dp)) {
-                val c = center
-                val r = size.minDimension / 2
-                drawCircle(Color(0xFF0B7A55), r, c)
-                drawCircle(Color.White, r - 4, c)
-                val q = Math.toRadians(kiblat)
-                val a = Math.toRadians(s.azimuth.toDouble())
-                // Utara perangkat.
-                drawLine(Color.Gray, c, c + Offset(-sin(a).toFloat() * r, (-cos(a)).toFloat() * r), 4f)
-                // Arah kiblat relatif terhadap layar = azimut kiblat − arah hadap perangkat.
-                val rel = q - a
-                drawLine(Color(0xFFC9A227), c,
-                    c + Offset(sin(rel).toFloat() * (r - 12), (-cos(rel)).toFloat() * (r - 12)), 10f)
-                drawCircle(Color.Red, 8f, c)
+        // Jarum hanya digambar bila sensornya ada **dan** pengguna memilih tampilan kompas. Tanpa
+        // magnetometer sudut hadap perangkat tak diketahui, sehingga jarum akan menunjuk arah yang
+        // salah padahal tampak meyakinkan — plan.txt meminta perangkat tanpa magnetometer dilayani
+        // lewat peta/sudut hasil perhitungan, bukan kompas yang mengarang arah.
+        val gambarJarum = TampilanKompas.gambarJarum(s.tampilan, s.hasCompass)
+        if (gambarJarum) {
+            Box(Modifier.fillMaxWidth().height(280.dp), contentAlignment = Alignment.Center) {
+                Canvas(
+                    Modifier.size(240.dp).semantics {
+                        contentDescription = "Kompas arah kiblat: kiblat $azimutTeks ke arah $arah, " +
+                            "perangkat menghadap ${"%.0f".format(s.azimuth)} derajat. " +
+                            "Akurasi sensor tidak dijamin."
+                    }
+                ) {
+                    val c = center
+                    val r = size.minDimension / 2
+                    drawCircle(Color(0xFF0B7A55), r, c)
+                    drawCircle(Color.White, r - 4, c)
+                    val q = Math.toRadians(kiblat)
+                    val a = Math.toRadians(s.azimuth.toDouble())
+                    // Utara perangkat.
+                    drawLine(Color.Gray, c, c + Offset(-sin(a).toFloat() * r, (-cos(a)).toFloat() * r), 4f)
+                    // Arah kiblat relatif terhadap layar = azimut kiblat − arah hadap perangkat.
+                    val rel = q - a
+                    drawLine(Color(0xFFC9A227), c,
+                        c + Offset(sin(rel).toFloat() * (r - 12), (-cos(rel)).toFloat() * (r - 12)), 10f)
+                    drawCircle(Color.Red, 8f, c)
+                }
             }
+            Text("Jarum emas = kiblat • garis abu = utara • Akurasi kompas tidak dijamin; pisahkan azimut matematis vs sensor.",
+                style = MaterialTheme.typography.labelSmall)
+        } else {
+            Text("Jarum kompas tidak digambar — gunakan angka azimut di atas bersama peta di bawah. " +
+                    "Jarum hanya berarti bila perangkat punya magnetometer dan arahnya terkalibrasi.",
+                style = MaterialTheme.typography.labelSmall)
         }
-        Text("Jarum emas = kiblat • garis abu = utara • Akurasi kompas tidak dijamin; pisahkan azimut matematis vs sensor.",
-            style = MaterialTheme.typography.labelSmall)
         Text("Peta arah kiblat (offline)", style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp))
         KiblatMap(s.lat, s.lon, s.bearing, Modifier.padding(top = 4.dp))
@@ -159,6 +206,18 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
             FilterChip(s.unit == "derajat", { vm.setUnit("derajat") }, { Text("Derajat") })
             FilterChip(s.unit == "mil", { vm.setUnit("mil") }, { Text("Mil") })
             OutlinedButton(onClick = { vm.refreshLocation() }, enabled = s.hasPermission) { Text("Perbarui lokasi") }
+        }
+        // Pemilih tampilan hanya ditawarkan bila sensor memang ada: menawarkan "Kompas & peta"
+        // pada perangkat tanpa magnetometer berarti menawarkan pilihan yang tak bisa dipakai.
+        if (s.hasCompass) Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(top = 4.dp).horizontalScroll(rememberScrollState()),
+        ) {
+            Text("Tampilan kompas:", style = MaterialTheme.typography.labelMedium)
+            TampilanKompas.SEMUA.forEach { t ->
+                FilterChip(s.tampilan == t, { vm.setTampilan(t) }, { Text(TampilanKompas.label(t)) })
+            }
         }
     }
 }

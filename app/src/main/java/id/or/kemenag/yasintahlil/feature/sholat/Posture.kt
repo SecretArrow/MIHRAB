@@ -60,6 +60,20 @@ object Postures {
         "Masih duduk tasyahud akhir, wajah menoleh ke kanan lalu ke kiri hingga " +
             "pipi terlihat dari belakang.",
     )
+    /**
+     * Duduk tasyahud akhir. Sengaja **tidak** diberi label salah satu bentuk saja: yang dipakai
+     * bergantung pada jumlah rakaat, dan aplikasi tidak menanyakan jumlah rakaat sholat sunnah
+     * yang sedang dibaca. Skemanya menggambarkan bentuk tawarruk, sedangkan deskripsinya
+     * menyebut kedua bentuk apa adanya.
+     */
+    private val DUDUK_AKHIR = Posture(
+        R.drawable.posisi_duduk_akhir,
+        "Duduk akhir",
+        "Duduk pada rakaat terakhir. Pada sholat tiga atau empat rakaat: pantat menyentuh " +
+            "lantai dengan kaki kiri di bawah kaki kanan (tawarruk). Pada sholat dua rakaat: " +
+            "duduk iftirasy seperti duduk di antara dua sujud. Kedua tangan di atas paha, " +
+            "pandangan ke arah jari telunjuk.",
+    )
 
     private val byId: Map<String, Posture> = mapOf(
         "niat" to BERDIRI,
@@ -71,8 +85,9 @@ object Postures {
         "itidal" to BERDIRI,
         "sujud" to SUJUD,
         "duduk" to DUDUK,
-        "tasyahud" to DUDUK,
-        "sholawat_ibrahimiyah" to DUDUK,
+        "tasyahud_awal" to DUDUK,
+        "tasyahud_akhir" to DUDUK_AKHIR,
+        "sholawat_ibrahimiyah" to DUDUK_AKHIR,
         "qunut" to TAKBIR,
         "salam" to SALAM,
     )

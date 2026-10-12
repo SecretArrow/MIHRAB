@@ -43,6 +43,8 @@ class ReminderSchedulingTest {
         store.set(Store.NOTIF, true)
         store.set(Store.ADZAN_ON, "1,1,1,1,1")
         store.set(Store.ADZAN_PRE_MIN, 0)
+        store.set(Store.DOA_ADZAN_REMINDER, false)
+        store.set(Store.IQOMAH_ON, false)
     }
 
     /** Pekerjaan yang belum selesai/dibatalkan — pekerjaan CANCELLED tetap tersimpan di database. */
@@ -87,6 +89,74 @@ class ReminderSchedulingTest {
             PrayerScheduler.scheduleAll(ctx)
         }
         assertEquals("pengingat nonaktif harus membatalkan seluruh pekerjaan", 0, pending())
+    }
+
+    @Test
+    fun pengingatDoaSetelahAdzanMenambahSatuJadwalPerWaktu() {
+        runBlocking {
+            store.set(Store.DOA_ADZAN_REMINDER, true)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("5 adzan + 5 pengingat doa", 10, pending())
+    }
+
+    @Test
+    fun mematikanPengingatDoaMenghapusJadwalnya() {
+        runBlocking {
+            store.set(Store.DOA_ADZAN_REMINDER, true)
+            PrayerScheduler.scheduleAll(ctx)
+            assertEquals(10, pending())
+
+            store.set(Store.DOA_ADZAN_REMINDER, false)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("kembali ke 5 jadwal adzan saja", 5, pending())
+    }
+
+    /** plan.txt: "Tambahkan pengatur waktu Iqomah opsional setelah pengingat masuk waktu sholat." */
+    @Test
+    fun pengingatIqomahMenambahSatuJadwalPerWaktu() {
+        runBlocking {
+            store.set(Store.IQOMAH_ON, true)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("5 adzan + 5 pengingat iqomah", 10, pending())
+    }
+
+    @Test
+    fun mematikanPengingatIqomahMenghapusJadwalnya() {
+        runBlocking {
+            store.set(Store.IQOMAH_ON, true)
+            PrayerScheduler.scheduleAll(ctx)
+            assertEquals(10, pending())
+
+            store.set(Store.IQOMAH_ON, false)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("kembali ke 5 jadwal adzan saja", 5, pending())
+    }
+
+    /** Ketiga saklar bersamaan harus menumpuk, bukan saling menggantikan. */
+    @Test
+    fun doaDanIqomahBersamaTetapSepasangPerWaktu() {
+        runBlocking {
+            store.set(Store.DOA_ADZAN_REMINDER, true)
+            store.set(Store.IQOMAH_ON, true)
+            store.set(Store.ADZAN_PRE_MIN, 10)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("5 adzan + 5 pra + 5 doa + 5 iqomah", 20, pending())
+    }
+
+    /** Waktu yang dimatikan tidak boleh ikut mengingatkan iqomah. */
+    @Test
+    fun iqomahMengikutiSaklarPerWaktu() {
+        runBlocking {
+            store.set(Store.ADZAN_ON, "1,0,1,0,1")
+            store.set(Store.IQOMAH_ON, true)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("3 waktu aktif × (adzan + iqomah)", 6, pending())
     }
 
     @Test

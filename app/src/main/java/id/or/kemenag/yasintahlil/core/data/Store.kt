@@ -28,12 +28,22 @@ class Store(private val ctx: Context) {
         val SHOW_LATIN = booleanPreferencesKey("show_latin")
         val SHOW_TRANS = booleanPreferencesKey("show_trans")
         val SHOW_ARAB = booleanPreferencesKey("show_arab")
+        /** Tema halaman bacaan: `ikut`|`krem`|`gelap` (lihat `TemaHalaman` di paket designsystem). */
+        val PAGE_THEME = stringPreferencesKey("page_theme")
         val ASAR = stringPreferencesKey("asar") // syafii|hanafi
         val METHOD = stringPreferencesKey("method") // kemenag|mwl|umm_al_qura|egyptian|makkah
         val CITY = stringPreferencesKey("city")
         val LAT = doublePreferencesKey("lat")
         val LON = doublePreferencesKey("lon")
         val USE_GPS = booleanPreferencesKey("use_gps")
+        /**
+         * Jadwal sholat mengikuti perubahan lokasi (GPS live), bukan hanya satu perbaikan terakhir.
+         *
+         * Terpisah dari [USE_GPS]: [USE_GPS] berarti "koordinat yang dipakai berasal dari GPS"
+         * (dipakai bersama layar Kiblat), sedangkan kunci ini berarti "hitung ulang saat pengguna
+         * berpindah tempat". Menggabungkannya membuat satu saklar mengubah dua hal sekaligus.
+         */
+        val JADWAL_IKUT = booleanPreferencesKey("jadwal_ikut_lokasi")
         val TZ = stringPreferencesKey("tz") // id zona waktu, kosong = default perangkat
         val CORR = stringPreferencesKey("corr") // koreksi menit csv 6 angka
         val SOURCE = stringPreferencesKey("source") // lokal|online
@@ -41,10 +51,21 @@ class Store(private val ctx: Context) {
         val ADZAN_URI = stringPreferencesKey("adzan_uri")
         val ADZAN_VOL = floatPreferencesKey("adzan_vol")
         val ADZAN_PRE_MIN = intPreferencesKey("adzan_pre_min")
+        /** Pengingat membaca doa setelah adzan, beberapa menit setelah waktu sholat masuk. */
+        val DOA_ADZAN_REMINDER = booleanPreferencesKey("doa_adzan_reminder")
         val IQOMAH_MIN = intPreferencesKey("iqomah_min")
+        /**
+         * Pengingat opsional bahwa perkiraan waktu iqomah telah lewat ([IQOMAH_MIN] menit setelah
+         * masuk waktu). Waktu iqomah tiap masjid berbeda, jadi ini pengingat pribadi — bukan klaim.
+         */
+        val IQOMAH_ON = booleanPreferencesKey("iqomah_on")
         val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
         val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
+        /** Susunan tahlil buatan pengguna: CSV id bagian, urut. Kosong = belum disusun. */
+        val TAHLIL_CUSTOM = stringPreferencesKey("tahlil_custom")
         val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
+        /** Tampilan kompas kiblat: `kompas`|`angka` (lihat `TampilanKompas` di paket designsystem). */
+        val COMPASS_VIEW = stringPreferencesKey("compass_view")
         val INFO_CARD = booleanPreferencesKey("info_card")
         val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
         val FAV = stringSetPreferencesKey("fav") // warisan (legacy) — migrasi ke Room
@@ -101,11 +122,12 @@ class Store(private val ctx: Context) {
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
             str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
+            str(TAHLIL_CUSTOM); str(PAGE_THEME); str(COMPASS_VIEW)
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)
-            bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS)
-            bool(INFO_CARD); bool(NOTIF)
+            bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
+            bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)

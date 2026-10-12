@@ -6,19 +6,26 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
+import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
+import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(go: (String) -> Unit = {}) {
     val store = rememberStore()
+    val repo = rememberRepo()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -35,7 +42,15 @@ fun SettingsScreen() {
     var notif by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
     var compassUnit by remember { mutableStateOf("derajat") }
+    var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
+    // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
+    // "Susunan saya" bila pengguna pernah menyusunnya di modul Tahlil.
+    var susunanTersedia by remember { mutableStateOf<List<TahlilSusunan>>(emptyList()) }
+    var susunanAktif by remember { mutableStateOf("") }
     var backup by remember { mutableStateOf("") }
+    var ringkasan by remember { mutableStateOf<RingkasanData?>(null) }
+    var ringkasanUlang by remember { mutableStateOf(0) }
+    var hapusTarget by remember { mutableStateOf<BagianData?>(null) }
     LaunchedEffect(Unit) {
         theme = store.get(Store.DARK, "sistem")
         arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
@@ -46,7 +61,16 @@ fun SettingsScreen() {
         notif = store.get(Store.NOTIF, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
+        compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
+        val daftarSusunan = PreferensiSusunan.tersedia(
+            repo.tahlilSusunan(),
+            PreferensiSusunan.susunanSaya(PreferensiSusunan.parse(store.get(Store.TAHLIL_CUSTOM, ""))),
+        )
+        susunanTersedia = daftarSusunan
+        susunanAktif = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), daftarSusunan)
     }
+    // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
+    LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Pengaturan", style = MaterialTheme.typography.titleLarge)
         Text("Tema:", style = MaterialTheme.typography.titleMedium)
@@ -120,6 +144,50 @@ fun SettingsScreen() {
                 }
             })
         }
+        Text("Manajemen data offline", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        val r = ringkasan
+        if (r == null) {
+            Text("Menghitung isi data yang tersimpan…", style = MaterialTheme.typography.labelSmall)
+        } else {
+            Text("Tersimpan di perangkat ini: ${r.favorit} favorit, ${r.bookmark} bookmark, " +
+                    "${r.riwayat} riwayat, ${r.progres} progres. Tidak ada data ini yang dikirim ke server.",
+                style = MaterialTheme.typography.labelSmall)
+            BagianData.entries.forEach { bagian ->
+                val n = bagian.jumlah(r)
+                Row(Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text("${bagian.label}: $n", style = MaterialTheme.typography.labelMedium)
+                    OutlinedButton(onClick = { hapusTarget = bagian }, enabled = n > 0) { Text("Hapus") }
+                }
+            }
+            Text("Menghapus satu bagian tidak menyentuh bagian lain, jadi riwayat saja dapat dibuang " +
+                    "tanpa kehilangan favorit dan bookmark.",
+                style = MaterialTheme.typography.labelSmall)
+        }
+        hapusTarget?.let { bagian ->
+            val n = bagian.jumlah(ringkasan ?: RingkasanData())
+            AlertDialog(
+                onDismissRequest = { hapusTarget = null },
+                title = { Text("Hapus ${bagian.label.lowercase()}?") },
+                text = {
+                    Text("$n entri ${bagian.label.lowercase()} akan dihapus dari perangkat ini dan " +
+                            "tidak dapat dikembalikan. Bagian lain tidak tersentuh.")
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        hapusTarget = null
+                        scope.launch {
+                            bagian.hapus(userData)
+                            ringkasanUlang++
+                        }
+                    }) { Text("Hapus") }
+                },
+                dismissButton = { TextButton(onClick = { hapusTarget = null }) { Text("Batal") } },
+            )
+        }
+
         Text("Backup / pulihkan data lokal:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
@@ -149,8 +217,44 @@ fun SettingsScreen() {
         Text("Backup memuat pengaturan, favorit, bookmark, riwayat, dan progres. Simpan berkasnya di tempat aman.",
             style = MaterialTheme.typography.labelSmall)
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
-        Text("Kota: $city (ubah di menu Jadwal). Susunan Tahlil: lazim Indonesia (lihat modul Tahlil).",
-            style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(vertical = 8.dp))
+        Text("Kota: $city (ubah di menu Jadwal).", style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(vertical = 8.dp))
+
+        Text("Susunan Tahlil", style = MaterialTheme.typography.titleMedium)
+        if (susunanTersedia.isEmpty()) {
+            Text("Berkas susunan tahlil tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.",
+                style = MaterialTheme.typography.labelSmall)
+        } else {
+            // Pemilih hanya muncul bila memang ada yang bisa dipilih; satu chip tunggal hanyalah hiasan.
+            if (susunanTersedia.size > 1) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                    susunanTersedia.forEach { s ->
+                        FilterChip(susunanAktif == s.id, {
+                            susunanAktif = s.id
+                            scope.launch {
+                                store.set(Store.TAHLIL_SUSUNAN, s.id)
+                                // Urutan bagiannya berbeda, jadi posisi baca yang lama tidak lagi
+                                // menunjuk bagian yang sama — dikosongkan supaya penandanya tidak
+                                // berbohong. Sama seperti saat mengganti susunan di modul Tahlil.
+                                userData.setProgress(PreferensiSusunan.KIND_PROGRES, "idx", 0)
+                                userData.setProgress(PreferensiSusunan.KIND_PROGRES, "count", 0)
+                            }
+                        }, { Text(s.nama) })
+                    }
+                }
+            }
+            Text("Susunan aktif: ${PreferensiSusunan.namaAktif(susunanAktif, susunanTersedia)}. " +
+                    (if (susunanTersedia.size > 1)
+                        "Pilihan ini sama dengan pemilih di modul Tahlil (satu kunci preferensi); " +
+                            "menggantinya mengosongkan penanda posisi baca karena urutan bagiannya berbeda."
+                     else
+                        "Baru satu susunan tersedia di bundel konten; susunan lain menunggu rujukan " +
+                            "tradisi yang jelas dan tidak disusun sendiri di sini.") +
+                    " Susunan dapat berbeda menurut tradisi dan rujukan — tidak ada susunan yang " +
+                    "diklaim paling benar.",
+                style = MaterialTheme.typography.labelSmall)
+        }
 
         Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -163,14 +267,62 @@ fun SettingsScreen() {
         }
         Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
             style = MaterialTheme.typography.labelSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
+            TampilanKompas.SEMUA.forEach { t ->
+                FilterChip(compassView == t,
+                    { compassView = t; scope.launch { store.set(Store.COMPASS_VIEW, t) } },
+                    { Text(TampilanKompas.label(t)) })
+            }
+        }
+        Text("Menentukan apakah jarum kompas digambar di layar Kiblat. Pada perangkat tanpa " +
+                "magnetometer jarum tidak pernah digambar, karena tanpa sensor arahnya hanya " +
+                "dugaan yang tampak meyakinkan.",
+            style = MaterialTheme.typography.labelSmall)
+
+        Text("Pembaruan konten", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka pembaruan konten") }
+        Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya (domain resmi, " +
+                "kategori, harakat). Tidak ada unduhan otomatis dan tidak ada izin jaringan.",
+            style = MaterialTheme.typography.labelSmall)
 
         Text("Tentang & sumber", style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
         Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
+        // Ringkasannya tetap di sini supaya terlihat tanpa membuka apa pun; dokumen lengkapnya
+        // (kebijakan privasi, daftar izin beserta alasannya, dan lisensi) ada di layar Tentang —
+        // sebelumnya hanya ada di berkas `docs/` yang tak dapat dibaca pengguna aplikasi.
+        OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka Tentang & privasi") }
         Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
             style = MaterialTheme.typography.labelSmall)
         Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
             style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+/**
+ * Bagian data lokal yang dapat dibuang sendiri-sendiri. Setiap bagian memetakan dirinya ke jumlah
+ * yang tampil dan ke operasi hapusnya, supaya tombol "Hapus" tak mungkin menghapus bagian lain.
+ */
+private enum class BagianData(val label: String) {
+    FAVORIT("Favorit"),
+    BOOKMARK("Bookmark"),
+    RIWAYAT("Riwayat"),
+    PROGRES("Progres"),
+    ;
+
+    fun jumlah(r: RingkasanData): Int = when (this) {
+        FAVORIT -> r.favorit
+        BOOKMARK -> r.bookmark
+        RIWAYAT -> r.riwayat
+        PROGRES -> r.progres
+    }
+
+    suspend fun hapus(repo: UserDataRepository) = when (this) {
+        FAVORIT -> repo.clearFavorites()
+        BOOKMARK -> repo.clearBookmarks()
+        RIWAYAT -> repo.clearHistory()
+        PROGRES -> repo.clearProgress()
     }
 }
