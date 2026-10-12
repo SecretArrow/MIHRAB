@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Keterangan batas timer iqomah kini satu kalimat**: batas tanggung jawab aplikasi atas timer
+  iqomah — bahwa waktu iqomah **berbeda tiap masjid** dan karena itu hanya perkiraan pribadi, bukan
+  ketentuan syariat — ditulis di **empat** tempat dengan empat kata yang berbeda: dua kali di layar
+  Iqomah dan sekali di notifikasi yang berbunyi saat perkiraan waktunya habis. Salinan di notifikasi
+  justru versi yang paling pendek — *"Waktu iqomah tiap masjid berbeda — ini pengingat pribadi"* —
+  tanpa menyebut bahwa ini bukan ketentuan syariat, padahal itulah batas yang sesungguhnya;
+  sedangkan layar menyebut *"jadi ini perkiraan pribadi — bukan ketentuan syariat"*. Pengguna yang
+  membuka layar setelah notifikasi berbunyi membaca dua keterangan berbeda untuk keadaan yang sama,
+  dan perbaikan pada satu salinan tidak sampai ke salinan lain. Kini satu kalimat di
+  `PengingatAdzan.IQOMAH_PERKIRAAN`, dipakai layar Iqomah (di bawah timer **dan** pada penjelasan
+  saklarnya) maupun notifikasi. Dijaga `PengingatAdzanTest`: ejaan kalimatnya dipaku, potongan
+  khasnya (*"masjid berbeda"*, *"pengingat pribadi"*, *"perkiraan pribadi"*, *"bukan ketentuan
+  syariat"*) tidak boleh muncul di berkas lain, dan kedua tempat itu harus benar-benar membaca
+  kalimat bersama — bukan menggantinya dengan versi yang dieja sedikit berbeda. Delapan mutasi
+  terverifikasi tertangkap.
 - **Nama rentang waktu sholat sunnah kini satu tempat**: pengelompokan sholat sunnah menuliskan
   keenam nama rentangnya **dua kali** — sekali sebagai literal pada cabang `KelompokSholat.waktu`,
   sekali lagi pada daftar urutan tampilnya. Keduanya adalah daftar teks yang sama, jadi tak ada yang

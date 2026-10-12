@@ -19,6 +19,11 @@ package id.or.kemenag.yasintahlil.core.util
  *  - Penjelasan pengingat "baca doa setelah adzan" dan jedanya (`5` menit) ditulis di layar Adzan
  *    **dan** layar Iqomah dengan kata-kata sendiri-sendiri, padahal keduanya mengatur saklar yang
  *    sama (`Store.DOA_ADZAN_REMINDER`).
+ *  - Keterangan batas tanggung jawab timer iqomah — bahwa waktunya berbeda tiap masjid dan karena
+ *    itu hanya perkiraan pribadi — ditulis di **empat** tempat dengan kata yang berbeda-beda: dua
+ *    kali di layar Iqomah dan sekali di notifikasi yang berbunyi saat perkiraan waktunya habis,
+ *    sehingga pengguna membaca keterangan yang tidak sama di layar dan di notifikasi untuk keadaan
+ *    yang sama. Kini satu kalimat: [IQOMAH_PERKIRAAN].
  *
  * Tanpa Android, sehingga dapat diuji langsung di JVM.
  */
@@ -55,6 +60,22 @@ object PengingatAdzan {
 
     /** Jepit nilai tersimpan ke rentang yang sah, sehingga layar dan notifikasi memakai angka sama. */
     fun iqomahMenit(mentah: Int): Int = mentah.coerceIn(IQOMAH_MIN_MENIT, IQOMAH_MAKS_MENIT)
+
+    /**
+     * Batas tanggung jawab aplikasi atas timer iqomah — **satu** kalimat untuk semua tempat yang
+     * menyebutnya: keterangan di bawah timer dan pada penjelasan saklarnya di layar Iqomah, serta
+     * notifikasi yang berbunyi saat perkiraan waktunya habis.
+     *
+     * Dahulu keempat tempat itu menulis versinya sendiri-sendiri — *"Ini pengingat pribadi — waktu
+     * iqomah tiap masjid berbeda"*, *"Waktu iqomah tiap masjid berbeda — ini pengingat pribadi"*,
+     * dan *"…jadi ini perkiraan pribadi — bukan ketentuan syariat"* — sehingga pengguna membaca
+     * keterangan yang berbeda di notifikasi dan di layar untuk keadaan yang sama. Yang paling
+     * merugikan adalah salinan yang paling pendek: ia menyebut "pengingat pribadi" tanpa menyebut
+     * bahwa waktu iqomah memang **berbeda tiap masjid**, padahal itulah sebabnya timer ini tidak
+     * boleh dibaca sebagai jadwal masjid tempat pengguna sholat.
+     */
+    const val IQOMAH_PERKIRAAN =
+        "Waktu iqomah tiap masjid berbeda, jadi ini perkiraan pribadi — bukan ketentuan syariat."
 
     /**
      * Batas jeda pengingat sebelum adzan, dalam menit. 0 berarti **tanpa** pengingat tambahan —

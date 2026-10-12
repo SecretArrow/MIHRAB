@@ -65,7 +65,8 @@ class Store(private val ctx: Context) {
         val IQOMAH_MIN = intPreferencesKey("iqomah_min")
         /**
          * Pengingat opsional bahwa perkiraan waktu iqomah telah lewat ([IQOMAH_MIN] menit setelah
-         * masuk waktu). Waktu iqomah tiap masjid berbeda, jadi ini pengingat pribadi — bukan klaim.
+         * masuk waktu). Kalimat yang membatasinya satu tempat — `PengingatAdzan.IQOMAH_PERKIRAAN` —
+         * karena waktu iqomah tiap masjid memang berbeda.
          */
         val IQOMAH_ON = booleanPreferencesKey("iqomah_on")
         val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
