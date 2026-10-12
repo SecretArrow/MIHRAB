@@ -24,6 +24,12 @@ import java.io.File
  *    pemisah jalur — sebagai `nama_berkas_sah` tersendiri. Penyimpangannya paling sunyi dari
  *    semuanya, sebab **tak satu pun bundel contoh di `tools/fixtures/bundel/` punya nama yang
  *    cacat**: aturan itu tidak pernah dijalankan gate, sehingga salinan yang salah tetap hijau.
+ *  - **Field yang dinilai** ([BundelKonten.FIELD_TEKS]): field tempat prosa penunjuk dan harakat
+ *    dicari dahulu dieja di tiga tempat — badan `fieldTeks`, pemeriksa `check_placeholders` di gate
+ *    Python, dan baris aturan `docs/CONTENT_UPDATE.md` yang menyebut field yang sama kepada
+ *    pembaca. Field yang ditambahkan di satu sisi saja menyempitkan pemeriksaan tanpa galat: prosa
+ *    penunjuk di field baru lolos ke layar, atau dokumen menjanjikan pemeriksaan yang tak pernah
+ *    dijalankan.
  *
  * Gate kini **membaca** nilainya dari `BundelKonten.kt`. Uji ini menjaga agar keduanya tidak pernah
  * kembali menyimpan salinan, dan agar pola pengambilnya benar-benar menghasilkan nilai aplikasi —
@@ -159,6 +165,21 @@ class AturanBundelSatuTempatTest {
     }
 
     /**
+     * Gate konten membaca **field yang dinilai** dari [BundelKonten], bukan menyimpannya.
+     *
+     * `check_placeholders` dahulu menyimpan `("arab", "latin")` tersendiri. Bila daftar bersama
+     * bertambah field, gate yang menyimpan salinan akan terus memeriksa yang lama — dan prosanya
+     * lolos ke layar tanpa satu pun galat.
+     */
+    @Test
+    fun gerbangKontenMembacaFieldTeksDariBundelKonten() {
+        assertTrue("gate konten tidak membaca daftar field teks dari BundelKonten.kt",
+            gerbangKonten.contains("""baca_daftar_teks(SUMBER_BUNDEL, "FIELD_TEKS")"""))
+        assertFalse("gate konten mengeja ulang daftar field teks",
+            gerbangKonten.contains("if k in (\"arab\", \"latin\")"))
+    }
+
+    /**
      * Gate bundel membaca aturan nama berkas dari [BundelKonten], bukan menyimpannya.
      *
      * Aturan inilah yang paling sunyi penyimpangannya: `tools/fixtures/bundel/cacat.json` ditolak
@@ -185,6 +206,8 @@ class AturanBundelSatuTempatTest {
 
         assertEquals("prosa penunjuk yang dibaca gate berbeda dari yang dipakai aplikasi",
             BundelKonten.PLACEHOLDER, daftar(sumber, "PLACEHOLDER"))
+        assertEquals("field teks yang dibaca gate berbeda dari yang dipakai aplikasi",
+            BundelKonten.FIELD_TEKS, daftar(sumber, "FIELD_TEKS"))
         assertEquals("awalan terlarang yang dibaca gate berbeda dari yang dipakai aplikasi",
             BundelKonten.AWALAN_NAMA_DILARANG, daftar(sumber, "AWALAN_NAMA_DILARANG"))
         assertEquals("pemisah terlarang yang dibaca gate berbeda dari yang dipakai aplikasi",
@@ -197,6 +220,7 @@ class AturanBundelSatuTempatTest {
         // Daftar kosong akan membuat gate meloloskan segalanya; rentang terbalik akan membuat
         // seluruh nama berkas ditolak.
         assertTrue("daftar prosa penunjuk kosong", BundelKonten.PLACEHOLDER.isNotEmpty())
+        assertTrue("daftar field teks kosong", BundelKonten.FIELD_TEKS.isNotEmpty())
         assertTrue("awalan terlarang kosong", BundelKonten.AWALAN_NAMA_DILARANG.isNotEmpty())
         assertTrue("pemisah terlarang kosong", BundelKonten.PEMISAH_NAMA_DILARANG.isNotEmpty())
         assertTrue("rentang panjang nama terbalik",
@@ -222,5 +246,84 @@ class AturanBundelSatuTempatTest {
             kode.contains("PEMISAH_NAMA_DILARANG.none"))
         assertFalse("batas panjang dieja ulang di dalam badan fungsi",
             kode.contains("in 6..64"))
+    }
+
+    /** Field teks dipakai lewat konstanta bersama, bukan dieja di dalam badan fungsinya. */
+    @Test
+    fun fieldTeksMemakaiKonstantaBersama() {
+        val kode = KodeSumber.kodeTanpaKomentar(KodeSumber.sumber(berkasBundel))
+        assertTrue("field teks tidak dibaca dari konstanta bersama", kode.contains("k in FIELD_TEKS"))
+        assertFalse("field teks dieja ulang di dalam badan fungsi",
+            kode.contains("k == \"arab\" || k == \"latin\""))
+    }
+
+    // --- Dokumen yang mengulang aturan ini ------------------------------------------------------
+
+    /**
+     * Sel aturan pada baris tabel `docs/CONTENT_UPDATE.md` yang memuat [penanda].
+     *
+     * Tabel itu punya dua kolom (aturan, alasan); hanya sel pertama yang memuat aturannya, sebab
+     * kolom alasan pun memakai penekanan berkurung kutip (`plan.txt`) dan bukan nama field atau
+     * prosa. Barisnya karena itu dipecah lebih dulu, bukan dipindai seluruhnya.
+     */
+    private fun selAturanDokumen(penanda: String): String {
+        val berkas = File(repoRoot(), "docs/CONTENT_UPDATE.md")
+        val baris = berkas.readLines().singleOrNull { it.startsWith("|") && it.contains(penanda) }
+            ?: error("baris aturan '$penanda' tidak ditemukan di docs/CONTENT_UPDATE.md")
+        val sel = baris.split("|")
+        assertTrue("baris aturan '$penanda' kehilangan kolomnya", sel.size >= 3)
+        return sel[1].trim()
+    }
+
+    /**
+     * Prosa penunjuk yang disebut dokumen harus benar-benar ditolak aplikasi.
+     *
+     * Baris aturan itu menyingkat daftarnya dengan *"…"*, jadi yang dituntut bukan kesamaan:
+     * **tiap prosa yang disebut dokumen wajib ada di [BundelKonten.PLACEHOLDER]**. Bila sebuah
+     * prosa berganti nama atau dihapus dari daftar bersama, dokumen akan menjanjikan penjagaan yang
+     * tak lagi ada — pembaca menyimpulkan bundelnya aman padahal prosanya lolos ke layar. Sebaliknya,
+     * begitu dokumen berhenti menyingkat (tanpa *"…"*), daftarnya justru harus lengkap.
+     */
+    @Test
+    fun prosaPenunjukDiDokumenMasihDitolakAplikasi() {
+        val sel = selAturanDokumen("prosa penunjuk")
+        assertTrue("baris aturan prosa penunjuk tidak lagi memuat daftar berkurung",
+            sel.contains("(") && sel.contains(")"))
+        val didalam = sel.substringAfter("(").substringBefore(")")
+        val disebut = Regex("`([^`]+)`").findAll(didalam).map { it.groupValues[1] }.toList()
+        assertTrue("dokumen tidak lagi menyebut satu pun prosa penunjuk", disebut.isNotEmpty())
+
+        val asing = disebut.filterNot { it in BundelKonten.PLACEHOLDER }
+        assertTrue(
+            "prosa di docs/CONTENT_UPDATE.md bukan prosa penunjuk yang ditolak aplikasi — dokumen " +
+                "menjanjikan penjagaan yang tidak ada: $asing",
+            asing.isEmpty(),
+        )
+        if ("…" !in didalam) {
+            assertEquals(
+                "dokumen berhenti menyingkat daftar prosa penunjuk, jadi daftarnya harus lengkap",
+                BundelKonten.PLACEHOLDER, disebut,
+            )
+        }
+    }
+
+    /**
+     * Field yang disebut dokumen harus persis yang diperiksa aplikasi.
+     *
+     * Baris itu adalah satu-satunya keterangan yang dibaca orang untuk tahu **seberapa luas**
+     * pemeriksaan prosanya. Field yang ditambahkan di kode tanpa ikut disunting di sini membuat
+     * dokumen mengecilkan cakupannya; field yang disebut dokumen tetapi tidak diperiksa membuatnya
+     * melebihkannya.
+     */
+    @Test
+    fun fieldProsaPenunjukDiDokumenSelarasDenganYangDiperiksa() {
+        val sel = selAturanDokumen("prosa penunjuk")
+        assertTrue("baris aturan prosa penunjuk tidak lagi memuat daftar berkurung", sel.contains("("))
+        val disebut = Regex("`([a-z]+)`").findAll(sel.substringBefore("("))
+            .map { it.groupValues[1] }.toList()
+        assertEquals(
+            "field prosa penunjuk di docs/CONTENT_UPDATE.md berbeda dari yang diperiksa aplikasi",
+            BundelKonten.FIELD_TEKS, disebut,
+        )
     }
 }

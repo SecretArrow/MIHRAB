@@ -175,6 +175,10 @@ AKHIRAN_NAMA = baca_teks(SUMBER_BUNDEL, "AKHIRAN_NAMA")
 AWALAN_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "AWALAN_NAMA_DILARANG")
 PEMISAH_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "PEMISAH_NAMA_DILARANG")
 PLACEHOLDER_MARKERS = tuple(baca_daftar_teks(SUMBER_BUNDEL, "PLACEHOLDER"))
+# Field yang dinilai prosa penunjuk dan harakat — dibaca dari `BundelKonten.FIELD_TEKS`, sebab
+# `docs/CONTENT_UPDATE.md` menyebut field yang sama kepada pembaca dan dahulu tak ada yang
+# membandingkannya. Lihat catatan di atas berkas ini.
+FIELD_TEKS = tuple(baca_daftar_teks(SUMBER_BUNDEL, "FIELD_TEKS"))
 
 # Aturan teks Arab — dipakai `unvocalized_words` di bawah, dan dibaca dari `TeksArab.kt`.
 SUMBER_TEKS_ARAB = _sumber(TEKS_ARAB)
@@ -284,11 +288,12 @@ def check_placeholders(name: str, node, where="") -> list[str]:
     diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya.
 
     Daftar prosanya ada di `PLACEHOLDER_MARKERS`, dibaca dari `BundelKonten.PLACEHOLDER` — lihat
-    catatan di bagian atas berkas ini."""
+    catatan di bagian atas berkas ini. Field yang dinilai (`FIELD_TEKS`) pun dibaca dari sana, agar
+    field yang ditambahkan di satu sisi saja tidak membuat pemeriksaan ini diam-diam menyempit."""
     errs: list[str] = []
     if isinstance(node, dict):
         for k, v in node.items():
-            if k in ("arab", "latin") and isinstance(v, str):
+            if k in FIELD_TEKS and isinstance(v, str):
                 low = v.lower()
                 for m in PLACEHOLDER_MARKERS:
                     if m in low:

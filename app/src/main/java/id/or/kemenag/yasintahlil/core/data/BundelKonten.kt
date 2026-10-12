@@ -68,6 +68,21 @@ object BundelKonten {
         "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
     )
 
+    /**
+     * Field yang dinilai prosa penunjuk dan harakat.
+     *
+     * Kebijakannya dulu tersebar di tiga tempat: badan [fieldTeks] di sini, pemeriksa
+     * `check_placeholders` di `tools/validate_content.py` (yang menyimpan `("arab", "latin")`
+     * tersendiri), dan baris aturan di `docs/CONTENT_UPDATE.md` yang menyebut field yang sama
+     * kepada pembaca. Salinan yang menyimpang tidak menghasilkan galat apa pun: field yang
+     * ditambahkan di satu sisi saja membuat prosa penunjuk lolos dari sisi lain, atau membuat
+     * dokumen menjanjikan pemeriksaan yang tidak pernah dijalankan.
+     *
+     * Dinyatakan sebagai data supaya gate CI **membacanya dari sini** — sama seperti [PLACEHOLDER] —
+     * dan dokumennya dapat dibandingkan, bukan disalin. Dijaga `AturanBundelSatuTempatTest`.
+     */
+    val FIELD_TEKS = listOf("arab", "latin")
+
     // ---- Aturan nama berkas --------------------------------------------------------------------
     //
     // Nilai-nilainya dinyatakan sebagai data di sini, bukan disebar di dalam badan
@@ -315,12 +330,12 @@ object BundelKonten {
         return keluar.distinct()
     }
 
-    /** Field `arab`/`latin` (rekursif) beserta nilainya. */
+    /** Field teks ([FIELD_TEKS], rekursif) beserta nilainya. */
     private fun fieldTeks(node: Any?, keluar: MutableList<Pair<String, String>> = mutableListOf()): List<Pair<String, String>> {
         when (node) {
             is JSONObject -> node.keys().asSequence().forEach { k ->
                 val v = node.get(k)
-                if ((k == "arab" || k == "latin") && v is String) keluar += k to v
+                if (k in FIELD_TEKS && v is String) keluar += k to v
                 fieldTeks(v, keluar)
             }
             is JSONArray -> (0 until node.length()).forEach { fieldTeks(node.get(it), keluar) }
@@ -340,7 +355,7 @@ object BundelKonten {
      *
      * Aturannya — rentang Arab, rentang huruf, tanda harakat, dan panjang kata minimum — ada di
      * [TeksArab], dipakai bersama gate konten dan uji assets. Yang tinggal di sini hanyalah **field
-     * mana** yang dinilai: `arab`/`latin` saja, karena field lain memang memuat prosa Indonesia.
+     * mana** yang dinilai: [FIELD_TEKS] saja, karena field lain memang memuat prosa Indonesia.
      */
     private fun tanpaHarakat(node: Any?, keluar: MutableList<String> = mutableListOf()): List<String> {
         fieldTeks(node).forEach { (_, teks) -> keluar += TeksArab.tanpaHarakat(teks) }
