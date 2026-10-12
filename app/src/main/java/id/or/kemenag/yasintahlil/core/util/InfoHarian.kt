@@ -45,13 +45,12 @@ object InfoHarian {
     /**
      * Zona [id] bila sah, zona perangkat bila id-nya kosong atau tak dikenal.
      *
-     * Sama seperti jam di beranda, "hari ini" mengikuti zona waktu yang dipilih pengguna di layar
-     * Jadwal: perangkat yang zonanya berbeda dari zona jadwalnya akan menyebut tanggal yang berbeda
-     * pula, dan butir harian yang tidak sejalan dengan tanggal yang tertera di atasnya membingungkan.
+     * Aturannya bukan milik berkas ini melainkan [JadwalHariIni.zonaId]: jam beranda, penjadwal
+     * pengingat, dan layar Jadwal memakai zona yang sama, hanya dalam bentuk `TimeZone`. Kalau
+     * keduanya berbeda, "hari ini" pada butir harian tidak sejalan dengan tanggal yang tertera di
+     * atasnya — dan butir yang tidak cocok dengan tanggalnya membingungkan.
      */
-    fun zona(id: String): ZoneId =
-        if (id.isBlank()) ZoneId.systemDefault()
-        else runCatching { ZoneId.of(id) }.getOrDefault(ZoneId.systemDefault())
+    fun zona(id: String): ZoneId = JadwalHariIni.zonaId(id)
 
     fun jumat(tanggal: LocalDate): Boolean = tanggal.dayOfWeek == DayOfWeek.FRIDAY
 

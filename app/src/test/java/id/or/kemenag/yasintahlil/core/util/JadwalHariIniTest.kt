@@ -1,11 +1,13 @@
 package id.or.kemenag.yasintahlil.core.util
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import id.or.kemenag.yasintahlil.core.data.PrayerTimes
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.time.ZoneId
 import java.util.TimeZone
 
 /**
@@ -55,6 +57,49 @@ class JadwalHariIniTest {
     fun zonaKosongMemakaiZonaPerangkat() {
         assertEquals(TimeZone.getDefault(), JadwalHariIni.zona(""))
         assertEquals("Asia/Jakarta", JadwalHariIni.zona("Asia/Jakarta").id)
+    }
+
+    /**
+     * Id zona yang **tak dikenal** harus jatuh ke zona perangkat, bukan GMT.
+     *
+     * `TimeZone.getTimeZone` mengembalikan GMT diam-diam untuk id asing — zona yang tak seorang pun
+     * pilih — sementara `ZoneId.of` melempar. Selama kedua bentuk itu punya aturan sendiri-sendiri,
+     * id yang rusak (mis. dari pemulihan cadangan versi lain) membuat jam beranda dan penjadwal
+     * pengingat memakai GMT sementara kartu info harian memakai zona perangkat: dua waktu berbeda
+     * untuk hari yang sama. [JadwalHariIni.zonaId] kini aturan tunggalnya, dan [JadwalHariIni.zona]
+     * hanya bentuk `TimeZone`-nya.
+     */
+    @Test
+    fun zonaTakDikenalMemakaiZonaPerangkat() {
+        listOf("bukan/zona", "WIB", "Asia/Jakartaa", "   ").forEach { id ->
+            assertEquals("id zona '$id' tidak jatuh ke zona perangkat",
+                TimeZone.getDefault(), JadwalHariIni.zona(id))
+            assertEquals("zonaId('$id') tidak jatuh ke zona perangkat",
+                ZoneId.systemDefault(), JadwalHariIni.zonaId(id))
+        }
+        assertEquals(ZoneId.of("Asia/Jakarta"), JadwalHariIni.zonaId("Asia/Jakarta"))
+        assertEquals(ZoneId.systemDefault(), JadwalHariIni.zonaId(JadwalHariIni.TZ_DEFAULT))
+    }
+
+    /**
+     * Tidak ada layar yang boleh menyusun sendiri zona waktunya.
+     *
+     * Beranda pernah menulis `if (tzId.isBlank()) TimeZone.getDefault() else
+     * TimeZone.getTimeZone(tzId)` langsung di composable-nya — salinan aturan yang, untuk id tak
+     * dikenal, menghasilkan GMT sementara `InfoHarian.zona` menghasilkan zona perangkat.
+     */
+    @Test
+    fun tidakAdaLayarYangMenyusunZonaWaktuSendiri() {
+        val fitur = File(KodeSumber.root(), "src/main/java/id/or/kemenag/yasintahlil/feature")
+        val pelanggar = fitur.walkTopDown().filter { it.isFile && it.extension == "kt" }
+            .filter { f ->
+                val kode = KodeSumber.kodeTanpaKomentar(f.readText())
+                kode.contains("TimeZone.getTimeZone(") || kode.contains("TimeZone.getDefault(") ||
+                    kode.contains("ZoneId.systemDefault(")
+            }
+            .map { it.name }.toList()
+        assertTrue("layar menyusun zona waktu sendiri alih-alih memakai JadwalHariIni.zona()/zonaId(): $pelanggar",
+            pelanggar.isEmpty())
     }
 
     // ---- Parameter hisab ----
