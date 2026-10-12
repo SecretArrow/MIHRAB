@@ -16,7 +16,7 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `tahlil_full.json` | 15 bagian susunan tahlil | Qur'an Kemenag (MSI) + hadis sunnah.com | ✅ resmi |
 | `tahlil.json` | Deskriptor susunan (id merujuk `tahlil_full`) | — | ✅ metadata |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
-| `dzikir.json` | Dzikir & doa harian | **sunnah.com** + Qur'an Kemenag | ✅ resmi |
+| `dzikir.json` | Dzikir & doa harian | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
@@ -73,3 +73,9 @@ manusia dari sumber resmi.
 python3 tools/validate_content.py          # peringatan (non-blocking) — untuk pengembangan
 python3 tools/validate_content.py --strict # CI rilis: gagal bila ada entri tanpa sumber resmi
 ```
+
+Selain `sumber_url` tingkat berkas, gate ini juga menuntut **sumber per-entri** pada
+`dzikir.json` (agar ayat Qur'an, hadis sahih, dan hadis **daif** dapat dibedakan pengguna —
+lihat doa masuk rumah dan doa sesudah makan) serta menolak **placeholder** di field `arab`/`latin`
+(mis. `"— lihat rujukan file —"`). Bila teks asli diambil dari berkas rujukan (`rujukan`), field
+inline-nya dibiarkan kosong alih-alih diisi prosa penunjuk.

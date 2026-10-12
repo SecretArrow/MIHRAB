@@ -39,7 +39,10 @@ class ContentSourceTest {
     /** Tidak boleh ada teks instruksi yang menyamar sebagai lafaz Arab. */
     @Test
     fun arabicFieldsAreNotPlaceholders() {
-        val badMarkers = listOf("lafaz niat per sholat", "... (sesuai", "TODO", "Lorem")
+        val badMarkers = listOf(
+            "lafaz niat per sholat", "... (sesuai", "TODO", "Lorem",
+            "lihat rujukan file", "dibaca penuh dari mushaf",
+        )
         val files = contentDir().listFiles { f -> f.extension == "json" }.orEmpty()
         val problems = mutableListOf<String>()
         files.forEach { f ->
@@ -47,6 +50,27 @@ class ContentSourceTest {
             badMarkers.forEach { m -> if (text.contains(m)) problems += "${f.name}: '$m'" }
         }
         assertTrue("Placeholder terdeteksi: $problems", problems.isEmpty())
+    }
+
+    /**
+     * Setiap entri dzikir wajib menyebut sumbernya sendiri, bukan hanya mengandalkan
+     * `sumber_url` tingkat berkas. Tanpa itu pengguna tak bisa membedakan ayat Qur'an,
+     * hadis sahih, dan hadis daif (mis. doa masuk rumah & doa sesudah makan).
+     *
+     * Dihitung lewat jumlah kunci: `"judul"` ada pada tiap kelompok sekaligus tiap entri,
+     * sedangkan `"items"` hanya pada kelompok — jadi judul - kelompok = jumlah entri.
+     */
+    @Test
+    fun everyDzikirItemDeclaresItsOwnSource() {
+        val text = File(contentDir(), "dzikir.json").readText()
+        fun count(key: String) = Regex("\"$key\"\\s*:").findAll(text).count()
+        val entri = count("judul") - count("items")
+        val bersumber = count("sumber")
+        assertTrue("dzikir.json tanpa entri yang diperiksa", entri > 0)
+        assertTrue(
+            "Ada $entri entri dzikir tetapi hanya $bersumber yang punya sumber sendiri",
+            bersumber >= entri,
+        )
     }
 
     /**

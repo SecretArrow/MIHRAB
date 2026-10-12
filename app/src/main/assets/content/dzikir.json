@@ -8,7 +8,8 @@
      "judul": "Istighfar",
      "latin": "Astaghfirullah.",
      "terjemahan": "Aku memohon ampun kepada Allah.",
-     "ulangi": 3
+     "ulangi": 3,
+     "sumber": "HR Muslim 591 — sunnah.com"
     },
     {
      "arab": "اَللّٰهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",
@@ -29,25 +30,29 @@
      "judul": "Tasbih",
      "latin": "Subhanallah.",
      "terjemahan": "Maha Suci Allah.",
-     "ulangi": 33
+     "ulangi": 33,
+     "sumber": "HR Bukhari 843 & Muslim 597 — sunnah.com"
     },
     {
      "arab": "اَلْحَمْدُ لِلّٰهِ",
      "judul": "Tahmid",
      "latin": "Alhamdulillah.",
      "terjemahan": "Segala puji bagi Allah.",
-     "ulangi": 33
+     "ulangi": 33,
+     "sumber": "HR Bukhari 843 & Muslim 597 — sunnah.com"
     },
     {
      "arab": "اَللهُ أَكْبَرُ",
      "judul": "Takbir",
      "latin": "Allahu akbar.",
      "terjemahan": "Allah Maha Besar.",
-     "ulangi": 33
+     "ulangi": 33,
+     "sumber": "HR Bukhari 843 & Muslim 597 — sunnah.com"
     },
     {
      "judul": "Ayat Kursi",
-     "rujukan_file": "ayat_kursi.json"
+     "rujukan_file": "ayat_kursi.json",
+     "sumber": "QS Al-Baqarah 255 — MSI Kemenag"
     },
     {
      "arab": "اَللّٰهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ",
@@ -70,16 +75,14 @@
    "id": "pagi_petang",
    "items": [
     {
-     "arab": "آمَنَ الرَّسُوْلُ ... (dibaca penuh dari mushaf) — ringkas: Ayat Kursi + 3 Qul masing-masing 3x pagi & petang.",
      "judul": "Ayat Kursi + Al-Ikhlas, Al-Falaq, An-Nas (3x)",
-     "latin": "— lihat rujukan file —",
      "rujukan": [
       "ayat_kursi.json",
       "surah_112.json",
       "surah_113.json",
       "surah_114.json"
      ],
-     "terjemahan": "Dibaca 3 kali setiap pagi dan petang."
+     "sumber": "QS Al-Baqarah 255 + Al-Ikhlas, Al-Falaq, An-Nas — MSI Kemenag"
     },
     {
      "arab": "اَللّٰهُمَّ أَنْتَ رَبِّيْ لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِيْ وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوْذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوْءُ بِذَنْبِيْ فَاغْفِرْ لِيْ فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ",
@@ -129,25 +132,29 @@
      "arab": "اَللّٰهُمَّ افْتَحْ لِيْ أَبْوَابَ رَحْمَتِكَ",
      "judul": "Doa masuk masjid",
      "latin": "Allahummaftahli abwaba rahmatik.",
-     "terjemahan": "Ya Allah, bukakanlah untukku pintu-pintu rahmat-Mu."
+     "terjemahan": "Ya Allah, bukakanlah untukku pintu-pintu rahmat-Mu.",
+     "sumber": "HR Muslim 713 — sunnah.com"
     },
     {
      "arab": "بِسْمِ اللهِ تَوَكَّلْتُ عَلَى اللهِ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
      "judul": "Doa keluar rumah",
      "latin": "Bismillahi tawakkaltu 'alallah, la haula wa la quwwata illa billah.",
-     "terjemahan": "Dengan nama Allah aku bertawakal kepada Allah, tidak ada daya dan kekuatan kecuali dengan Allah."
+     "terjemahan": "Dengan nama Allah aku bertawakal kepada Allah, tidak ada daya dan kekuatan kecuali dengan Allah.",
+     "sumber": "HR Abu Dawud 5095 (sahih, Al-Albani) — sunnah.com"
     },
     {
      "arab": "اَللّٰهُمَّ بَارِكْ لَنَا فِيْمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
      "judul": "Doa sebelum makan",
      "latin": "Allahumma barik lana fima razaqtana wa qina 'adzaban nar.",
-     "terjemahan": "Ya Allah, berkahilah rezeki yang Engkau berikan kepada kami dan lindungilah kami dari azab neraka."
+     "terjemahan": "Ya Allah, berkahilah rezeki yang Engkau berikan kepada kami dan lindungilah kami dari azab neraka.",
+     "sumber": "Muwatta Malik 49/34 (atsar Hisyam bin Urwah) — sunnah.com"
     },
     {
      "arab": "اَلْحَمْدُ لِلّٰهِ الَّذِيْ أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِيْنَ",
      "judul": "Doa sesudah makan",
      "latin": "Alhamdulillahilladzi ath'amana wa saqana wa ja'alana muslimin.",
-     "terjemahan": "Segala puji bagi Allah yang memberi kami makan dan minum serta menjadikan kami muslim."
+     "terjemahan": "Segala puji bagi Allah yang memberi kami makan dan minum serta menjadikan kami muslim.",
+     "sumber": "HR Abu Dawud 3850 & Ibn Majah 3283 (daif menurut Al-Albani/Darussalam) — sunnah.com"
     },
     {
      "arab": "بِاسْمِكَ اللّٰهُمَّ أَحْيَا وَبِاسْمِكَ أَمُوْتُ",
