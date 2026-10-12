@@ -48,7 +48,16 @@ class Store(private val ctx: Context) {
         val CORR = stringPreferencesKey("corr") // koreksi menit csv 6 angka
         val SOURCE = stringPreferencesKey("source") // lokal|online
         val ADZAN_ON = stringPreferencesKey("adzan_on") // csv 5 bool
+        /** Berkas audio adzan yang **sedang aktif** — satu-satunya yang diputar penjadwal & pekerja. */
         val ADZAN_URI = stringPreferencesKey("adzan_uri")
+        /**
+         * Daftar "jenis suara" adzan milik pengguna: nama + URI per baris (lihat [DaftarSuaraAdzan]).
+         *
+         * Terpisah dari [ADZAN_URI] karena keduanya menjawab hal berbeda: [ADZAN_URI] "berkas mana
+         * yang berbunyi", kunci ini "berkas apa saja yang pernah disimpan". Menggabungkannya akan
+         * memaksa pekerja latar mengurai daftar hanya untuk tahu satu berkas yang harus diputar.
+         */
+        val ADZAN_SOUNDS = stringPreferencesKey("adzan_sounds")
         val ADZAN_VOL = floatPreferencesKey("adzan_vol")
         val ADZAN_PRE_MIN = intPreferencesKey("adzan_pre_min")
         /** Pengingat membaca doa setelah adzan, beberapa menit setelah waktu sholat masuk. */
@@ -121,7 +130,8 @@ class Store(private val ctx: Context) {
             fun dbl(k: Preferences.Key<Double>) { if (o.has(k.name)) p[k] = o.optDouble(k.name) }
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
-            str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
+            str(ADZAN_ON); str(ADZAN_URI); str(ADZAN_SOUNDS); str(MADHAB); str(TAHLIL_SUSUNAN)
+            str(COMPASS_UNIT)
             str(TAHLIL_CUSTOM); str(PAGE_THEME); str(COMPASS_VIEW)
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)

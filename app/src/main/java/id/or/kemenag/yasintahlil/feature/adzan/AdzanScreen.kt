@@ -12,11 +12,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.audio.AdzanPreview
+import id.or.kemenag.yasintahlil.core.data.DaftarSuaraAdzan
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.SuaraAdzan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
@@ -24,9 +27,10 @@ import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.launch
 
 /**
- * Pengaturan adzan & pengingat: saklar per waktu, berkas audio pilihan pengguna (aplikasi tidak
- * menyertakan audio bawaan karena lisensi), volume, jeda pengingat sebelum adzan, penembus mode
- * senyap, pratinjau, serta pintasan izin sistem (notifikasi, optimasi baterai, akses DND).
+ * Pengaturan adzan & pengingat: saklar per waktu, daftar **jenis suara** (berkas audio pilihan
+ * pengguna yang diberi nama — aplikasi tidak menyertakan audio bawaan karena lisensi), volume,
+ * jeda pengingat sebelum adzan, penembus mode senyap, pratinjau, serta pintasan izin sistem
+ * (notifikasi, optimasi baterai, akses DND).
  */
 @Composable
 fun AdzanScreen() {
@@ -37,6 +41,8 @@ fun AdzanScreen() {
     val lafaz = remember { repo.adzan() }
     var on by remember { mutableStateOf(List(5) { true }) }
     var uri by remember { mutableStateOf("") }
+    var sounds by remember { mutableStateOf<List<SuaraAdzan>>(emptyList()) }
+    var ubahNama by remember { mutableStateOf<SuaraAdzan?>(null) }
     var vol by remember { mutableStateOf(0.8f) }
     var preMin by remember { mutableStateOf(0) }
     var doaReminder by remember { mutableStateOf(false) }
@@ -56,17 +62,29 @@ fun AdzanScreen() {
     val player = remember { AdzanPreview(ctx) { putarGagal = it } }
     DisposableEffect(player) { onDispose { player.release() } }
 
+    /** Jenis suara yang tampil: tersimpan, ditambah berkas aktif lama yang belum tercatat. */
+    val daftarSuara = remember(sounds, uri) { DaftarSuaraAdzan.tampil(sounds, uri) }
+
+    /** Simpan daftar jenis suara lalu tulis ulang berkas aktifnya dalam satu langkah. */
+    fun simpanSuara(baru: List<SuaraAdzan>, aktifBaru: String) {
+        sounds = baru
+        uri = aktifBaru
+        scope.launch {
+            store.set(Store.ADZAN_SOUNDS, DaftarSuaraAdzan.serialize(baru))
+            store.set(Store.ADZAN_URI, aktifBaru)
+            PrayerScheduler.scheduleAll(ctx.applicationContext)
+        }
+    }
+
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { u: Uri? ->
         u?.let {
             // Simpan izin baca agar berkas tetap dapat diputar pekerja latar setelah app ditutup.
             runCatching {
                 ctx.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            uri = it.toString()
-            scope.launch {
-                store.set(Store.ADZAN_URI, uri)
-                PrayerScheduler.scheduleAll(ctx.applicationContext)
-            }
+            val dipilih = it.toString()
+            // Berkas yang baru dipilih langsung menjadi jenis suara aktif — itu yang diharapkan.
+            simpanSuara(DaftarSuaraAdzan.tambah(sounds, DaftarSuaraAdzan.namaDariUri(dipilih), dipilih), dipilih)
         }
     }
     val notifPerm = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
@@ -75,6 +93,7 @@ fun AdzanScreen() {
         val parsed = store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" }
         on = (parsed + List(5) { true }).take(5)
         uri = store.get(Store.ADZAN_URI, "")
+        sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, ""))
         vol = store.get(Store.ADZAN_VOL, 0.8f)
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
@@ -101,11 +120,52 @@ fun AdzanScreen() {
             }
         }
 
-        Text("Suara adzan (berkas audio pilihan Anda — aplikasi tidak menyertakan audio karena lisensi):",
-            style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
-        Text(if (uri.isBlank()) "Belum ada berkas dipilih" else uri, style = MaterialTheme.typography.labelSmall)
+        // `plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang legal digunakan"*
+        // dan *"Pengaturan volume dan jenis suara"*. Aplikasi tidak menyertakan audio bawaan, jadi
+        // jenis suara = berkas pilihan pengguna yang diberi nama; beberapa boleh disimpan sekaligus
+        // dan satu dipilih sebagai yang aktif.
+        Text("Jenis suara adzan", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        Text("Aplikasi tidak menyertakan audio bawaan karena lisensi: setiap jenis suara adalah " +
+                "berkas pilihan Anda sendiri yang diberi nama. Simpan beberapa (mis. \"adzan masjid " +
+                "lokal\") lalu pilih satu yang dipakai pengingat. Nama hanya penanda pilihan Anda.",
+            style = MaterialTheme.typography.labelSmall)
+        if (daftarSuara.isEmpty()) {
+            Text("Belum ada jenis suara tersimpan.", style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 4.dp))
+        }
+        daftarSuara.forEach { s ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = s.uri == uri, onClick = {
+                        // Hanya berkas aktif yang berubah, jadi penjadwal & pekerja latar tetap
+                        // membaca satu kunci yang sama.
+                        uri = s.uri
+                        scope.launch {
+                            store.set(Store.ADZAN_URI, s.uri)
+                            PrayerScheduler.scheduleAll(ctx.applicationContext)
+                        }
+                    })
+                    Column {
+                        Text(s.nama, style = MaterialTheme.typography.bodyMedium)
+                        Text(if (s.uri == uri) "Aktif" else "Tidak aktif",
+                            style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+                Row {
+                    TextButton(onClick = { ubahNama = s }) { Text("Ubah nama") }
+                    TextButton(
+                        // Jenis suara terakhir tidak dapat dihapus: menghapusnya menyisakan layar
+                        // tanpa berkas apa pun yang bisa dipilih atau dipratinjau.
+                        enabled = daftarSuara.size > 1,
+                        onClick = { simpanSuara(DaftarSuaraAdzan.hapus(daftarSuara, s.uri), DaftarSuaraAdzan.aktifSetelahHapus(daftarSuara, s.uri, uri)) },
+                    ) { Text("Hapus") }
+                }
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { pick.launch(arrayOf("audio/*")) }) { Text("Pilih audio") }
+            Button(onClick = { pick.launch(arrayOf("audio/*")) }) { Text("Tambah jenis suara") }
             Button(onClick = {
                 if (uri.isNotBlank()) {
                     putarGagal = null
@@ -114,6 +174,9 @@ fun AdzanScreen() {
             }, enabled = uri.isNotBlank()) { Text("Pratinjau") }
             OutlinedButton(onClick = { player.stop() }) { Text("Stop") }
         }
+        Text(if (uri.isBlank()) "Belum ada berkas dipilih"
+                else "Aktif: ${DaftarSuaraAdzan.namaAktif(daftarSuara, uri)}",
+            style = MaterialTheme.typography.labelSmall)
         putarGagal?.let { pesan ->
             ErrorState(pesan, onRetry = {
                 putarGagal = null
@@ -194,6 +257,31 @@ fun AdzanScreen() {
                 true, true, arabSize, ulangi = l.ulangi, showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
+    }
+
+    ubahNama?.let { s ->
+        var namaBaru by remember(s) { mutableStateOf(s.nama) }
+        AlertDialog(
+            onDismissRequest = { ubahNama = null },
+            title = { Text("Ubah nama jenis suara") },
+            text = {
+                Column {
+                    Text("Nama ini hanya penanda pilihan Anda — bukan nama muadzin atau masjid " +
+                            "tertentu.", style = MaterialTheme.typography.labelSmall)
+                    OutlinedTextField(namaBaru, { namaBaru = it }, label = { Text("Nama") },
+                        singleLine = true, modifier = Modifier.fillMaxWidth())
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    // Nama dikosongkan = kembali ke nama bawaan dari nama berkas, bukan entri tanpa
+                    // label yang tak dapat dibedakan dari yang lain.
+                    simpanSuara(DaftarSuaraAdzan.ubahNama(daftarSuara, s.uri, namaBaru), uri)
+                    ubahNama = null
+                }) { Text("Simpan") }
+            },
+            dismissButton = { TextButton(onClick = { ubahNama = null }) { Text("Batal") } },
+        )
     }
 
     if (settings) {

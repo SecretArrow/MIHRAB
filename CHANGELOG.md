@@ -6,6 +6,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Jenis suara adzan** (`plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang
+  legal digunakan"* dan *"Pengaturan volume dan jenis suara"*): layar Adzan hanya punya **satu**
+  berkas audio (`Store.ADZAN_URI`) dan satu slider volume — "jenis suara" tidak ada sama sekali,
+  sehingga memilih berkas lain berarti kehilangan berkas sebelumnya tanpa cara kembali. Kini
+  pengguna dapat menyimpan **beberapa** jenis suara sekaligus, masing-masing berkas pilihannya
+  sendiri yang ia beri nama (mis. "adzan masjid lokal"), lalu memilih satu yang aktif, menamainya
+  ulang, atau menghapusnya. Aplikasi tetap **tidak menyertakan audio bawaan** (lisensi) — jenis
+  suara tidak pernah berarti katalog suara dari aplikasi. Daftarnya disimpan di kunci **baru**
+  `Store.ADZAN_SOUNDS`, sedangkan berkas yang berbunyi tetap satu kunci lama `Store.ADZAN_URI`,
+  sehingga penjadwal dan pekerja latar tidak perlu tahu apa pun tentang daftar itu — berkas yang
+  terdengar dijamin sama dengan yang terlihat aktif. Berkas aktif dari versi sebelumnya tetap
+  muncul di daftar meski belum tercatat, jenis suara terakhir tidak dapat dihapus (menghapusnya
+  menyisakan layar tanpa apa pun yang bisa dipilih), dan menghapus yang sedang aktif memindahkan
+  pilihan ke berkas tersisa. Aturannya murni (tanpa Android) di `DaftarSuaraAdzan` dan dijaga
+  `JenisSuaraAdzanTest`, yang juga menolak audio bawaan di `assets/`.
 - **Jadwal sholat mengikuti perubahan lokasi** (`plan.txt` §"Jadwal Sholat dan Pengaturan Adzan":
   *"Pembaruan jadwal saat lokasi berubah"*): sebelumnya tombol "Pakai lokasi GPS" hanya membaca
   **satu** perbaikan terakhir (`LocationProvider.lastKnown`) lalu diam — jadwal tetap memakai
