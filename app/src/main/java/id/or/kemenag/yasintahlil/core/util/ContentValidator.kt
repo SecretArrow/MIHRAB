@@ -43,7 +43,7 @@ object ContentValidator {
     /**
      * Ejaan yang **ditulis** aplikasi sendiri — yang pertama pada [KUNCI_SUMBER].
      *
-     * Dipakai `ContentUpdateManager.metaJson` saat mencatat sumber tiap berkas yang dipasang.
+     * Dipakai `MetaPembaruan.tulis` saat mencatat sumber tiap berkas yang dipasang.
      * Menulis lewat konstanta ini menjaga agar tak ada ejaan kunci yang ditulis di luar berkas ini,
      * sekaligus aman: pembacanya ([sumberBerkas]) menerima kedua ejaan, jadi mengubah urutan
      * prioritas tidak membuat metadata lama tak terbaca.

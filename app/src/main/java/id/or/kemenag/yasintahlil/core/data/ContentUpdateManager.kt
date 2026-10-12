@@ -3,14 +3,8 @@ package id.or.kemenag.yasintahlil.core.data
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import id.or.kemenag.yasintahlil.core.util.ContentValidator
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * Pemasangan bundel pembaruan konten ke penyimpanan aplikasi — memenuhi `plan.txt`:
@@ -25,6 +19,9 @@ import java.util.Locale
  * pengguna. Sebelum ditulis, seluruh bundel diperiksa [BundelKonten] — sumber resmi, kategori,
  * harakat, bebas placeholder, dan rujukan berkas yang benar-benar ada. Satu berkas yang gagal
  * membatalkan seluruh bundel.
+ *
+ * Keadaan pembaruan dicatat di `_meta.json` ([META]); kunci berkas itu tinggal di [MetaPembaruan],
+ * satu tempat bagi penulis dan pembacanya.
  */
 class ContentUpdateManager(private val ctx: Context) {
 
@@ -43,36 +40,9 @@ class ContentUpdateManager(private val ctx: Context) {
         data class Ditolak(val alasan: List<String>) : Hasil
     }
 
-    /** Keadaan konten yang sedang dipakai. */
-    data class Status(
-        val aktif: Boolean = false,
-        val dipasang: String = "",
-        val penerbit: String = "",
-        val catatan: String = "",
-        val berkas: List<BundelKonten.Berkas> = emptyList(),
-    )
-
     /** Keadaan pembaruan saat ini, dibaca dari berkas metadata di disk. */
-    fun status(): Status {
-        val j = runCatching { JSONObject(meta.readText()) }.getOrNull() ?: return Status()
-        val arr = j.optJSONArray("berkas") ?: JSONArray()
-        val berkas = (0 until arr.length()).mapNotNull { i ->
-            val o = arr.optJSONObject(i) ?: return@mapNotNull null
-            val nama = o.optString("nama").takeIf { it.isNotBlank() } ?: return@mapNotNull null
-            val kat = o.optJSONArray("kategori")?.let { k -> (0 until k.length()).map { k.getString(it) } }.orEmpty()
-            // Dibaca lewat aturan bersama, bukan ejaan lokal: `_meta.json` ditulis kelas ini sendiri
-            // dengan ejaan utama, tetapi nilai yang ditampilkan ke pengguna tetap harus dibaca
-            // dengan aturan yang sama seperti sumber konten di tempat lain.
-            BundelKonten.Berkas(nama, ContentValidator.sumberBerkas(o), kat)
-        }
-        return Status(
-            aktif = berkas.isNotEmpty(),
-            dipasang = j.optString("dipasang"),
-            penerbit = j.optString("penerbit"),
-            catatan = j.optString("catatan"),
-            berkas = berkas,
-        )
-    }
+    fun status(): MetaPembaruan.Status =
+        MetaPembaruan.baca(runCatching { meta.readText() }.getOrDefault(""))
 
     /** Baca bundel dari berkas yang dipilih pengguna, lalu pasang bila lolos pemeriksaan. */
     fun pasangDariUri(uri: Uri): Hasil =
@@ -104,7 +74,7 @@ class ContentUpdateManager(private val ctx: Context) {
         val ringkas = BundelKonten.ringkasan(hasil)
         return runCatching {
             hasil.berkas.forEach { (nama, doc) -> File(staging, nama).writeText(doc.toString(1)) }
-            File(staging, META).writeText(metaJson(hasil, ringkas).toString(1))
+            File(staging, META).writeText(MetaPembaruan.tulis(hasil, ringkas).toString(1))
             // Tukar direktori: setelah baris ini, seluruh bundel aktif sekaligus.
             dir.deleteRecursively()
             check(staging.renameTo(dir)) { "Tidak dapat mengaktifkan folder pembaruan." }
@@ -130,22 +100,6 @@ class ContentUpdateManager(private val ctx: Context) {
         staging.deleteRecursively()
         Log.i(TAG, "Pembaruan konten dikembalikan ke bawaan (berhasil=$ok)")
         return ok
-    }
-
-    private fun metaJson(hasil: BundelKonten.Hasil, ringkas: List<BundelKonten.Berkas>): JSONObject {
-        val berkas = JSONArray()
-        ringkas.forEach { b ->
-            berkas.put(JSONObject()
-                .put("nama", b.nama)
-                .put(ContentValidator.KUNCI_SUMBER_UTAMA, b.sumberUrl)
-                .put("kategori", JSONArray(b.kategori)))
-        }
-        return JSONObject()
-            .put("skema", hasil.skema)
-            .put("dipasang", SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(Date()))
-            .put("penerbit", hasil.penerbit)
-            .put("catatan", hasil.catatan)
-            .put("berkas", berkas)
     }
 
     /** Baca berkas terpilih dengan batas ukuran agar bundel raksasa tidak menghabiskan memori. */

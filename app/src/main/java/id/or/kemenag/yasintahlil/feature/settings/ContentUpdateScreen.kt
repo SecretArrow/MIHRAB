@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BundelKonten
 import id.or.kemenag.yasintahlil.core.data.ContentUpdateManager
+import id.or.kemenag.yasintahlil.core.data.MetaPembaruan
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
@@ -34,7 +35,7 @@ fun ContentUpdateScreen() {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val mgr = remember { ContentUpdateManager(ctx.applicationContext) }
-    var status by remember { mutableStateOf(ContentUpdateManager.Status()) }
+    var status by remember { mutableStateOf(MetaPembaruan.Status()) }
     var hasil by remember { mutableStateOf<ContentUpdateManager.Hasil?>(null) }
     var memproses by remember { mutableStateOf(false) }
     var konfirmasiKembali by remember { mutableStateOf(false) }

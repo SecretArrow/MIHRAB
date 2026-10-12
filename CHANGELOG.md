@@ -380,6 +380,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kunci `_meta.json` tak lagi dieja dua kali**: berkas metadata pembaruan ditulis oleh `metaJson`
+  dan dibaca oleh `status()` di `ContentUpdateManager` — tujuh kunci, dua kali, tanpa apa pun yang
+  membandingkannya. Mengganti nama kunci di satu sisi saja membuat layar **"Pembaruan konten"**
+  melaporkan *tidak ada pembaruan terpasang* padahal berkasnya sudah ada dan sedang dipakai; karena
+  tombol **"Kembalikan ke konten bawaan"** hanya muncul saat ada yang terpasang, pengguna kehilangan
+  satu-satunya jalan kembali ke konten bawaan — tanpa satu pun pesan galat. Penulis dan pembacanya
+  kini tinggal bersama di `MetaPembaruan` sebagai fungsi murni (dapat diuji tanpa `Context`) dan
+  memakai konstanta kunci yang sama; `MetaPembaruanTest` menuntut `ContentUpdateManager` tidak lagi
+  mengeja satu pun kunci itu sendiri. Waktu pemasangan pun kini diformat pada zona yang diberikan,
+  sehingga ujinya sama di mesin mana pun. Tiga belas mutasi terverifikasi tertangkap.
 - **Aturan prosa penunjuk di dokumen kedua ikut dijaga**: `docs/CONTENT_SOURCES.md` mengulang aturan
   yang sama dalam bentuk **prosa** — *"menolak **placeholder** di field `arab`/`latin`"* beserta
   contohnya (`"— lihat rujukan file —"`) — dan tak ada apa pun yang membandingkannya dengan kode.
