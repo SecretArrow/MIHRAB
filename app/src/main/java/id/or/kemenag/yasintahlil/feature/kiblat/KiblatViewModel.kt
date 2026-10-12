@@ -14,6 +14,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.QiblaCalc
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,11 +27,17 @@ import kotlin.math.sqrt
 import javax.inject.Inject
 
 data class KiblatUiState(
-    val lat: Double = -6.2,
-    val lon: Double = 106.8,
+    val lat: Double = JadwalHariIni.LAT_DEFAULT,
+    val lon: Double = JadwalHariIni.LON_DEFAULT,
     val useGps: Boolean = false,
     val hasPermission: Boolean = false,
-    val bearing: Double = 295.0,
+    /**
+     * Azimut awal dari lokasi bawaan, dihitung dengan rumus yang sama dengan nilai sesungguhnya —
+     * bukan angka `295.0` yang ditulis tetap. Angka tetap itu benar untuk Jakarta dan **hanya**
+     * Jakarta: ia harus disunting sendiri setiap kali lokasi bawaannya berubah, dan bila terlewat
+     * layar sempat menampilkan arah kiblat kota lain.
+     */
+    val bearing: Double = QiblaCalc.bearing(JadwalHariIni.LAT_DEFAULT, JadwalHariIni.LON_DEFAULT),
     val azimuth: Float = 0f,
     val hasCompass: Boolean = true,
     /**
@@ -45,8 +52,8 @@ data class KiblatUiState(
     val mencari: Boolean = false,
     /** Pesan bila GPS diminta tetapi belum ada perbaikan lokasi yang bisa dipakai. */
     val pesanLokasi: String? = null,
-    /** Satuan tampilan azimut: "derajat" atau "mil". */
-    val unit: String = "derajat",
+    /** Satuan tampilan azimut — salah satu dari [TampilanKompas.SATUAN]. */
+    val unit: String = TampilanKompas.SATUAN_DEFAULT,
     /** Tampilan kompas: jarum digambar atau hanya angka & peta (lihat [TampilanKompas]). */
     val tampilan: String = TampilanKompas.KOMPAS,
 )
@@ -74,14 +81,14 @@ class KiblatViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val useGps = store.get(Store.USE_GPS, false)
-            val lat = store.get(Store.LAT, -6.2)
-            val lon = store.get(Store.LON, 106.8)
+            val lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
+            val lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
             _state.update {
                 it.copy(
                     useGps = useGps, lat = lat, lon = lon,
                     hasPermission = LocationProvider.hasPermission(ctx),
                     bearing = QiblaCalc.bearing(lat, lon),
-                    unit = store.get(Store.COMPASS_UNIT, "derajat"),
+                    unit = store.get(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT),
                     tampilan = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS),
                 )
             }

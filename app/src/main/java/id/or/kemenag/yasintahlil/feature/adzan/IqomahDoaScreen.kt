@@ -16,6 +16,8 @@ import id.or.kemenag.yasintahlil.core.data.AdzanDoa
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -46,16 +48,18 @@ fun IqomahScreen() {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     val items = remember { repo.iqomah() }
-    var mins by remember { mutableStateOf(10) }
+    var mins by remember { mutableStateOf(PengingatAdzan.IQOMAH_DEFAULT_MENIT) }
     var remaining by rememberSaveable { mutableStateOf(-1) } // detik; -1 = tidak berjalan
-    var fullscreen by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(24f) }
+    // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        mins = store.get(Store.IQOMAH_MIN, 10)
-        arabSize = store.get(Store.ARAB_SIZE, 24f)
+        mins = PengingatAdzan.iqomahMenit(
+            store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         ingatkan = store.get(Store.IQOMAH_ON, false)
     }
@@ -94,9 +98,15 @@ fun IqomahScreen() {
             style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            OutlinedButton(onClick = { mins = (mins - 1).coerceAtLeast(1); remaining = -1; simpanMins(store, scope, mins, ctx) }) { Text("−") }
+            // Batasnya dari aturan bersama, sama dengan yang menjepit nilai tersimpan di penjadwal
+            // dan pekerja latar — kalau tidak, layar bisa menampilkan angka yang tak pernah dipakai.
+            OutlinedButton(onClick = {
+                mins = PengingatAdzan.iqomahMenit(mins - 1); remaining = -1; simpanMins(store, scope, mins, ctx)
+            }) { Text("−") }
             Text("$mins mnt", style = MaterialTheme.typography.titleMedium)
-            OutlinedButton(onClick = { mins = (mins + 1).coerceAtMost(60); remaining = -1; simpanMins(store, scope, mins, ctx) }) { Text("+") }
+            OutlinedButton(onClick = {
+                mins = PengingatAdzan.iqomahMenit(mins + 1); remaining = -1; simpanMins(store, scope, mins, ctx)
+            }) { Text("+") }
         }
 
         // `plan.txt` §"Fitur Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat
@@ -139,7 +149,7 @@ fun IqomahScreen() {
         items.forEachIndexed { i, l ->
             BacaanCard("iqomah:${i + 1}", "Lafaz iqomah ${i + 1} dari ${items.size}",
                 l.arab, l.latin, l.terjemahan,
-                true, true, if (fullscreen) arabSize + 8 else arabSize, ulangi = l.ulangi,
+                true, true, UkuranBacaan.arabBacaJauh(arabSize, fullscreen), ulangi = l.ulangi,
                 sumber = l.sumber, showArab = showArab, kategori = l.kategori)
         }
     }
@@ -162,12 +172,12 @@ fun DoaAdzanScreen() {
     val doa = remember { repo.doaAdzan() }
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
-    var arabSize by remember { mutableStateOf(22f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         ingatkan = store.get(Store.DOA_ADZAN_REMINDER, false)
     }

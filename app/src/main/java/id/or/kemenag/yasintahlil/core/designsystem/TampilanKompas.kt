@@ -27,6 +27,39 @@ object TampilanKompas {
         else -> "Kompas & peta"
     }
 
+    // ---- Satuan azimut ---------------------------------------------------------------------
+    // Kunci `"derajat"`/`"mil"` dahulu ditulis di tiga berkas: layar Pengaturan, layar Kiblat, dan
+    // `KiblatViewModel` (bawaan state-nya). Menambah satu satuan berarti menyunting ketiganya, dan
+    // satuan yang lolos dari percabangan tampilan akan tampil sebagai derajat meski pilihannya
+    // tersimpan — pengguna melihat angka yang sama untuk satuan yang berbeda.
+
+    /** Derajat busur, 0–360 — bawaan, dan satu-satunya satuan yang dipakai perhitungan. */
+    const val DERAJAT = "derajat"
+
+    /** Mil artileri (1/6400 lingkaran). Hanya satuan **tampilan**; azimutnya tetap derajat. */
+    const val MIL = "mil"
+
+    /** Seluruh satuan yang sah, urut untuk ditampilkan. */
+    val SATUAN: List<String> = listOf(DERAJAT, MIL)
+
+    /** Satuan bawaan bila pengguna belum pernah memilihnya. */
+    const val SATUAN_DEFAULT = DERAJAT
+
+    fun satuanSah(v: String): Boolean = v in SATUAN
+
+    /**
+     * Nama satuan untuk ditampilkan; nilai tak dikenal diperlakukan sebagai [DERAJAT].
+     *
+     * Mil diberi keterangan "(6400)" karena istilahnya mudah tertukar dengan mil jarak: yang
+     * dimaksud di sini adalah mil artileri, 1/6400 lingkaran. Sebelumnya hanya layar Pengaturan
+     * memberi keterangan itu sementara chip di layar Kiblat berbunyi "Mil" saja — dua nama untuk
+     * satu satuan yang sama.
+     */
+    fun labelSatuan(v: String): String = when (v) {
+        MIL -> "Mil (6400)"
+        else -> "Derajat"
+    }
+
     /** Jarum hanya boleh digambar bila sensornya ada **dan** pengguna memilih tampilan kompas. */
     fun gambarJarum(pilihan: String, adaSensor: Boolean): Boolean =
         adaSensor && (if (sah(pilihan)) pilihan else KOMPAS) == KOMPAS

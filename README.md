@@ -31,6 +31,27 @@ Sumber jadwal/kalender *online* resmi belum diaktifkan karena SIHAT Bimas Islam 
 menyediakan API publik untuk aplikasi pihak ketiga; izin Internet akan ditambahkan hanya bila
 fitur itu benar-benar ada.
 
+## Batasan yang disengaja
+
+Semuanya adalah pilihan sadar, bukan pekerjaan yang tertinggal — supaya tidak ada yang tampak
+"belum jadi" padahal memang sengaja:
+
+- **Antarmuka hanya berbahasa Indonesia.** Tidak ada kontrol "Bahasa aplikasi" karena belum ada
+  terjemahan antarmuka kedua; tombol yang tidak mengubah apa pun dilarang oleh `plan.txt` sendiri
+  ("Hindari tombol dekoratif yang tidak bekerja").
+- **Tidak ada audio adzan bawaan.** Lisensi audio tidak dapat dipastikan, jadi setiap jenis suara
+  adalah berkas pilihan pengguna yang ia beri nama — aplikasi tidak menyertakan satu pun.
+- **Satu susunan Tahlil.** Susunan lain menunggu sumber resmi; lihat `docs/CONTENT_SOURCES.md`.
+  Penjelasan perbedaan susunan Iqomah antar-mazhab juga belum ada karena alasan yang sama.
+- **Pengingat memakai WorkManager, tanpa izin alarm tepat waktu.** Waktu dapat bergeser beberapa
+  menit saat perangkat tidur (Doze); hal ini dinyatakan di layar Adzan, bukan disembunyikan.
+- **Sepenuhnya offline** — tidak ada sumber *online*, dengan alasan yang dijelaskan di bagian Build
+  di atas.
+- **Toolchain dipatok** (AGP 8.5.x, Kotlin 2.0.20, `compileSdk`/`targetSdk` 34). Kenaikan toolchain
+  harus dilakukan sebagai satu perubahan teruji — rincian dan alasan tiap plafon ada di
+  `.github/dependabot.yml`. Selama `targetSdk` belum dinaikkan, aplikasi belum memenuhi syarat
+  `targetSdk` minimum yang ditetapkan Google Play untuk pengajuan aplikasi baru.
+
 ## Jalankan lokal (opsional)
 Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.
 

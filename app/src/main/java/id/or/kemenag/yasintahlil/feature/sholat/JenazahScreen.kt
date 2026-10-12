@@ -5,10 +5,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
 
@@ -21,12 +23,13 @@ fun JenazahScreen() {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
-    var fullscreen by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(22f) }
+    // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
     }
     FullscreenEffect(fullscreen)
@@ -64,7 +67,7 @@ fun JenazahScreen() {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
                 BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true,
-                    if (fullscreen) arabSize + 8 else arabSize, sumber = b.sumber,
+                    UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
         }

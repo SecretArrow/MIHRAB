@@ -360,6 +360,109 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Pilihan tampilan tidak lagi lenyap saat perangkat diputar**: `MainActivity` tidak mengunci
+  orientasi (`android:screenOrientation` tidak ada di manifest), jadi memutar perangkat membangun
+  ulang Activity beserta seluruh komposisinya — dan apa pun yang disimpan di `remember` biasa ikut
+  hilang. Yang paling merugikan adalah posisi **langkah panduan sholat**: pengguna yang sedang di
+  langkah ketujuh terlempar kembali ke langkah pertama hanya karena memutar ponsel. Hal yang sama
+  terjadi pada tab panduan sholat dan kelompok dzikir, cara pengelompokan, mode layar penuh
+  (Yasin, Tahlil, Kiblat, Dzikir, Ghaib, Jenazah, Iqomah), mode jamaah dan panel susunan Tahlil,
+  mode ringkas dan tanda selesai panduan sholat, mode baca fokus dan layar tetap menyala Yasin,
+  daftar bookmark, serta kata kunci yang sedang diketik di Yasin dan Pencarian — semuanya kini
+  `rememberSaveable`. Keadaan yang **sengaja** tetap `remember` (panel pengaturan modal, indeks
+  pencarian dan pesan galat yang dibangun ulang oleh efek, penghitung percobaan ulang) dinyatakan
+  terang-terangan di `KeadaanLayarSaatDiputarTest`, supaya tidak ada yang "memperbaikinya" keliru.
+- **Bilah sistem tidak lagi memakan tepi layar**: `plan.txt` §"UI/UX dan Navigasi" meminta *"Layout
+  responsif untuk berbagai ukuran layar"*, tetapi yang dijaga baru **lebarnya** — inset bilah sistem
+  sama sekali tidak dihitung. Jendela memakai bilah berlatar warna, sehingga pita di sekitar poni
+  (notch) dan di belakang bilah gestur menjadi ruang mati, dan ikon bilah sistem mengikuti tema
+  **perangkat** — bukan tema yang dipilih pengguna, sehingga memilih tema yang berlawanan dengan
+  perangkatnya meninggalkan ikon status bar terang di atas latar terang. Kini `MainActivity`
+  memanggil `enableEdgeToEdge()` **sebelum** `setContent` (jendela harus diatur sebelum bingkai
+  pertama digambar), warna ikon bilah status dan navigasi disinkronkan dari nilai `dark` yang sama
+  dengan tema aplikasi lewat `SideEffect`, dan inset-nya ditambahkan sekali di `AppNav` oleh
+  `Scaffold` — yang bawaannya memang `WindowInsets.systemBars` — sehingga setiap layar ikut tanpa
+  pengkabelan per layar. Warna bilah di `themes.xml` sengaja **dibiarkan**: itu nilai untuk jendela
+  pembuka sebelum Compose menggambar, dan zamrud `#0B7A55` memang butuh ikon terang. Ini juga
+  menyiapkan aplikasi bila `targetSdk` kelak dinaikkan: mulai API 35 tepi-ke-tepi diberlakukan
+  sistem, dan tata letak yang tak menghitung inset akan tertutup bilah. Dijaga
+  `TataLetakResponsifTest` (`aplikasiMenggambarTepiKeTepi`, `insetSistemDitambahkanDiNavigasi`,
+  `ikonBilahSistemMengikutiTemaAplikasi`), yang juga menolak `Scaffold` yang mematikan insetnya
+  sendiri dengan `WindowInsets(0)`.
+- **Bawaan konfigurasi jadwal dan pengingat kini punya satu rumah, bukan sembilan salinan**: kuncinya
+  memang satu, tetapi **bawaannya** bercabang di mana-mana. Koordinat Jakarta (`-6.2`/`106.8`) ditulis
+  sembilan kali di `PrayerScheduler`, `HomeViewModel`, `JadwalViewModel`, `KiblatViewModel`, dan layar
+  Adzan; `"KEMENAG"` lima kali, `"syafii"` lima kali (termasuk `JadwalViewModel.setAsarHanafi` yang
+  memetakannya sendiri dari boolean), `"Jakarta"` tiga kali, `"0,0,0,0,0,0"` empat kali, zona waktu
+  `""` empat kali, `"derajat"`/`"mil"` tiga kali, dan CSV saklar `"1,1,1,1,1"` dua kali. Tak ada satu
+  pun tempat yang tahu berapa bawaannya seharusnya: bila salah satunya berbeda, layar Jadwal, arah
+  Kiblat, layar Adzan, dan pengingat latar menghitung untuk tempat yang berlainan **tanpa satu pun
+  pesan galat** — pengguna hanya melihat dua jam yang tidak sama untuk sholat yang sama. Semuanya kini
+  tinggal di rumah masing-masing: `JadwalHariIni` (`LAT_DEFAULT`, `LON_DEFAULT`, `KOTA_DEFAULT`,
+  `METODE_DEFAULT`, `ASAR_SYAFII`/`ASAR_HANAFI`/`ASAR_DEFAULT`, `CORR_DEFAULT`, `TZ_DEFAULT`),
+  `PengingatAdzan` (`ON_DEFAULT`, `PRE_MIN_DEFAULT` beserta rentangnya), `TampilanKompas`
+  (`SATUAN`/`SATUAN_DEFAULT`/`satuanSah`/`labelSatuan`), dan `Mazhab` yang baru (`core/sholat/Mazhab.kt`,
+  menggantikan daftar yang dahulu disalin di layar panduan dan layar Pengaturan). Dijaga
+  `JadwalHariIniTest`, `PengingatAdzanTest`, `TampilanKompasTest`, dan `MazhabTest`, yang masing-masing
+  menolak bawaannya ditulis ulang di luar rumahnya.
+- **Rentang yang dahulu hanya ada di slider kini juga menjepit jalur baca**: batas koreksi menit
+  (`±30`) hidup hanya sebagai `valueRange` slider di layar Jadwal, dan batas jeda pengingat sebelum
+  adzan (`0..30`) hanya sebagai `valueRange` di layar Adzan — nilai tersimpan di luar rentang itu (mis.
+  dari backup yang disunting) dihormati apa adanya oleh seluruh layar **dan** penjadwal, sehingga
+  jadwal dapat bergeser jauh lebih banyak daripada yang dapat dipilih pengguna. Keduanya kini dijepit
+  saat dibaca (`JadwalHariIni.parseCorr` dan `PengingatAdzan.preMenit`), dengan rentang dari satu
+  sumber yang sama dengan slidernya.
+- **Arah kiblat bawaan dihitung, bukan angka tetap**: `KiblatUiState` memulai dengan `295.0` yang
+  ditulis tetap — benar untuk Jakarta dan **hanya** Jakarta. Angka itu harus disunting sendiri setiap
+  kali lokasi bawaan berubah, dan bila terlewat layar sempat menampilkan arah kiblat kota lain. Kini
+  ia dihitung `QiblaCalc.bearing(LAT_DEFAULT, LON_DEFAULT)` dengan rumus yang sama dengan nilai
+  sesungguhnya.
+- **Mode tema kini punya satu daftar, satu bawaan, dan satu pemetaan**: nilai `"terang"`, `"gelap"`,
+  dan `"sistem"` beserta artinya dahulu tinggal di **tiga** berkas — `MainViewModel` menulis bawaan
+  `"sistem"`, `MainActivity` memetakan `"terang"`/`"gelap"` ke `dark: Boolean` lewat rantai `when`,
+  dan layar Pengaturan menyusun sendiri daftar chip `listOf("terang", "gelap", "sistem")`. Kuncinya
+  memang satu (`Store.DARK`), tetapi daftarnya tiga; menambah satu mode berarti harus ingat
+  menyunting ketiganya, dan mode yang lolos dari pemetaan diam-diam jatuh ke "ikut sistem" —
+  pilihan pengguna tampak tersimpan, chip-nya terlihat aktif, tetapi tema tidak berubah. Ketiganya
+  kini di `TemaAplikasi` (murni, tanpa Android, dapat diuji di JVM), termasuk pemetaannya
+  (`gelap(v, sistemGelap)`), sehingga mode yang tak dikenal pun jatuh dengan cara yang sama di mana
+  pun. Dijaga `TemaAplikasiTest`.
+- **Ukuran bacaan kini punya satu bawaan dan satu rentang**: `Store.ARAB_SIZE` dibaca di **sebelas**
+  tempat dengan bawaan yang bercabang — enam memakai `22f`, lima `24f` — ditambah tiga nilai awal di
+  ViewModel (22/24/24). Kuncinya memang satu, tetapi selama pengguna belum pernah menyentuh
+  slidernya bacaan yang sama dirender 22 sp di layar Sholat dan 24 sp di layar Yasin, sementara layar
+  Pengaturan menyebut 24: tiga angka untuk satu pengaturan, tanpa satu pun pesan galat. Rentang
+  slidernya pun tinggal di `UiKit` sementara bawaannya tersebar, sehingga tak ada satu tempat yang
+  dapat memastikan bawaannya masuk rentang. Keduanya kini di `UkuranBacaan` (murni, tanpa Android,
+  dapat diuji di JVM), termasuk angka `+ 8`/`44f` untuk bacaan jarak jauh yang dahulu ditulis ulang
+  di empat layar (Ghaib, Jenazah, Iqomah, Tahlil) — tiga di antaranya bahkan tanpa batas atas,
+  sehingga ukuran maksimum 40 melompat ke 48 dan melewati lebar kartu. Dijaga `UkuranBacaanTest`,
+  yang juga menolak bawaan maupun angka jarak jauh itu ditulis ulang di luar `UkuranBacaan`.
+  Bawaan jarak antarbaris yang sama (`1.9f`) pun masih tertulis di tanda tangan `ArabText` — satu
+  salinan lagi yang tak terlihat oleh layar Pengaturan; kini diambil dari
+  `UkuranBacaan.JARAK_DEFAULT`.
+- **Aturan preferensi pengingat adzan kini juga tunggal**: CSV saklar per waktu (`Store.ADZAN_ON`)
+  diurai di dua tempat — `PrayerScheduler` (pembaca) dan layar Adzan (penulis) — dengan panjang dan
+  padding yang ditulis ulang masing-masing; bila keduanya berbeda, menyalakan satu waktu di layar
+  mematikan waktu lain di penjadwal. Batas panjang timer iqomah (1–60 menit) pun ditulis di **tiga**
+  tempat: dua tombol di layar Iqomah, penjadwal pengingat, dan pekerja latar — sehingga layar dapat
+  menampilkan angka yang tidak pernah dipakai notifikasi. Keduanya kini tinggal di `PengingatAdzan`
+  (murni, tanpa Android): `parseOn`/`serializeOn` dan `iqomahMenit`, dipakai keempat berkas itu.
+  Dijaga `PengingatAdzanTest`, dan `AdzanJadwalTest` menolak salinan barunya muncul lagi. Hal yang
+  sama berlaku untuk volume suara: bawaan `0.8f` ditulis di **dua** tempat — pekerja latar yang
+  benar-benar memutar suaranya dan layar Adzan yang menampilkan slidernya — sehingga angka di layar
+  bisa berbeda dari volume yang berbunyi; kini satu, `PengingatAdzan.VOL_DEFAULT`.
+- **Urutan nama waktu sholat kini juga tunggal**: nama lima waktu beradzan (`Subuh, Zuhur, Asar,
+  Magrib, Isya`) dan enam waktu berkoreksi (dengan `Terbit`) dahulu ditulis ulang di **empat**
+  tempat — `PrayerScheduler`, layar Adzan, layar Jadwal, dan beranda. Urutan itu bukan hiasan:
+  `Store.ADZAN_ON` adalah CSV lima angka yang indeksnya berarti waktu ke-`i`, dan `Store.CORR` CSV
+  enam angka dengan arti yang sama. Daftar yang berbeda urutan membuat mematikan "Magrib"
+  mematikan waktu lain, atau koreksi Asar diterapkan pada Zuhur — tanpa satu pun pesan galat.
+  Keduanya kini tinggal di `JadwalHariIni` (`LIMA_WAKTU`, `ENAM_WAKTU`), dan jam tiap waktu
+  diambil dari nama yang sama (`adzan`, `semua`, `jam`) sehingga nama dan jamnya tak dapat
+  tertukar. Beranda juga berhenti memetakan nama ke jam lewat rangkaian `when` yang menutup dengan
+  `else -> isya` — cabang cadangan yang diam-diam menampilkan jam sholat lain lebih buruk daripada
+  tak ada. Dijaga `JadwalHariIniTest` dan `AdzanJadwalTest`.
 - **Aturan jadwal sholat kini tunggal, tidak lagi disalin ke tiga tempat**: `parseCorr`, pemetaan
   mazhab Asar ke faktor bayangan, dan pemilihan zona waktu dahulu identik di **tiga** berkas —
   `PrayerScheduler` (penjadwal pengingat), `JadwalViewModel` (menu Jadwal), dan `HomeViewModel`

@@ -15,6 +15,8 @@ import id.or.kemenag.yasintahlil.MainActivity
 import id.or.kemenag.yasintahlil.core.audio.AdzanPlayer
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
 
@@ -40,7 +42,8 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         NotifChannels.ensure(applicationContext)
 
         if (jenis == PrayerScheduler.JENIS_PRA) {
-            notifyPre(nama, store.get(Store.ADZAN_PRE_MIN, 0))
+            notifyPre(nama, PengingatAdzan.preMenit(
+                store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT)))
             PrayerScheduler.rescheduleOne(applicationContext, nama)
             return Result.success()
         }
@@ -52,18 +55,22 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         if (jenis == PrayerScheduler.JENIS_IQOMAH) {
             // Sama: saklar dapat dimatikan antara penjadwalan dan saat pekerjaan berjalan.
             if (store.get(Store.IQOMAH_ON, false)) {
-                notifyIqomah(nama, store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60))
+                // Panjang timer dibaca lewat aturan bersama: angka yang tertulis di notifikasi harus
+                // sama dengan yang dihitung penjadwal dan yang ditampilkan layar Iqomah.
+                notifyIqomah(nama, PengingatAdzan.iqomahMenit(
+                    store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)))
             }
             return Result.success()
         }
 
         val uri = store.get(Store.ADZAN_URI, "")
-        val vol = store.get(Store.ADZAN_VOL, 0.8f)
+        val vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
         val playAudio = uri.isNotBlank()
         if (playAudio) {
             runCatching { setForeground(foregroundInfo(nama)) }
         }
-        notifyAdzan(nama, playAudio, PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG")).label)
+        notifyAdzan(nama, playAudio,
+            PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT)).label)
         if (playAudio) {
             AdzanPlayer.playOnce(applicationContext, uri, vol)
         }

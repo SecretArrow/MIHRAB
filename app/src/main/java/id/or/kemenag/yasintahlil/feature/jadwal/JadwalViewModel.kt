@@ -24,13 +24,13 @@ import java.util.TimeZone
 import javax.inject.Inject
 
 data class JadwalUiState(
-    val city: String = "Jakarta",
-    val lat: Double = -6.2,
-    val lon: Double = 106.8,
-    val method: PrayerCalc.Method = PrayerCalc.Method.KEMENAG,
-    val asarHanafi: Boolean = false,
-    val tzId: String = "",
-    val corr: List<Int> = List(6) { 0 },
+    val city: String = JadwalHariIni.KOTA_DEFAULT,
+    val lat: Double = JadwalHariIni.LAT_DEFAULT,
+    val lon: Double = JadwalHariIni.LON_DEFAULT,
+    val method: PrayerCalc.Method = PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT),
+    val asarHanafi: Boolean = JadwalHariIni.asarHanafi(JadwalHariIni.ASAR_DEFAULT),
+    val tzId: String = JadwalHariIni.TZ_DEFAULT,
+    val corr: List<Int> = JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT),
     val times: PrayerTimes? = null,
     val nowMin: Int = 0,
     /** Koordinat GPS sedang diikuti: jadwal dihitung ulang saat pengguna berpindah tempat. */
@@ -70,13 +70,13 @@ class JadwalViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(memuat = true, gagalMuat = null)
             runCatching {
-                val city = store.get(Store.CITY, "Jakarta")
-                val lat = store.get(Store.LAT, -6.2)
-                val lon = store.get(Store.LON, 106.8)
-                val method = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
-                val asarH = store.get(Store.ASAR, "syafii") == "hanafi"
-                val tzId = store.get(Store.TZ, "")
-                val corr = JadwalHariIni.parseCorr(store.get(Store.CORR, "0,0,0,0,0,0"))
+                val city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
+                val lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
+                val lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
+                val method = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
+                val asarH = JadwalHariIni.asarHanafi(store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT))
+                val tzId = store.get(Store.TZ, JadwalHariIni.TZ_DEFAULT)
+                val corr = JadwalHariIni.parseCorr(store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT))
                 val ikut = store.get(Store.JADWAL_IKUT, false)
                 _state.value = _state.value.copy(
                     city = city, lat = lat, lon = lon, method = method,
@@ -242,7 +242,11 @@ class JadwalViewModel @Inject constructor(
 
     fun setAsarHanafi(hanafi: Boolean) {
         _state.value = _state.value.copy(asarHanafi = hanafi); recompute()
-        viewModelScope.launch { store.set(Store.ASAR, if (hanafi) "hanafi" else "syafii"); PrayerScheduler.scheduleAll(ctx) }
+        // Kunci disimpan lewat konstanta bersama: `"syafii"` yang diketik ulang di sini dahulu
+        // menjadi salinan kelima dari nilai yang sama, dan salah ketik satu huruf membuat
+        // pilihannya jatuh ke faktor jumhur tanpa pesan galat.
+        val kunci = if (hanafi) JadwalHariIni.ASAR_HANAFI else JadwalHariIni.ASAR_SYAFII
+        viewModelScope.launch { store.set(Store.ASAR, kunci); PrayerScheduler.scheduleAll(ctx) }
     }
 
     fun setTimezone(tzId: String) {
@@ -252,7 +256,11 @@ class JadwalViewModel @Inject constructor(
 
     fun setCorrection(index: Int, delta: Int) {
         val corr = _state.value.corr.toMutableList()
-        corr[index] = (corr[index] + delta).coerceIn(-30, 30)
+        // Rentangnya dari aturan bersama, sama dengan yang dipakai `parseCorr` saat membaca:
+        // batas slider dan batas jalur baca tidak boleh berbeda.
+        corr[index] = (corr[index] + delta).coerceIn(
+            JadwalHariIni.KOREKSI_MIN_MENIT, JadwalHariIni.KOREKSI_MAKS_MENIT,
+        )
         _state.value = _state.value.copy(corr = corr); recompute()
         viewModelScope.launch { store.set(Store.CORR, corr.joinToString(",")); PrayerScheduler.scheduleAll(ctx) }
     }

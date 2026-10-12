@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 
 @Composable
@@ -122,7 +123,9 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
 
         Text("Koreksi menit per waktu", style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp))
-        val names = listOf("Subuh", "Terbit", "Zuhur", "Asar", "Magrib", "Isya")
+        // Nama dari aturan bersama: indeksnya harus sama dengan CSV `Store.CORR` yang diurai
+        // `JadwalHariIni.parseCorr`, karena `s.corr[i]` di bawah dipasangkan ke waktu ke-i.
+        val names = JadwalHariIni.ENAM_WAKTU
         names.forEachIndexed { i, n ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -151,8 +154,8 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
 
             s.times != null -> {
                 val t = s.times!!
-                val rows = listOf("Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
-                    "Asar" to t.asar, "Magrib" to t.magrib, "Isya" to t.isya)
+                // Dipasangkan dari aturan bersama, sehingga nama dan jamnya tak dapat tertukar.
+                val rows = JadwalHariIni.ENAM_WAKTU.zip(JadwalHariIni.semua(t))
                 rows.forEach { (n, j) ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(n, style = MaterialTheme.typography.titleMedium)

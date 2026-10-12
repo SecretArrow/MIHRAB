@@ -36,7 +36,7 @@ class PengaturanBacaanTest {
     fun rentangJarakAntarbarisDipakaiBersama() {
         val s = layar()
         assertTrue("Pengaturan menuliskan rentang jarak antarbaris sendiri, bukan yang bersama",
-            s.contains("LINE_HEIGHT_RANGE"))
+            s.contains("UkuranBacaan.JARAK"))
     }
 
     /** Tema halaman ditawarkan lewat daftar pilihan yang sah, bukan chip tetap. */

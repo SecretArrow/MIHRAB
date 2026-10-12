@@ -43,10 +43,9 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
     }
     val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
     val (berikut, sisa) = PrayerCalc.next(nowMin, times)
-    val berikutJam = when (berikut) {
-        "Subuh" -> times.subuh; "Terbit" -> times.terbit; "Zuhur" -> times.zuhur
-        "Asar" -> times.asar; "Magrib" -> times.magrib; else -> times.isya
-    }
+    // Nama→jam dari aturan bersama, bukan rangkaian `when` yang menutup dengan `else -> isya`:
+    // cabang cadangan yang diam-diam menampilkan jam sholat lain lebih buruk daripada tak ada.
+    val berikutJam = JadwalHariIni.jam(times, berikut) ?: times.isya
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         // Ornamen geometris Islami halus (`plan.txt` §"Konsep dan Identitas Aplikasi"). Digambar di

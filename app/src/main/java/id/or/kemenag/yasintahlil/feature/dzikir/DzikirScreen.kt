@@ -18,8 +18,9 @@ import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val groups = vm.groups
-    var tab by remember { mutableStateOf(0) }
-    var fullscreen by remember { mutableStateOf(false) }
+    // rememberSaveable: tab dan mode layar penuh pilihan pengguna tidak hilang saat diputar ulang.
+    var tab by rememberSaveable { mutableStateOf(0) }
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
     // Kata kunci penyaring di layar ini (`plan.txt`: "pencarian dan akses cepat pada halaman yang
     // memiliki banyak konten"). Pustaka dzikir memuat puluhan entri dalam lima kelompok; sebelum

@@ -8,6 +8,7 @@ import androidx.work.workDataOf
 import id.or.kemenag.yasintahlil.core.data.ReminderWorker
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import java.util.Calendar
 import java.util.Locale
@@ -26,7 +27,13 @@ import java.util.concurrent.TimeUnit
  */
 object PrayerScheduler {
     const val TAG = "sholat"
-    private val NAMES = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
+
+    /**
+     * Lima waktu beradzan, urutannya sama dengan CSV `Store.ADZAN_ON` dan dengan
+     * [JadwalHariIni.adzan] — lihat [JadwalHariIni.LIMA_WAKTU]. Daftar ini dahulu ditulis ulang di
+     * sini dan di layar Adzan; salinan yang berbeda urutan akan mematikan waktu yang salah.
+     */
+    private val NAMES = JadwalHariIni.LIMA_WAKTU
 
     /** Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa & iqomah (sesudah). */
     const val JENIS_ADZAN = "adzan"
@@ -53,21 +60,23 @@ object PrayerScheduler {
 
     private suspend fun loadCfg(ctx: Context): Cfg {
         val store = Store(ctx)
-        val tz = JadwalHariIni.zona(store.get(Store.TZ, ""))
+        val tz = JadwalHariIni.zona(store.get(Store.TZ, JadwalHariIni.TZ_DEFAULT))
         return Cfg(
             params = JadwalHariIni.params(
-                lat = store.get(Store.LAT, -6.2),
-                lon = store.get(Store.LON, 106.8),
-                methodKey = store.get(Store.METHOD, "KEMENAG"),
-                asarKey = store.get(Store.ASAR, "syafii"),
-                corrCsv = store.get(Store.CORR, "0,0,0,0,0,0"),
+                lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT),
+                lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT),
+                methodKey = store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT),
+                asarKey = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT),
+                corrCsv = store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT),
                 tz = tz,
             ),
-            on = (store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" } + List(5) { true }).take(5),
-            preMin = store.get(Store.ADZAN_PRE_MIN, 0),
+            on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT)),
+            preMin = PengingatAdzan.preMenit(
+                store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT)),
             doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
             iqomahOn = store.get(Store.IQOMAH_ON, false),
-            iqomahMin = store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60),
+            iqomahMin = PengingatAdzan.iqomahMenit(
+                store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)),
         )
     }
 
@@ -95,10 +104,9 @@ object PrayerScheduler {
         val now = Calendar.getInstance(cfg.params.tz)
         val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
         val times = PrayerCalc.compute(now, cfg.params)
-        val map = mapOf(
-            "Subuh" to times.subuh, "Zuhur" to times.zuhur, "Asar" to times.asar,
-            "Magrib" to times.magrib, "Isya" to times.isya,
-        )
+        // Pasangan nama→jam diturunkan dari daftar nama yang sama dengan yang mengindeks
+        // `cfg.on`: menulisnya manual di sini berarti salinan kedua yang dapat berbeda urutan.
+        val map = NAMES.zip(JadwalHariIni.adzan(times)).toMap()
         val target = PrayerCalc.toMinutes(map.getValue(nama))
         var delta = target - nowMin
         if (delta <= 0) delta += 1440
