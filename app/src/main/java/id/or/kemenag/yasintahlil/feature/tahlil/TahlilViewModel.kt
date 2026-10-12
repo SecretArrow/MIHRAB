@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
+import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
@@ -53,9 +54,8 @@ class TahlilViewModel @Inject constructor(
         viewModelScope.launch {
             val semua = repo.tahlil(null)
             val pilihan = SusunanSaya.parse(store.get(Store.TAHLIL_CUSTOM, ""))
-            val susunan = repo.tahlilSusunan() + listOfNotNull(SusunanSaya.susunan(pilihan))
-            val saved = store.get(Store.TAHLIL_SUSUNAN, "")
-            val id = susunan.firstOrNull { it.id == saved }?.id ?: susunan.firstOrNull()?.id ?: ""
+            val susunan = PreferensiSusunan.tersedia(repo.tahlilSusunan(), SusunanSaya.susunan(pilihan))
+            val id = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), susunan)
             val items = itemsUntuk(id, semua, pilihan)
             val idx = userData.progress(KIND, "idx").first()?.value ?: 0
             val count = userData.progress(KIND, "count").first()?.value ?: 0
@@ -123,7 +123,7 @@ class TahlilViewModel @Inject constructor(
     fun hapusSusunanSaya() {
         val s = _state.value
         val lain = s.susunan.filterNot { it.id == SusunanSaya.ID }
-        val id = lain.firstOrNull()?.id ?: ""
+        val id = PreferensiSusunan.idAktif("", lain)
         val items = itemsUntuk(id, s.semuaBagian, emptyList())
         _state.update {
             it.copy(susunan = lain, susunanId = id, pilihan = emptyList(), items = items, idx = 0, count = 0)
@@ -168,5 +168,5 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
-    companion object { const val KIND = "tahlil" }
+    companion object { const val KIND = PreferensiSusunan.KIND_PROGRES }
 }

@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
+import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
@@ -23,6 +25,7 @@ import org.json.JSONObject
 @Composable
 fun SettingsScreen(go: (String) -> Unit = {}) {
     val store = rememberStore()
+    val repo = rememberRepo()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -40,6 +43,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var hijriCorr by remember { mutableStateOf(0) }
     var compassUnit by remember { mutableStateOf("derajat") }
     var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
+    // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
+    // "Susunan saya" bila pengguna pernah menyusunnya di modul Tahlil.
+    var susunanTersedia by remember { mutableStateOf<List<TahlilSusunan>>(emptyList()) }
+    var susunanAktif by remember { mutableStateOf("") }
     var backup by remember { mutableStateOf("") }
     var ringkasan by remember { mutableStateOf<RingkasanData?>(null) }
     var ringkasanUlang by remember { mutableStateOf(0) }
@@ -55,6 +62,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
         compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
+        val daftarSusunan = PreferensiSusunan.tersedia(
+            repo.tahlilSusunan(),
+            PreferensiSusunan.susunanSaya(PreferensiSusunan.parse(store.get(Store.TAHLIL_CUSTOM, ""))),
+        )
+        susunanTersedia = daftarSusunan
+        susunanAktif = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), daftarSusunan)
     }
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
@@ -204,8 +217,44 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         Text("Backup memuat pengaturan, favorit, bookmark, riwayat, dan progres. Simpan berkasnya di tempat aman.",
             style = MaterialTheme.typography.labelSmall)
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
-        Text("Kota: $city (ubah di menu Jadwal). Susunan Tahlil: lazim Indonesia (lihat modul Tahlil).",
-            style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(vertical = 8.dp))
+        Text("Kota: $city (ubah di menu Jadwal).", style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(vertical = 8.dp))
+
+        Text("Susunan Tahlil", style = MaterialTheme.typography.titleMedium)
+        if (susunanTersedia.isEmpty()) {
+            Text("Berkas susunan tahlil tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.",
+                style = MaterialTheme.typography.labelSmall)
+        } else {
+            // Pemilih hanya muncul bila memang ada yang bisa dipilih; satu chip tunggal hanyalah hiasan.
+            if (susunanTersedia.size > 1) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                    susunanTersedia.forEach { s ->
+                        FilterChip(susunanAktif == s.id, {
+                            susunanAktif = s.id
+                            scope.launch {
+                                store.set(Store.TAHLIL_SUSUNAN, s.id)
+                                // Urutan bagiannya berbeda, jadi posisi baca yang lama tidak lagi
+                                // menunjuk bagian yang sama — dikosongkan supaya penandanya tidak
+                                // berbohong. Sama seperti saat mengganti susunan di modul Tahlil.
+                                userData.setProgress(PreferensiSusunan.KIND_PROGRES, "idx", 0)
+                                userData.setProgress(PreferensiSusunan.KIND_PROGRES, "count", 0)
+                            }
+                        }, { Text(s.nama) })
+                    }
+                }
+            }
+            Text("Susunan aktif: ${PreferensiSusunan.namaAktif(susunanAktif, susunanTersedia)}. " +
+                    (if (susunanTersedia.size > 1)
+                        "Pilihan ini sama dengan pemilih di modul Tahlil (satu kunci preferensi); " +
+                            "menggantinya mengosongkan penanda posisi baca karena urutan bagiannya berbeda."
+                     else
+                        "Baru satu susunan tersedia di bundel konten; susunan lain menunggu rujukan " +
+                            "tradisi yang jelas dan tidak disusun sendiri di sini.") +
+                    " Susunan dapat berbeda menurut tradisi dan rujukan — tidak ada susunan yang " +
+                    "diklaim paling benar.",
+                style = MaterialTheme.typography.labelSmall)
+        }
 
         Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

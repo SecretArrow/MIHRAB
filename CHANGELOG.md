@@ -163,6 +163,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Preferensi susunan Tahlil kini ada di Pengaturan — dan tidak lagi berbohong** (`plan.txt`
+  §"Pengaturan Aplikasi": *"Preferensi susunan Tahlil"*): Pengaturan dulu hanya mencetak satu baris
+  tetap, *"Susunan Tahlil: lazim Indonesia (lihat modul Tahlil)"*, yang menyebut nama susunan tanpa
+  pernah membacanya — sehingga tetap menyebut "lazim Indonesia" meski pengguna sudah menyusun
+  "Susunan saya" sendiri. Kini Pengaturan **menampilkan susunan yang benar-benar aktif** dan,
+  begitu ada lebih dari satu pilihan, menyediakan pemilihnya langsung di sana. Pilihannya memakai
+  kunci preferensi yang sama dengan modul Tahlil (satu sumber kebenaran), jadi mengubahnya di mana
+  pun berlaku di keduanya. Mengganti susunan **mengosongkan penanda posisi baca**: urutan bagiannya
+  berbeda, sehingga posisi lama akan menunjuk bagian yang bukan bagian yang sedang dibaca pengguna.
+  Saat hanya ada satu susunan di bundel konten, pemilihnya sengaja tidak ditawarkan — satu chip
+  tunggal hanyalah hiasan — dan teksnya jujur menyebut bahwa susunan lain menunggu rujukan tradisi
+  yang jelas, bukan disusun sendiri. Aturan "susunan mana yang aktif" (termasuk nilai tersimpan yang
+  sudah tidak ada di bundel, yang harus jatuh ke susunan pertama alih-alih mengosongkan layar)
+  dikumpulkan di `PreferensiSusunan` dan dipakai bersama oleh layar Pengaturan dan modul Tahlil.
 - **Penjelasan metode hisab di layar Adzan kini benar** (`plan.txt`: *"Penjelasan metode
   perhitungan yang sedang digunakan"*): layar Adzan selalu menulis *"Metode jadwal: Kemenag/SIHAT"*
   dan menyuruh mencari koreksi serta zona waktu *di Pengaturan* — padahal metode, koreksi menit,

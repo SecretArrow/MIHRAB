@@ -78,7 +78,7 @@ manusia dari sumber resmi.
 | Doa **bepergian (safar)** | ✅ ada di `dzikir.json` | HR Muslim 1342 — sunnah.com |
 | **Lafaz sholawat setelah adzan** | ✅ ada di `adzan.json` (`sholawat_setelah_adzan`) & tampil di layar Doa Adzan | HR Bukhari 3370 — sunnah.com |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
-| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
+| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu, di modul Tahlil **dan** di Pengaturan (`PreferensiSusunan`) | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
 
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum
 > tersedia, entri ditandai `catatan_verifikasi` dan dibiarkan apa adanya, bukan dikarang.

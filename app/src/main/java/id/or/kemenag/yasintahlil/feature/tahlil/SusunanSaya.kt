@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.tahlil
 
+import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
 
@@ -14,19 +15,21 @@ import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
  * ditampilkan sebagai susunan buatan pengguna, bukan sebagai tradisi tertentu.
  *
  * Sengaja murni (tanpa Android) agar aturan urutannya dapat diuji di JVM.
+ *
+ * Bentuk yang **disimpan** (id, nama, dan CSV id bagian) tinggal di [PreferensiSusunan] karena
+ * nilainya dibaca juga oleh layar Pengaturan; di sini hanya aturan penyusunan yang butuh
+ * [TahlilItem].
  */
 object SusunanSaya {
     /** Id susunan buatan pengguna; dibedakan dari id susunan di `assets/content/tahlil.json`. */
-    const val ID = "saya"
-    const val NAMA = "Susunan saya"
+    const val ID = PreferensiSusunan.ID_SAYA
+    const val NAMA = PreferensiSusunan.NAMA_SAYA
 
     /** Baca daftar id dari preferensi (CSV). Urutan dipertahankan, duplikat dan kosong dibuang. */
-    fun parse(csv: String): List<String> =
-        csv.split(",").map { it.trim() }.filter { it.isNotBlank() }.distinct()
+    fun parse(csv: String): List<String> = PreferensiSusunan.parse(csv)
 
     /** Simpan daftar id ke preferensi (CSV). */
-    fun serialize(ids: List<String>): String =
-        ids.map { it.trim() }.filter { it.isNotBlank() }.distinct().joinToString(",")
+    fun serialize(ids: List<String>): String = PreferensiSusunan.serialize(ids)
 
     /**
      * Terapkan pilihan pengguna pada seluruh bagian tahlil.
@@ -41,6 +44,5 @@ object SusunanSaya {
     }
 
     /** Susunan buatan pengguna untuk ditampilkan di pemilih susunan, atau null bila belum ada. */
-    fun susunan(pilihan: List<String>): TahlilSusunan? =
-        if (pilihan.isEmpty()) null else TahlilSusunan(ID, NAMA, pilihan)
+    fun susunan(pilihan: List<String>): TahlilSusunan? = PreferensiSusunan.susunanSaya(pilihan)
 }
