@@ -121,6 +121,21 @@ class OfflineContentTest {
         assertTrue("Surat Yasin tidak menyebut sumber terjemahan", yasin.sumber.isNotBlank())
     }
 
+    /**
+     * Keterangan sumber tingkat modul wajib ada di bundel — sebagian besar bagian tahlil dan
+     * seluruh daftar sholat tidak menyebut sumbernya sendiri, jadi keterangan modul inilah satu-
+     * satunya yang dapat ditampilkan untuk mereka.
+     */
+    @Test
+    fun keteranganSumberTingkatModulTersedia() {
+        assertTrue("tahlil_full.json tidak menyediakan sumber bacaan tingkat modul",
+            repo.tahlilSumberBacaan().isNotBlank())
+        assertTrue("tahlil.json tidak menyediakan catatan tradisi tingkat modul",
+            repo.tahlilCatatanTradisi().isNotBlank())
+        assertTrue("sholat_daftar.json tidak menyediakan sumber panduan tingkat modul",
+            repo.sholatPanduan().isNotBlank())
+    }
+
     @Test
     fun aplikasiTidakMemintaIzinInternet() {
         @Suppress("DEPRECATION")

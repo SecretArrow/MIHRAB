@@ -40,7 +40,11 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Tahlil — bagian ${s.idx + 1} dari ${s.items.size}", style = MaterialTheme.typography.titleLarge)
-        Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}; susunan dapat berbeda menurut tradisi.",
+        // Catatan tradisi dibaca dari bundel (`tahlil.json` → `catatan_tradisi`) dengan kalimat
+        // cadangan bila berkasnya kosong: sebelumnya kalimat ini ditulis di kode, jadi ia tidak
+        // ikut berubah bila bundelnya diperbarui — dan bundelnya memuat versi yang lebih lengkap.
+        Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}. " +
+                repo.tahlilCatatanTradisi().ifBlank { "Susunan dapat berbeda menurut tradisi." },
             style = MaterialTheme.typography.labelMedium)
         // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan yang *"berdasarkan sumber atau tradisi
         // yang jelas"*. Menampilkan nama susunan saja tidak cukup: nama bukan sumber. Bila susunan
@@ -49,6 +53,12 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         Text(if (s.sumberSusunan.isNotBlank()) "Sumber: ${s.sumberSusunan}"
                 else "Sumber: susunan ini disusun sendiri oleh Anda, bukan rangkaian dari rujukan atau tradisi tertentu.",
             style = MaterialTheme.typography.labelSmall)
+        // Sumber bacaan tingkat modul: sebagian besar bagian tahlil tidak menyebut sumbernya
+        // sendiri, dan berkasnya sudah menyediakan keterangan yang berlaku untuk semuanya.
+        val sumberBacaan = remember { repo.tahlilSumberBacaan() }
+        if (sumberBacaan.isNotBlank()) {
+            Text("Sumber bacaan: $sumberBacaan", style = MaterialTheme.typography.labelSmall)
+        }
 
         if (s.susunan.size > 1) {
             ScrollableTabRow(s.susunan.indexOfFirst { it.id == s.susunanId }.coerceAtLeast(0)) {

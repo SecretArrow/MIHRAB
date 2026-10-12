@@ -161,6 +161,35 @@ class ContentRepo(private val ctx: Context) {
     fun sholatWajib(): List<SholatInfo> = sholatList("wajib")
     fun sholatSunnah(): List<SholatInfo> = sholatList("sunnah")
 
+    /**
+     * Sumber panduan tingkat modul dari `sholat_daftar.json` (`panduan`).
+     *
+     * Layar Panduan Sholat mencetak "(Fasolatan Kemenag)" sebagai teks hardcode, sementara
+     * berkasnya sudah mencatat keterangan yang lebih tepat — *"Fasolatan Ditjen Bimas Islam Kemenag;
+     * verifikasi hadis via sunnah.com"*. Keterangan itu ditulis, divalidasi gerbang konten, lalu
+     * tak pernah sampai ke layar. Kosong = tidak diklaim.
+     */
+    fun sholatPanduan(): String = doc("sholat_daftar.json").optString("panduan", "")
+
+    /**
+     * Catatan tradisi tingkat modul dari `tahlil.json` (`catatan_tradisi`).
+     *
+     * Layar Tahlil mencetak *"susunan dapat berbeda menurut tradisi"* sebagai teks hardcode —
+     * kalimat yang sudah ada di bundel dengan bunyi yang lebih lengkap (*"…; bukan satu-satunya
+     * versi yang benar"*). Membacanya dari berkas menjaga agar peringatan itu ikut berubah bila
+     * bundelnya diperbarui, bukan tertinggal sebagai salinan di kode.
+     */
+    fun tahlilCatatanTradisi(): String = doc("tahlil.json").optString("catatan_tradisi", "")
+
+    /**
+     * Sumber bacaan tingkat modul dari `tahlil_full.json` (`sumber_umum`).
+     *
+     * Sebagian besar bagian tahlil tidak menyebut sumbernya sendiri; keterangan tingkat modul
+     * inilah yang berlaku untuk mereka (*"Bacaan Qur'an dari Mushaf Standar Indonesia LPMQ Kemenag;
+     * doa dari khazanah sunnah"*). Tanpa dibaca, kartu bagian itu tampil tanpa asal-usul apa pun.
+     */
+    fun tahlilSumberBacaan(): String = doc("tahlil_full.json").optString("sumber_umum", "")
+
     private fun sholatList(key: String): List<SholatInfo> {
         val d = doc("sholat_daftar.json")
         val defKategori = d.optString("kategori", "")

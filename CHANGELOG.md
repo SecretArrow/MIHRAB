@@ -360,6 +360,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Keterangan sumber tingkat modul kini dibaca, bukan disalin ke kode**: tiga berkas mencatat
+  keterangan yang berlaku untuk seluruh isinya, dan ketiganya tidak pernah dibaca kode — jadi layar
+  mengarang versi yang lebih pendek atau tidak menyebut asal-usulnya sama sekali. Layar Tahlil
+  menulis *"susunan dapat berbeda menurut tradisi"* padahal `tahlil.json` memuat kalimat yang lebih
+  lengkap (*"…; bukan satu-satunya versi yang benar"*); sebagian besar bagian tahlil tidak menyebut
+  sumbernya sendiri sehingga `tahlil_full.json` menyediakan `sumber_umum` yang tak pernah tampil;
+  dan layar Panduan Sholat menulis "(Fasolatan Kemenag)" sementara `sholat_daftar.json` mencatat
+  keterangan yang lebih tepat, termasuk bahwa hadisnya diverifikasi lewat sunnah.com. Ketiganya kini
+  dibaca dari berkasnya (dengan kalimat cadangan bila berkasnya kehilangan kuncinya) dan ditampilkan
+  sebagai baris atribusi. Dijaga `AtribusiModulTest`.
 - **Teks Surat Yasin kini menyebut asal teks Arab, transliterasi, dan terjemahannya**: berkas Qur'an
   di `assets/content` mencatat **tiga** sumber secara terpisah — `sumber_arab` (Mushaf Standar
   Indonesia LPMQ Kemenag), `sumber_latin` (transliterasi resmi Kemenag), dan `sumber_terjemahan`

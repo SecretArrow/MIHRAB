@@ -51,7 +51,14 @@ fun SholatScreen(go: (String) -> Unit) {
     }
     val kelompokSunnah = remember(sunnahTampil, cara) { KelompokSholat.kelompok(sunnahTampil, cara) }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Panduan Sholat (Fasolatan Kemenag)", style = MaterialTheme.typography.titleLarge)
+        Text("Panduan Sholat", style = MaterialTheme.typography.titleLarge)
+        // Sumber panduan dibaca dari bundel (`sholat_daftar.json` → `panduan`): sebelumnya layar
+        // hanya menulis "(Fasolatan Kemenag)" sebagai teks hardcode, sedangkan berkasnya mencatat
+        // keterangan yang lebih tepat — termasuk bahwa hadisnya diverifikasi lewat sunnah.com.
+        val panduan = remember { repo.sholatPanduan() }
+        if (panduan.isNotBlank()) {
+            Text("Sumber panduan: $panduan", style = MaterialTheme.typography.labelSmall)
+        }
         TabRow(tab) {
             Tab(tab == 0, { tab = 0 }, text = { Text("Wajib") })
             Tab(tab == 1, { tab = 1 }, text = { Text("Sunnah") })
