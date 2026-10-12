@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Beranda dan layar Favorit tidak lagi membaca aturan tujuan dengan cara berbeda**: `RuteKonten`
+  memutuskan layar tujuan sebuah bacaan tersimpan, tetapi beranda memanggil `ruteTerakhir` **tanpa**
+  id kelompok dzikir lalu `namaTujuan` tanpa argumen apa pun, sementara layar Favorit menyertakan
+  keduanya. Jenis yang sama karena itu dapat terbaca berbeda di dua layar: bacaan dzikir terakhir
+  tampil sebagai *"Layar tujuan tidak dikenal"* di beranda walau layar Favorit mengenalinya, dan nama
+  tujuan yang kosong membuat baris tersimpan tampak seperti tautan rusak. Rute dan namanya kini
+  diputuskan bersama lewat `RuteKonten.tujuan(kind, grupDzikir)` / `tujuanTerakhir(last, grupDzikir)`,
+  dan beranda menerima id kelompok dzikir dari `HomeViewModel` — dari **pembacaan bundel yang sama**
+  dengan butir info harian, sehingga satu pembacaan menghasilkan satu sebab kegagalan. Kalimat
+  *"Layar tujuan tidak dikenal"* kini satu konstanta (`RuteKonten.TIDAK_DIKENAL`): dahulu ia disalin
+  ke `FavoritScreen` dua kali sehingga satu baris tanpa tujuan menampilkannya **dua kali
+  berturut-turut**, dan `HomeScreen` menyimpannya sekali lagi. Dijaga `RuteKontenTest`.
 - **Berkas konten yang gagal dibaca tidak lagi menyembunyikan domainnya dari layar Tentang**:
   layar Tentang menjanjikan bahwa daftar sumbernya *"tidak dapat bertambah diam-diam"*, tetapi
   `ContentRepo.sumberDipakai()` melewati berkas konten yang gagal diurai

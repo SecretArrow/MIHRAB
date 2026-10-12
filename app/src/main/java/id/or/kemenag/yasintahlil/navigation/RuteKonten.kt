@@ -21,8 +21,29 @@ package id.or.kemenag.yasintahlil.navigation
  * [grupDzikir] diisi id kelompok dzikir **dari bundel konten**. Daftarnya sengaja tidak ditulis
  * tetap di sini: daftar tetap akan kembali salah begitu bundel menambah kelompok baru — persis
  * kerusakan yang sedang diperbaiki.
+ *
+ * Rute dan namanya diputuskan bersama lewat [tujuan] / [tujuanTerakhir], bukan dengan memanggil
+ * [rute] dan [namaTujuan] terpisah. Dahulu beranda memanggil keduanya **tanpa** [grupDzikir],
+ * sementara layar Favorit menyertakannya: jenis yang sama dapat menghasilkan jawaban berbeda di
+ * dua layar, dan nama tujuan yang kosong membuat baris tersimpan tampak seperti tautan rusak.
  */
 object RuteKonten {
+
+    /**
+     * Keterangan yang ditampilkan layar saat sebuah bacaan tersimpan tidak punya layar tujuan.
+     *
+     * Satu tempat, bukan disalin ke tiap layar: dua salinan akan berbeda begitu salah satunya
+     * diperbaiki, dan pengguna melihat dua kalimat berbeda untuk keadaan yang sama.
+     */
+    const val TIDAK_DIKENAL = "Layar tujuan tidak dikenal"
+
+    /**
+     * Tujuan sebuah bacaan tersimpan: [rute] layarnya beserta [nama] layar itu.
+     *
+     * Keduanya selalu ada bersama — [tujuan] tidak pernah mengembalikan nama kosong, karena tombol
+     * "Buka" tanpa keterangan tujuan sama menyesatkannya dengan tombol yang membuka layar salah.
+     */
+    data class TujuanKonten(val rute: String, val nama: String)
 
     /**
      * Rute layar untuk sebuah [kind], atau `null` bila jenis itu tidak punya layar sendiri.
@@ -57,8 +78,20 @@ object RuteKonten {
      * beranda maupun layar Favorit.
      *
      * `null` bila jenisnya tidak punya layar sendiri (layar harus mengatakannya, bukan menebak).
+     *
+     * @param grupDzikir id kelompok dzikir pada bundel konten — wajib sama dengan yang dipakai
+     *   [rute]; tanpa itu bacaan dzikir terbaca seolah tidak punya tujuan.
      */
-    fun ruteTerakhir(last: String): String? = rute(last.substringBefore(':'))
+    fun ruteTerakhir(last: String, grupDzikir: Set<String> = emptySet()): String? =
+        rute(last.substringBefore(':'), grupDzikir)
+
+    /**
+     * Tujuan lengkap untuk nilai `Store.LAST` — rute **dan** nama layarnya sekaligus, sehingga
+     * pemanggil tidak dapat memakai [ruteTerakhir] dengan satu [grupDzikir] lalu [namaTujuan]
+     * dengan yang lain (atau tanpa sama sekali).
+     */
+    fun tujuanTerakhir(last: String, grupDzikir: Set<String> = emptySet()): TujuanKonten? =
+        tujuan(last.substringBefore(':'), grupDzikir)
 
     /**
      * Nama layar tujuan, untuk memberi tahu pengguna ke mana tombol "Buka" akan membawanya.
@@ -78,4 +111,16 @@ object RuteKonten {
             Routes.SEARCH -> "Pencarian"
             else -> null
         }
+
+    /**
+     * Rute dan nama tujuan sebuah [kind] sekaligus, atau `null` bila jenis itu tidak punya layar.
+     *
+     * Inilah yang dipakai layar: satu pemanggilan, satu [grupDzikir], sehingga keterangan tujuan
+     * dan tombol "Buka" tidak mungkin menunjuk hal yang berbeda.
+     */
+    fun tujuan(kind: String, grupDzikir: Set<String> = emptySet()): TujuanKonten? {
+        val r = rute(kind, grupDzikir) ?: return null
+        val n = namaTujuan(kind, grupDzikir) ?: return null
+        return TujuanKonten(r, n)
+    }
 }

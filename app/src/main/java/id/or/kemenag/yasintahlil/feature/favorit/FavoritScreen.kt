@@ -38,7 +38,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         if (s.last.isNotBlank()) {
             item {
                 Text("Terakhir dibaca: ${s.last}")
-                AksiBuka(RuteKonten.ruteTerakhir(s.last), "Lanjutkan", go)
+                AksiBuka(RuteKonten.tujuanTerakhir(s.last, grupDzikir), "Lanjutkan", go)
             }
         }
 
@@ -85,7 +85,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))
-                AksiBuka(RuteKonten.rute(h.kind, grupDzikir), "Buka", go)
+                AksiBuka(RuteKonten.tujuan(h.kind, grupDzikir), "Buka", go)
             }
         }
     }
@@ -100,13 +100,16 @@ private fun BarisTersimpan(
     go: (String) -> Unit,
     onHapus: () -> Unit,
 ) {
+    // Tujuan dihitung sekali: dahulu nama tujuan ditulis di sini **dan** keterangan "tidak dikenal"
+    // ditulis lagi oleh [AksiBuka] ketika rutenya kosong, sehingga satu baris yang tak punya tujuan
+    // menampilkan kalimat itu dua kali berturut-turut.
+    val tujuan = RuteKonten.tujuan(kind, grupDzikir)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Column(Modifier.weight(1f)) {
             Text(judul)
-            Text(RuteKonten.namaTujuan(kind, grupDzikir) ?: "Layar tujuan tidak dikenal",
-                style = MaterialTheme.typography.labelSmall)
+            tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
         }
-        AksiBuka(RuteKonten.rute(kind, grupDzikir), "Buka", go)
+        AksiBuka(tujuan, "Buka", go)
         TextButton(onClick = onHapus) { Text("Hapus") }
     }
 }
@@ -114,7 +117,7 @@ private fun BarisTersimpan(
 /**
  * Tombol menuju layar asal sebuah bacaan tersimpan.
  *
- * Rutenya sudah diputuskan pemanggil lewat [RuteKonten] — bukan dihitung di sini — supaya aturan
+ * Tujuannya sudah diputuskan pemanggil lewat [RuteKonten] — bukan dihitung di sini — supaya aturan
  * "jenis ini menuju layar mana" hanya ada satu, sama untuk favorit, bookmark, riwayat, maupun
  * "terakhir dibaca" di beranda.
  *
@@ -123,10 +126,10 @@ private fun BarisTersimpan(
  * hilang, dan itu lebih buruk daripada tidak ada tombol sama sekali.
  */
 @Composable
-private fun AksiBuka(rute: String?, label: String, go: (String) -> Unit) {
-    if (rute != null) {
-        TextButton(onClick = { go(rute) }) { Text(label) }
+private fun AksiBuka(tujuan: RuteKonten.TujuanKonten?, label: String, go: (String) -> Unit) {
+    if (tujuan != null) {
+        TextButton(onClick = { go(tujuan.rute) }) { Text(label) }
     } else {
-        Text("Layar tujuan tidak dikenal", style = MaterialTheme.typography.labelSmall)
+        Text(RuteKonten.TIDAK_DIKENAL, style = MaterialTheme.typography.labelSmall)
     }
 }

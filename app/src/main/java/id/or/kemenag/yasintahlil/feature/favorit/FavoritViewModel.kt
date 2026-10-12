@@ -11,6 +11,7 @@ import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
 import id.or.kemenag.yasintahlil.core.domain.model.HistItem
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,7 +59,7 @@ class FavoritViewModel @Inject constructor(
             dzikirGagal = hasilDzikir.exceptionOrNull()?.let { e ->
                 "Daftar kelompok dzikir tidak dapat dibaca dari bundel konten " +
                     "(${e.message ?: e::class.java.simpleName}); sebagian baris dzikir di bawah " +
-                    "dapat menampilkan \"Layar tujuan tidak dikenal\"."
+                    "dapat menampilkan \"${RuteKonten.TIDAK_DIKENAL}\"."
             },
         ),
     )
