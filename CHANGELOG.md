@@ -380,6 +380,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Angka isi konten di dokumen tidak lagi dapat menua sendiri**: tabel provenans
+  `docs/CONTENT_SOURCES.md` menyatakan **banyaknya** isi tiap berkas — *"Yasin 83 ayat"*,
+  *"15 bagian susunan tahlil"*, *"5 kelompok"* dzikir — dan angka itulah yang dibaca orang untuk
+  menilai apakah sebuah berkas masih lengkap. Tak ada apa pun yang membandingkannya dengan berkas
+  yang benar-benar dikirim: gate konten menjaga konsistensi **di dalam** bundel (`ayat_count` vs
+  jumlah `verses`) tetapi tidak pernah membaca dokumennya, sehingga berkas yang kehilangan beberapa
+  ayat tetap ditulis *"83 ayat"* dan pembaca menyimpulkan ada isi yang tidak pernah ikut terkirim.
+  `HitungKontenDiDokumenTest` membandingkan angka-angka itu dengan bundelnya, sekaligus menuntut
+  tiap nama kelompok dzikir yang disebut dokumen masih menunjuk kelompok yang ada — tanpa memaksa
+  dokumen melepas gaya ringkasnya (`*setelah sholat*` untuk *"Dzikir setelah sholat"*). Tujuh
+  mutasi terverifikasi tertangkap.
 - **Patokan toolchain di README tidak lagi dapat menua diam-diam**: `README.md` menyatakan satu
   baris yang justru dibaca lebih dulu oleh siapa pun yang hendak membangun — *"Toolchain dipatok
   (AGP 8.5.x, Kotlin 2.0.20, `compileSdk`/`targetSdk` 34)"* — dan "Butuh Android Studio + JDK 17".
