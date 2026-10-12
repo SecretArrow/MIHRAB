@@ -7,6 +7,7 @@ import dagger.hilt.android.HiltAndroidApp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -38,8 +39,12 @@ class YasinApp : Application(), Configuration.Provider {
                 if (legacy.isEmpty()) return@runCatching
                 if (userData.favorites().first().isNotEmpty()) return@runCatching
                 legacy.forEach { id ->
-                    val i = id.indexOf(':')
-                    if (i > 0) userData.toggleFavorite(id.substring(0, i), id.substring(i + 1), id)
+                    // Pemisahnya dibaca lewat kosakata bersama, sama dengan penulis id di layar.
+                    val (jenis, rujukan) = JenisBacaan.pisah(id)
+                    // Id warisan yang tidak berbentuk `jenis:rujukan` dilewati: jenisnya jatuh ke
+                    // `JenisBacaan.LAIN` yang sengaja tidak punya layar tujuan, jadi menyimpannya
+                    // hanya menghasilkan baris favorit yang tak dapat dibuka.
+                    if (jenis != JenisBacaan.LAIN) userData.toggleFavorite(jenis, rujukan, id)
                 }
                 store.set(Store.FAV, BawaanPreferensi.FAVORIT)
             }

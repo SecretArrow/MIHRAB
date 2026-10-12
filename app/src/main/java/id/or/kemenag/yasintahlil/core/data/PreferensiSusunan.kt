@@ -12,9 +12,6 @@ package id.or.kemenag.yasintahlil.core.data
  */
 object PreferensiSusunan {
 
-    /** Kind progres bacaan Tahlil di `UserDataRepository`; dipakai layar Tahlil dan Pengaturan. */
-    const val KIND_PROGRES = "tahlil"
-
     /** Id susunan buatan pengguna; dibedakan dari id susunan di `assets/content/tahlil.json`. */
     const val ID_SAYA = "saya"
     const val NAMA_SAYA = "Susunan saya"

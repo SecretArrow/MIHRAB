@@ -10,6 +10,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -176,7 +177,7 @@ class TahlilViewModel @Inject constructor(
         viewModelScope.launch {
             userData.setProgress(KIND, "idx", s.idx)
             userData.setProgress(KIND, "count", s.count)
-            s.items.getOrNull(s.idx)?.let { store.set(Store.LAST, "tahlil:${it.id}") }
+            s.items.getOrNull(s.idx)?.let { store.set(Store.LAST, JenisBacaan.id(JenisBacaan.TAHLIL, it.id)) }
         }
     }
 
@@ -196,5 +197,7 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
-    companion object { const val KIND = PreferensiSusunan.KIND_PROGRES }
+    // Jenis progres dan riwayat bacaan Tahlil datang dari kosakata bersama `JenisBacaan` — sama
+    // dengan yang dipakai pemetaan tujuan tombol "Buka" pada Favorit & Riwayat.
+    companion object { const val KIND = JenisBacaan.TAHLIL }
 }

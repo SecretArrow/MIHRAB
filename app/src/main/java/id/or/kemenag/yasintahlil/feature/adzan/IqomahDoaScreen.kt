@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -148,7 +149,8 @@ fun IqomahScreen() {
         // Nomor urut juga membuat id kartu unik: sebelumnya id memakai 10 huruf Arab pertama,
         // yang sama untuk lafaz berulang, sehingga favorit satu lafaz menandai lafaz lain juga.
         items.forEachIndexed { i, l ->
-            BacaanCard("iqomah:${i + 1}", "Lafaz iqomah ${i + 1} dari ${items.size}",
+            BacaanCard(JenisBacaan.id(JenisBacaan.IQOMAH, (i + 1).toString()),
+                "Lafaz iqomah ${i + 1} dari ${items.size}",
                 l.arab, l.latin, l.terjemahan,
                 true, true, UkuranBacaan.arabBacaJauh(arabSize, fullscreen), ulangi = l.ulangi,
                 sumber = l.sumber, showArab = showArab, kategori = l.kategori)
@@ -213,9 +215,9 @@ fun DoaAdzanScreen() {
             "Bila diaktifkan: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, " +
                 "dan pengingat tetap berbunyi walau aplikasi ditutup."
         }, style = MaterialTheme.typography.labelSmall)
-        KartuDoa("doa:menjawab_adzan", menjawab, arabSize, showArab)
-        KartuDoa("doa:sholawat_adzan", sholawat, arabSize, showArab)
-        KartuDoa("doa:adzan", doa, arabSize, showArab)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize, showArab)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize, showArab)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize, showArab)
         Text("Suara adzan dan pengingat sebelum adzan diatur di menu Adzan; saklar pengingat doa di " +
                 "atas dan di menu Adzan menulis preferensi yang sama. Iqomah memiliki timer " +
                 "tersendiri di menu Iqomah.",

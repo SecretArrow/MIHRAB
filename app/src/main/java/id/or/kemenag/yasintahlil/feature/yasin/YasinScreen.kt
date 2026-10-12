@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
 @Composable
@@ -130,7 +131,8 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                     Text("${v.nomor}", style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(end = 8.dp, top = 12.dp))
                     Column(Modifier.weight(1f)) {
-                        BacaanCard("yasin:${v.nomor}", "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
+                        BacaanCard(JenisBacaan.id(JenisBacaan.YASIN, v.nomor.toString()),
+                            "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
                             s.showLatin, s.showTrans, s.arabSize,
                             showArab = s.showArab, kategori = surah.kategori)
                         Row {

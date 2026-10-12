@@ -84,12 +84,15 @@ class AtribusiLafazAdzanTest {
     fun tiapLafazDiberiNomorUrutDanIdUnik() {
         val adzan = layarAdzan()
         assertTrue("lafaz adzan tidak diberi nomor urut", adzan.contains("forEachIndexed"))
-        assertTrue("id kartu adzan tidak memakai nomor urut", adzan.contains("\"adzan:\${i + 1}\""))
+        // Jenis idnya datang dari kosakata bersama `JenisBacaan`, bukan literal yang dieja di layar.
+        assertTrue("id kartu adzan tidak memakai nomor urut dari kosakata bersama",
+            adzan.contains("JenisBacaan.id(JenisBacaan.ADZAN, (i + 1).toString())"))
         assertTrue("judul kartu adzan tidak menyebut urutannya", adzan.contains("dari \${lafaz.size}"))
 
         val iqomah = layarIqomah()
         assertTrue("lafaz iqomah tidak diberi nomor urut", iqomah.contains("forEachIndexed"))
-        assertTrue("id kartu iqomah tidak memakai nomor urut", iqomah.contains("\"iqomah:\${i + 1}\""))
+        assertTrue("id kartu iqomah tidak memakai nomor urut dari kosakata bersama",
+            iqomah.contains("JenisBacaan.id(JenisBacaan.IQOMAH, (i + 1).toString())"))
         assertTrue("judul kartu iqomah tidak menyebut urutannya", iqomah.contains("dari \${items.size}"))
     }
 

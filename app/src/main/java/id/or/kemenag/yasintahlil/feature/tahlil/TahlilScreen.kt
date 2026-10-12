@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -99,7 +100,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
                     if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, jamaah))
                     if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
                 } else {
-                    BacaanCard("tahlil:${cur.id}", cur.judul, arab, latin, trans,
+                    BacaanCard(JenisBacaan.id(JenisBacaan.TAHLIL, cur.id), cur.judul, arab, latin, trans,
                         s.showLatin, s.showTrans, s.arabSize, ulangi = cur.ulangi, sumber = cur.sumber,
                         showArab = s.showArab, kategori = cur.kategori)
                 }

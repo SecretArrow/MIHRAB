@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Langkah
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import kotlinx.coroutines.launch
 
 /**
@@ -79,4 +80,6 @@ private fun LangkahBagian(title: String, steps: List<Langkah>) {
     }
 }
 
-private const val KIND = "wudhu"
+// Jenis progres panduan bersuci — dari kosakata bersama `JenisBacaan`. Hanya menyimpan progres:
+// langkah wudhu tinggal di satu layar bersama tayamum, jadi tidak punya layar tujuan sendiri.
+private const val KIND = JenisBacaan.WUDHU

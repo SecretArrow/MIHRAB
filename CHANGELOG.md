@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Jenis bacaan tersimpan kini satu tempat**: bagian sebelum `:` pada id bacaan — `yasin`, `tahlil`,
+  `dzikir`, `adzan`, `iqomah`, `doa`, `ghaib`, `jenazah`, `bacaan`, `niat`, `langkah`, `search` —
+  adalah **kunci sambung** antara penulis dan pembaca: layar menulisnya sebagai awalan id kartu yang
+  disimpan `BacaanCard` ke favorit, riwayat, dan progres, lalu `RuteKonten` membacanya kembali untuk
+  menentukan layar yang dibuka tombol "Buka". Keduanya dahulu mengeja jenisnya sendiri-sendiri —
+  `"yasin"` di layar Yasin **dan** di `RuteKonten`, `"adzan"` di layar Adzan dan di `RuteKonten` —
+  sehingga satu huruf yang berubah di salah satu sisi membuat favorit terbuka ke layar yang salah
+  atau berakhir *"Layar tujuan tidak dikenal"*, **tanpa satu pun pesan galat**; `PreferensiSusunan`
+  bahkan menyimpan ejaan ketiga untuk `"tahlil"`. Kini semuanya membaca kosakata bersama
+  `JenisBacaan` di `core/util/`, lengkap dengan pemisah id dan aturan membacanya
+  (`id`/`pisah`/`jenisDari`) — begitu pula `splitContentId` dan migrasi favorit warisan di
+  `YasinApp`, yang dahulu menyalin pemisah `':'` sendiri. Id yang tersimpan **tidak berubah satu
+  byte pun** (`yasin:58`, `ghaib:niat:syafii`, `langkah:<id sholat>:<id bacaan>`), sehingga favorit,
+  riwayat, dan progres lama tetap menunjuk bacaan yang sama. Dijaga `JenisBacaanSatuTempatTest`,
+  yang sekaligus mengunci ejaan tiap jenis: string itu tersimpan di perangkat dan bertahan melintasi
+  pembaruan aplikasi, jadi menggantinya harus disengaja dan disertai migrasi.
 - **Sebutan untuk hal yang sama kini satu ejaan**: tiga sebutan ditulis di beberapa tempat
   sekaligus. **Nama berkas modul sholat khusus** (`sholat_ghaib.json`, `sholat_jenazah.json`) ada di
   layar Sholat Ghaib, layar Sholat Jenazah, dan indeks pencarian; nama berkas adalah kunci ke bundel

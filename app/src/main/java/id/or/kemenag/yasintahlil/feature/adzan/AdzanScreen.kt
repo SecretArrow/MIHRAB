@@ -25,6 +25,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
@@ -312,7 +313,8 @@ fun AdzanScreen() {
         // satu entri favorit — menandai satu lafaz membuat lafaz lain ikut bertanda. Nomor urut
         // menjadikan id-nya unik.
         lafaz.forEachIndexed { i, l ->
-            BacaanCard("adzan:${i + 1}", "Lafaz adzan ${i + 1} dari ${lafaz.size}",
+            BacaanCard(JenisBacaan.id(JenisBacaan.ADZAN, (i + 1).toString()),
+                "Lafaz adzan ${i + 1} dari ${lafaz.size}",
                 l.arab, l.latin, l.terjemahan,
                 true, true, arabSize, ulangi = l.ulangi, sumber = l.sumber,
                 showArab = showArab, kategori = l.kategori)
