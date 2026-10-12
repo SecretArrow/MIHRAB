@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil
 
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
+import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import org.junit.Assert.assertEquals
@@ -156,5 +157,54 @@ class SebutanSatuTempatTest {
             .take(700)
         assertTrue("mengubah mazhab Asar di menu Pengaturan tidak menjadwalkan ulang pengingat",
             blok.contains("PrayerScheduler.scheduleAll"))
+    }
+
+    /**
+     * Kosakata mazhab Asar harus **dipinjam** dari kosakata mazhab panduan, bukan disalin.
+     *
+     * Layar Pengaturan menampilkan kedua daftar itu berdampingan (`Mazhab.SEMUA` untuk mazhab
+     * panduan, `JadwalHariIni.ASAR_SEMUA` untuk mazhab Asar), dan keduanya menyebut mazhab yang
+     * sama. Dulu tiap daftar menuliskan kunci dan namanya sendiri, sehingga mengubah nama di
+     * [Mazhab] menyisakan layar itu menawarkan dua sebutan untuk satu mazhab — tanpa satu pun galat.
+     */
+    @Test
+    fun kosakataMazhabAsarDipinjamDariKosakataMazhabPanduan() {
+        assertEquals("kunci mazhab Asar Syafi'i berbeda dari mazhab panduan",
+            Mazhab.SYAFII, JadwalHariIni.ASAR_SYAFII)
+        assertEquals("kunci mazhab Asar Hanafi berbeda dari mazhab panduan",
+            Mazhab.HANAFI, JadwalHariIni.ASAR_HANAFI)
+        assertEquals("mazhab Asar bawaan berbeda dari mazhab panduan bawaan",
+            Mazhab.DEFAULT, JadwalHariIni.ASAR_DEFAULT)
+
+        val dariPanduan = Mazhab.SEMUA.filter {
+            it.first == JadwalHariIni.ASAR_SYAFII || it.first == JadwalHariIni.ASAR_HANAFI
+        }
+        assertEquals("pilihan mazhab Asar bukan bagian dari daftar mazhab panduan",
+            dariPanduan, JadwalHariIni.ASAR_SEMUA)
+        // Tepat dua mazhab yang jam Asarnya berbeda: daftar yang menyusut membuat `asarLabel`
+        // melempar, dan daftar yang memanjang menawarkan mazhab yang tak mengubah perhitungan.
+        assertEquals("pilihan mazhab Asar tidak lagi tepat dua", 2, JadwalHariIni.ASAR_SEMUA.size)
+    }
+
+    /**
+     * Kunci dan nama mazhab Asar tak boleh dieja kembali di [JadwalHariIni].
+     *
+     * Nilai yang kebetulan sama hari ini bukan jaminan: salinan yang ditulis ulang akan lepas lagi
+     * begitu salah satunya diubah. Karena itu yang diperiksa adalah **ejaannya**, bukan hasilnya.
+     */
+    @Test
+    fun JadwalHariIniTidakMengejaUlangKunciDanNamaMazhab() {
+        val kode = KodeSumber.kodeTanpaKomentar(
+            File(
+                KodeSumber.root(),
+                "src/main/java/id/or/kemenag/yasintahlil/core/util/JadwalHariIni.kt",
+            ).readText(),
+        )
+        listOf("\"syafii\"", "\"hanafi\"", "\"Syafi'i\"", "\"Hanafi\"").forEach { literal ->
+            assertFalse(
+                "JadwalHariIni.kt mengeja ulang $literal alih-alih meminjamnya dari Mazhab",
+                kode.contains(literal),
+            )
+        }
     }
 }
