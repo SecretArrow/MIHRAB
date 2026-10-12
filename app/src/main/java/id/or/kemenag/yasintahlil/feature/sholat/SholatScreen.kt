@@ -63,9 +63,11 @@ fun SholatScreen(go: (String) -> Unit) {
                 // tidak menjawab semua pertanyaan: "mana yang dikerjakan malam ini" berbeda dari
                 // "mana yang tujuannya memohon ampunan".
                 item {
-                    Row(Modifier.horizontalScroll(rememberScrollState()),
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState())
+                            .padding(vertical = 4.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(vertical = 4.dp)) {
+                    ) {
                         Text("Kelompok:", style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.align(Alignment.CenterVertically))
                         CaraKelompok.entries.forEach { c ->

@@ -55,7 +55,10 @@ object MarkdownRingkas {
         for (p in potongan(markdown)) {
             val pertama = p.first().trimStart()
             when {
-                p.all { it.trimStart().startsWith("|") } -> tabel(p)?.let { out += it }
+                // Baris berpipa yang tak cukup untuk jadi tabel tetap ditampilkan apa adanya —
+                // teks tidak boleh hilang hanya karena bentuknya tidak seperti yang diharapkan.
+                p.all { it.trimStart().startsWith("|") } ->
+                    out += tabel(p) ?: Blok.Paragraf(rapi(p.joinToString(" ")))
 
                 pertama.startsWith("#") -> {
                     val level = pertama.takeWhile { it == '#' }.length
