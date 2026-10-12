@@ -42,9 +42,6 @@ object PrayerScheduler {
     const val JENIS_DOA = "doa"
     const val JENIS_IQOMAH = "iqomah"
 
-    /** Jeda pengingat "baca doa setelah adzan" dari waktu masuk, dalam menit. */
-    const val DOA_DELAY_MIN = 5
-
     private data class Cfg(
         /**
          * Parameter hisab yang sudah jadi, bukan potongan-potongan nilai mentah.
@@ -127,7 +124,7 @@ object PrayerScheduler {
         // hari ini tetap berjalan, susulan besok memakai nama lain.
         val hari = kunciHari(now, delta.toLong())
         if (cfg.doaReminder) {
-            enqueue(ctx, "doa_${nama}_$hari", nama, (delta + DOA_DELAY_MIN).toLong(), JENIS_DOA)
+            enqueue(ctx, "doa_${nama}_$hari", nama, (delta + PengingatAdzan.DOA_DELAY_MIN).toLong(), JENIS_DOA)
         }
         if (cfg.iqomahOn) {
             enqueue(ctx, "iqomah_${nama}_$hari", nama, (delta + cfg.iqomahMin).toLong(), JENIS_IQOMAH)

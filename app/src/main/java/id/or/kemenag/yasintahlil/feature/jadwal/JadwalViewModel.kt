@@ -14,6 +14,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PesanLokasi
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,7 +140,7 @@ class JadwalViewModel @Inject constructor(
     fun useGps(): Boolean {
         val loc = LocationProvider.lastKnown(ctx)
         if (loc == null) {
-            _state.value = _state.value.copy(pesanLokasi = PESAN_TANPA_FIX)
+            _state.value = _state.value.copy(pesanLokasi = PesanLokasi.TANPA_FIX_JADWAL)
             return false
         }
         terapkanKoordinat(loc.latitude, loc.longitude, pesan = null)
@@ -196,7 +197,7 @@ class JadwalViewModel @Inject constructor(
             locationJob = null
             _state.value = _state.value.copy(
                 followGps = false,
-                pesanLokasi = if (pernahAdaFix) null else PESAN_TANPA_FIX,
+                pesanLokasi = if (pernahAdaFix) null else PesanLokasi.TANPA_FIX_JADWAL,
             )
             store.set(Store.JADWAL_IKUT, false)
         }
@@ -282,10 +283,10 @@ class JadwalViewModel @Inject constructor(
     }
 
     companion object {
-        /** Ditampilkan saat GPS diminta tetapi belum ada perbaikan lokasi yang bisa dipakai. */
-        const val PESAN_TANPA_FIX =
-            "Belum ada perbaikan lokasi GPS. Pastikan GPS aktif dan berada di luar ruangan, " +
-                "lalu coba lagi — atau pilih kota secara manual."
+        // Sebab "belum ada perbaikan GPS" dan sarannya kini tinggal di `PesanLokasi`, bersama
+        // dengan layar Kiblat: penjelasan atas kegagalan yang sama tidak boleh berbeda kata
+        // antarlayar. Yang memang berbeda — saran untuk layar berpemilih kota (layar ini) versus
+        // layar yang kotanya dipilih di menu Jadwal — tetap dipisah di sana.
 
         /**
          * Jarak minimum (meter) sebelum jadwal dihitung ulang saat mengikuti lokasi live.

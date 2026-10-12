@@ -16,6 +16,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PesanLokasi
 import id.or.kemenag.yasintahlil.core.util.QiblaCalc
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -152,7 +153,7 @@ class KiblatViewModel @Inject constructor(
     private fun tandaiTanpaFix() {
         _state.update { s ->
             if (s.liveFix) s.copy(mencari = false, pesanLokasi = null)
-            else s.copy(mencari = false, pesanLokasi = PESAN_TANPA_FIX)
+            else s.copy(mencari = false, pesanLokasi = PesanLokasi.TANPA_FIX_KIBLAT)
         }
     }
 
@@ -267,8 +268,7 @@ class KiblatViewModel @Inject constructor(
         /** Lama menunggu perbaikan GPS sebelum layar menjelaskan bahwa belum ada perbaikan. */
         const val TIMEOUT_LOKASI_MS = 20_000L
 
-        const val PESAN_TANPA_FIX =
-            "Belum ada perbaikan lokasi GPS. Pastikan GPS aktif dan berada di luar ruangan, " +
-                "lalu coba lagi — atau matikan GPS dan pilih kota di menu Jadwal."
+        // Sebab kegagalan GPS dan sarannya tinggal di `PesanLokasi` bersama layar Jadwal; layar ini
+        // memakai varian yang sarannya berbeda (tanpa pemilih kota sendiri).
     }
 }
