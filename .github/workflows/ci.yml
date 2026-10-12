@@ -26,7 +26,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Validasi konten JSON (strict — wajib sumber resmi, SOURCES.md)
         run: python3 tools/validate_content.py --strict
-      - name: Validasi gate bundel pembaruan konten (fixture: sah lolos, cacat ditolak)
+      - name: "Validasi gate bundel pembaruan konten (fixture sah lolos, cacat ditolak)"
         run: |
           python3 tools/validate_bundle.py --strict tools/fixtures/bundel/sah.json
           python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/cacat.json
