@@ -148,7 +148,6 @@ class JenisSuaraAdzanTest {
         assertTrue("tombol pratinjau hilang", s.contains("Pratinjau"))
     }
 
-    @Test
     /** Nama kunci tersimpan dibekukan: mengubahnya membuat daftar jenis suara lama tak terbaca. */
     @Test
     fun kunciJenisSuaraDideklarasikan() {

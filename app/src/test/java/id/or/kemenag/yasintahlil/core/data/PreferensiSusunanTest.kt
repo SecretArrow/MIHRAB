@@ -155,7 +155,6 @@ class PreferensiSusunanTest {
             vm.contains("JenisBacaan.TAHLIL"))
     }
 
-    @Test
     /** Nama kunci tersimpan dibekukan: mengubahnya membuat susunan lama tak terbaca. */
     @Test
     fun kunciPreferensiSusunanDideklarasikan() {

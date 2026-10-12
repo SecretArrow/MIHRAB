@@ -61,7 +61,6 @@ class TampilanKompasTest {
             TampilanKompas.gambarJarum("ngawur", adaSensor = false))
     }
 
-    @Test
     /** Nama kunci tersimpan dibekukan: mengubahnya membuat pilihan lama tak terbaca. */
     @Test
     fun kunciPreferensiDideklarasikan() {

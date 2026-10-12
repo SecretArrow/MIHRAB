@@ -52,7 +52,6 @@ class TemaHalamanTest {
         label.forEach { assertTrue("label kosong", it.isNotBlank()) }
     }
 
-    @Test
     /** Nama kunci tersimpan dibekukan: mengubahnya membuat pilihan lama tak terbaca. */
     @Test
     fun kunciPreferensiDideklarasikan() {
