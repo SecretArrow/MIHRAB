@@ -86,13 +86,16 @@ class UxStateTest {
      * Layar yang menampilkan bacaan harus mengatur tampilannya lewat bottom sheet: setiap berkas
      * yang memanggil `BacaanCard` juga harus memanggil `BacaanSettingsSheet` **dan** menyediakan
      * tombol pembukanya — supaya sheet-nya bukan kode mati yang tak bisa dibuka pengguna.
+     *
+     * Label tombolnya datang dari kosakata bersama `NamaAntarmuka`, bukan literal yang dieja di
+     * layar: tombol harus menyebut apa yang akan terbuka, sama dengan judul sheet-nya.
      */
     @Test
     fun pengaturan_bacaan_lewat_bottom_sheet() {
         val pelanggar = featureSources().filter { it.readText().contains("BacaanCard(") }
             .filterNot { f ->
                 val t = f.readText()
-                t.contains("BacaanSettingsSheet(") && t.contains("Text(\"Pengaturan bacaan\")")
+                t.contains("BacaanSettingsSheet(") && t.contains("NamaAntarmuka.PENGATURAN_BACAAN")
             }
             .map { it.name }
         assertTrue("Layar bacaan tanpa bottom sheet pengaturan: $pelanggar", pelanggar.isEmpty())

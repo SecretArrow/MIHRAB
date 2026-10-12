@@ -154,7 +154,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))

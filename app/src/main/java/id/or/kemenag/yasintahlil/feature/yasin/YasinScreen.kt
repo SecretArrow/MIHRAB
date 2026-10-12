@@ -101,8 +101,8 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
             if (query.isNotBlank()) Text("${shown.size} ayat cocok", style = MaterialTheme.typography.labelSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
-                FilterChip(focus, { focus = !focus }, { Text("Layar penuh") })
+                OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
+                FilterChip(focus, { focus = !focus }, { Text(NamaAntarmuka.LAYAR_PENUH) })
                 FilterChip(keepOn, { keepOn = !keepOn }, { Text("Tetap menyala") })
                 FilterChip(showBookmarks, { showBookmarks = !showBookmarks }, { Text("Bookmark ${s.bookmarks.size}") })
             }

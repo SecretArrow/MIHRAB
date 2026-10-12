@@ -54,8 +54,8 @@ fun JenazahScreen() {
                 style = MaterialTheme.typography.labelMedium)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         info.niat.forEach { n ->
             // Varian niat diberi rujukan `niat:<id varian>` supaya tidak bertabrakan dengan id

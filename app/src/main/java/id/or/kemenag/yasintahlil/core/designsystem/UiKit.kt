@@ -186,7 +186,7 @@ fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit,
 fun EmptyState(
     judul: String,
     pesan: String = "",
-    labelTombol: String = "Coba lagi",
+    labelTombol: String = NamaAntarmuka.COBA_LAGI,
     onTombol: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
@@ -213,7 +213,7 @@ fun ErrorState(pesan: String, onRetry: (() -> Unit)? = null, modifier: Modifier 
     ) {
         Text(pesan, style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-        if (onRetry != null) Button(onClick = onRetry) { Text("Coba lagi") }
+        if (onRetry != null) Button(onClick = onRetry) { Text(NamaAntarmuka.COBA_LAGI) }
     }
 }
 
@@ -280,7 +280,7 @@ fun BacaanSettingsSheet(
             Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text("Pengaturan bacaan", style = MaterialTheme.typography.titleMedium)
+            Text(NamaAntarmuka.PENGATURAN_BACAAN, style = MaterialTheme.typography.titleMedium)
             Text("Berlaku untuk semua bacaan dan tersimpan otomatis.",
                 style = MaterialTheme.typography.labelSmall)
             Row(

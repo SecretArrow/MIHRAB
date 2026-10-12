@@ -148,7 +148,7 @@ fun SholatScreen(go: (String) -> Unit) {
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(vertical = 4.dp)) {
-                        OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+                        OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
                     }
                 }
                 items(bacaanTampil) { b ->

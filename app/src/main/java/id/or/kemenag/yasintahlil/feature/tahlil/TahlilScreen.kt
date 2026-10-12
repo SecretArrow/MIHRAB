@@ -79,10 +79,10 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
             Button(onClick = { vm.prev() }, enabled = s.idx > 0) { Text("← Sebelumnya") }
             Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text("Berikutnya →") }
             FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             OutlinedButton(onClick = { susun = true }) { Text("Sesuaikan susunan") }
         }
         CounterRow(s.count, cur.ulangi,

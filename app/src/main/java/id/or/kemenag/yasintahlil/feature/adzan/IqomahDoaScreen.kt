@@ -94,7 +94,7 @@ fun IqomahScreen() {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { remaining = total }, enabled = !running) { Text("Mulai") }
             OutlinedButton(onClick = { remaining = -1 }) { Text(if (running) "Batal" else "Reset") }
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
         Text("Timer berjalan selama layar ini terbuka; getar menandai waktu habis.",
             style = MaterialTheme.typography.labelSmall)
@@ -136,7 +136,7 @@ fun IqomahScreen() {
         }, style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         if (repo.iqomahCatatan().isNotBlank()) {
             Text(repo.iqomahCatatan(), style = MaterialTheme.typography.labelMedium,
@@ -189,7 +189,7 @@ fun DoaAdzanScreen() {
         Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
             style = MaterialTheme.typography.labelMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat
         // membaca doa setelah adzan."* Saklar yang sama juga ada di menu Adzan; keduanya menulis

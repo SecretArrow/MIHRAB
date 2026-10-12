@@ -38,8 +38,8 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Dzikir & Doa", style = MaterialTheme.typography.titleLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
         ScrollableTabRow(tab) {
             groups.forEachIndexed { i, g -> Tab(tab == i, { tab = i }, text = { Text(g.judul) }) }
