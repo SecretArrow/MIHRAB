@@ -363,12 +363,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `./gradlew tasks`, sehingga tak pernah memperbaiki apa-apa. Kini `tools/format_teks.py` merapikan
   lima hal yang **tidak dapat mengubah perilaku**: akhir baris LF saja, tanpa spasi/tab di akhir
   baris, tanpa baris berisi spasi saja, tidak lebih dari dua baris kosong beruntun, dan tepat satu
-  baris baru di akhir berkas. Alat yang sama dipakai sebagai gate di `ci.yml` (mode periksa) dan
-  sebagai pemasang di `.github/workflows/autofix.yml` (mode `--fix`), jadi aturan periksa dan
-  perbaikan mustahil berbeda. Alur kerja itu berjalan pada PR dari cabang repo ini dan pada
-  `workflow_dispatch`, lalu **hanya meng-commit bila ada perubahan**; PR dari fork dan PR yang
-  dibuat bot ini dilewati, sehingga tidak ada gelung tak berujung. Alat ini sengaja **tidak**
-  menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
+  baris baru di akhir berkas. Alat yang sama dipakai di dua tempat — **gate** di `ci.yml` (mode
+  periksa) dan **pemasang** di `.github/workflows/autofix.yml` (mode `--fix`) — sehingga aturan
+  periksa dan perbaikan mustahil berbeda. Alur kerja itu dijalankan sengaja lewat
+  `workflow_dispatch`, plus sapuan mingguan sebagai jaring pengaman `main`, dan **hanya meng-commit
+  bila ada temuan**. Ia sengaja **tidak** dipicu `pull_request`: dibuktikan di PR #37 bahwa commit
+  bot ke cabang PR membuat GitHub menahan rangkaian run untuk commit itu di `action_required`
+  (aktor `github-actions[bot]` bukan kolaborator), sehingga commit perbaikannya justru tidak pernah
+  tervalidasi lint/unit/build — melanggar prinsip "setiap commit yang digabung sudah lulus CI".
+  Pemicu itu baru bersih dengan token ber-aktor kolaborator (PAT/GitHub App), yang sengaja tidak
+  disimpan di repo ini. Pembagiannya: `ci.yml` **mencegah**, alur ini **memperbaiki**. Alat ini
+  sengaja **tidak** menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
 - **Higiene berkas teks**: 13 berkas konten JSON (`adzan`, `ayat_kursi`, `dzikir`, `kota`,

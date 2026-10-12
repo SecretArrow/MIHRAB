@@ -2,44 +2,48 @@ name: Auto-fix (higiene teks)
 
 # Kenapa ada: `plan.txt` baris 1 meminta "auto fix" sebagai bagian alur kerja. Alur kerja lama
 # bernama sama hanya menjalankan `./gradlew tasks` — tanpa pemasang apa pun — sehingga tak pernah
-# memperbaiki apa-apa dan dihapus. Alur ini menjalankan pemasang yang nyata: `tools/format_teks.py
-# --fix`, yang hanya menyentuh spasi dan baris baru (akhir baris LF, spasi ekor, baris kosong
-# beruntun, tepat satu baris baru di akhir) sehingga tidak dapat mengubah perilaku aplikasi maupun
-# isi teks keagamaan.
+# memperbaiki apa-apa dan sudah dihapus. Alur ini menjalankan pemasang yang nyata:
+# `tools/format_teks.py --fix`, yang hanya menyentuh spasi dan baris baru (akhir baris LF, spasi
+# ekor, baris kosong beruntun, tepat satu baris baru di akhir) sehingga tidak dapat mengubah
+# perilaku aplikasi maupun isi teks keagamaan.
 #
-# Ia sengaja **tidak** menyentuh `main` secara langsung: perbaikan terjadi di cabang PR, tempat
-# perubahan masih dapat ditinjau. Untuk `main` yang telanjur kotor, jalankan manual lewat
-# `workflow_dispatch` dengan cabang `main` yang dipilih.
+# Kenapa TIDAK dipicu oleh `pull_request` (padahal itu yang paling terasa "otomatis"): sudah
+# dibuktikan empiris di PR #37. Bila bot meng-commit perbaikan ke cabang PR, GitHub membuat
+# rangkaian run baru untuk commit itu dengan aktor `github-actions[bot]` — dan karena bot bukan
+# kolaborator, run itu berhenti di `action_required` (menunggu persetujuan manusia) alih-alih
+# berjalan. Akibatnya commit perbaikan **tidak pernah tervalidasi** lint/unit/build sampai
+# seseorang menyetujuinya; itu melanggar prinsip "setiap commit yang digabung sudah lulus CI".
+# Pemicu `pull_request` hanya akan bersih bila push memakai token yang aktornya kolaborator
+# (PAT/GitHub App), dan token semacam itu sengaja tidak disimpan di repo ini.
+#
+# Maka pembagiannya: **gate di `ci.yml` yang mencegah** higiene kotor masuk lewat PR, dan **alur
+# kerja ini yang memperbaiki** — dijalankan sengaja lewat `workflow_dispatch`, plus sapuan
+# mingguan sebagai jaring pengaman untuk `main` (mis. bila ada yang men-push langsung tanpa PR).
+# Sapuan itu hanya meng-commit bila memang ada temuan, dan karena gate menjaga `main` tetap
+# bersih, biasanya selesai dalam hitungan detik tanpa perubahan.
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  schedule:
+    # Minggu 02:23 WIB. Menit sengaja bukan :00 — permintaan serentak dari seluruh dunia menumpuk
+    # di menit bulat, dan jadwal ini tidak perlu presisi.
+    - cron: '23 19 * * 0'
 
 permissions:
   contents: write
 
 concurrency:
-  group: autofix-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  group: autofix-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   rapikan:
-    # Dua penjaga:
-    #   1. PR dari fork tidak punya izin tulis — tokennya read-only, jadi push akan gagal. Lewati.
-    #   2. PR yang dibuat bot ini sendiri dilewati. Push memakai GITHUB_TOKEN memang tidak
-    #      memicu workflow baru (GitHub menekannya), tetapi penjaga ini membuat niatnya terang
-    #      dan tetap benar bila kelak tokennya diganti.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.head.repo.full_name == github.repository &&
-       github.actor != 'github-actions[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.ref_name }}
       - name: Rapikan higiene teks
         run: python3 tools/format_teks.py --fix .
       - name: Buktikan hasilnya sudah bersih (periksa ulang)
@@ -59,4 +63,4 @@ jobs:
           Hanya spasi dan baris baru; tidak ada isi yang berubah.
 
           Co-Authored-By: [CC] <noreply@anthropic.com>"
-          git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
