@@ -101,11 +101,11 @@ class PengingatIqomahTest {
             penjadwal.contains("fun kunciHari"))
     }
 
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat pengaturan lama tak terbaca. */
     @Test
-    fun preferensiPengingatIqomahIkutTerbackup() {
+    fun kunciPengingatIqomahDideklarasikan() {
         val store = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt")
-        val impor = store.substringAfter("fun importJson").substringBefore("val arr = o.optJSONArray")
-        assertTrue("preferensi pengingat iqomah tidak ikut dipulihkan dari backup",
-            impor.contains("IQOMAH_ON"))
+        assertTrue("Store.IQOMAH_ON tidak dideklarasikan dengan nama tersimpannya",
+            store.contains("val IQOMAH_ON = booleanPreferencesKey(\"iqomah_on\")"))
     }
 }

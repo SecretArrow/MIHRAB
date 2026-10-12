@@ -61,14 +61,12 @@ class TampilanKompasTest {
             TampilanKompas.gambarJarum("ngawur", adaSensor = false))
     }
 
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat pilihan lama tak terbaca. */
     @Test
-    fun kunciPreferensiDideklarasikanDanIkutBackup() {
+    fun kunciPreferensiDideklarasikan() {
         val s = store()
-        assertTrue("Store.COMPASS_VIEW tidak dideklarasikan",
+        assertTrue("Store.COMPASS_VIEW tidak dideklarasikan dengan nama tersimpannya",
             s.contains("val COMPASS_VIEW = stringPreferencesKey(\"compass_view\")"))
-        // Tanpa ikut importJson, pilihan tampilan kompas hilang saat backup dipulihkan.
-        val impor = s.substringAfter("fun importJson")
-        assertTrue("COMPASS_VIEW tidak ikut dipulihkan dari backup", impor.contains("COMPASS_VIEW"))
     }
 
     /** Jarum tidak boleh digambar di jalur mana pun yang melewatkan pemeriksaan sensor. */

@@ -81,11 +81,11 @@ class PengingatDoaAdzanTest {
             pekerja.contains("MainActivity.EXTRA_ROUTE"))
     }
 
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat pengaturan lama tak terbaca. */
     @Test
-    fun preferensiPengingatIkutTerbackup() {
+    fun kunciPengingatDoaAdzanDideklarasikan() {
         val store = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt")
-        val impor = store.substringAfter("fun importJson").substringBefore("val arr = o.optJSONArray")
-        assertTrue("preferensi pengingat doa tidak ikut dipulihkan dari backup",
-            impor.contains("DOA_ADZAN_REMINDER"))
+        assertTrue("Store.DOA_ADZAN_REMINDER tidak dideklarasikan dengan nama tersimpannya",
+            store.contains("val DOA_ADZAN_REMINDER = booleanPreferencesKey(\"doa_adzan_reminder\")"))
     }
 }

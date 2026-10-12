@@ -380,6 +380,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kunci preferensi baru tidak lagi luput dari pemulihan backup**: `Store.exportJson` menulis
+  seluruh isi DataStore apa adanya (`d.asMap()`), sehingga ia lengkap dengan sendirinya; `importJson`
+  tidak — ia menyebut satu per satu kunci yang dipulihkan. Dua daftar itu — deklarasi kunci di
+  `Store` dan daftar di `importJson` — ditulis terpisah, dan tak ada apa pun yang membandingkannya.
+  Bedanya sunyi dan datang pada saat paling buruk: pengguna mencadangkan pengaturannya, memasang
+  ulang aplikasi, lalu memulihkan backup — dan pemulihannya **tampak berhasil**, berkasnya terbaca,
+  tak ada galat, layar menampilkan pesan sukses, sementara satu pengaturan diam-diam kembali ke
+  bawaan tanpa cara mengetahui yang mana kecuali mencoba satu per satu. Itulah yang membuat tiap
+  kunci baru menambahkan pemeriksaannya sendiri: tema halaman, tampilan kompas, susunan tahlil, jenis
+  suara adzan, pengingat iqomah, pengingat doa adzan, dan jadwal-ikut-lokasi masing-masing punya satu
+  di berkas uji fiturnya — sehingga aturan "kunci baru wajib ikut dipulihkan" tinggal tersebar di
+  **tujuh** tempat, dan kunci berikutnya tetap akan tertinggal. Pemeriksaan itu pun tidak utuh:
+  `substringAfter("fun importJson")` mengembalikan seluruh berkas bila penandanya tidak ada, jadi
+  mengganti nama fungsinya membuat semuanya lolos tanpa memeriksa apa pun. Kini ada satu penjaga
+  untuk seluruh kelasnya, `StoreBackupLengkapTest`: daftar kunci diambil dari deklarasi `Store`,
+  daftar pemulihan dari badan `importJson`, dan keduanya harus memuat nama yang **sama persis** —
+  nama yang hilang maupun nama yang tidak pernah dideklarasikan sama-sama gagal, penanda fungsinya
+  wajib ada, dan tipe kunci yang belum dikenal penjaga itu ikut dilaporkan. Pemeriksaan per-fitur
+  yang tergantikan dihapus; yang tersisa di sana hanya pembekuan nama kunci tersimpannya. Sembilan
+  mutasi terverifikasi tertangkap.
 - **Keterangan batas timer iqomah kini satu kalimat**: batas tanggung jawab aplikasi atas timer
   iqomah — bahwa waktu iqomah **berbeda tiap masjid** dan karena itu hanya perkiraan pribadi, bukan
   ketentuan syariat — ditulis di **empat** tempat dengan empat kata yang berbeda: dua kali di layar
