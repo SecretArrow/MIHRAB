@@ -47,6 +47,20 @@ object RuteKonten {
     }
 
     /**
+     * Rute untuk nilai `Store.LAST` — bacaan terakhir yang dibuka, berformat `kind:ref` (mis.
+     * `yasin:58` atau `tahlil:taawudz`).
+     *
+     * Beranda dahulu menentukan tujuannya sendiri dengan `if (last.startsWith("yasin")) YASIN else
+     * FAVORIT`. Karena `Store.LAST` hanya pernah berisi `yasin:…` dan `tahlil:…`, setiap bacaan
+     * Tahlil terakhir membuka layar **Favorit** — bukan Tahlil. Tombol yang membawa pengguna ke
+     * tempat yang salah membuat isinya tampak hilang, jadi aturannya tinggal satu: yang ini, dipakai
+     * beranda maupun layar Favorit.
+     *
+     * `null` bila jenisnya tidak punya layar sendiri (layar harus mengatakannya, bukan menebak).
+     */
+    fun ruteTerakhir(last: String): String? = rute(last.substringBefore(':'))
+
+    /**
      * Nama layar tujuan, untuk memberi tahu pengguna ke mana tombol "Buka" akan membawanya.
      * `null` bila tidak ada tujuan.
      */

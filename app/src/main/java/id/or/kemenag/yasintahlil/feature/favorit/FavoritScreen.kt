@@ -31,7 +31,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         if (s.last.isNotBlank()) {
             item {
                 Text("Terakhir dibaca: ${s.last}")
-                AksiBuka(s.last.substringBefore(':'), grupDzikir, "Lanjutkan", go)
+                AksiBuka(RuteKonten.ruteTerakhir(s.last), "Lanjutkan", go)
             }
         }
 
@@ -78,7 +78,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))
-                AksiBuka(h.kind, grupDzikir, "Buka", go)
+                AksiBuka(RuteKonten.rute(h.kind, grupDzikir), "Buka", go)
             }
         }
     }
@@ -99,21 +99,24 @@ private fun BarisTersimpan(
             Text(RuteKonten.namaTujuan(kind, grupDzikir) ?: "Layar tujuan tidak dikenal",
                 style = MaterialTheme.typography.labelSmall)
         }
-        AksiBuka(kind, grupDzikir, "Buka", go)
+        AksiBuka(RuteKonten.rute(kind, grupDzikir), "Buka", go)
         TextButton(onClick = onHapus) { Text("Hapus") }
     }
 }
 
 /**
- * Tombol menuju layar asal sebuah jenis konten.
+ * Tombol menuju layar asal sebuah bacaan tersimpan.
  *
- * Bila jenis itu tidak punya layar sendiri (lihat [RuteKonten]), yang tampil adalah keterangan —
- * bukan tombol yang membuka layar lain. Tombol yang membawa pengguna ke tempat yang salah membuat
- * isinya tampak hilang, dan itu lebih buruk daripada tidak ada tombol sama sekali.
+ * Rutenya sudah diputuskan pemanggil lewat [RuteKonten] — bukan dihitung di sini — supaya aturan
+ * "jenis ini menuju layar mana" hanya ada satu, sama untuk favorit, bookmark, riwayat, maupun
+ * "terakhir dibaca" di beranda.
+ *
+ * Bila jenis itu tidak punya layar sendiri, yang tampil adalah keterangan — bukan tombol yang
+ * membuka layar lain. Tombol yang membawa pengguna ke tempat yang salah membuat isinya tampak
+ * hilang, dan itu lebih buruk daripada tidak ada tombol sama sekali.
  */
 @Composable
-private fun AksiBuka(kind: String, grupDzikir: Set<String>, label: String, go: (String) -> Unit) {
-    val rute = RuteKonten.rute(kind, grupDzikir)
+private fun AksiBuka(rute: String?, label: String, go: (String) -> Unit) {
     if (rute != null) {
         TextButton(onClick = { go(rute) }) { Text(label) }
     } else {

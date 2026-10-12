@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
@@ -37,15 +38,15 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var latin by remember { mutableStateOf(UkuranBacaan.LATIN_DEFAULT) }
     var lineHeight by remember { mutableStateOf(UkuranBacaan.JARAK_DEFAULT) }
     var pageTheme by remember { mutableStateOf(TemaHalaman.IKUT) }
-    var showL by remember { mutableStateOf(true) }
-    var showT by remember { mutableStateOf(true) }
-    var showA by remember { mutableStateOf(true) }
-    var infoCard by remember { mutableStateOf(true) }
+    var showL by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showT by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
+    var showA by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var infoCard by remember { mutableStateOf(BawaanPreferensi.KARTU_INFO) }
     var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var city by remember { mutableStateOf(JadwalHariIni.KOTA_DEFAULT) }
-    var notif by remember { mutableStateOf(true) }
-    var hijriCorr by remember { mutableStateOf(0) }
+    var notif by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_WAKTU) }
+    var hijriCorr by remember { mutableStateOf(BawaanPreferensi.KOREKSI_HIJRIAH) }
     var compassUnit by remember { mutableStateOf(TampilanKompas.SATUAN_DEFAULT) }
     var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
     // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
@@ -62,21 +63,25 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         latin = store.get(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
         lineHeight = store.get(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
         pageTheme = store.get(Store.PAGE_THEME, TemaHalaman.IKUT)
-        showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
-        showA = store.get(Store.SHOW_ARAB, true); infoCard = store.get(Store.INFO_CARD, true)
+        showL = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showT = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
+        showA = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        infoCard = store.get(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO)
         asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
         city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
         mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
-        notif = store.get(Store.NOTIF, true)
-        hijriCorr = store.get(Store.HIJRI_CORR, 0)
+        notif = store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)
+        hijriCorr = store.get(Store.HIJRI_CORR, BawaanPreferensi.KOREKSI_HIJRIAH)
         compassUnit = store.get(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT)
         compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
         val daftarSusunan = PreferensiSusunan.tersedia(
             repo.tahlilSusunan(),
-            PreferensiSusunan.susunanSaya(PreferensiSusunan.parse(store.get(Store.TAHLIL_CUSTOM, ""))),
+            PreferensiSusunan.susunanSaya(
+                PreferensiSusunan.parse(store.get(Store.TAHLIL_CUSTOM, BawaanPreferensi.SUSUNAN_SAYA))),
         )
         susunanTersedia = daftarSusunan
-        susunanAktif = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), daftarSusunan)
+        susunanAktif = PreferensiSusunan.idAktif(
+            store.get(Store.TAHLIL_SUSUNAN, BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH), daftarSusunan)
     }
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
@@ -161,8 +166,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         Text("Koreksi kalender Hijriah: ${if (hijriCorr > 0) "+" else ""}$hijriCorr hari",
             style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { hijriCorr = (hijriCorr - 1).coerceAtLeast(-2); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("−") }
-            OutlinedButton(onClick = { hijriCorr = (hijriCorr + 1).coerceAtMost(2); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("+") }
+            // Batas koreksi dari aturan bersama (`BawaanPreferensi`), bukan angka yang diingat
+            // masing-masing tombol: tombol dan nilai bawaan tidak dapat berbeda pendapat lagi.
+            OutlinedButton(onClick = { hijriCorr = BawaanPreferensi.koreksiHijriah(hijriCorr - 1); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("−") }
+            OutlinedButton(onClick = { hijriCorr = BawaanPreferensi.koreksiHijriah(hijriCorr + 1); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("+") }
         }
         Text("Tanggal Hijriah dihitung tabular (perkiraan) dan dapat berselisih dengan isbat Kemenag; samakan dengan hasil sidang isbat lewat koreksi ini.",
             style = MaterialTheme.typography.labelSmall)

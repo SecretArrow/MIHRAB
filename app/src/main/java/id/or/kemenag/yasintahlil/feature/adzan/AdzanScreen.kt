@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.audio.AdzanPreview
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.DaftarSuaraAdzan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SuaraAdzan
@@ -104,15 +105,15 @@ fun AdzanScreen() {
 
     LaunchedEffect(Unit) {
         on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT))
-        uri = store.get(Store.ADZAN_URI, "")
-        sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, ""))
+        uri = store.get(Store.ADZAN_URI, BawaanPreferensi.BERKAS_ADZAN)
+        sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, BawaanPreferensi.DAFTAR_SUARA_ADZAN))
         vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
         preMin = PengingatAdzan.preMenit(
             store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT))
-        doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
+        doaReminder = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
-        showArab = store.get(Store.SHOW_ARAB, true)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
         lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
         lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)

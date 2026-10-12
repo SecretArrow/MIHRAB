@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
@@ -80,7 +81,7 @@ class KiblatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val useGps = store.get(Store.USE_GPS, false)
+            val useGps = store.get(Store.USE_GPS, BawaanPreferensi.LOKASI_DARI_GPS)
             val lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
             val lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
             _state.update {

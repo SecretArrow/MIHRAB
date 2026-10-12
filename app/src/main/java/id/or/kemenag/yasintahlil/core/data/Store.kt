@@ -97,12 +97,12 @@ class Store(private val ctx: Context) {
         ctx.ds.data.map { it[key] ?: def }
 
     suspend fun toggleFav(id: String) {
-        val cur = get(FAV, emptySet())
+        val cur = get(FAV, BawaanPreferensi.FAVORIT)
         set(FAV, if (cur.contains(id)) cur - id else cur + id)
     }
 
     suspend fun pushHist(id: String) {
-        val cur = get(HIST, "")
+        val cur = get(HIST, BawaanPreferensi.RIWAYAT)
         val items = (listOf("$id|${System.currentTimeMillis()}") + cur.split(";").filter { it.isNotBlank() }).take(50)
         set(HIST, items.joinToString(";"))
     }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
@@ -38,7 +39,7 @@ fun SholatScreen(go: (String) -> Unit) {
     // sedang dibuka tanpa berpindah ke layar Pencarian.
     var q by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
-        showArab = store.get(Store.SHOW_ARAB, true)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
     }
     val bacaan = remember { repo.sholatBacaan() }

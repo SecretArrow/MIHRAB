@@ -2,6 +2,7 @@ package id.or.kemenag.yasintahlil.navigation
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -21,6 +22,44 @@ import java.io.File
 class RuteKontenTest {
 
     private fun root(): File = listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
+
+    /**
+     * Kode sumber tanpa komentar (baris maupun blok); isi literal string dipertahankan.
+     *
+     * Pemeriksaan di kelas ini mencari potongan **kode** seperti `startsWith("yasin")`. KDoc yang
+     * menjelaskan pola lama itu memuat tulisan yang sama, dan penjelasan bukan pelanggaran —
+     * `BawaanPreferensiTest` memakai pemindaian tanpa komentar dengan alasan yang sama. String
+     * sengaja tidak dibuang supaya pencarian potongan berkutip tetap bekerja.
+     */
+    private fun kodeTanpaKomentar(teks: String): String {
+        val sb = StringBuilder()
+        var i = 0
+        var blok = 0
+        var teksString = false
+        while (i < teks.length) {
+            when {
+                blok > 0 -> if (teks.startsWith("*/", i)) { blok--; i += 2 } else i++
+                teksString -> {
+                    sb.append(teks[i])
+                    if (teks[i] == '\\' && i + 1 < teks.length) { sb.append(teks[i + 1]); i++ }
+                    else if (teks[i] == '"') teksString = false
+                    i++
+                }
+                teks.startsWith("//", i) -> {
+                    val akhir = teks.indexOf('\n', i)
+                    i = if (akhir < 0) teks.length else akhir
+                }
+                teks.startsWith("/*", i) -> { blok++; i += 2 }
+                teks.startsWith("\"\"\"", i) -> {
+                    val akhir = teks.indexOf("\"\"\"", i + 3)
+                    i = if (akhir < 0) teks.length else akhir + 3
+                }
+                teks[i] == '"' -> { teksString = true; sb.append(teks[i]); i++ }
+                else -> { sb.append(teks[i]); i++ }
+            }
+        }
+        return sb.toString()
+    }
 
     private fun berkasDzikir(): File =
         File(root(), "src/main/assets/content/dzikir.json")
@@ -103,11 +142,42 @@ class RuteKontenTest {
         assertTrue("rute tanpa nama tujuan: $tanpaNama", tanpaNama.isEmpty())
     }
 
+    /**
+     * Nilai `Store.LAST` berformat `kind:ref`. Beranda dahulu memutuskan tujuannya sendiri dengan
+     * `if (last.startsWith("yasin")) YASIN else FAVORIT`, sehingga setiap bacaan **Tahlil** terakhir
+     * membuka layar Favorit. Karena `Store.LAST` hanya pernah berisi `yasin:…` dan `tahlil:…`,
+     * pemeriksaan di sini memakai kedua bentuk yang benar-benar ditulis aplikasi itu.
+     */
+    @Test
+    fun ruteTerakhirMengikutiJenisnyaBukanMenebak() {
+        assertEquals(Routes.YASIN, RuteKonten.ruteTerakhir("yasin:58"))
+        assertEquals(Routes.TAHLIL, RuteKonten.ruteTerakhir("tahlil:taawudz"))
+        // Tanpa `:` pun harus tetap terbaca sebagai jenisnya.
+        assertEquals(Routes.YASIN, RuteKonten.ruteTerakhir("yasin"))
+        assertNull("nilai kosong seharusnya tidak menuju layar mana pun", RuteKonten.ruteTerakhir(""))
+        assertNull("jenis tak dikenal seharusnya tidak menebak layar",
+            RuteKonten.ruteTerakhir("entah:1"))
+    }
+
+    /**
+     * Beranda memakai pemetaan bersama yang sama dengan Favorit — bukan cabang `startsWith` sendiri
+     * yang mengirim bacaan Tahlil ke layar Favorit.
+     */
+    @Test
+    fun layarBerandaMemakaiPemetaanBersama() {
+        val layar = kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/home/HomeScreen.kt").readText())
+        assertTrue("HomeScreen tidak memakai RuteKonten untuk 'Terakhir dibaca'",
+            layar.contains("RuteKonten.ruteTerakhir("))
+        assertFalse("HomeScreen masih menebak tujuan dari awalan id bacaan",
+            layar.contains("startsWith(\"yasin\")"))
+    }
+
     /** Layar Favorit memakai pemetaan bersama, bukan daftar sendiri dengan fallback Beranda. */
     @Test
     fun layarFavoritMemakaiPemetaanBersama() {
-        val layar = File(root(),
-            "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText()
+        val layar = kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText())
         assertTrue("FavoritScreen tidak memakai RuteKonten", layar.contains("RuteKonten.rute("))
         assertTrue("FavoritScreen tidak membaca kelompok dzikir dari bundel konten",
             layar.contains("repo.dzikir()"))

@@ -3,6 +3,7 @@ package id.or.kemenag.yasintahlil.feature.yasin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.Surah
@@ -18,10 +19,12 @@ import javax.inject.Inject
 
 data class YasinUiState(
     val arabSize: Float = UkuranBacaan.ARAB_DEFAULT,
-    val showLatin: Boolean = true,
-    val showTrans: Boolean = true,
-    val showArab: Boolean = true,
-    val mark: Int = 0,
+    // Keadaan awal memakai bawaan yang sama dengan nilai yang dibaca dari preferensi; kalau tidak,
+    // bacaan sempat tampil dengan pengaturan lain sebelum DataStore selesai dibaca.
+    val showLatin: Boolean = BawaanPreferensi.TAMPIL_LATIN,
+    val showTrans: Boolean = BawaanPreferensi.TAMPIL_TERJEMAHAN,
+    val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
+    val mark: Int = BawaanPreferensi.PENANDA_YASIN,
     val bookmarks: List<BookmarkItem> = emptyList(),
 )
 
@@ -42,10 +45,10 @@ class YasinViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT),
-                    showLatin = store.get(Store.SHOW_LATIN, true),
-                    showTrans = store.get(Store.SHOW_TRANS, true),
-                    showArab = store.get(Store.SHOW_ARAB, true),
-                    mark = store.get(Store.YASIN_MARK, 0),
+                    showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN),
+                    showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN),
+                    showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB),
+                    mark = store.get(Store.YASIN_MARK, BawaanPreferensi.PENANDA_YASIN),
                 )
             }
         }

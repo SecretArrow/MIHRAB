@@ -380,6 +380,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **"Terakhir dibaca" di beranda membuka layar yang benar**: beranda memutuskan tujuannya sendiri
+  dengan `if (last.startsWith("yasin")) YASIN else FAVORIT`, sedangkan `Store.LAST` hanya pernah
+  berisi `yasin:…` dan `tahlil:…` — jadi membaca Tahlil lalu menekan **"Lanjutkan"** membuka layar
+  **Favorit**, bukan Tahlil. Layar Favorit sendiri sudah memetakan nilai yang sama dengan benar,
+  sehingga satu nilai punya dua jawaban berbeda. Kini keduanya memakai satu aturan di `RuteKonten`
+  (`ruteTerakhir`), tombol menampilkan nama layar tujuannya, dan jenis yang tidak punya layar
+  sendiri ditampilkan sebagai keterangan — bukan diarahkan ke layar lain. Dijaga `RuteKontenTest`.
+- **Bawaan preferensi kini satu rumah** (`BawaanPreferensi`): nilai bawaan ditulis ulang sebagai
+  literal di setiap tempat yang membaca preferensinya — `store.get(Store.SHOW_ARAB, true)` di
+  sebelas layar, `store.get(Store.NOTIF, true)` di empat berkas, batas koreksi Hijriah `-2`/`2` di
+  dua tombol. Preferensinya satu kunci, tetapi bawaannya bercabang: begitu satu layar mengubah
+  bawaannya, layar lain diam-diam tidak ikut berubah, dan pengguna yang belum pernah menyentuh
+  pengaturannya melihat perilaku berbeda di tiap layar — kerusakan yang pernah benar-benar terjadi
+  pada ukuran bacaan (`UkuranBacaan`). Seluruh bawaan kini ada di satu objek murni-tanpa-Android,
+  termasuk pembatas koreksi Hijriah (`koreksiHijriah`), dan **tidak satu pun nilai berubah** — ini
+  penggabungan salinan, bukan perubahan perilaku. `BawaanPreferensiTest` memindai seluruh
+  `app/src/main` dan gagal bila ada pembacaan preferensi yang membawa bawaannya sendiri sebagai
+  literal.
 - **`workflow_dispatch` pada alur rilis tidak lagi menerbitkan rilis palsu**: `release.yml`
   mendeklarasikan `workflow_dispatch`, tetapi langkah `softprops/action-gh-release` tidak punya
   pembatas ref — dan action itu menormalkan `github.ref_name` menjadi nama tag. Akibatnya menjalankan

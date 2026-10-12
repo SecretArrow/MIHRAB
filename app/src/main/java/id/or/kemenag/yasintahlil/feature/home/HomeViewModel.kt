@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
@@ -36,10 +37,10 @@ data class HomeUiState(
     val method: PrayerCalc.Method = PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT),
     val tzId: String = JadwalHariIni.TZ_DEFAULT,
     val corr: List<Int> = JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT),
-    val last: String = "",
-    val infoCard: Boolean = true,
-    val hijriCorr: Int = 0,
-    val notif: Boolean = true,
+    val last: String = BawaanPreferensi.TERAKHIR_DIBACA,
+    val infoCard: Boolean = BawaanPreferensi.KARTU_INFO,
+    val hijriCorr: Int = BawaanPreferensi.KOREKSI_HIJRIAH,
+    val notif: Boolean = BawaanPreferensi.PENGINGAT_WAKTU,
     val favCount: Int = 0,
     val histCount: Int = 0,
     /** Detak jam beranda — diperbarui tiap detik agar hitung mundur tetap hidup. */
@@ -66,10 +67,10 @@ class HomeViewModel @Inject constructor(
         alir(Store.METHOD, JadwalHariIni.METODE_DEFAULT) { s, v -> s.copy(method = PrayerCalc.Method.from(v)) }
         alir(Store.TZ, JadwalHariIni.TZ_DEFAULT) { s, v -> s.copy(tzId = v) }
         alir(Store.CORR, JadwalHariIni.CORR_DEFAULT) { s, v -> s.copy(corr = JadwalHariIni.parseCorr(v)) }
-        alir(Store.LAST, "") { s, v -> s.copy(last = v) }
-        alir(Store.INFO_CARD, true) { s, v -> s.copy(infoCard = v) }
-        alir(Store.HIJRI_CORR, 0) { s, v -> s.copy(hijriCorr = v) }
-        alir(Store.NOTIF, true) { s, v -> s.copy(notif = v) }
+        alir(Store.LAST, BawaanPreferensi.TERAKHIR_DIBACA) { s, v -> s.copy(last = v) }
+        alir(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO) { s, v -> s.copy(infoCard = v) }
+        alir(Store.HIJRI_CORR, BawaanPreferensi.KOREKSI_HIJRIAH) { s, v -> s.copy(hijriCorr = v) }
+        alir(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU) { s, v -> s.copy(notif = v) }
 
         // Ringkasan favorit & riwayat (Room) — ikut terbarui saat berubah di layar lain.
         viewModelScope.launch {

@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.ReminderWorker
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
@@ -73,8 +74,8 @@ object PrayerScheduler {
             on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT)),
             preMin = PengingatAdzan.preMenit(
                 store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT)),
-            doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
-            iqomahOn = store.get(Store.IQOMAH_ON, false),
+            doaReminder = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN),
+            iqomahOn = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH),
             iqomahMin = PengingatAdzan.iqomahMenit(
                 store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)),
         )
@@ -84,7 +85,7 @@ object PrayerScheduler {
     suspend fun scheduleAll(ctx: Context) {
         val store = Store(ctx)
         WorkManager.getInstance(ctx).cancelAllWorkByTag(TAG)
-        if (!store.get(Store.NOTIF, true)) return
+        if (!store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)) return
         val cfg = loadCfg(ctx)
         NAMES.forEachIndexed { i, n -> if (cfg.on.getOrElse(i) { true }) enqueueNext(ctx, cfg, n) }
     }
@@ -92,7 +93,7 @@ object PrayerScheduler {
     /** Jadwalkan kemunculan berikutnya untuk satu waktu sholat. Dipakai pekerja setelah ia berjalan. */
     suspend fun rescheduleOne(ctx: Context, nama: String) {
         val store = Store(ctx)
-        if (!store.get(Store.NOTIF, true)) return
+        if (!store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)) return
         val idx = NAMES.indexOf(nama)
         if (idx < 0) return
         val cfg = loadCfg(ctx)
