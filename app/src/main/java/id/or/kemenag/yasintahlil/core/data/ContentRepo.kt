@@ -416,17 +416,28 @@ class ContentRepo(private val ctx: Context) {
      * dan bukan hanya `sumber_url` tingkat berkas. Berkas yang menambahkan `sumber_tambahan`
      * (daftar URL per modul, mis. `sholat_ghaib.json`) karena itu ikut tampil: daftar ini harus
      * memuat setiap domain yang benar-benar dirujuk, sebab layar Tentang menjanjikan bahwa daftar
-     * itu "tidak dapat bertambah diam-diam". Berkas yang rusak dilewati tanpa membuat layar gagal.
+     * itu "tidak dapat bertambah diam-diam".
+     *
+     * Berkas yang rusak dahulu dilewati tanpa jejak (`mapNotNull { runCatching { doc(f) } … }`),
+     * sehingga daftar yang tampak lengkap bisa kehilangan domainnya. Kini berkas itu dicatat pada
+     * [SumberBundel.gagal] supaya layar Tentang dapat mengatakan bahwa daftarnya belum tentu utuh —
+     * janji "tidak bertambah diam-diam" hanya bermakna bila daftar itu juga tidak dapat *menyusut*
+     * diam-diam.
      */
-    fun sumberDipakai(): List<String> {
-        val berkas = runCatching { ctx.assets.list("content")?.toList() }.getOrNull() ?: return emptyList()
-        return berkas.asSequence()
-            .filter { it.endsWith(".json") }
-            .mapNotNull { f -> runCatching { doc(f) }.getOrNull() }
-            .flatMap { d -> ContentValidator.sumberUrl(d).asSequence() }
-            .mapNotNull { ContentValidator.hostOf(it) }
-            .distinct()
-            .sorted()
-            .toList()
+    fun sumberDipakai(): SumberBundel {
+        val berkas = runCatching { ctx.assets.list("content")?.toList() }.getOrNull()
+            ?: return SumberBundel(emptyList(), listOf("direktori content pada aset tidak dapat dibaca"))
+        val host = mutableListOf<String>()
+        val gagal = mutableListOf<String>()
+        berkas.filter { it.endsWith(".json") }.forEach { f ->
+            val d = runCatching { doc(f) }.getOrElse { e ->
+                gagal += "$f (${e.message ?: e::class.java.simpleName})"
+                return@forEach
+            }
+            ContentValidator.sumberUrl(d).forEach { url ->
+                ContentValidator.hostOf(url)?.let { host += it }
+            }
+        }
+        return SumberBundel(host.distinct().sorted(), gagal.sorted())
     }
 }

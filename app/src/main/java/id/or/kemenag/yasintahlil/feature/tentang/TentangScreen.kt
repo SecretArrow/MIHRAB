@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.data.SumberBundel
 import id.or.kemenag.yasintahlil.core.legal.Blok
 import id.or.kemenag.yasintahlil.core.legal.DokumenLegal
 import id.or.kemenag.yasintahlil.core.legal.MarkdownRingkas
@@ -31,13 +32,23 @@ import id.or.kemenag.yasintahlil.core.legal.SumberKonten
  * yang dibaca pengguna selalu sama dengan apa yang didokumentasikan di repositori. Sumber konten
  * pun dibaca dari **seluruh nilai bersumber** pada bundel — bukan dari daftar tetap, dan bukan
  * hanya `sumber_url` tingkat berkas, sehingga domain yang disebut `sumber_tambahan` ikut tampil
- * dan layar ini tidak dapat berbohong soal dari mana teksnya berasal.
+ * dan layar ini tidak dapat berbohong soal dari mana teksnya berasal. Bila sebuah berkas konten
+ * gagal dibaca, sebabnya ditampilkan di atas daftar: daftar yang menyusut tanpa keterangan sama
+ * menyesatkannya dengan daftar yang bertambah tanpa keterangan.
  */
 @Composable
 fun TentangScreen() {
     val ctx = LocalContext.current
     val repo = rememberRepo()
-    val sumber = remember(repo) { runCatching { repo.sumberDipakai() }.getOrDefault(emptyList()) }
+    // Kegagalan membaca bundel tidak ditelan menjadi daftar kosong: sebabnya dibawa ke layar lewat
+    // `bundel.gagal`, sebab daftar yang menyusut tanpa keterangan sama menyesatkannya dengan daftar
+    // yang bertambah tanpa keterangan.
+    val bundel = remember(repo) {
+        runCatching { repo.sumberDipakai() }.getOrElse { e ->
+            SumberBundel(emptyList(), listOf(e.message ?: e::class.java.simpleName))
+        }
+    }
+    val sumber = bundel.host
     val privasi = remember { DokumenLegal.baca(ctx, DokumenLegal.PRIVASI) }
     val izin = remember { DokumenLegal.baca(ctx, DokumenLegal.IZIN) }
     val lisensi = remember { DokumenLegal.baca(ctx, DokumenLegal.LISENSI) }
@@ -73,6 +84,16 @@ fun TentangScreen() {
             item {
                 Text("Daftar sumber tidak dapat dibaca di perangkat ini.",
                     style = MaterialTheme.typography.labelMedium)
+            }
+        }
+        // Berkas konten yang gagal dibaca dapat menyembunyikan domainnya dari daftar di bawah. Tanpa
+        // keterangan ini, daftar yang menyusut tampak sama dengan daftar yang lengkap.
+        if (!bundel.lengkap) {
+            item {
+                Text("Sebagian berkas konten tidak dapat dibaca, sehingga domain yang dirujuknya " +
+                        "belum tentu tercantum di bawah: ${bundel.gagal.joinToString("; ")}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error)
             }
         }
         items(sumber) { host ->

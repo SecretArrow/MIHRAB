@@ -143,9 +143,40 @@ class RuteKontenTest {
         val layar = KodeSumber.kodeTanpaKomentar(File(root(),
             "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText())
         assertTrue("FavoritScreen tidak memakai RuteKonten", layar.contains("RuteKonten.rute("))
-        assertTrue("FavoritScreen tidak membaca kelompok dzikir dari bundel konten",
-            layar.contains("repo.dzikir()"))
         assertTrue("FavoritScreen masih menyimpan fallback rute sendiri (Routes.HOME)",
             !layar.contains("Routes.HOME"))
+        // Id kelompok dzikir tetap harus berasal dari bundel konten — hanya tempat membacanya yang
+        // pindah ke ViewModel. Membacanya di layar dengan `getOrDefault(emptySet())` membuat
+        // kegagalan bundel menyamar sebagai "tujuan tidak dikenal"; lihat
+        // `kegagalanMembacaKelompokDzikirTidakDisamarkan`.
+        assertTrue("FavoritScreen tidak memakai kelompok dzikir dari keadaan layar",
+            layar.contains("s.grupDzikir"))
+    }
+
+    /**
+     * Kegagalan membaca kelompok dzikir dari bundel konten tidak boleh disamarkan.
+     *
+     * `FavoritScreen` dahulu membaca `repo.dzikir()` sendiri dan menelan kegagalannya menjadi
+     * himpunan kosong. Akibatnya bundel konten yang bermasalah membuat setiap baris favorit/riwayat
+     * **dzikir** menampilkan *"Layar tujuan tidak dikenal"* — padahal tujuannya memang dikenal
+     * (layar Dzikir & Doa); yang gagal adalah mengenali id kelompoknya. Pengguna menyimpulkan
+     * isinya hilang. Id kelompok kini dibaca `FavoritViewModel` dan sebab kegagalannya dibawa ke
+     * layar lewat `dzikirGagal`, sama seperti `kotaGagal` pada layar Jadwal.
+     */
+    @Test
+    fun kegagalanMembacaKelompokDzikirTidakDisamarkan() {
+        val vm = KodeSumber.kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritViewModel.kt").readText())
+        assertTrue("FavoritViewModel tidak membaca kelompok dzikir dari bundel konten",
+            vm.contains("repo.dzikir()"))
+        assertTrue("sebab kegagalan membaca kelompok dzikir tidak dibawa ke keadaan layar",
+            vm.contains("dzikirGagal"))
+
+        val layar = KodeSumber.kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText())
+        assertTrue("layar tidak menampilkan sebab kegagalan membaca kelompok dzikir",
+            layar.contains("s.dzikirGagal"))
+        assertFalse("layar masih membaca sendiri bundel konten dan menelan kegagalannya",
+            layar.contains("repo.dzikir()"))
     }
 }
