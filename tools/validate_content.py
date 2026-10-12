@@ -67,6 +67,86 @@ ALLOWED_HOSTS = load_allowed_hosts()
 ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 
 
+# --- Aturan bundel yang dibaca dari sumber Kotlin -------------------------------------------
+#
+# Sebagian aturan bundel dipakai dua kali: oleh aplikasi saat memasang bundel yang dipilih pengguna
+# sendiri, dan oleh gate CI. Dahulu keduanya menyimpan salinannya masing-masing — satu di Kotlin,
+# satu di Python — dan tak ada apa pun yang membandingkannya. Dua salinan berarti dua kebijakan,
+# dan bedanya sunyi: bundel yang lolos gate dapat ditolak aplikasi saat dipasang (pembaruan tampak
+# berhasil tetapi tidak mengubah apa pun), atau sebaliknya prosa penunjuk yang seharusnya ditolak
+# lolos sampai **ditampilkan kepada pengguna sebagai bacaan** — tepat yang dilarang aturan
+# "jangan karang teks agama".
+#
+# Karena itu gate **membaca** nilainya dari `BundelKonten.kt` alih-alih menyimpannya. Pola
+# pengambilnya ditulis persis sama di penjaga Kotlin (`AturanBundelSatuTempatTest`), sehingga pola
+# yang berbeda antar-keduanya tidak dapat lolos tanpa ketahuan.
+
+BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+                 / "yasintahlil" / "core" / "data" / "BundelKonten.kt")
+
+# Literal string Kotlin, termasuk escape di dalamnya (`"\\"`), supaya `PEMISAH_NAMA_DILARANG`
+# yang memuat garis miring terbalik pun terbaca utuh.
+_TEKS_KOTLIN = r'"((?:[^"\\]|\\.)*)"'
+_ESCAPE_KOTLIN = {"\\": "\\", '"': '"', "n": "\n", "t": "\t", "r": "\r"}
+
+
+def _unescape_kotlin(teks: str) -> str:
+    """Isi literal string Kotlin → teks sebenarnya (`\\\\` → `\\`, `\\"` → `"`)."""
+    keluar: list[str] = []
+    i = 0
+    while i < len(teks):
+        if teks[i] == "\\" and i + 1 < len(teks):
+            keluar.append(_ESCAPE_KOTLIN.get(teks[i + 1], teks[i + 1]))
+            i += 2
+        else:
+            keluar.append(teks[i])
+            i += 1
+    return "".join(keluar)
+
+
+def _cari(sumber: str, pola: str, nama: str) -> str:
+    m = re.search(pola, sumber)
+    if not m:
+        raise SystemExit(f"[validate_content] '{nama}' tidak ditemukan di {BUNDEL_KONTEN}")
+    return m.group(1)
+
+
+def baca_teks(sumber: str, nama: str) -> str:
+    """Nilai `const val <nama> = "…"` pada sumber Kotlin."""
+    return _unescape_kotlin(_cari(sumber, rf"\b{nama}\s*=\s*{_TEKS_KOTLIN}", nama))
+
+
+def baca_angka(sumber: str, nama: str) -> int:
+    """Nilai `const val <nama> = 1` pada sumber Kotlin."""
+    return int(_cari(sumber, rf"\b{nama}\s*=\s*(\d+)", nama))
+
+
+def baca_daftar_teks(sumber: str, nama: str) -> list[str]:
+    """Nilai `val <nama> = listOf("a", "b")` pada sumber Kotlin."""
+    isi = _cari(sumber, rf"\b{nama}\s*=\s*listOf\(([^)]*)\)", nama)
+    return [_unescape_kotlin(t) for t in re.findall(_TEKS_KOTLIN, isi)]
+
+
+def _sumber_bundel() -> str:
+    """Isi `BundelKonten.kt`. Sengaja **gagal keras** bila tidak terbaca: gate yang diam-diam
+    memakai nilai bawaan akan meloloskan berkas yang seharusnya ditolak."""
+    try:
+        return BUNDEL_KONTEN.read_text(encoding="utf-8")
+    except OSError as e:
+        raise SystemExit(f"[validate_content] tidak dapat membaca {BUNDEL_KONTEN}: {e}")
+
+
+SUMBER_BUNDEL = _sumber_bundel()
+
+# Aturan nama berkas konten — dipakai `tools/validate_bundle.py` lewat modul ini.
+PANJANG_NAMA_MIN = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MIN")
+PANJANG_NAMA_MAKS = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MAKS")
+AKHIRAN_NAMA = baca_teks(SUMBER_BUNDEL, "AKHIRAN_NAMA")
+AWALAN_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "AWALAN_NAMA_DILARANG")
+PEMISAH_NAMA_DILARANG = baca_daftar_teks(SUMBER_BUNDEL, "PEMISAH_NAMA_DILARANG")
+PLACEHOLDER_MARKERS = tuple(baca_daftar_teks(SUMBER_BUNDEL, "PLACEHOLDER"))
+
+
 def host_allowed(host: str) -> bool:
     host = (host or "").lower()
     return any(host == h or host.endswith("." + h) for h in ALLOWED_HOSTS)
@@ -160,16 +240,13 @@ def check_schema(name: str, data) -> list[str]:
     return errs
 
 
-PLACEHOLDER_MARKERS = (
-    "lihat rujukan file", "lihat rujukan berkas", "dibaca penuh dari mushaf",
-    "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
-)
-
-
 def check_placeholders(name: str, node, where="") -> list[str]:
     """Teks Arab/Latin tidak boleh berisi prosa penunjuk (placeholder) — lihat plan.txt:
     'Jangan menghasilkan teks Arab secara acak atau merekonstruksi bacaan yang belum
-    diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya."""
+    diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya.
+
+    Daftar prosanya ada di `PLACEHOLDER_MARKERS`, dibaca dari `BundelKonten.PLACEHOLDER` — lihat
+    catatan di bagian atas berkas ini."""
     errs: list[str] = []
     if isinstance(node, dict):
         for k, v in node.items():

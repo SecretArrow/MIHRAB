@@ -38,7 +38,11 @@ import org.json.JSONObject
  */
 object BundelKonten {
 
-    /** Versi skema bundel yang dipahami aplikasi ini. */
+    /**
+     * Versi skema bundel yang dipahami aplikasi ini. Gate CI (`tools/validate_bundle.py`)
+     * **membacanya dari sini** alih-alih menyimpan salinannya — lihat catatan di
+     * [PANJANG_NAMA_MIN].
+     */
     const val SKEMA = 1
 
     /** Kunci metadata tingkat bundel. */
@@ -48,13 +52,52 @@ object BundelKonten {
     const val KUNCI_BERKAS = "berkas"
 
     /**
-     * Prosa penunjuk yang tidak boleh muncul di field `arab`/`latin` — sama persis dengan
-     * `PLACEHOLDER_MARKERS` di `tools/validate_content.py`.
+     * Prosa penunjuk yang tidak boleh muncul di field `arab`/`latin`.
+     *
+     * Daftarnya tinggal **di sini saja**. Gate CI (`tools/validate_content.py`) membacanya dari
+     * berkas ini, persis seperti [ContentValidator.allowedHosts] — karena keduanya menilai bundel
+     * yang sama dan tidak boleh punya dua kebijakan. Bila salinannya berbeda, bundel yang lolos CI
+     * dapat ditolak aplikasi saat dipasang (pembaruan tampak berhasil tetapi tidak mengubah apa pun),
+     * atau sebaliknya: prosa penunjuk seperti *"lihat rujukan file"* lolos pemasangan dan
+     * **ditampilkan kepada pengguna sebagai bacaan** — tepat yang dilarang aturan "jangan karang
+     * teks agama". Dijaga `AturanBundelSatuTempatTest`.
      */
     val PLACEHOLDER = listOf(
         "lihat rujukan file", "lihat rujukan berkas", "dibaca penuh dari mushaf",
         "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
     )
+
+    // ---- Aturan nama berkas --------------------------------------------------------------------
+    //
+    // Nilai-nilainya dinyatakan sebagai data di sini, bukan disebar di dalam badan
+    // [namaBerkasSah], karena gate CI **membacanya dari berkas ini**. `tools/validate_bundle.py`
+    // dahulu menuliskan ulang seluruh aturannya sebagai fungsi `nama_berkas_sah` tersendiri —
+    // batas `6`, batas `64`, akhiran `.json`, awalan terlarang, dan pemisah jalur — dan tak ada
+    // apa pun yang membandingkan keduanya. Dua salinan berarti dua kebijakan: nama berkas yang lolos
+    // gate dapat ditolak aplikasi saat dipasang (bundel tampak "terpasang" tetapi ditolak **utuh**,
+    // karena satu nama yang ditolak membatalkan seluruh bundel), atau sebaliknya nama yang
+    // sebenarnya berbahaya lolos gate lalu baru ditolak di perangkat pengguna.
+    //
+    // Karena itu skrip Python membaca nama-nama konstanta di bawah, persis seperti
+    // `ContentValidator.allowedHosts` dibaca gate konten. Dijaga `AturanBundelSatuTempatTest`.
+
+    /** Panjang nama berkas konten yang sah, dalam karakter. */
+    const val PANJANG_NAMA_MIN = 6
+    const val PANJANG_NAMA_MAKS = 64
+
+    /** Akhiran wajib nama berkas konten. */
+    const val AKHIRAN_NAMA = ".json"
+
+    /**
+     * Awalan yang tidak boleh dipakai nama berkas konten.
+     *
+     * Titik menyembunyikan berkas, dan garis bawah disisihkan untuk berkas internal (mis. metadata
+     * pembaruan) agar tidak bisa ditimpa oleh isi bundel.
+     */
+    val AWALAN_NAMA_DILARANG = listOf(".", "_")
+
+    /** Pemisah jalur, supaya nama berkas tidak dapat menunjuk ke luar direktori konten. */
+    val PEMISAH_NAMA_DILARANG = listOf("/", "\\", ":")
 
     private val ARAB = Regex("[\\u0600-\\u06FF\\u0750-\\u077F]+")
 
@@ -80,13 +123,14 @@ object BundelKonten {
     }
 
     /**
-     * Nama berkas yang boleh masuk ke direktori konten: `*.json` polos tanpa pemisah direktori,
-     * tanpa awalan titik, dan tanpa awalan garis bawah — awalan `_` disisihkan untuk berkas
-     * internal (mis. metadata pembaruan) agar tidak bisa ditimpa oleh isi bundel.
+     * Nama berkas yang boleh masuk ke direktori konten — aturannya ada pada konstanta di atas,
+     * supaya gate CI membaca nilai yang sama alih-alih menyimpan salinannya.
      */
     fun namaBerkasSah(nama: String): Boolean =
-        nama.length in 6..64 && nama.endsWith(".json") && !nama.startsWith(".") &&
-            !nama.startsWith("_") && nama.none { it == '/' || it == '\\' || it == ':' }
+        nama.length in PANJANG_NAMA_MIN..PANJANG_NAMA_MAKS &&
+            nama.endsWith(AKHIRAN_NAMA) &&
+            AWALAN_NAMA_DILARANG.none { nama.startsWith(it) } &&
+            PEMISAH_NAMA_DILARANG.none { nama.contains(it) }
 
     /**
      * Baca dan periksa sebuah bundel. JSON yang tidak sah tidak melempar keluar: sebabnya

@@ -29,18 +29,25 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import validate_content as vc  # noqa: E402
 
-SKEMA = 1
-PANJANG_NAMA_MAKS = 64
+# Versi skema dan aturan nama berkas — **dibaca** dari `BundelKonten.kt` lewat `validate_content`,
+# bukan disimpan di sini. Lihat catatan panjang di bagian atas `tools/validate_content.py`.
+SKEMA = vc.baca_angka(vc.SUMBER_BUNDEL, "SKEMA")
 
 
 def nama_berkas_sah(nama: str) -> bool:
-    """Sama dengan `BundelKonten.namaBerkasSah` di aplikasi."""
+    """Aturan nama berkas bundel, nilainya dibaca dari `BundelKonten.namaBerkasSah`.
+
+    Bentuk pemeriksaannya sengaja tetap sejajar dengan `BundelKonten.namaBerkasSah` — rentang
+    panjang, akhiran wajib, awalan terlarang, pemisah jalur. Yang tidak boleh lagi ada di sini
+    adalah **nilainya** (`6`, `64`, `".json"`, awalan, pemisah): itulah yang dahulu disalin ke
+    fungsi ini dan dapat menyimpang tanpa ketahuan, sebab tak ada bundel contoh yang namanya cacat
+    sehingga gate tak pernah menyentuh aturan ini.
+    """
     return (
-        6 <= len(nama) <= PANJANG_NAMA_MAKS
-        and nama.endswith(".json")
-        and not nama.startswith(".")
-        and not nama.startswith("_")
-        and not any(c in nama for c in "/\\:")
+        vc.PANJANG_NAMA_MIN <= len(nama) <= vc.PANJANG_NAMA_MAKS
+        and nama.endswith(vc.AKHIRAN_NAMA)
+        and not any(nama.startswith(a) for a in vc.AWALAN_NAMA_DILARANG)
+        and not any(p in nama for p in vc.PEMISAH_NAMA_DILARANG)
     )
 
 
