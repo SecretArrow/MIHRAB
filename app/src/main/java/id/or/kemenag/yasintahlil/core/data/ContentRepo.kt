@@ -77,9 +77,28 @@ class ContentRepo(private val ctx: Context) {
 
     val yasin: Surah get() = surah("yasin_full.json")
 
+    /**
+     * Teks Arab/Latin/terjemahan dari sebuah berkas rujukan.
+     *
+     * Nama berkas boleh diikuti `#id` untuk menunjuk **satu entri** di dalam berkas yang memuat
+     * daftar (`bagian` pada tahlil, `bacaan` pada bacaan sholat), mis.
+     * `sholat_mayit.json#doa_mayit`. Dengan begitu teks yang sama dapat dipakai di beberapa modul
+     * tanpa disalin ulang — salinan yang menyimpang adalah cara paling halus untuk membuat dua
+     * bacaan berbeda dari satu sumber yang sama.
+     */
     fun resolveArabLatinTerjemah(rujukanFile: String?): Triple<String, String, String> {
-        if (rujukanFile == null) return Triple("", "", "")
-        val d = doc(rujukanFile)
+        if (rujukanFile.isNullOrBlank()) return Triple("", "", "")
+        val pisah = rujukanFile.split("#", limit = 2)
+        val nama = pisah[0].trim()
+        if (nama.isBlank()) return Triple("", "", "")
+        val d = doc(nama)
+        val id = pisah.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }
+        if (id != null) {
+            val arr = d.optJSONArray("bagian") ?: d.optJSONArray("bacaan") ?: return Triple("", "", "")
+            val o = (0 until arr.length()).map { arr.getJSONObject(it) }
+                .firstOrNull { it.optString("id") == id } ?: return Triple("", "", "")
+            return Triple(o.optString("arab"), o.optString("latin"), o.optString("terjemahan"))
+        }
         return if (d.has("verses")) {
             val arr = d.getJSONArray("verses")
             Triple(

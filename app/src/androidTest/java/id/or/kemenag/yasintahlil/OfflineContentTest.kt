@@ -50,6 +50,19 @@ class OfflineContentTest {
         assertTrue(arab.isNotBlank() && latin.isNotBlank() && terjemahan.isNotBlank())
     }
 
+    /**
+     * Setiap entri dzikir harus benar-benar menghasilkan teks — termasuk entri yang hanya
+     * menunjuk berkas rujukan (`berkas#id`). Rujukan yang salah ketik tidak melempar galat; ia
+     * hanya tampil sebagai kartu kosong di layar, jadi jalur ini diuji pada konten sungguhan.
+     */
+    @Test
+    fun setiapEntriDzikirMenghasilkanTeksLengkap() {
+        val kosong = repo.dzikir().flatMap { g -> g.items.map { "${g.id}:${it.judul}" to it } }
+            .filter { (_, it) -> it.arab.isBlank() || it.latin.isBlank() || it.terjemahan.isBlank() }
+            .map { it.first }
+        assertTrue("entri dzikir tanpa teks lengkap: $kosong", kosong.isEmpty())
+    }
+
     /** Setiap susunan tahlil hanya boleh merujuk bagian yang benar-benar ada. */
     @Test
     fun susunanTahlilHanyaMerujukBagianYangAda() {

@@ -211,6 +211,22 @@
     }
    ],
    "judul": "Doa harian"
+  },
+  {
+   "id": "doa_khusus",
+   "judul": "Doa khusus",
+   "items": [
+    {
+     "judul": "Doa untuk orang yang meninggal",
+     "rujukan_file": "sholat_mayit.json#doa_mayit",
+     "sumber": "HR Muslim — sunnah.com"
+    },
+    {
+     "judul": "Doa tambahan untuk jenazah",
+     "rujukan_file": "sholat_mayit.json#doa_mayit_tambahan",
+     "sumber": "HR Tirmidzi, Ibnu Majah — sunnah.com"
+    }
+   ]
   }
  ],
  "sumber_url": "https://sunnah.com/",

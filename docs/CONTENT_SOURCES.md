@@ -83,7 +83,10 @@ manusia dari sumber resmi.
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum
 > tersedia, entri ditandai `catatan_verifikasi` dan dibiarkan apa adanya, bukan dikarang.
 > Doa untuk orang yang meninggal dan doa ampunan sudah tersedia (modul Tahlil, sholat
-> jenazah/ghaib, serta Istighfar/Sayyidul Istighfar di `dzikir.json`).
+> jenazah/ghaib, serta Istighfar/Sayyidul Istighfar di `dzikir.json`). Sejak kelompok
+> **"Doa khusus"** ditambahkan, doa jenazah juga tampil sebagai entri tersendiri di pustaka
+> dzikir — tetapi **tidak disalin**: entri itu menunjuk `sholat_mayit.json#doa_mayit`, sehingga
+> hanya ada satu salinan teks yang terverifikasi di seluruh aplikasi.
 >
 > **Doa masuk rumah** disertakan beserta derajat hadisnya (daif menurut Al-Albani) secara
 > terbuka pada field `sumber`, agar pengguna dapat menilai sendiri — bukan disembunyikan.

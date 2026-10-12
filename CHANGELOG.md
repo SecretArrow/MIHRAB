@@ -6,6 +6,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Doa untuk orang yang meninggal di pustaka dzikir** (`plan.txt` §"Pustaka Doa dan Dzikir":
+  *"Doa untuk orang yang meninggal"*): layar Dzikir & Doa kini punya kelompok **"Doa khusus"**
+  berisi doa jenazah (takbir ke-3) dan doa tambahannya (takbir ke-4), yang sebelumnya hanya dapat
+  dibaca di dalam alur sholat jenazah/ghaib. Teksnya **tidak disalin**: entri itu menunjuk berkas
+  rujukan (`sholat_mayit.json#doa_mayit`), sehingga hanya ada satu salinan teks terverifikasi di
+  seluruh aplikasi dan tidak mungkin ada dua bacaan berbeda dari satu sumber. Resolusi rujukan
+  `berkas#id` diperluas ke daftar `bacaan` (sebelumnya hanya `bagian` pada tahlil), dan dijaga dua
+  uji: satu memastikan rujukan tidak menjadi tautan mati atau salinan teks, satu lagi memastikan
+  setiap entri dzikir benar-benar menghasilkan teks pada konten sungguhan.
 - **Tema halaman bacaan** (`plan.txt`: *"Pengaturan jarak antarbaris dan tema halaman"*): bottom
   sheet pengaturan bacaan kini punya pilihan **Ikut tema / Krem / Gelap** yang mengubah "kertas"
   halaman bacaan — krem gading dengan tinta cokelat, atau halaman gelap — terlepas dari tema
