@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Skema posisi duduk akhir (tawarruk): pantat menyentuh lantai, kaki kiri dimasukkan
+  ke bawah kaki kanan sehingga kaki terlipat rata di lantai. Pembeda dari
+  posisi_duduk.xml (iftirasy, duduk di atas kaki kiri yang terlipat) hanyalah letak
+  kaki terlipat itu — karena itu skemanya digambar terpisah, bukan dipakai bersama.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- kepala -->
+    <path
+        android:pathData="M42,28 a8,8 0 1 0 16,0 a8,8 0 1 0 -16,0 z"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- badan turun sampai pantat menyentuh lantai -->
+    <path
+        android:pathData="M50,36 L50,84"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- paha ke depan lalu betis terlipat rata di lantai -->
+    <path
+        android:pathData="M50,76 L70,82 M70,82 L50,86"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- kedua tangan di atas paha -->
+    <path
+        android:pathData="M50,42 L64,72 M50,44 L58,74"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="4.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- garis lantai -->
+    <path
+        android:pathData="M14,88 L86,88"
+        android:fillColor="#00000000"
+        android:strokeColor="#0B7A55"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

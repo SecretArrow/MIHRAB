@@ -66,6 +66,17 @@
    "terjemahan": "Allah mendengar orang yang memuji-Nya. Wahai Tuhan kami, bagi-Mu segala puji sepenuh langit dan sepenuh bumi dan sepenuh apa yang Engkau kehendaki setelah itu."
   },
   {
+   "arab": "اَللّٰهُمَّ اهْدِنِيْ فِيْمَنْ هَدَيْتَ وَعَافِنِيْ فِيْمَنْ عَافَيْتَ وَتَوَلَّنِيْ فِيْمَنْ تَوَلَّيْتَ وَبَارِكْ لِيْ فِيْمَا أَعْطَيْتَ وَقِنِيْ شَرَّ مَا قَضَيْتَ فَإِنَّكَ تَقْضِيْ وَلَا يُقْضَى عَلَيْكَ وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ وَلَا يَعِزُّ مَنْ عَادَيْتَ تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ",
+   "id": "qunut",
+   "judul": "Doa qunut Subuh",
+   "kapan": "Rakaat kedua Subuh setelah i'tidal (Syafi'i; ada perbedaan — lihat catatan mazhab)",
+   "latin": "Allahummahdini fiman hadait, wa 'afini fiman 'afait, wa tawallani fiman tawallait, wa barik li fima a'thait, wa qini syarra ma qadhait. Fa innaka taqdhi wa la yuqdho 'alaik. Wa innahu la yadzillu maw walait, wa la ya'izzu man 'adait. Tabarakta rabbana wa ta'alait.",
+   "sumber": "HR Abu Dawud, Tirmidzi, Nasa'i — sunnah.com",
+   "mazhab": "syafii",
+   "sholat": ["subuh"],
+   "terjemahan": "Ya Allah, berilah aku petunjuk sebagaimana orang yang telah Engkau beri petunjuk, sehatkanlah aku sebagaimana orang yang telah Engkau sehatkan, pimpinlah aku sebagaimana orang yang telah Engkau pimpin, berkahilah apa yang telah Engkau berikan kepadaku, dan lindungilah aku dari keburukan apa yang telah Engkau tetapkan. Sesungguhnya Engkau yang menetapkan dan tidak ada yang menetapkan atas-Mu. Sesungguhnya tidak akan hina orang yang Engkau jadikan wali, dan tidak akan mulia orang yang Engkau musuhi. Maha Berkah Engkau wahai Tuhan kami dan Maha Tinggi."
+  },
+  {
    "arab": "سُبْحَانَ رَبِّيَ الْأَعْلَى وَبِحَمْدِهِ",
    "id": "sujud",
    "judul": "Bacaan sujud",
@@ -84,10 +95,17 @@
    "terjemahan": "Wahai Tuhanku, ampunilah aku, rahmatilah aku, cukupilah aku, angkatlah derajatku, berilah aku rezeki, berilah aku petunjuk, sehatkanlah aku dan maafkanlah aku."
   },
   {
+   "id": "tasyahud_awal",
+   "judul": "Tasyahud awal",
+   "kapan": "Rakaat kedua sholat yang lebih dari dua rakaat (duduk iftirasy); pada sholat dua rakaat tidak ada tasyahud awal",
+   "rujukan_file": "sholat_bacaan.json#tasyahud_akhir",
+   "sumber": "HR Muslim — sunnah.com"
+  },
+  {
    "arab": "اَلتَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلّٰهِ. اَلسَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ. اَلسَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللهِ الصَّالِحِيْنَ. أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُوْلُ اللهِ",
-   "id": "tasyahud",
-   "judul": "Tasyahud (awal & akhir)",
-   "kapan": "Duduk tasyahud awal (iftirasy) / akhir (tawarruk)",
+   "id": "tasyahud_akhir",
+   "judul": "Tasyahud akhir",
+   "kapan": "Rakaat terakhir setiap sholat, dilanjutkan sholawat Ibrahimiyah lalu salam",
    "latin": "Attahiyyatul mubarakatush shalawatuth thayyibatu lillah. Assalamu 'alaika ayyuhan nabiyyu wa rahmatullahi wa barakatuh. Assalamu 'alaina wa 'ala 'ibadillahish shalihin. Asyhadu alla ilaha illallah wa asyhadu anna Muhammadar rasulullah.",
    "sumber": "HR Muslim — sunnah.com",
    "terjemahan": "Segala penghormatan yang penuh berkah, sholawat dan kebaikan hanyalah bagi Allah. Semoga keselamatan atasmu wahai Nabi, beserta rahmat Allah dan berkah-Nya. Semoga keselamatan atas kami dan atas hamba-hamba Allah yang saleh. Aku bersaksi tidak ada tuhan selain Allah dan aku bersaksi bahwa Muhammad adalah utusan Allah."
@@ -100,17 +118,6 @@
    "latin": "Allahumma shalli 'ala Muhammad wa 'ala ali Muhammad kama shallaita 'ala Ibrahima wa 'ala ali Ibrahima, wa barik 'ala Muhammad wa 'ala ali Muhammad kama barakta 'ala Ibrahima wa 'ala ali Ibrahima fil 'alamina innaka hamidum majid.",
    "sumber": "HR Bukhari-Muslim — sunnah.com",
    "terjemahan": "Ya Allah, limpahkanlah sholawat kepada Muhammad dan keluarga Muhammad sebagaimana Engkau melimpahkan sholawat kepada Ibrahim dan keluarga Ibrahim, dan limpahkanlah berkah kepada Muhammad dan keluarga Muhammad sebagaimana Engkau melimpahkan berkah kepada Ibrahim dan keluarga Ibrahim di seluruh alam. Sesungguhnya Engkau Maha Terpuji lagi Maha Mulia."
-  },
-  {
-   "arab": "اَللّٰهُمَّ اهْدِنِيْ فِيْمَنْ هَدَيْتَ وَعَافِنِيْ فِيْمَنْ عَافَيْتَ وَتَوَلَّنِيْ فِيْمَنْ تَوَلَّيْتَ وَبَارِكْ لِيْ فِيْمَا أَعْطَيْتَ وَقِنِيْ شَرَّ مَا قَضَيْتَ فَإِنَّكَ تَقْضِيْ وَلَا يُقْضَى عَلَيْكَ وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ وَلَا يَعِزُّ مَنْ عَادَيْتَ تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ",
-   "id": "qunut",
-   "judul": "Doa qunut Subuh",
-   "kapan": "Rakaat kedua Subuh setelah i'tidal (Syafi'i; ada perbedaan — lihat catatan mazhab)",
-   "latin": "Allahummahdini fiman hadait, wa 'afini fiman 'afait, wa tawallani fiman tawallait, wa barik li fima a'thait, wa qini syarra ma qadhait. Fa innaka taqdhi wa la yuqdho 'alaik. Wa innahu la yadzillu maw walait, wa la ya'izzu man 'adait. Tabarakta rabbana wa ta'alait.",
-   "sumber": "HR Abu Dawud, Tirmidzi, Nasa'i — sunnah.com",
-   "mazhab": "syafii",
-   "sholat": ["subuh"],
-   "terjemahan": "Ya Allah, berilah aku petunjuk sebagaimana orang yang telah Engkau beri petunjuk, sehatkanlah aku sebagaimana orang yang telah Engkau sehatkan, pimpinlah aku sebagaimana orang yang telah Engkau pimpin, berkahilah apa yang telah Engkau berikan kepadaku, dan lindungilah aku dari keburukan apa yang telah Engkau tetapkan. Sesungguhnya Engkau yang menetapkan dan tidak ada yang menetapkan atas-Mu. Sesungguhnya tidak akan hina orang yang Engkau jadikan wali, dan tidak akan mulia orang yang Engkau musuhi. Maha Berkah Engkau wahai Tuhan kami dan Maha Tinggi."
   },
   {
    "arab": "اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ",

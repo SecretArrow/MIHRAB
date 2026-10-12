@@ -6,6 +6,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Tasyahud awal dan tasyahud akhir sebagai dua langkah tersendiri** (`plan.txt` §"Tata Cara Sholat
+  Langkah demi Langkah" mendaftar *"Tasyahud awal **jika relevan**"* dan *"Tasyahud akhir"* sebagai
+  dua langkah): dulu keduanya satu entri "Tasyahud (awal & akhir)", sehingga pengguna yang
+  mengikuti tombol "Berikutnya" tidak pernah diberi tahu bahwa tasyahud awal hanya ada pada sholat
+  lebih dari dua rakaat. Kini masing-masing punya keterangan waktunya sendiri, dan mode **Ringkas**
+  sengaja melewati tasyahud awal karena ringkasan harus berlaku untuk semua sholat. Pemisahan ini
+  **tidak menambah satu pun teks Arab baru**: entri `tasyahud_awal` hanya merujuk lafaz yang sudah
+  ada lewat `rujukan_file` (`sholat_bacaan.json#tasyahud_akhir`), mekanisme yang sama yang dipakai
+  `niat` dan `fatihah`. Ilustrasi posisinya juga dipisah: duduk akhir punya skema **tawarruk**
+  sendiri (`posisi_duduk_akhir.xml`) dengan deskripsi yang menyebut kedua bentuk duduk menurut
+  jumlah rakaat, karena sebelumnya langkah tasyahud akhir menampilkan skema **iftirasy** — yang
+  justru bukan bentuk duduk akhir pada sholat tiga/empat rakaat. Sholawat Ibrahimiyah ikut
+  dipetakan ke duduk akhir, bukan duduk iftirasy.
 - **Pengingat waktu iqomah yang tertambat pada pengingat masuk waktu** (`plan.txt` §"Fitur
   Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat masuk waktu sholat. Fitur
   ini hanya berfungsi sebagai pengingat pribadi dan tidak boleh menganggap waktu Iqomah sama di
@@ -250,6 +263,10 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Doa qunut terletak setelah i'tidal pada daftar langkah**: entri qunut berdiri di antara sholawat
+  Ibrahimiyah dan salam — bertentangan dengan keterangan waktunya sendiri ("Rakaat kedua Subuh
+  setelah i'tidal"), sehingga pembaca yang menekan "Berikutnya" sampai ke qunut justru setelah
+  tasyahud. Daftar langkah dibaca berurutan, jadi letaknya kini mengikuti gerakannya.
 - **Pengingat setelah waktu masuk tidak lagi membatalkan dirinya sendiri**: pekerja adzan, begitu
   berbunyi, menjadwalkan ulang dirinya untuk kemunculan berikutnya — dan penjadwalan ulang itu
   ikut mengantrekan pekerjaan susulan (pengingat doa, dan kini iqomah) dengan **nama unik yang

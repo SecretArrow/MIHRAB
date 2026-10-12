@@ -40,7 +40,10 @@ fun SholatDetailScreen(id: String) {
     // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i)
     // dan cakupan sholat (mis. qunut hanya untuk Subuh).
     val steps = remember(ringkas, mazhab, id) {
-        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "surat_setelah_fatihah", "rukuk", "sujud", "tasyahud", "salam") }
+        // Mode ringkas memuat langkah pokok saja. Tasyahud awal sengaja tidak ikut: ia hanya
+        // relevan pada sholat lebih dari dua rakaat, sedangkan ringkasan harus berlaku untuk
+        // semua sholat. Keduanya langkah tersendiri — lihat `tasyahud_awal` dan `tasyahud_akhir`.
+        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "surat_setelah_fatihah", "rukuk", "sujud", "tasyahud_akhir", "salam") }
         else bacaan
         base.filter {
             (it.mazhab == null || it.mazhab == mazhab) &&

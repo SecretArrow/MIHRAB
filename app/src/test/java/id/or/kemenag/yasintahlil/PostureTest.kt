@@ -44,7 +44,7 @@ class PostureTest {
     fun berkas_skema_posisi_tersedia() {
         listOf(
             "posisi_berdiri", "posisi_takbir", "posisi_rukuk",
-            "posisi_sujud", "posisi_duduk", "posisi_salam",
+            "posisi_sujud", "posisi_duduk", "posisi_duduk_akhir", "posisi_salam",
         ).forEach { nama ->
             val f = drawable("$nama.xml")
             assertTrue("$nama.xml tidak ada", f.isFile)
