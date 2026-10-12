@@ -9,6 +9,12 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Pemeriksaan dependensi (plan.txt: "Lint dan pemeriksaan dependensi") dilakukan oleh
+# Dependabot — lihat .github/dependabot.yml. Ia memantau dependensi Gradle (termasuk
+# libs.versions.toml) dan versi action, membuka PR pembaruan mingguan, serta memunculkan
+# peringatan kerentanan di tab Security. Tidak ada job CI tambahan yang perlu dijalankan
+# berulang untuk hal yang sudah ditangani GitHub secara berkelanjutan.
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -18,8 +24,8 @@ jobs:
       - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v6
-      - name: Validasi konten JSON (sumber resmi — SOURCES.md)
-        run: python3 tools/validate_content.py
+      - name: Validasi konten JSON (strict — wajib sumber resmi, SOURCES.md)
+        run: python3 tools/validate_content.py --strict
       - name: Lint debug (hemat, tanpa emulator)
         run: ./gradlew :app:lintDebug --parallel --build-cache
       - uses: actions/upload-artifact@v7

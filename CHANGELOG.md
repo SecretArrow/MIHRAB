@@ -70,6 +70,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **`e2e.yml`**: grup `concurrency` kini per-ref (`e2e-${{ github.ref }}`), bukan global
   `e2e-main`. Sebelumnya `workflow_dispatch` pada branch membatalkan run `main` yang sedang
   berjalan, sehingga verifikasi `main` bisa hilang tanpa disadari.
+- **Gate konten diperketat**: `ci.yml` kini menjalankan `tools/validate_content.py --strict`
+  pada **setiap PR** (sebelumnya hanya di rilis), sehingga entri tanpa sumber resmi tidak dapat
+  masuk ke `main`. Pemeriksaan dependensi dilakukan Dependabot (Gradle + GitHub Actions), jadi
+  tidak ada job CI tambahan yang perlu dijalankan berulang.
+- **`e2e.yml`**: APK uji dibangun **sebelum** emulator menyala (kompilasi Gradle yang berjalan
+  bersamaan dengan emulator di runner 2-vCPU membuat emulator tak responsif →
+  "Unknown API Level" → 0 perangkat, dan seluruh uji dilewati). Emulator diberi `-memory 4096`,
+  dan uji diulang **sekali** hanya bila log memuat tanda-tangan kegagalan infrastruktur —
+  uji yang benar-benar gagal tetap langsung dinyatakan gagal. Logikanya diletakkan di
+  `.github/scripts/e2e-instrumented.sh` karena aksi emulator menjalankan setiap baris `script`
+  sebagai `sh -c` terpisah, sehingga loop/fungsi multi-baris tidak akan utuh. Setelah uji hijau,
+  buffer crash/ANR diperiksa agar proses yang sempat mati tidak lolos diam-diam.
 - **Kejujuran izin**: izin `SCHEDULE_EXACT_ALARM` dihapus dari manifes karena pengingat memakai
   WorkManager dan tidak ada pemakaian `AlarmManager` sama sekali; tombol "Alarm tepat waktu"
   (yang membuka pengaturan izin tak terpakai) ikut dihapus, dan teks di menu Adzan kini
