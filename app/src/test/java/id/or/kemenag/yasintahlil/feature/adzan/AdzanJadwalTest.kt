@@ -91,6 +91,25 @@ class AdzanJadwalTest {
             penjadwal.contains("JadwalHariIni.params("))
         assertTrue("penjadwal pengingat tidak memakai zona waktu bersama",
             penjadwal.contains("JadwalHariIni.zona("))
+        assertTrue("penjadwal pengingat tidak memakai daftar nama waktu bersama",
+            penjadwal.contains("JadwalHariIni.LIMA_WAKTU"))
+    }
+
+    /**
+     * Urutan nama waktu adalah arti indeks CSV `Store.ADZAN_ON` dan `Store.CORR`. Daftar lokal di
+     * layar Adzan, layar Jadwal, atau beranda adalah salinan yang dapat berbeda urutan dari yang
+     * dibaca penjadwal — jadi hanya aturan bersama yang boleh menyediakannya.
+     */
+    @Test
+    fun tidakAdaDaftarNamaWaktuYangDitulisUlang() {
+        listOf(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/adzan/AdzanScreen.kt",
+            "src/main/java/id/or/kemenag/yasintahlil/feature/jadwal/JadwalScreen.kt",
+            "src/main/java/id/or/kemenag/yasintahlil/feature/home/HomeScreen.kt",
+        ).forEach { rel ->
+            assertFalse("$rel menulis ulang daftar nama waktu; pakai JadwalHariIni",
+                sumber(rel).contains("listOf(\"Subuh\""))
+        }
     }
 
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */

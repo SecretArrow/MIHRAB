@@ -118,4 +118,35 @@ class JadwalHariIniTest {
         assertEquals(listOf("04:35", "11:52", "15:12", "18:02", "19:15"), JadwalHariIni.adzan(t))
         assertFalse("Terbit tidak beradzan", JadwalHariIni.adzan(t).contains(t.terbit))
     }
+
+    // ---- Urutan nama sejajar dengan jam & CSV ----
+
+    /**
+     * Indeks daftar nama **adalah** arti CSV `Store.ADZAN_ON` dan `Store.CORR`. Bila nama dan jam
+     * tak lagi sejajar, mematikan "Magrib" akan mematikan waktu lain, atau koreksi Asar diterapkan
+     * pada Zuhur — tanpa satu pun pesan galat.
+     */
+    @Test
+    fun urutanNamaSejajarDenganJamnya() {
+        val t = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+        assertEquals(JadwalHariIni.LIMA_WAKTU.size, JadwalHariIni.adzan(t).size)
+        assertEquals(JadwalHariIni.ENAM_WAKTU.size, JadwalHariIni.semua(t).size)
+        assertEquals(5, JadwalHariIni.LIMA_WAKTU.size)
+        assertEquals(6, JadwalHariIni.ENAM_WAKTU.size)
+        // Lima waktu beradzan adalah enam waktu minus Terbit, dengan urutan yang sama.
+        assertEquals(JadwalHariIni.LIMA_WAKTU, JadwalHariIni.ENAM_WAKTU - "Terbit")
+        assertEquals(JadwalHariIni.ENAM_WAKTU.indexOf("Terbit"), 1)
+        // Jam tiap nama dapat ditanyakan satu per satu dan hasilnya sama dengan daftar.
+        JadwalHariIni.ENAM_WAKTU.forEachIndexed { i, n ->
+            assertEquals("jam($n) tidak sejajar dengan semua()[$i]", JadwalHariIni.semua(t)[i],
+                JadwalHariIni.jam(t, n))
+        }
+    }
+
+    @Test
+    fun namaTakDikenalTidakDiberiJamTebakan() {
+        val t = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+        assertEquals(null, JadwalHariIni.jam(t, "Dhuha"))
+        assertEquals("18:02", JadwalHariIni.jam(t, "Magrib"))
+    }
 }

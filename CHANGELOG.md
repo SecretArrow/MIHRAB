@@ -360,6 +360,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Urutan nama waktu sholat kini juga tunggal**: nama lima waktu beradzan (`Subuh, Zuhur, Asar,
+  Magrib, Isya`) dan enam waktu berkoreksi (dengan `Terbit`) dahulu ditulis ulang di **empat**
+  tempat — `PrayerScheduler`, layar Adzan, layar Jadwal, dan beranda. Urutan itu bukan hiasan:
+  `Store.ADZAN_ON` adalah CSV lima angka yang indeksnya berarti waktu ke-`i`, dan `Store.CORR` CSV
+  enam angka dengan arti yang sama. Daftar yang berbeda urutan membuat mematikan "Magrib"
+  mematikan waktu lain, atau koreksi Asar diterapkan pada Zuhur — tanpa satu pun pesan galat.
+  Keduanya kini tinggal di `JadwalHariIni` (`LIMA_WAKTU`, `ENAM_WAKTU`), dan jam tiap waktu
+  diambil dari nama yang sama (`adzan`, `semua`, `jam`) sehingga nama dan jamnya tak dapat
+  tertukar. Beranda juga berhenti memetakan nama ke jam lewat rangkaian `when` yang menutup dengan
+  `else -> isya` — cabang cadangan yang diam-diam menampilkan jam sholat lain lebih buruk daripada
+  tak ada. Dijaga `JadwalHariIniTest` dan `AdzanJadwalTest`.
 - **Aturan jadwal sholat kini tunggal, tidak lagi disalin ke tiga tempat**: `parseCorr`, pemetaan
   mazhab Asar ke faktor bayangan, dan pemilihan zona waktu dahulu identik di **tiga** berkas —
   `PrayerScheduler` (penjadwal pengingat), `JadwalViewModel` (menu Jadwal), dan `HomeViewModel`

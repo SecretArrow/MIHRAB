@@ -119,7 +119,9 @@ fun AdzanScreen() {
         asar = store.get(Store.ASAR, "syafii")
     }
 
-    val names = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
+    // Nama lima waktu dari aturan bersama, bukan daftar lokal: indeksnya harus sama dengan CSV
+    // `Store.ADZAN_ON` yang ditulis saklar di bawah dan dibaca penjadwal pengingat.
+    val names = JadwalHariIni.LIMA_WAKTU
     // Jadwal hari ini dihitung dengan aturan yang sama persis dengan penjadwal pengingat
     // (`JadwalHariIni`), jadi jam yang terlihat di sini adalah jam yang benar-benar dijadwalkan —
     // bukan perkiraan terpisah yang bisa menyimpang diam-diam.

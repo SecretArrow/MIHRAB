@@ -26,7 +26,13 @@ import java.util.concurrent.TimeUnit
  */
 object PrayerScheduler {
     const val TAG = "sholat"
-    private val NAMES = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
+
+    /**
+     * Lima waktu beradzan, urutannya sama dengan CSV `Store.ADZAN_ON` dan dengan
+     * [JadwalHariIni.adzan] — lihat [JadwalHariIni.LIMA_WAKTU]. Daftar ini dahulu ditulis ulang di
+     * sini dan di layar Adzan; salinan yang berbeda urutan akan mematikan waktu yang salah.
+     */
+    private val NAMES = JadwalHariIni.LIMA_WAKTU
 
     /** Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa & iqomah (sesudah). */
     const val JENIS_ADZAN = "adzan"
@@ -95,10 +101,9 @@ object PrayerScheduler {
         val now = Calendar.getInstance(cfg.params.tz)
         val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
         val times = PrayerCalc.compute(now, cfg.params)
-        val map = mapOf(
-            "Subuh" to times.subuh, "Zuhur" to times.zuhur, "Asar" to times.asar,
-            "Magrib" to times.magrib, "Isya" to times.isya,
-        )
+        // Pasangan nama→jam diturunkan dari daftar nama yang sama dengan yang mengindeks
+        // `cfg.on`: menulisnya manual di sini berarti salinan kedua yang dapat berbeda urutan.
+        val map = NAMES.zip(JadwalHariIni.adzan(times)).toMap()
         val target = PrayerCalc.toMinutes(map.getValue(nama))
         var delta = target - nowMin
         if (delta <= 0) delta += 1440
