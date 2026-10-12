@@ -395,6 +395,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   syariat"*) tidak boleh muncul di berkas lain, dan kedua tempat itu harus benar-benar membaca
   kalimat bersama — bukan menggantinya dengan versi yang dieja sedikit berbeda. Delapan mutasi
   terverifikasi tertangkap.
+- **Id bacaan sholat kini satu kosakata**: id yang menghubungkan bundel konten (`sholat_bacaan.json`,
+  `sholat_mayit.json`) dengan layar yang menampilkannya dahulu dieja sendiri-sendiri di **empat**
+  tempat — peta posisi tubuh (14 id), daftar langkah mode ringkas (8 id), dan daftar langkah takbir
+  layar Sholat Ghaib serta Sholat Jenazah (masing-masing 5 id). Keempatnya tidak pernah dibandingkan
+  satu sama lain, sehingga satu salah eja pada salah satunya tidak berbunyi apa pun: `cari(id)`
+  mengembalikan `null` dan kartu bacaan langkah itu **hilang** sementara judul bernomor di atasnya
+  tetap tampil — pengguna melihat *"Takbir 3 → Doa untuk mayit"* tanpa isi dan menyangka doanya memang
+  tidak ada; `it.id in listOf(…)` pada mode ringkas sekadar tidak cocok, sehingga satu langkah pokok
+  diam-diam terlewat dari panduan yang justru dipakai pemula; dan `Postures.of(id)` mengembalikan
+  `null` sehingga ilustrasi posisi tubuhnya hilang tanpa keterangan. Seluruh id kini tinggal di
+  `core/sholat/BacaanSholat.kt` (`SEMUA`, `MAYIT`, `RINGKAS`, `TAKBIR_MAYIT`), dan layar sholat tidak
+  lagi mengeja id apa pun — urutan takbir sholat mayit pun datang dari satu daftar bersama, sementara
+  tiap layar hanya menyimpan judulnya sendiri yang khas, dipetakan lewat id bersama sehingga satu id
+  tanpa judul gagal keras alih-alih menghilang diam-diam. Dijaga `BacaanSholatTest`: ejaan keempat
+  daftar dipaku, id pada kosakata harus sejajar urut dengan bundel konten, urutan takbir bersama harus
+  diakhiri salam pada takbir keempat, dan tidak satu pun berkas `src/main` boleh menuliskan id bacaan
+  sebagai literal — kecuali dua kata yang sekaligus kunci skema konten (`niat`, `takbir`), yang
+  berkas pemakainya dipaku hanya `ContentRepo.kt` dan `JenisBacaan.kt` supaya pengecualiannya tidak
+  melebar. Empat belas mutasi terverifikasi tertangkap.
 - **Nama rentang waktu sholat sunnah kini satu tempat**: pengelompokan sholat sunnah menuliskan
   keenam nama rentangnya **dua kali** — sekali sebagai literal pada cabang `KelompokSholat.waktu`,
   sekali lagi pada daftar urutan tampilnya. Keduanya adalah daftar teks yang sama, jadi tak ada yang

@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
 import id.or.kemenag.yasintahlil.KodeSumber
+import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -119,13 +120,16 @@ class LangkahSholatTest {
     /** Mode ringkas harus tetap sah untuk sholat dua rakaat: tanpa langkah yang bersyarat rakaat. */
     @Test
     fun modeRingkasMelewatiLangkahBersyaratRakaat() {
-        val layar = File(root(),
-            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/SholatDetailScreen.kt").readText()
-        val daftar = layar.substringAfter("if (ringkas) bacaan.filter { it.id in listOf(")
-            .substringBefore(")")
-        assertTrue("mode ringkas tidak memuat tasyahud akhir", daftar.contains("tasyahud_akhir"))
-        assertTrue("mode ringkas masih memuat langkah tasyahud lama", !daftar.contains("\"tasyahud\""))
-        assertTrue("mode ringkas memuat langkah bersyarat rakaat", !daftar.contains("tasyahud_awal"))
+        val daftar = BacaanSholat.RINGKAS
+        assertTrue("mode ringkas tidak memuat tasyahud akhir", BacaanSholat.TASYAHUD_AKHIR in daftar)
+        assertTrue("mode ringkas memuat langkah bersyarat rakaat", BacaanSholat.TASYAHUD_AWAL !in daftar)
+        // Qunut pun bersyarat — mazhab Syafi'i dan sholat Subuh — jadi tidak boleh ikut meringkas.
+        assertTrue("mode ringkas memuat langkah bersyarat mazhab", BacaanSholat.QUNUT !in daftar)
+        // Layar harus membaca daftar bersama itu, bukan menyalin isinya: salinan akan berbeda
+        // begitu salah satunya diubah, dan satu langkah pokok diam-diam hilang dari ringkasan.
+        val layar = KodeSumber.kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/SholatDetailScreen.kt").readText())
+        assertTrue("layar tidak memakai daftar ringkas bersama", layar.contains("BacaanSholat.RINGKAS"))
     }
 
     /**
@@ -146,12 +150,10 @@ class LangkahSholatTest {
     /** Seluruh langkah wajib tetap ada setelah pemisahan dan pengurutan ulang. */
     @Test
     fun tidakAdaLangkahYangHilang() {
-        val id = entri().map { it.getString("id") }
-        listOf(
-            "niat", "takbir", "iftitah", "fatihah", "surat_setelah_fatihah", "rukuk", "itidal",
-            "sujud", "duduk", "tasyahud_awal", "tasyahud_akhir", "sholawat_ibrahimiyah", "salam",
-        ).forEach { assertTrue("langkah '$it' hilang dari bundel", id.contains(it)) }
-        assertEquals("jumlah langkah berubah tanpa alasan", 14, id.size)
+        // Dibandingkan dengan kosakata bersama, bukan daftar yang diketik di sini: daftar kedua di
+        // dalam uji akan tetap "lulus" meski bundel dan layar sama-sama bergeser meninggalkannya.
+        assertEquals("id bacaan pada bundel berbeda dari kosakata bersama",
+            BacaanSholat.SEMUA, entri().map { it.getString("id") })
     }
 
     /**
