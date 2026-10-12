@@ -18,10 +18,12 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     val repo = rememberRepo()
     var jamaah by remember { mutableStateOf(false) }
     var fullscreen by remember { mutableStateOf(false) }
+    var settings by remember { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
 
     if (s.items.isEmpty()) {
-        Box(Modifier.fillMaxSize().padding(16.dp)) { Text("Konten tahlil tidak tersedia.") }
+        EmptyState("Konten tahlil tidak tersedia",
+            "Berkas susunan tahlil tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
         return
     }
     val cur = s.items[s.idx.coerceIn(0, s.items.size - 1)]
@@ -53,9 +55,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
-            FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
-            FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         CounterRow(s.count, cur.ulangi,
             onPlus = { vm.setCount(s.count + 1) },
@@ -90,5 +90,15 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
                 }
             }
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
+            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
+            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
+            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
+        )
     }
 }

@@ -61,8 +61,9 @@ fun SettingsScreen() {
                 "terjemahan antarmuka lain, jadi tidak ada tombol bahasa yang tidak berfungsi.",
             style = MaterialTheme.typography.labelSmall)
 
-        Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = 16f..40f)
-        Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = 12f..24f)
+        // Rentangnya dipakai bersama bottom sheet pengaturan bacaan (satu sumber kebenaran).
+        Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = ARAB_SIZE_RANGE)
+        Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = LATIN_SIZE_RANGE)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text("Arab") })
             FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text("Latin") })

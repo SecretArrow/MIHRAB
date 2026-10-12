@@ -91,9 +91,9 @@ class TahlilViewModel @Inject constructor(
     }
 
     fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; viewModelScope.launch { store.set(Store.ARAB_SIZE, v) } }
-    fun toggleLatin() { val v = !_state.value.showLatin; _state.update { it.copy(showLatin = v) }; viewModelScope.launch { store.set(Store.SHOW_LATIN, v) } }
-    fun toggleTrans() { val v = !_state.value.showTrans; _state.update { it.copy(showTrans = v) }; viewModelScope.launch { store.set(Store.SHOW_TRANS, v) } }
-    fun toggleArab() { val v = !_state.value.showArab; _state.update { it.copy(showArab = v) }; viewModelScope.launch { store.set(Store.SHOW_ARAB, v) } }
+    fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; viewModelScope.launch { store.set(Store.SHOW_LATIN, v) } }
+    fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; viewModelScope.launch { store.set(Store.SHOW_TRANS, v) } }
+    fun setShowArab(v: Boolean) { _state.update { it.copy(showArab = v) }; viewModelScope.launch { store.set(Store.SHOW_ARAB, v) } }
 
     private fun persist() {
         val s = _state.value

@@ -22,6 +22,7 @@ fun SholatScreen(go: (String) -> Unit) {
     var tab by remember { mutableStateOf(0) }
     var showArab by remember { mutableStateOf(true) }
     var arabSize by remember { mutableStateOf(22f) }
+    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         showArab = store.get(Store.SHOW_ARAB, true)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
@@ -63,18 +64,7 @@ fun SholatScreen(go: (String) -> Unit) {
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(vertical = 4.dp)) {
-                        FilterChip(showArab, {
-                            showArab = !showArab
-                            scope.launch { store.set(Store.SHOW_ARAB, showArab) }
-                        }, { Text("Arab") })
-                        OutlinedButton(onClick = {
-                            arabSize = (arabSize + 2).coerceAtMost(40f)
-                            scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-                        }) { Text("A+") }
-                        OutlinedButton(onClick = {
-                            arabSize = (arabSize - 2).coerceAtLeast(16f)
-                            scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-                        }) { Text("A−") }
+                        OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
                     }
                 }
                 items(bacaan) { b ->
@@ -90,5 +80,13 @@ fun SholatScreen(go: (String) -> Unit) {
                 }
             }
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }
