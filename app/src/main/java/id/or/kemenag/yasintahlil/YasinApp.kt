@@ -45,4 +45,3 @@ class YasinApp : Application(), Configuration.Provider {
         }
     }
 }
-

@@ -1,0 +1,62 @@
+name: Auto-fix (higiene teks)
+
+# Kenapa ada: `plan.txt` baris 1 meminta "auto fix" sebagai bagian alur kerja. Alur kerja lama
+# bernama sama hanya menjalankan `./gradlew tasks` — tanpa pemasang apa pun — sehingga tak pernah
+# memperbaiki apa-apa dan dihapus. Alur ini menjalankan pemasang yang nyata: `tools/format_teks.py
+# --fix`, yang hanya menyentuh spasi dan baris baru (akhir baris LF, spasi ekor, baris kosong
+# beruntun, tepat satu baris baru di akhir) sehingga tidak dapat mengubah perilaku aplikasi maupun
+# isi teks keagamaan.
+#
+# Ia sengaja **tidak** menyentuh `main` secara langsung: perbaikan terjadi di cabang PR, tempat
+# perubahan masih dapat ditinjau. Untuk `main` yang telanjur kotor, jalankan manual lewat
+# `workflow_dispatch` dengan cabang `main` yang dipilih.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: autofix-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  rapikan:
+    # Dua penjaga:
+    #   1. PR dari fork tidak punya izin tulis — tokennya read-only, jadi push akan gagal. Lewati.
+    #   2. PR yang dibuat bot ini sendiri dilewati. Push memakai GITHUB_TOKEN memang tidak
+    #      memicu workflow baru (GitHub menekannya), tetapi penjaga ini membuat niatnya terang
+    #      dan tetap benar bila kelak tokennya diganti.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.actor != 'github-actions[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - name: Rapikan higiene teks
+        run: python3 tools/format_teks.py --fix .
+      - name: Buktikan hasilnya sudah bersih (periksa ulang)
+        run: python3 tools/format_teks.py .
+      - name: Commit dan push bila ada perubahan
+        run: |
+          if git diff --quiet; then
+            echo "Tidak ada yang perlu dirapikan — berkas sudah bersih."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(rapikan): higiene teks otomatis
+
+          Dijalankan oleh .github/workflows/autofix.yml memakai tools/format_teks.py.
+          Hanya spasi dan baris baru; tidak ada isi yang berubah.
+
+          Co-Authored-By: [CC] <noreply@anthropic.com>"
+          git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
