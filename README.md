@@ -12,17 +12,20 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
 - `app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
 - `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*),
-  workflow-lint (memastikan berkas workflow sendiri dapat dibaca — lihat `tools/check_workflows.py`)
+  autofix (higiene teks: `workflow_dispatch` + sapuan mingguan), workflow-lint (memastikan berkas
+  workflow sendiri dapat dibaca — lihat `tools/check_workflows.py`)
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
 - `tools/` gate konten & gate cepat: `validate_content.py` (konten wajib bersumber resmi),
   `validate_bundle.py` (bundel pembaruan), `check_workflows.py` (workflow dapat dibaca),
-  `check_kotlin_lex.py` (higiene komentar Kotlin). Ketiganya di luar `validate_content.py`
-  dapat dijalankan lokal tanpa membangun proyek.
+  `check_kotlin_lex.py` (higiene komentar Kotlin), `format_teks.py` (higiene teks: akhir baris LF,
+  spasi ekor, tepat satu baris baru di akhir; `--fix` merapikan di tempat). Semuanya Python murni
+  dan dapat dijalankan lokal tanpa membangun proyek.
 
 ## Build (via GitHub Actions, bukan lokal)
 - PR: validasi konten + lint + unit test + build debug/release (R8) (3-6 mnt).
 - main: sama seperti PR.
 - tag `v*.*.*`: release AAB/APK + GitHub Release otomatis. **Signed** bila Secrets keystore tersedia; bila tidak, APK release bersifat *unsigned* (hanya untuk memvalidasi build R8).
+- `workflow_dispatch` pada release: menguji build rilis **tanpa menerbitkan apa pun**; isi masukan `tag` untuk menerbitkan rilis bagi tag yang sudah ada.
 
 Secrets (hanya untuk rilis bertanda tangan): `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 

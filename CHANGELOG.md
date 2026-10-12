@@ -363,14 +363,30 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `./gradlew tasks`, sehingga tak pernah memperbaiki apa-apa. Kini `tools/format_teks.py` merapikan
   lima hal yang **tidak dapat mengubah perilaku**: akhir baris LF saja, tanpa spasi/tab di akhir
   baris, tanpa baris berisi spasi saja, tidak lebih dari dua baris kosong beruntun, dan tepat satu
-  baris baru di akhir berkas. Alat yang sama dipakai sebagai gate di `ci.yml` (mode periksa) dan
-  sebagai pemasang di `.github/workflows/autofix.yml` (mode `--fix`), jadi aturan periksa dan
-  perbaikan mustahil berbeda. Alur kerja itu berjalan pada PR dari cabang repo ini dan pada
-  `workflow_dispatch`, lalu **hanya meng-commit bila ada perubahan**; PR dari fork dan PR yang
-  dibuat bot ini dilewati, sehingga tidak ada gelung tak berujung. Alat ini sengaja **tidak**
+  baris baru di akhir berkas. Alat yang sama dipakai di dua tempat — **gate** di `ci.yml` (mode
+  periksa) dan **pemasang** di `.github/workflows/autofix.yml` (mode `--fix`) — sehingga aturan
+  periksa dan perbaikan mustahil berbeda. Alur kerja itu dijalankan sengaja lewat
+  `workflow_dispatch`, plus sapuan mingguan sebagai jaring pengaman `main`, dan **hanya meng-commit
+  bila ada temuan**. Ia sengaja **tidak** dipicu `pull_request`: dibuktikan di PR #37 bahwa commit
+  bot ke cabang PR membuat GitHub menahan rangkaian run untuk commit itu di `action_required`
+  (aktor `github-actions[bot]` bukan kolaborator), sehingga commit perbaikannya justru tidak pernah
+  tervalidasi lint/unit/build — melanggar prinsip "setiap commit yang digabung sudah lulus CI".
+  Pemicu itu baru bersih dengan token ber-aktor kolaborator (PAT/GitHub App), yang sengaja tidak
+  disimpan di repo ini. Pembagiannya: `ci.yml` **mencegah**, alur ini **memperbaiki**. Batas yang
+  diketahui (dinyatakan di komentar alur kerja): commit hasil perbaikan dibuat dengan
+  `GITHUB_TOKEN`, dan `push` yang dipicu `GITHUB_TOKEN` tidak memunculkan alur kerja baru —
+  sehingga commit itu tidak divalidasi `ci.yml`. Diterima karena alat ini hanya menyentuh spasi dan
+  baris baru sehingga secara rancangan tidak dapat mengubah perilaku. Alat ini sengaja **tidak**
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **`workflow_dispatch` pada alur rilis tidak lagi menerbitkan rilis palsu**: `release.yml`
+  mendeklarasikan `workflow_dispatch`, tetapi langkah `softprops/action-gh-release` tidak punya
+  pembatas ref — dan action itu menormalkan `github.ref_name` menjadi nama tag. Akibatnya menjalankan
+  alur rilis dari sebuah cabang (mis. untuk menguji build rilis) akan mencoba menerbitkan rilis
+  bernama cabang itu. Kini langkah rilis dijaga `github.ref_type == 'tag' || inputs.tag != ''`, dan
+  dispatch mendapat masukan **`tag`**: diisi → menerbitkan rilis untuk tag itu, dikosongkan → sekadar
+  menguji build rilis tanpa menerbitkan apa pun. Alur tag (`v*.*.*`) tidak berubah.
 - **Higiene berkas teks**: 13 berkas konten JSON (`adzan`, `ayat_kursi`, `dzikir`, `kota`,
   `sholat_bacaan`, `sholat_daftar`, `surah_001/112/113/114`, `tahlil`, `tahlil_full`,
   `yasin_full`) tidak diakhiri baris baru, dan `YasinApp.kt` menyisakan satu baris kosong di

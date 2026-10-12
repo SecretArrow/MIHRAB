@@ -50,6 +50,12 @@ MAKS_BARIS_KOSONG = 2
 
 def rapikan(teks: str) -> str:
     """Kembalikan [teks] setelah seluruh aturan diterapkan. Idempoten."""
+    # Berkas kosong dibiarkan kosong: tidak ada baris akhir yang hilang, dan mengubahnya menjadi
+    # "\n" berarti menambah isi — padahal alat ini hanya boleh membuang kelebihan spasi/baris baru,
+    # bukan menciptakannya.
+    if teks == "":
+        return ""
+
     # Akhir baris diseragamkan lebih dulu supaya aturan berikutnya hanya berurusan dengan "\n".
     teks = teks.replace("\r\n", "\n").replace("\r", "\n")
 
@@ -79,6 +85,9 @@ def periksa(path: Path) -> list[str]:
         asli = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return []  # berkas biner atau tak terbaca: bukan urusan alat ini
+
+    if asli == "":
+        return []  # berkas kosong: tidak ada yang bisa dirapikan
 
     if rapikan(asli) == asli:
         return []
