@@ -152,15 +152,18 @@ fun DoaAdzanScreen() {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
     val doa = remember { repo.doaAdzan() }
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
+    var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
+        ingatkan = store.get(Store.DOA_ADZAN_REMINDER, false)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Doa sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
@@ -169,10 +172,36 @@ fun DoaAdzanScreen() {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
+        // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat
+        // membaca doa setelah adzan."* Saklar yang sama juga ada di menu Adzan; keduanya menulis
+        // kunci `Store.DOA_ADZAN_REMINDER` yang sama, jadi tidak ada dua sumber kebenaran.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Pengingat membaca doa setelah adzan")
+            Switch(ingatkan, {
+                ingatkan = it
+                scope.launch {
+                    store.set(Store.DOA_ADZAN_REMINDER, ingatkan)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            })
+        }
+        Text(if (ingatkan) {
+            "Bila aktif: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu masuk, " +
+                "berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung membuka " +
+                "layar ini, dan pengingat tetap berbunyi walau aplikasi ditutup. Mengikuti saklar " +
+                "per waktu di menu Adzan — waktu yang dimatikan tidak ikut mengingatkan. Waktunya " +
+                "pengingat pribadi, bukan ketentuan syariat."
+        } else {
+            "Bila diaktifkan: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu " +
+                "masuk, berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung " +
+                "membuka layar ini, dan pengingat tetap berbunyi walau aplikasi ditutup."
+        }, style = MaterialTheme.typography.labelSmall)
         KartuDoa("doa:menjawab_adzan", menjawab, arabSize, showArab)
         KartuDoa("doa:sholawat_adzan", sholawat, arabSize, showArab)
         KartuDoa("doa:adzan", doa, arabSize, showArab)
-        Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
+        Text("Suara adzan dan pengingat sebelum adzan diatur di menu Adzan; saklar pengingat doa di " +
+                "atas dan di menu Adzan menulis preferensi yang sama. Iqomah memiliki timer " +
+                "tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
 

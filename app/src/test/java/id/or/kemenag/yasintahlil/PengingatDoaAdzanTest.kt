@@ -42,6 +42,22 @@ class PengingatDoaAdzanTest {
             layar.contains("PrayerScheduler.scheduleAll"))
     }
 
+    /**
+     * Saklar yang sama harus tersedia di layar Doa Adzan — di situlah orang membacanya, jadi
+     * mengaktifkannya tidak boleh menuntut berpindah ke menu Adzan lebih dulu. Keduanya menulis
+     * kunci preferensi yang sama supaya tidak lahir dua sumber kebenaran.
+     */
+    @Test
+    fun saklarPengingatJugaAdaDiLayarDoaAdzan() {
+        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt")
+        val doa = layar.substringAfter("fun DoaAdzanScreen(").substringBefore("private fun KartuDoa(")
+        assertTrue("layar Doa Adzan tidak punya saklar pengingat", doa.contains("DOA_ADZAN_REMINDER"))
+        assertTrue("mengubah saklar di layar Doa Adzan tidak menjadwalkan ulang pengingat",
+            doa.contains("PrayerScheduler.scheduleAll"))
+        assertTrue("saklar di layar Doa Adzan tidak dipulihkan dari preferensi",
+            doa.contains("store.get(Store.DOA_ADZAN_REMINDER"))
+    }
+
     @Test
     fun penjadwalMengantrekanPengingatKeduaSetelahWaktuMasuk() {
         val penjadwal = sumber("src/main/java/id/or/kemenag/yasintahlil/core/scheduling/PrayerScheduler.kt")
