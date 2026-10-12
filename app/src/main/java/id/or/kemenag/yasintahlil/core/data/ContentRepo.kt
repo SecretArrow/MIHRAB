@@ -48,7 +48,7 @@ class ContentRepo(private val ctx: Context) {
             Log.w("ContentRepo", "Konten pembaruan $file rusak — memakai bawaan", it)
             return null
         }
-        val src = json.optString("sumber_url", "")
+        val src = ContentValidator.sumberBerkas(json)
         if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
             Log.w("ContentRepo", "Konten pembaruan $file tanpa sumber_url resmi — memakai bawaan")
             return null
@@ -59,7 +59,7 @@ class ContentRepo(private val ctx: Context) {
     private fun dariAset(file: String): JSONObject {
         val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
         // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
-        val src = json.optString("sumber_url", "")
+        val src = ContentValidator.sumberBerkas(json)
         if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
             Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
         }
@@ -135,12 +135,13 @@ class ContentRepo(private val ctx: Context) {
         val def = d.optString("kategori", "")
         val all = (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
-            val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+            val rujukan = rujukanTeks(o)
+            val (a, l, t) = resolveArabLatinTerjemah(rujukan)
             TahlilItem(
                 o.getString("id"), o.getString("judul"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optInt("ulangi", 1),
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                rujukan,
                 o.optString("sumber", ""),
                 o.optString("kategori", def)
             )
@@ -220,7 +221,7 @@ class ContentRepo(private val ctx: Context) {
                     Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan"),
                         it.optString("kategori", defKategori))
                 },
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                rujukanTeks(o),
                 ketentuan = ket,
                 niatCatatan = o.optString("niat_catatan", ""),
                 tujuan = o.optString("tujuan"),
@@ -240,12 +241,13 @@ class ContentRepo(private val ctx: Context) {
         val arr = d.getJSONArray("bacaan")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
-            val (a, l, t) = resolveArabLatinTerjemah(o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") })
+            val rujukan = rujukanTeks(o)
+            val (a, l, t) = resolveArabLatinTerjemah(rujukan)
             val scope = o.optJSONArray("sholat")?.let { s -> (0 until s.length()).map { s.getString(it) } }.orEmpty()
             Bacaan(o.getString("id"), o.getString("judul"), o.optString("kapan"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
-                o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                rujukan,
                 catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
                 sholatScope = scope,
@@ -264,11 +266,11 @@ class ContentRepo(private val ctx: Context) {
                 (0 until items.length()).map { i ->
                     val o = items.getJSONObject(i)
                     val ruj = mutableListOf<String>()
-                    if (o.has("rujukan")) { val ra = o.getJSONArray("rujukan"); repeat(ra.length()) { ruj += ra.getString(it) } }
-                    val singles = mutableListOf<String?>()
-                    o.optString("rujukanFile", null).takeIf { o.has("rujukanFile") }?.let { singles += it }
-                    o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") }?.let { singles += it }
-                    val all = (singles.filterNotNull() + ruj)
+                    if (o.has(KUNCI_RUJUKAN_DAFTAR)) {
+                        val ra = o.getJSONArray(KUNCI_RUJUKAN_DAFTAR)
+                        repeat(ra.length()) { ruj += ra.getString(it) }
+                    }
+                    val all = rujukanTeksSemua(o) + ruj
                     val joined = all.map { resolveArabLatinTerjemah(it) }
                     val ja = joined.joinToString("\n\n") { it.first }.ifBlank { o.optString("arab") }
                     val jl = joined.joinToString("\n\n") { it.second }.ifBlank { o.optString("latin") }

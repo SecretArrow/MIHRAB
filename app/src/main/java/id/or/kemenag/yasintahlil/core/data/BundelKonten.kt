@@ -47,12 +47,6 @@ object BundelKonten {
     /** Kunci peta nama-berkas → dokumen konten. */
     const val KUNCI_BERKAS = "berkas"
 
-    /** Kunci rujukan berkas yang nilainya satu teks — sama dengan yang dibaca `ContentRepo`. */
-    private val KUNCI_RUJUKAN = listOf("rujukan_file", "rujukanFile")
-
-    /** Kunci rujukan berkas yang nilainya larik teks (beberapa lafaz dari satu entri dzikir). */
-    private const val KUNCI_RUJUKAN_DAFTAR = "rujukan"
-
     /**
      * Prosa penunjuk yang tidak boleh muncul di field `arab`/`latin` — sama persis dengan
      * `PLACEHOLDER_MARKERS` di `tools/validate_content.py`.
@@ -148,9 +142,7 @@ object BundelKonten {
     fun periksaBerkas(doc: JSONObject): List<String> {
         val galat = mutableListOf<String>()
 
-        val sumber = listOf("sumber_url", "sumberUrl")
-            .firstNotNullOfOrNull { k -> doc.optString(k).takeIf { it.isNotBlank() } }
-            .orEmpty()
+        val sumber = ContentValidator.sumberBerkas(doc)
         when {
             sumber.isBlank() -> galat += "tidak menyatakan 'sumber_url'"
             !ContentValidator.isOfficialSource(sumber) ->
@@ -259,6 +251,9 @@ object BundelKonten {
         when (node) {
             is JSONObject -> node.keys().asSequence().forEach { k ->
                 val v = node.get(k)
+                // Ejaan yang diterima datang dari satu tempat bersama pembacanya (`Rujukan`), bukan
+                // dari daftar lokal di sini — dua daftar yang seharusnya sama adalah cara paling
+                // halus untuk membuat pemeriksa dan pembaca berbeda pendapat.
                 if (k in KUNCI_RUJUKAN || k == KUNCI_RUJUKAN_DAFTAR) terima(k, v)
                 else telusuriRujukan(v, terima)
             }
@@ -318,8 +313,6 @@ object BundelKonten {
 
     /** Ringkasan berkas yang lolos — dipakai layar untuk menampilkan sumber tiap berkas. */
     fun ringkasan(hasil: Hasil): List<Berkas> = hasil.berkas.map { (nama, doc) ->
-        val sumber = listOf("sumber_url", "sumberUrl")
-            .firstNotNullOfOrNull { k -> doc.optString(k).takeIf { it.isNotBlank() } }.orEmpty()
-        Berkas(nama, sumber, kumpulkan(doc, "kategori"))
+        Berkas(nama, ContentValidator.sumberBerkas(doc), kumpulkan(doc, "kategori"))
     }.sortedBy { it.nama }
 }

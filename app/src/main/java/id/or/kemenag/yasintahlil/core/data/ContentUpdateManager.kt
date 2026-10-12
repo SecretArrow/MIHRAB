@@ -3,6 +3,7 @@ package id.or.kemenag.yasintahlil.core.data
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -59,7 +60,10 @@ class ContentUpdateManager(private val ctx: Context) {
             val o = arr.optJSONObject(i) ?: return@mapNotNull null
             val nama = o.optString("nama").takeIf { it.isNotBlank() } ?: return@mapNotNull null
             val kat = o.optJSONArray("kategori")?.let { k -> (0 until k.length()).map { k.getString(it) } }.orEmpty()
-            BundelKonten.Berkas(nama, o.optString("sumber_url"), kat)
+            // Dibaca lewat aturan bersama, bukan ejaan lokal: `_meta.json` ditulis kelas ini sendiri
+            // dengan ejaan utama, tetapi nilai yang ditampilkan ke pengguna tetap harus dibaca
+            // dengan aturan yang sama seperti sumber konten di tempat lain.
+            BundelKonten.Berkas(nama, ContentValidator.sumberBerkas(o), kat)
         }
         return Status(
             aktif = berkas.isNotEmpty(),
@@ -133,7 +137,7 @@ class ContentUpdateManager(private val ctx: Context) {
         ringkas.forEach { b ->
             berkas.put(JSONObject()
                 .put("nama", b.nama)
-                .put("sumber_url", b.sumberUrl)
+                .put(ContentValidator.KUNCI_SUMBER_UTAMA, b.sumberUrl)
                 .put("kategori", JSONArray(b.kategori)))
         }
         return JSONObject()

@@ -3,6 +3,35 @@ package id.or.kemenag.yasintahlil.core.data
 import org.json.JSONObject
 
 /**
+ * Kunci **rujukan berkas** bernilai satu teks, berurutan menurut prioritas.
+ *
+ * Satu tempat, karena kunci yang sama dibaca dua peran: pemeriksa bundel (`BundelKonten`, yang
+ * menolak rujukan mati sebelum bundel dipasang) dan pembaca konten (`ContentRepo`, yang benar-benar
+ * mengikuti rujukannya). Dahulu keduanya menuliskan daftar ini sendiri-sendiri, dan hanya
+ * `ContentRepo.dzikir` yang mengenal ejaan kedua — sehingga bundel ber-`rujukanFile` pada Tahlil
+ * atau bacaan sholat lolos pemasangan, lalu entri yang mengandalkan rujukan itu tampil **kosong**
+ * tanpa galat: rujukannya sudah "diperiksa" sebagai sah, tetapi tidak pernah dibaca.
+ */
+internal val KUNCI_RUJUKAN = listOf("rujukan_file", "rujukanFile")
+
+/** Kunci rujukan berkas bernilai larik teks (beberapa lafaz dari satu entri dzikir). */
+internal const val KUNCI_RUJUKAN_DAFTAR = "rujukan"
+
+/**
+ * Nilai rujukan berkas pada [o], satu per ejaan pada [KUNCI_RUJUKAN] yang benar-benar ada.
+ *
+ * Mengembalikan **semua** ejaan yang ada, bukan hanya yang pertama: pemeriksa menelusuri setiap
+ * kemunculan kunci rujukan di seluruh dokumen, jadi pembaca pun harus mengikuti semuanya — kalau
+ * tidak, rujukan yang diperiksa bisa berbeda dari rujukan yang dibaca, persis kekeliruan yang
+ * membuat teks tampil kosong tanpa galat.
+ */
+internal fun rujukanTeksSemua(o: JSONObject): List<String> =
+    KUNCI_RUJUKAN.filter { o.opt(it) is String }.map { o.optString(it) }
+
+/** Rujukan berkas tunggal pada [o]: ejaan pertama yang ada, atau `null` bila tidak merujuk. */
+internal fun rujukanTeks(o: JSONObject): String? = rujukanTeksSemua(o).firstOrNull()
+
+/**
  * Cari entri ber-`id` di dalam sebuah dokumen konten.
  *
  * Berkas konten menyimpan entri yang dapat dirujuk dalam tiga bentuk: `bagian` (Tahlil),

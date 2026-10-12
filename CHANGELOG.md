@@ -380,6 +380,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Ejaan kunci konten dibaca sama oleh pemeriksa dan pembaca**: skema menerima dua ejaan untuk
+  sumber tingkat berkas (`sumber_url`/`sumberUrl`) dan untuk rujukan berkas
+  (`rujukan_file`/`rujukanFile`, ditambah larik `rujukan`). `BundelKonten` dan gerbang CI bundel
+  mengenal keduanya, tetapi **pembaca** kontenlah yang tertinggal: `ContentRepo` hanya membaca
+  `sumber_url` (kecuali `dzikir()`, satu-satunya yang mengenal `rujukanFile`), sedangkan Tahlil dan
+  bacaan sholat membaca `rujukan_file` saja. Bundel ber-`sumberUrl` karena itu **lolos pemasangan**
+  dan dilaporkan *"terpasang"*, lalu setiap berkasnya ditolak pembaca saat dibuka — tanpa sumber
+  resmi, berkas pembaruan dianggap tak bersumber — sehingga aplikasi diam-diam kembali ke konten
+  bawaan: pembaruan yang tampak berhasil tanpa mengubah apa pun, tanpa satu pun pesan yang menyebut
+  sebabnya. Pada Tahlil dan bacaan sholat hasilnya teks **kosong tanpa galat**, sebab rujukan
+  ber-`rujukanFile` sudah "diperiksa" sebagai sah tetapi tidak pernah dibaca. Daftar ejaan kini
+  hidup di satu tempat — `ContentValidator.KUNCI_SUMBER`/`sumberBerkas()` untuk sumber,
+  `Rujukan.KUNCI_RUJUKAN`/`rujukanTeks()`/`rujukanTeksSemua()` untuk rujukan — dan seluruh pemeriksa
+  maupun pembaca memakainya lewat fungsi bersama, termasuk `ContentUpdateManager` saat membaca
+  kembali metadata yang ditulisnya sendiri. `rujukanTeksSemua` mengembalikan **setiap** ejaan yang
+  ada, bukan hanya yang pertama: pemeriksa menelusuri tiap kemunculan kunci rujukan, jadi pembaca
+  yang hanya mengambil satu akan memeriksa sesuatu yang tidak pernah ia baca. Dijaga
+  `KunciKontenSatuTempatTest`, `RujukanTest`, dan `ContentValidatorTest`.
 - **Rujukan berkas pada bundel pembaruan diperiksa saat dipasang, bukan saat layarnya dibuka**:
   entri konten dapat **menunjuk** lafaz yang sudah terverifikasi di berkas lain
   (`rujukan_file` = `berkas.json#id`, larik `rujukan`) alih-alih menyalinnya. Tetapi
