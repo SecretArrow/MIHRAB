@@ -98,15 +98,15 @@
    "terjemahan": "Ya Allah, ampunilah dia, berilah dia rahmat, sejahterakanlah dia dan maafkanlah dia."
   },
   {
-   "arab": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+   "arab": "وَمِنْهُمْ مَّنْ يَّقُوْلُ رَبَّنَآ اٰتِنَا فِى الدُّنْيَا حَسَنَةً وَّفِى الْاٰخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ",
    "id": "doa_penutup",
    "judul": "Doa penutup (QS Al-Baqarah 201)",
-   "latin": "Rabbana atina fid-dunya hasanah wa fil-akhirati hasanah wa qina 'adzaban nar.",
+   "latin": "Wa minhum may yaqūlu rabbanā ātinā fid-dun-yā ḥasanataw wa fil-ākhirati ḥasanataw wa qinā ‘ażāban-nār(i).",
    "sumber": "QS Al-Baqarah 201 (MSI Kemenag)",
-   "terjemahan": "Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka."
+   "terjemahan": "Di antara mereka ada juga yang berdoa, “Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat serta lindungilah kami dari azab neraka.”"
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Susunan tahlil lazim Indonesia; bacaan Qur'an Kemenag 2019, doa/dzikir dari sunnah.com",
- "catatan_verifikasi": "Sebagian bacaan Qur'an memakai teks Utsmani; cocokkan dengan MSI LPMQ. Susunan tahlil dapat berbeda menurut tradisi."
+ "edisi": "Susunan tahlil lazim Indonesia; bacaan Qur'an memakai MSI LPMQ Kemenag + terjemah Kemenag edisi 2019, doa/dzikir dari sunnah.com",
+ "catatan_verifikasi": "Bacaan Qur'an memakai Mushaf Standar Indonesia (MSI) LPMQ Kemenag; disegarkan lewat tools/fetch_quran_kemenag.py. Susunan tahlil dapat berbeda menurut tradisi."
 }

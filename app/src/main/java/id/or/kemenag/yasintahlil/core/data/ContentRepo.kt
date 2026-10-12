@@ -173,6 +173,20 @@ class ContentRepo(private val ctx: Context) {
         return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
     }
 
+    /** Lafaz menjawab adzan beserta catatan kapan lafaz ini dibaca. */
+    fun menjawabAdzan(): AdzanDoa {
+        val o = doc("adzan.json").getJSONObject("menjawab_adzan")
+        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
+            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
+    }
+
+    /** Sholawat yang dibaca setelah menjawab adzan (sebelum doa setelah adzan). */
+    fun sholawatAdzan(): AdzanDoa {
+        val o = doc("adzan.json").getJSONObject("sholawat_setelah_adzan")
+        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
+            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
+    }
+
     fun kota(): List<Kota> {
         val arr = doc("kota.json").getJSONArray("kota")
         return (0 until arr.length()).map { i ->

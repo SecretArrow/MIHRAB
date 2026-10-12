@@ -1,36 +1,36 @@
 {
  "surah": "Al-Ikhlas",
  "ayat_count": 4,
- "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
- "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
- "sumber_latin": "api.quran.com word transliteration (English)",
+ "sumber_arab": "Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI — quran.kemenag.go.id",
+ "sumber_terjemahan": "Terjemah Kemenag edisi 2019 — quran.kemenag.go.id",
+ "sumber_latin": "Transliterasi resmi Kemenag RI — quran.kemenag.go.id",
  "verses": [
   {
    "nomor": 1,
-   "arab": "قُلْ هُوَ ٱللَّهُ أَحَدٌ",
-   "latin": "qul huwa l-lahu aḥadun",
-   "terjemahan": "Katakanlah: \"Dialah Allah, Yang Maha Esa."
+   "arab": "قُلْ هُوَ اللّٰهُ اَحَدٌۚ",
+   "latin": "Qul huwallāhu aḥad(un).",
+   "terjemahan": "Katakanlah (Nabi Muhammad), “Dialah Allah Yang Maha Esa."
   },
   {
    "nomor": 2,
-   "arab": "ٱللَّهُ ٱلصَّمَدُ",
-   "latin": "al-lahu l-ṣamadu",
-   "terjemahan": "Allah adalah Tuhan yang bergantung kepada-Nya segala sesuatu."
+   "arab": "اَللّٰهُ الصَّمَدُۚ",
+   "latin": "Allāhuṣ-ṣamad(u).",
+   "terjemahan": "Allah tempat meminta segala sesuatu."
   },
   {
    "nomor": 3,
-   "arab": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
-   "latin": "lam yalid walam yūlad",
-   "terjemahan": "Dia tiada beranak dan tidak pula diperanakkan,"
+   "arab": "لَمْ يَلِدْ وَلَمْ يُوْلَدْۙ",
+   "latin": "Lam yalid wa lam yūlad.",
+   "terjemahan": "Dia tidak beranak dan tidak pula diperanakkan"
   },
   {
    "nomor": 4,
-   "arab": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
-   "latin": "walam yakun lahu kufuwan aḥadun",
-   "terjemahan": "dan tidak ada seorangpun yang setara dengan Dia\"."
+   "arab": "وَلَمْ يَكُنْ لَّهٗ كُفُوًا اَحَدٌ ࣖ",
+   "latin": "Wa lam yakul lahū kufuwan aḥad(un).",
+   "terjemahan": "serta tidak ada sesuatu pun yang setara dengan-Nya.”"
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
- "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+ "edisi": "Kemenag: teks Arab Mushaf Standar Indonesia (MSI), transliterasi Latin resmi, terjemah edisi 2019",
+ "catatan_verifikasi": "Teks Arab (MSI), transliterasi Latin, dan terjemahan diambil dari layanan resmi Qur'an Kemenag (quran.kemenag.go.id) lewat tools/fetch_quran_kemenag.py. Penanda catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki."
 }
