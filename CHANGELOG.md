@@ -6,6 +6,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Manajemen data offline** (`plan.txt`: *"Manajemen data offline."*): bagian baru di Pengaturan
+  menampilkan **jumlah** favorit, bookmark, riwayat, dan progres yang tersimpan di perangkat
+  sebelum apa pun dihapus, lalu menyediakan tombol hapus **per bagian**. Menghapus riwayat tidak
+  menyentuh favorit dan bookmark, dan sebaliknya; setiap penghapusan lewat dialog konfirmasi yang
+  menyebut berapa entri akan hilang, bukan "hapus semua" tanpa peringatan. Dihitung langsung dari
+  database (`SELECT COUNT(*)` per tabel) sehingga angkanya tidak menyesatkan, dan uji instrumented
+  membuktikan penghapusan tersimpan setelah aplikasi dibuka ulang (`UserDataPersistenceTest`),
+  sementara uji unit menjaga agar keempat bagian tetap punya tombolnya sendiri
+  (`ManajemenDataOfflineTest`).
+- **Pencarian terpadu atas seluruh konten** (`plan.txt`: *"Sediakan pencarian dan akses cepat pada
+  halaman yang memiliki banyak konten"*): layar Pencarian kini menyusun indeks dari **semua** modul
+  konten — Yasin (per ayat), Tahlil, pustaka doa & dzikir, panduan sholat wajib/sunnah beserta
+  ketentuannya, bacaan sholat, panduan bersuci (wudhu/tayamum/pembatal), sholat ghaib & jenazah
+  beserta varian niatnya, doa seputar adzan, dan lafaz iqomah. Pencocokan tidak lagi hanya atas
+  teks Indonesia: nomor ayat dicocokkan **persis** (mencari "1" tidak lagi memunculkan ayat 12),
+  teks Arab dapat dicari, dan cuplikan hasil diambil dari bagian yang memuat kata kunci lalu
+  dipangkas dengan elipsis. Indeks dibangun sekali di luar thread UI, dan kegagalannya tidak lagi
+  ditelan diam-diam melainkan tampil sebagai pesan kesalahan dengan tombol mencoba kembali; ada
+  pula keadaan memuat, keadaan kosong, dan daftar "pencarian terbaru". Aturan pencocokan diuji
+  terpisah (`PencarianTest`) karena mesinnya sengaja murni tanpa Android.
 - **Pembaruan konten dengan validasi sumber** (`plan.txt`: *"Sediakan mekanisme pembaruan konten
   dengan validasi sumber."*): Pengaturan → Pembaruan konten memungkinkan pengguna memasang berkas
   bundel (`.json`) pilihannya sendiri. Bundel **tidak pernah diunduh otomatis** dan tidak menambah

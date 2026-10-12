@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import id.or.kemenag.yasintahlil.core.data.local.AppDatabase
 import id.or.kemenag.yasintahlil.core.data.local.RoomUserDataRepository
+import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -134,6 +135,76 @@ class UserDataPersistenceTest {
 
             repo.restoreJson("{ bukan json")
             assertTrue("data lama terhapus oleh backup rusak", repo.isBookmarked("yasin", "58").first())
+        }
+    }
+
+    /**
+     * plan.txt: "Manajemen data offline." Angka yang ditampilkan sebelum menghapus harus benar —
+     * termasuk riwayat, yang jumlahnya tidak dibatasi [recentHistory] (yang hanya menampilkan 50).
+     */
+    @Test
+    fun ringkasanMenghitungIsiTiapBagian() {
+        runBlocking {
+            assertEquals("database baru seharusnya kosong", RingkasanData(), restart().ringkasan())
+
+            val repo = restart()
+            repo.toggleFavorite("dzikir", "harian", "Doa harian")
+            repo.toggleFavorite("dzikir", "pagi_petang", "Dzikir pagi & petang")
+            repo.toggleBookmark("yasin", "58", "Ayat 58")
+            repo.pushHistory("yasin", "1", "Yasin ayat 1")
+            repo.pushHistory("tahlil", "lazim_indonesia", "Tahlil")
+            repo.setProgress("yasin", "mark", 12)
+            repo.setProgress("tahlil", "lazim_indonesia", 3)
+
+            val r = restart().ringkasan()
+            assertEquals(2, r.favorit)
+            assertEquals(1, r.bookmark)
+            assertEquals(2, r.riwayat)
+            assertEquals(2, r.progres)
+        }
+    }
+
+    /** Menghapus satu bagian tidak boleh menyentuh bagian lain — inti "manajemen data offline". */
+    @Test
+    fun hapusRiwayatTidakMenyentuhBagianLain() {
+        runBlocking {
+            val repo = restart()
+            repo.toggleFavorite("dzikir", "harian", "Doa harian")
+            repo.toggleBookmark("yasin", "58", "Ayat 58")
+            repo.pushHistory("yasin", "1", "Yasin ayat 1")
+            repo.setProgress("yasin", "mark", 12)
+
+            repo.clearHistory()
+
+            val after = restart()
+            assertEquals(0, after.ringkasan().riwayat)
+            assertTrue("riwayat masih terbaca setelah dihapus", after.recentHistory().first().isEmpty())
+            assertEquals(1, after.ringkasan().favorit)
+            assertEquals(1, after.ringkasan().bookmark)
+            assertEquals(1, after.ringkasan().progres)
+            assertEquals(12, after.progress("yasin", "mark").first()?.value)
+        }
+    }
+
+    /** Favorit, bookmark, dan progres juga punya tombol hapusnya sendiri; semuanya harus nyata. */
+    @Test
+    fun hapusFavoritBookmarkDanProgresBekerjaDanBertahan() {
+        runBlocking {
+            val repo = restart()
+            repo.toggleFavorite("dzikir", "harian", "Doa harian")
+            repo.toggleBookmark("yasin", "58", "Ayat 58")
+            repo.setProgress("yasin", "mark", 12)
+
+            repo.clearFavorites()
+            repo.clearBookmarks()
+            repo.clearProgress()
+
+            // Diverifikasi setelah dibuka ulang: penghapusan tersimpan, bukan hanya di memori.
+            val after = restart()
+            assertEquals(RingkasanData(), after.ringkasan())
+            assertTrue(after.favorites().first().isEmpty())
+            assertTrue(after.bookmarks("yasin").first().isEmpty())
+            assertTrue(after.progressByKind("yasin").first().isEmpty())
         }
     }
 

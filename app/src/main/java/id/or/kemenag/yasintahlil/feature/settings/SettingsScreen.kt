@@ -6,12 +6,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
+import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -37,6 +40,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var hijriCorr by remember { mutableStateOf(0) }
     var compassUnit by remember { mutableStateOf("derajat") }
     var backup by remember { mutableStateOf("") }
+    var ringkasan by remember { mutableStateOf<RingkasanData?>(null) }
+    var ringkasanUlang by remember { mutableStateOf(0) }
+    var hapusTarget by remember { mutableStateOf<BagianData?>(null) }
     LaunchedEffect(Unit) {
         theme = store.get(Store.DARK, "sistem")
         arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
@@ -48,6 +54,8 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
     }
+    // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
+    LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Pengaturan", style = MaterialTheme.typography.titleLarge)
         Text("Tema:", style = MaterialTheme.typography.titleMedium)
@@ -121,6 +129,50 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 }
             })
         }
+        Text("Manajemen data offline", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        val r = ringkasan
+        if (r == null) {
+            Text("Menghitung isi data yang tersimpan…", style = MaterialTheme.typography.labelSmall)
+        } else {
+            Text("Tersimpan di perangkat ini: ${r.favorit} favorit, ${r.bookmark} bookmark, " +
+                    "${r.riwayat} riwayat, ${r.progres} progres. Tidak ada data ini yang dikirim ke server.",
+                style = MaterialTheme.typography.labelSmall)
+            BagianData.entries.forEach { bagian ->
+                val n = bagian.jumlah(r)
+                Row(Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text("${bagian.label}: $n", style = MaterialTheme.typography.labelMedium)
+                    OutlinedButton(onClick = { hapusTarget = bagian }, enabled = n > 0) { Text("Hapus") }
+                }
+            }
+            Text("Menghapus satu bagian tidak menyentuh bagian lain, jadi riwayat saja dapat dibuang " +
+                    "tanpa kehilangan favorit dan bookmark.",
+                style = MaterialTheme.typography.labelSmall)
+        }
+        hapusTarget?.let { bagian ->
+            val n = bagian.jumlah(ringkasan ?: RingkasanData())
+            AlertDialog(
+                onDismissRequest = { hapusTarget = null },
+                title = { Text("Hapus ${bagian.label.lowercase()}?") },
+                text = {
+                    Text("$n entri ${bagian.label.lowercase()} akan dihapus dari perangkat ini dan " +
+                            "tidak dapat dikembalikan. Bagian lain tidak tersentuh.")
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        hapusTarget = null
+                        scope.launch {
+                            bagian.hapus(userData)
+                            ringkasanUlang++
+                        }
+                    }) { Text("Hapus") }
+                },
+                dismissButton = { TextButton(onClick = { hapusTarget = null }) { Text("Batal") } },
+            )
+        }
+
         Text("Backup / pulihkan data lokal:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
@@ -180,5 +232,31 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
         Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
             style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+/**
+ * Bagian data lokal yang dapat dibuang sendiri-sendiri. Setiap bagian memetakan dirinya ke jumlah
+ * yang tampil dan ke operasi hapusnya, supaya tombol "Hapus" tak mungkin menghapus bagian lain.
+ */
+private enum class BagianData(val label: String) {
+    FAVORIT("Favorit"),
+    BOOKMARK("Bookmark"),
+    RIWAYAT("Riwayat"),
+    PROGRES("Progres"),
+    ;
+
+    fun jumlah(r: RingkasanData): Int = when (this) {
+        FAVORIT -> r.favorit
+        BOOKMARK -> r.bookmark
+        RIWAYAT -> r.riwayat
+        PROGRES -> r.progres
+    }
+
+    suspend fun hapus(repo: UserDataRepository) = when (this) {
+        FAVORIT -> repo.clearFavorites()
+        BOOKMARK -> repo.clearBookmarks()
+        RIWAYAT -> repo.clearHistory()
+        PROGRES -> repo.clearProgress()
     }
 }

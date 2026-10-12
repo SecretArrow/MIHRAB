@@ -4,6 +4,7 @@ import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
 import id.or.kemenag.yasintahlil.core.domain.model.HistItem
 import id.or.kemenag.yasintahlil.core.domain.model.ProgressItem
+import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,19 @@ class RoomUserDataRepository @Inject constructor(
     }
 
     override suspend fun clearHistory() = hist.clear()
+
+    override suspend fun ringkasan(): RingkasanData = RingkasanData(
+        favorit = fav.count(),
+        bookmark = mark.count(),
+        riwayat = hist.count(),
+        progres = prog.count(),
+    )
+
+    override suspend fun clearFavorites() = fav.clear()
+
+    override suspend fun clearBookmarks() = mark.clear()
+
+    override suspend fun clearProgress() = prog.clear()
 
     override fun progress(kind: String, refId: String): Flow<ProgressItem?> =
         prog.observe(kind, refId).map { list ->
