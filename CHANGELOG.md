@@ -360,6 +360,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Ukuran bacaan kini punya satu bawaan dan satu rentang**: `Store.ARAB_SIZE` dibaca di **sebelas**
+  tempat dengan bawaan yang bercabang — enam memakai `22f`, lima `24f` — ditambah tiga nilai awal di
+  ViewModel (22/24/24). Kuncinya memang satu, tetapi selama pengguna belum pernah menyentuh
+  slidernya bacaan yang sama dirender 22 sp di layar Sholat dan 24 sp di layar Yasin, sementara layar
+  Pengaturan menyebut 24: tiga angka untuk satu pengaturan, tanpa satu pun pesan galat. Rentang
+  slidernya pun tinggal di `UiKit` sementara bawaannya tersebar, sehingga tak ada satu tempat yang
+  dapat memastikan bawaannya masuk rentang. Keduanya kini di `UkuranBacaan` (murni, tanpa Android,
+  dapat diuji di JVM), termasuk angka `+ 8`/`44f` untuk bacaan jarak jauh yang dahulu ditulis ulang
+  di empat layar (Ghaib, Jenazah, Iqomah, Tahlil) — tiga di antaranya bahkan tanpa batas atas,
+  sehingga ukuran maksimum 40 melompat ke 48 dan melewati lebar kartu. Dijaga `UkuranBacaanTest`,
+  yang juga menolak bawaan maupun angka jarak jauh itu ditulis ulang di luar `UkuranBacaan`.
 - **Aturan preferensi pengingat adzan kini juga tunggal**: CSV saklar per waktu (`Store.ADZAN_ON`)
   diurai di dua tempat — `PrayerScheduler` (pembaca) dan layar Adzan (penulis) — dengan panjang dan
   padding yang ditulis ulang masing-masing; bila keduanya berbeda, menyalakan satu waktu di layar

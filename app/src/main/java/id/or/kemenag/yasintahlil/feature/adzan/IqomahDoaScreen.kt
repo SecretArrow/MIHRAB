@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -50,14 +51,14 @@ fun IqomahScreen() {
     var mins by remember { mutableStateOf(PengingatAdzan.IQOMAH_DEFAULT_MENIT) }
     var remaining by rememberSaveable { mutableStateOf(-1) } // detik; -1 = tidak berjalan
     var fullscreen by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(24f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         mins = PengingatAdzan.iqomahMenit(
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
-        arabSize = store.get(Store.ARAB_SIZE, 24f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         ingatkan = store.get(Store.IQOMAH_ON, false)
     }
@@ -147,7 +148,7 @@ fun IqomahScreen() {
         items.forEachIndexed { i, l ->
             BacaanCard("iqomah:${i + 1}", "Lafaz iqomah ${i + 1} dari ${items.size}",
                 l.arab, l.latin, l.terjemahan,
-                true, true, if (fullscreen) arabSize + 8 else arabSize, ulangi = l.ulangi,
+                true, true, UkuranBacaan.arabBacaJauh(arabSize, fullscreen), ulangi = l.ulangi,
                 sumber = l.sumber, showArab = showArab, kategori = l.kategori)
         }
     }
@@ -170,12 +171,12 @@ fun DoaAdzanScreen() {
     val doa = remember { repo.doaAdzan() }
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
-    var arabSize by remember { mutableStateOf(22f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         ingatkan = store.get(Store.DOA_ADZAN_REMINDER, false)
     }

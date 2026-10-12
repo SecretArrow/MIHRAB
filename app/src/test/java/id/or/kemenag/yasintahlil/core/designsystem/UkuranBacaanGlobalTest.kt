@@ -101,8 +101,8 @@ class UkuranBacaanGlobalTest {
     @Test
     fun sheetMenulisUkuranGlobalTanpaDioperLayar() {
         val badan = badanFungsi(uiKit(), "BacaanSettingsSheet")
-        assertTrue("Sheet tidak menyediakan slider ukuran Latin", badan.contains("LATIN_SIZE_RANGE"))
-        assertTrue("Sheet tidak menyediakan slider jarak antarbaris", badan.contains("LINE_HEIGHT_RANGE"))
+        assertTrue("Sheet tidak menyediakan slider ukuran Latin", badan.contains("UkuranBacaan.LATIN"))
+        assertTrue("Sheet tidak menyediakan slider jarak antarbaris", badan.contains("UkuranBacaan.JARAK"))
         assertTrue("Sheet tidak menulis Store.LATIN_SIZE sendiri", badan.contains("store.set(Store.LATIN_SIZE"))
         assertTrue("Sheet tidak menulis Store.LINE_HEIGHT sendiri", badan.contains("store.set(Store.LINE_HEIGHT"))
     }

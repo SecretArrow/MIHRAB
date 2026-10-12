@@ -7,6 +7,7 @@ import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.DzikirGroup
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class DzikirUiState(
-    val arabSize: Float = 22f,
+    val arabSize: Float = UkuranBacaan.ARAB_DEFAULT,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
     val showArab: Boolean = true,
@@ -39,7 +40,7 @@ class DzikirViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    arabSize = store.get(Store.ARAB_SIZE, 22f),
+                    arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT),
                     showLatin = store.get(Store.SHOW_LATIN, true),
                     showTrans = store.get(Store.SHOW_TRANS, true),
                     showArab = store.get(Store.SHOW_ARAB, true),

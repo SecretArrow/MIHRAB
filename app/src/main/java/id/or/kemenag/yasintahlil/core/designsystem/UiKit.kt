@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,8 +103,10 @@ fun BacaanCard(
     // Preferensi bacaan global — lihat KDoc di atas. Dibaca reaktif agar perubahan dari sheet
     // pengaturan bacaan (atau layar Pengaturan) langsung terlihat tanpa membuka ulang layar.
     val store = rememberStore()
-    val latinGlobal by store.flow(Store.LATIN_SIZE, 16f).collectAsStateWithLifecycle(16f)
-    val tinggiGlobal by store.flow(Store.LINE_HEIGHT, 1.9f).collectAsStateWithLifecycle(1.9f)
+    val latinGlobal by store.flow(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
+        .collectAsStateWithLifecycle(UkuranBacaan.LATIN_DEFAULT)
+    val tinggiGlobal by store.flow(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
+        .collectAsStateWithLifecycle(UkuranBacaan.JARAK_DEFAULT)
     val ukuranLatin = latinSize ?: latinGlobal
     val tinggiBaris = lineHeightFactor ?: tinggiGlobal
     // "Tema halaman" (plan.txt): kartu bacaan digambar di atas kertas pilihan pengguna. Skema
@@ -254,7 +257,9 @@ fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
  * layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang tak berefek.
  *
  * "Ukuran Latin" dan "jarak antarbaris" tidak dioper dari layar: keduanya preferensi bacaan global
- * yang ditulis sheet ini sendiri, sama seperti "tema halaman".
+ * yang ditulis sheet ini sendiri, sama seperti "tema halaman". "Ukuran Arab" tetap dioper karena
+ * layar penuh menaikkannya sendiri ([UkuranBacaan.arabBacaJauh]) — bawaannya pun satu, di
+ * [UkuranBacaan].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -285,7 +290,7 @@ fun BacaanSettingsSheet(
                     FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text("Terjemahan") })
                 }
             }
-            UkuranSlider("Ukuran Arab", arabSize, ARAB_SIZE_RANGE, onArabSize)
+            UkuranSlider("Ukuran Arab", arabSize, UkuranBacaan.ARAB, onArabSize)
             // "Ukuran Latin" dan "jarak antarbaris" adalah preferensi bacaan **global**: satu nilai
             // dipakai semua layar bacaan dan [BacaanCard] membacanya sendiri. Ditulis langsung ke
             // preferensi di sini — bukan dioper dari tiap layar — karena sebelumnya hanya layar Yasin
@@ -293,12 +298,14 @@ fun BacaanSettingsSheet(
             // labelnya berbunyi "berlaku untuk semua bacaan".
             val store = rememberStore()
             val scope = rememberCoroutineScope()
-            val latin by store.flow(Store.LATIN_SIZE, 16f).collectAsStateWithLifecycle(16f)
-            val tinggi by store.flow(Store.LINE_HEIGHT, 1.9f).collectAsStateWithLifecycle(1.9f)
-            UkuranSlider("Ukuran Latin", latin, LATIN_SIZE_RANGE, onUbah = { v ->
+            val latin by store.flow(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
+                .collectAsStateWithLifecycle(UkuranBacaan.LATIN_DEFAULT)
+            val tinggi by store.flow(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
+                .collectAsStateWithLifecycle(UkuranBacaan.JARAK_DEFAULT)
+            UkuranSlider("Ukuran Latin", latin, UkuranBacaan.LATIN, onUbah = { v ->
                 scope.launch { store.set(Store.LATIN_SIZE, v) }
             })
-            UkuranSlider("Jarak antarbaris", tinggi, LINE_HEIGHT_RANGE, onUbah = { v ->
+            UkuranSlider("Jarak antarbaris", tinggi, UkuranBacaan.JARAK, onUbah = { v ->
                 scope.launch { store.set(Store.LINE_HEIGHT, v) }
             }, desimal = 1)
             TemaHalamanChips()
@@ -333,11 +340,7 @@ private fun TemaHalamanChips() {
     }
 }
 
-/** Rentang ukuran dan jarak antarbaris yang sah — dipakai bersama oleh sheet dan uji statis. */
-val ARAB_SIZE_RANGE = 16f..40f
-val LATIN_SIZE_RANGE = 12f..24f
-val LINE_HEIGHT_RANGE = 1.4f..2.6f
-
+/** Slider ukuran dengan label dan nilai yang terbaca, dipakai seluruh pengaturan bacaan. */
 @Composable
 private fun UkuranSlider(
     label: String,

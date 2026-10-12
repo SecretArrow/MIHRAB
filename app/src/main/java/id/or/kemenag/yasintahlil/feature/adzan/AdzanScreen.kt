@@ -26,6 +26,7 @@ import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -50,7 +51,7 @@ fun AdzanScreen() {
     var preMin by remember { mutableStateOf(0) }
     var doaReminder by remember { mutableStateOf(false) }
     var dnd by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(22f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
@@ -109,7 +110,7 @@ fun AdzanScreen() {
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         metode = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
         lat = store.get(Store.LAT, -6.2)

@@ -98,22 +98,24 @@ class UxStateTest {
         assertTrue("Layar bacaan tanpa bottom sheet pengaturan: $pelanggar", pelanggar.isEmpty())
     }
 
-    /** Rentang ukuran yang sah hanya ditulis sekali, di komponen bersama — bukan angka lepas per layar. */
+    /** Rentang ukuran yang sah hanya ditulis sekali, di `UkuranBacaan` — bukan angka lepas per layar. */
     @Test
     fun rentang_ukuran_ditulis_sekali() {
-        val ui = uiKit()
-        assertTrue("Rentang ukuran Arab hilang", ui.contains("ARAB_SIZE_RANGE"))
-        assertTrue("Rentang ukuran Latin hilang", ui.contains("LATIN_SIZE_RANGE"))
-        assertTrue("Rentang jarak antarbaris hilang", ui.contains("LINE_HEIGHT_RANGE"))
-        val sheet = badanFungsi(ui, "BacaanSettingsSheet")
-        listOf("ARAB_SIZE_RANGE", "LATIN_SIZE_RANGE", "LINE_HEIGHT_RANGE").forEach { r ->
-            assertTrue("$r tidak dipakai sheet", sheet.contains(r))
+        val aturan = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/core/util/UkuranBacaan.kt",
+        ).readText()
+        listOf("16f..40f", "12f..24f", "1.4f..2.6f").forEach { r ->
+            assertTrue("Rentang $r tidak ada di aturan bersama UkuranBacaan", aturan.contains(r))
+        }
+        val sheet = badanFungsi(uiKit(), "BacaanSettingsSheet")
+        listOf("UkuranBacaan.ARAB", "UkuranBacaan.LATIN", "UkuranBacaan.JARAK").forEach { r ->
+            assertTrue("$r tidak dipakai sheet pengaturan bacaan", sheet.contains(r))
         }
         val lepas = featureSources().filter { f ->
             val t = f.readText()
             listOf("16f..40f", "12f..24f", "1.4f..2.6f").any { t.contains(it) }
         }.map { it.name }
-        assertTrue("Angka rentang ditulis ulang di layar (bukan dari komponen bersama): $lepas",
+        assertTrue("Angka rentang ditulis ulang di layar (bukan dari aturan bersama): $lepas",
             lepas.isEmpty())
     }
 

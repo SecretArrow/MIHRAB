@@ -13,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
 @Composable
@@ -91,7 +92,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         LazyColumn(Modifier.fillMaxSize()) {
             item {
                 if (jamaah) {
-                    if (s.showArab && arab.isNotBlank()) ArabText(arab, (s.arabSize + 8).coerceAtMost(44f))
+                    if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, jamaah))
                     if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
                 } else {
                     BacaanCard("tahlil:${cur.id}", cur.judul, arab, latin, trans,

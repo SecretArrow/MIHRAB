@@ -13,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
@@ -35,14 +36,14 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     val info = remember { (repo.sholatWajib() + repo.sholatSunnah()).find { it.id == id } }
     var step by remember { mutableStateOf(0) }
     var ringkas by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(22f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var selesai by remember { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf("syafii") }
     var settings by remember { mutableStateOf(false) }
     var syaratTerbuka by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
         mazhab = store.get(Store.MADHAB, "syafii")
     }

@@ -16,6 +16,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
 import id.or.kemenag.yasintahlil.core.sholat.KelompokSholat
 import id.or.kemenag.yasintahlil.core.util.Saring
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
@@ -29,7 +30,7 @@ fun SholatScreen(go: (String) -> Unit) {
     var tab by remember { mutableStateOf(0) }
     var cara by remember { mutableStateOf(CaraKelompok.WAKTU) }
     var showArab by remember { mutableStateOf(true) }
-    var arabSize by remember { mutableStateOf(22f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var settings by remember { mutableStateOf(false) }
     // Penyaring di layar (`plan.txt`: "pencarian dan akses cepat pada halaman yang memiliki banyak
     // konten"). Panduan sholat memuat puluhan entri dalam tiga tab; kotak ini menyaring tab yang
@@ -37,7 +38,7 @@ fun SholatScreen(go: (String) -> Unit) {
     var q by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         showArab = store.get(Store.SHOW_ARAB, true)
-        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
     }
     val bacaan = remember { repo.sholatBacaan() }
     val wajibTampil = remember(q, wajib) {

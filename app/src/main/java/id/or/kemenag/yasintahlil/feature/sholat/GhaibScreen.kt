@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
 
@@ -22,11 +23,11 @@ fun GhaibScreen() {
     val store = rememberStore()
     val scope = rememberCoroutineScope()
     var fullscreen by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(24f) }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        arabSize = store.get(Store.ARAB_SIZE, 24f)
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
     }
     FullscreenEffect(fullscreen)
@@ -68,7 +69,7 @@ fun GhaibScreen() {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
                 BacaanCard("ghaib:${b.id}", b.judul, a, l, t, true, true,
-                    if (fullscreen) arabSize + 8 else arabSize, sumber = b.sumber,
+                    UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
         }

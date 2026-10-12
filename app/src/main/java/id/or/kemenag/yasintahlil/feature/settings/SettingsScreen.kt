@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -55,8 +56,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var hapusTarget by remember { mutableStateOf<BagianData?>(null) }
     LaunchedEffect(Unit) {
         theme = store.get(Store.DARK, "sistem")
-        arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
-        lineHeight = store.get(Store.LINE_HEIGHT, 1.9f)
+        arab = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
+        latin = store.get(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
+        lineHeight = store.get(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
         pageTheme = store.get(Store.PAGE_THEME, TemaHalaman.IKUT)
         showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
         showA = store.get(Store.SHOW_ARAB, true); infoCard = store.get(Store.INFO_CARD, true)
@@ -89,16 +91,17 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 "terjemahan antarmuka lain, jadi tidak ada tombol bahasa yang tidak berfungsi.",
             style = MaterialTheme.typography.labelSmall)
 
-        // Rentangnya dipakai bersama bottom sheet pengaturan bacaan (satu sumber kebenaran).
-        Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = ARAB_SIZE_RANGE)
-        Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = LATIN_SIZE_RANGE)
+        // Rentang dan bawaannya dipakai bersama bottom sheet pengaturan bacaan (satu sumber
+        // kebenaran: `UkuranBacaan`).
+        Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = UkuranBacaan.ARAB)
+        Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = UkuranBacaan.LATIN)
         // "Jarak antarbaris" dan "tema halaman" juga preferensi bacaan global (`plan.txt`
         // §"Fitur Surat Yasin": *"Pengaturan jarak antarbaris dan tema halaman"*). Keduanya sudah
         // ada di sheet pengaturan bacaan, tetapi sebelumnya tidak ada di layar Pengaturan — padahal
         // "Ukuran Arab" dan "Ukuran Latin" ada di sini. Menaruhnya di sini membuat keempat
         // preferensi bacaan dapat ditemukan di satu tempat, menulis kunci yang sama.
         Text("Jarak antarbaris: ${"%.1f".format(lineHeight)}")
-        Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = LINE_HEIGHT_RANGE)
+        Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = UkuranBacaan.JARAK)
         Text("Tema halaman bacaan:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TemaHalaman.SEMUA.forEach { t ->
