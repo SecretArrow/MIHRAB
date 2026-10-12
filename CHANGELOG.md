@@ -171,7 +171,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyebut sama sekali, karena pengguna memercayai jadwal yang bukan jadwalnya. Kini nama metode,
   sudut Fajr, dan jeda Isya dibaca dari definisi metode yang sama dengan yang dipakai menghitung
   (`PrayerCalc.Method`), termasuk metode berjeda seperti Umm al-Qura, dan pengguna diarahkan ke
-  layar yang benar-benar memuat pengaturan itu.
+  layar yang benar-benar memuat pengaturan itu. Klaim yang sama di **notifikasi adzan** ("Jadwal
+  dihitung di perangkat (metode Kemenag/SIHAT).") juga diperbaiki — notifikasi itu muncul justru
+  saat pengguna paling mungkin memercayainya, dan kini menyebut metode yang benar-benar dipakai.
 - **Dua gate cepat sebelum kompilasi**, keduanya menangkap galat yang tadinya baru ketahuan setelah
   satu siklus CI terbuang:
   - `tools/check_workflows.py` — GitHub tidak melaporkan berkas workflow yang salah parse sebagai

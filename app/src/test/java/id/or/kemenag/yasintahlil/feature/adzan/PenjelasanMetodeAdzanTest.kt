@@ -58,4 +58,17 @@ class PenjelasanMetodeAdzanTest {
         assertFalse("AdzanScreen menyuruh mencari koreksi/zona waktu di Pengaturan",
             s.contains("koreksi & zona waktu di Pengaturan"))
     }
+
+    /**
+     * Notifikasi adzan juga menyebut metode, dan ia muncul justru saat pengguna paling mungkin
+     * memercayainya. Klaim hardcode di sana sama menyesatkannya dengan di layar.
+     */
+    @Test
+    fun notifikasiAdzanTidakMengklaimMetodeTetap() {
+        val s = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ReminderWorker.kt")
+        assertFalse("notifikasi adzan mengklaim metode secara hardcode",
+            s.contains("Jadwal dihitung di perangkat (metode Kemenag/SIHAT)."))
+        assertTrue("notifikasi adzan tidak membaca metode dari preferensi",
+            s.contains("PrayerCalc.Method.from(store.get(Store.METHOD"))
+    }
 }

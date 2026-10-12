@@ -15,6 +15,7 @@ import id.or.kemenag.yasintahlil.MainActivity
 import id.or.kemenag.yasintahlil.core.scheduling.AdzanPlayer
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
@@ -54,7 +55,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         if (playAudio) {
             runCatching { setForeground(foregroundInfo(nama)) }
         }
-        notifyAdzan(nama, playAudio)
+        notifyAdzan(nama, playAudio, PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG")).label)
         if (playAudio) {
             AdzanPlayer.playOnce(applicationContext, uri, vol)
         }
@@ -88,12 +89,14 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         }
     }
 
-    private fun notifyAdzan(nama: String, playAudio: Boolean) {
+    private fun notifyAdzan(nama: String, playAudio: Boolean, metode: String) {
         // Bila audio adzan diputar lewat ExoPlayer, pakai kanal senyap agar suara tidak ganda.
         val channel = if (playAudio) NotifChannels.ADZAN_SILENT else NotifChannels.ADZAN
         val notif = NotificationCompat.Builder(applicationContext, channel)
             .setContentTitle("Waktu $nama telah tiba")
-            .setContentText("Segerakan sholat. Jadwal dihitung di perangkat (metode Kemenag/SIHAT).")
+            // Nama metode dibaca dari preferensi: menyebut "Kemenag/SIHAT" secara tetap akan
+            // berbohong begitu pengguna memilih metode lain di menu Jadwal.
+            .setContentText("Segerakan sholat. Jadwal dihitung di perangkat dengan metode $metode.")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentIntent(contentIntent())
             .setCategory(NotificationCompat.CATEGORY_ALARM)
