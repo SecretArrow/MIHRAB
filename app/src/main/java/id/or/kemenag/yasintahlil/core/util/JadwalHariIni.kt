@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.core.util
 
 import id.or.kemenag.yasintahlil.core.data.PrayerTimes
+import java.time.ZoneId
 import java.util.TimeZone
 
 /**
@@ -41,9 +42,28 @@ object JadwalHariIni {
     /** Faktor bayangan Asar: 2 untuk Hanafi, 1 untuk jumhur (Syafi'i, Maliki, Hambali). */
     fun asarFactor(asarKey: String): Double = if (asarHanafi(asarKey)) 2.0 else 1.0
 
-    /** Zona waktu dari id tersimpan; kosong atau tak dikenal = zona waktu perangkat. */
-    fun zona(tzId: String): TimeZone =
-        if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId)
+    /**
+     * Zona waktu dari id tersimpan; kosong atau tak dikenal = zona waktu perangkat.
+     *
+     * Aturannya sendiri ada di [zonaId], dan itu disengaja: zona waktu dipakai dalam dua bentuk —
+     * `TimeZone` untuk jam beranda, penjadwal pengingat, menu Adzan, dan layar Jadwal; `ZoneId`
+     * untuk tanggal butir info harian ([InfoHarian.zona]). `TimeZone.getTimeZone` mengembalikan
+     * **GMT** untuk id yang tak dikenal sementara `ZoneId.of` melempar, sehingga id yang rusak
+     * (mis. dari pemulihan cadangan) dulu membuat jam beranda dan penjadwal memakai GMT sementara
+     * kartu info harian memakai zona perangkat — dua waktu berbeda untuk hari yang sama.
+     */
+    fun zona(tzId: String): TimeZone = TimeZone.getTimeZone(zonaId(tzId))
+
+    /**
+     * Aturan tunggal pemilihan zona waktu tampilan: id kosong **atau tak dikenal** = zona perangkat.
+     *
+     * Id tak dikenal bukan kasus teoretis: `Store.TZ` ikut backup/pemulihan, jadi nilai dari versi
+     * lain dapat masuk tanpa melewati daftar pilihan layar Pengaturan. Zona perangkat adalah
+     * tebakan yang jujur; GMT bukan — ia zona yang tak seorang pun pilih.
+     */
+    fun zonaId(tzId: String): ZoneId =
+        if (tzId.isBlank()) ZoneId.systemDefault()
+        else runCatching { ZoneId.of(tzId) }.getOrDefault(ZoneId.systemDefault())
 
     /**
      * Parameter hisab dari nilai preferensi mentah. Semua pemanggil memakai ini agar jadwal yang

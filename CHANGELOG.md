@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Zona waktu tampilan punya satu aturan, dan tak ada layar yang menyusunnya sendiri**: `Store.TZ`
+  menyimpan id zona waktu pilihan pengguna, dan dua bentuk zona dipakai di seluruh aplikasi —
+  `TimeZone` untuk jam beranda, penjadwal pengingat, menu Adzan, dan layar Jadwal; `ZoneId` untuk
+  tanggal butir info harian. Keduanya punya aturan sendiri-sendiri untuk id yang **tak dikenal**:
+  `TimeZone.getTimeZone` mengembalikan **GMT** diam-diam, sedangkan `ZoneId.of` melempar. Id yang
+  rusak — bukan kasus teoretis, sebab `Store.TZ` ikut backup/pemulihan sehingga nilai dari versi
+  lain dapat masuk tanpa melewati daftar pilihan layar Pengaturan — karena itu membuat jam beranda
+  dan penjadwal pengingat memakai GMT sementara kartu info harian memakai zona perangkat: dua waktu
+  berbeda untuk hari yang sama. Beranda pun menyusun zonanya sendiri langsung di composable
+  (`if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId)`), salinan aturan yang
+  ketiga. Aturannya kini satu — `JadwalHariIni.zonaId`, jatuh ke zona perangkat untuk id kosong
+  **maupun** tak dikenal — dan `JadwalHariIni.zona` hanya bentuk `TimeZone`-nya, `InfoHarian.zona`
+  memakainya, dan beranda memanggil `JadwalHariIni.zona()`. Dijaga `JadwalHariIniTest`, termasuk
+  penjaga bahwa tidak ada berkas di `feature/` yang menyusun zona waktunya sendiri.
 - **Ejaan kunci konten dibaca sama oleh pemeriksa dan pembaca**: skema menerima dua ejaan untuk
   sumber tingkat berkas (`sumber_url`/`sumberUrl`) dan untuk rujukan berkas
   (`rujukan_file`/`rujukanFile`, ditambah larik `rujukan`). `BundelKonten` dan gerbang CI bundel

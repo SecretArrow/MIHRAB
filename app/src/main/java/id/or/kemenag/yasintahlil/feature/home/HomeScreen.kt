@@ -29,7 +29,10 @@ import java.util.*
 fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
 
-    val tz = remember(s.tzId) { if (s.tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(s.tzId) }
+    // Zona waktu dari aturan bersama (`JadwalHariIni`), bukan disusun ulang di sini: id yang tak
+    // dikenal pernah membuat jam beranda memakai GMT (`TimeZone.getTimeZone` mengembalikan GMT
+    // untuk id asing) sementara kartu info harian memakai zona perangkat — dua waktu, satu hari.
+    val tz = remember(s.tzId) { JadwalHariIni.zona(s.tzId) }
     val now = remember(s.nowMillis, tz) { Calendar.getInstance(tz).apply { timeInMillis = s.nowMillis } }
     val jam = SimpleDateFormat("HH:mm", Locale("id")).format(now.time)
     val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id")).format(now.time)
