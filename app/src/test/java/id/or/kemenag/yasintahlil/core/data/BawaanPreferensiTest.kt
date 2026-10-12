@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.data
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -26,36 +27,6 @@ class BawaanPreferensiTest {
     private fun sumberKotlin(): List<File> =
         File(root(), "src/main/java").walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
 
-    /** Sumber tanpa komentar dan tanpa isi literal string. */
-    private fun tanpaKomentar(teks: String): String {
-        val sb = StringBuilder()
-        var i = 0
-        var blok = 0
-        while (i < teks.length) {
-            when {
-                blok > 0 ->
-                    if (teks.startsWith("*/", i)) { blok--; i += 2 } else i++
-                teks.startsWith("//", i) -> {
-                    val akhir = teks.indexOf('\n', i)
-                    i = if (akhir < 0) teks.length else akhir
-                }
-                teks.startsWith("/*", i) -> { blok++; i += 2 }
-                teks.startsWith("\"\"\"", i) -> {
-                    val akhir = teks.indexOf("\"\"\"", i + 3)
-                    i = if (akhir < 0) teks.length else akhir + 3
-                }
-                teks[i] == '"' -> {
-                    i++
-                    while (i < teks.length && teks[i] != '"' && teks[i] != '\n') {
-                        i += if (teks[i] == '\\') 2 else 1
-                    }
-                    i++
-                }
-                else -> { sb.append(teks[i]); i++ }
-            }
-        }
-        return sb.toString()
-    }
 
     @Test
     fun bawaanTampilanMenampilkanSeluruhBacaan() {
@@ -103,15 +74,20 @@ class BawaanPreferensiTest {
      * Invarian yang menjaga seluruh kelas kerusakan ini: pembacaan preferensi tidak boleh membawa
      * bawaannya sendiri sebagai literal. Hanya `Store` dan objek aturan bersama yang boleh
      * menyebutkannya.
+     *
+     * Pemindaiannya membuang komentar dan isi string lewat [KodeSumber]: KDoc kelas ini sengaja
+     * menyebut pola lama (`store.get(Store.SHOW_ARAB, true)`) sebagai penjelasan, dan penjelasan itu
+     * bukan pelanggaran.
      */
     @Test
     fun bawaanTidakDitulisUlangDiSumber() {
         val pola = Regex("""\b(get|flow|alir)\(\s*Store\.[A-Z_]+\s*,\s*(true|false|0|0f|""|emptySet\(\))""")
         val pelanggar = mutableListOf<String>()
         sumberKotlin().forEach { f ->
-            tanpaKomentar(f.readText()).lines().forEachIndexed { no, baris ->
-                if (pola.containsMatchIn(baris)) pelanggar += "${f.name}:${no + 1}: ${baris.trim()}"
-            }
+            KodeSumber.kodeTanpaKomentar(f.readText(), buangString = true)
+                .lines().forEachIndexed { no, baris ->
+                    if (pola.containsMatchIn(baris)) pelanggar += "${f.name}:${no + 1}: ${baris.trim()}"
+                }
         }
         assertTrue(
             "bawaan preferensi ditulis ulang sebagai literal, bukan dari BawaanPreferensi: $pelanggar",

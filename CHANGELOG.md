@@ -380,6 +380,48 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kegagalan memutar adzan tidak lagi ditelan**: aplikasi tidak menyertakan berkas adzan (lisensi),
+  sehingga berkasnya dipilih pengguna sendiri dan **berkas yang dipindah atau dicabut izinnya adalah
+  keadaan yang wajar**. Dahulu dua kegagalan pada jalur itu dibuang begitu saja: nilai balik
+  `AdzanPlayer.playOnce` diabaikan, dan kegagalan `setForeground` ditelan `runCatching`. Akibatnya
+  yang terdengar adalah **hening**: notifikasi senyap sudah tampil, tidak ada suara, dan tidak ada
+  satu pun jejak untuk menelusuri sebabnya — pengguna yang kehilangan suara adzan juga kehilangan
+  cara mengetahuinya. Kini penolakan layanan latar oleh sistem (mungkin sejak Android 12) mematikan
+  audio **sebelum** notifikasi dipilih, sehingga kanal bersuara yang dipakai — pengguna tetap
+  dikejutkan tepat waktu meski berkasnya bermasalah; dan bila berkasnya sendiri gagal diputar,
+  sebabnya dicatat ke `logcat` (`Log.w(TAG)`) **dan** notifikasi senyap tadi **diganti** (id sama,
+  bukan ditumpuk) oleh notifikasi yang menyebut berkas adzan tidak dapat diputar beserta jalan
+  keluarnya. Kanal notifikasi kini dipilih dari audio yang **benar-benar** diputar
+  (`notifyAdzan(nama, audio, metode)`), bukan dari niat memutarnya. Dijaga `LapisanAudioTest`.
+- **Daftar langkah sholat yang kosong tidak lagi menghentikan aplikasi**: bundel konten dapat
+  diperbarui pengguna lewat layar "Pembaruan konten", sehingga id sholat yang dahulu ada bisa hilang
+  dari `sholat_bacaan.json` dan daftar langkahnya menjadi kosong. Dahulu baris
+  `steps[step.coerceIn(0, steps.size - 1)]` menghitung `coerceIn(0, -1)` — **rentang kosong** — dan
+  aplikasi berhenti begitu layar ini dibuka, sementara bilah kemajuan membagi dengan `steps.size`.
+  Kekosongan itu kini ditangani lebih dahulu dan **diberitahukan** (sebabnya serta cara memuat ulang
+  bundel), dan bagian sesudahnya — tautan dzikir setelah sholat dan catatan mazhab — tetap
+  ditampilkan karena tetap berguna. Dijaga `LangkahSholatTest`.
+- **Daftar kota yang gagal dibaca tidak lagi menjadi daftar kosong tanpa keterangan**:
+  `JadwalViewModel` membaca daftar kota dengan `runCatching { repo.kota() }.getOrDefault(emptyList())`,
+  sehingga bundel konten yang bermasalah membuat tombol "Kota: …" membuka **daftar kosong tanpa satu
+  pun penjelasan** — pengguna menyimpulkan tombolnya rusak, padahal bundelnya yang bermasalah.
+  Sebabnya kini dibawa ke layar lewat `kotaGagal`, sejalan dengan `gagalMuat` untuk preferensi, dan
+  layar menampilkannya saat daftarnya kosong. Dijaga `JadwalLokasiTest`.
+- **Konversi satuan azimut tidak lagi ditulis ulang di layar**: layar Kiblat menghitung sendiri
+  `kiblat * MIL_PER_DEG` dengan konstanta `17.7778` miliknya sendiri, sedangkan aturan satuan
+  (`TampilanKompas`) sudah memutuskan satuan mana yang sah dan bagaimana ia dinamai. Satuan yang
+  ditambahkan kelak harus tahu cara mengonversi agar tidak tampil sebagai derajat — persis kerusakan
+  yang pernah terjadi pada kunci satuannya (dahulu ditulis di tiga berkas). Konversinya kini tinggal
+  di `TampilanKompas.formatAzimut`, dengan perilaku yang sama seperti `labelSatuan`: satuan tak
+  dikenal diperlakukan sebagai derajat, sehingga pilihan yang rusak tidak mengubah angkanya. Dijaga
+  `TampilanKompasTest`.
+- **Penjaga "isi berkas" tidak lagi tertipu oleh komentarnya sendiri**: beberapa uji di repositori
+  ini bekerja dengan mencari potongan kode di dalam berkas lain ("layar ini tidak boleh lagi
+  menghitung tujuannya sendiri"). KDoc yang menjelaskan pola lama memuat tulisan yang **sama persis**
+  dengan yang dilarang, sehingga penjaganya gagal justru karena penjelasannya bagus — keliru tiga
+  kali dalam satu rangkaian perubahan. Pemindai yang membuang komentar lebih dahulu kini tinggal di
+  satu tempat (`KodeSumber`), bukan salinan yang berbeda-beda di tiap berkas uji — persis kekeliruan
+  yang sedang dihindari penjaga yang memakainya.
 - **"Terakhir dibaca" di beranda membuka layar yang benar**: beranda memutuskan tujuannya sendiri
   dengan `if (last.startsWith("yasin")) YASIN else FAVORIT`, sedangkan `Store.LAST` hanya pernah
   berisi `yasin:…` dan `tahlil:…` — jadi membaca Tahlil lalu menekan **"Lanjutkan"** membuka layar

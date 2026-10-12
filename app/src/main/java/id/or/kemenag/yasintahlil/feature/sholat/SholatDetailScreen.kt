@@ -165,49 +165,61 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 }, { Text(label) })
             }
         }
-        Text("Langkah ${step + 1} dari ${steps.size}")
-        LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
-        val b = steps[step.coerceIn(0, steps.size - 1)]
-        val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
-            Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
-        }
-        Text(b.judul, style = MaterialTheme.typography.titleMedium)
-        if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
-        // Ilustrasi skematik posisi tubuh + deskripsi (plan: tiap gerakan punya visual yang sopan).
-        Postures.of(b.id)?.let { p ->
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                Icon(
-                    painter = painterResource(p.gambar),
-                    contentDescription = "Ilustrasi posisi: ${p.label}",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(64.dp),
-                )
-                Column(Modifier.padding(start = 8.dp)) {
-                    Text(p.label, style = MaterialTheme.typography.titleSmall)
-                    Text(p.deskripsi, style = MaterialTheme.typography.bodySmall)
+        // Bundel konten dapat diperbarui dari layar "Pembaruan konten", sehingga id sholat yang
+        // dahulu ada bisa hilang dan daftar langkahnya menjadi kosong. Dahulu baris di bawah ini
+        // menghitung `coerceIn(0, steps.size - 1)` = `coerceIn(0, -1)` — rentang kosong — dan
+        // aplikasi berhenti begitu layar ini dibuka. Kekosongan itu kini diberitahukan; bagian
+        // sesudahnya (dzikir setelah sholat, catatan mazhab) tetap ditampilkan karena tetap berguna.
+        if (steps.isEmpty()) {
+            Text("Bacaan langkah untuk sholat ini belum ada di bundel konten.",
+                style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
+            Text("Muat ulang bundel konten di Pengaturan → Konten, atau pilih sholat lain dari daftar.",
+                style = MaterialTheme.typography.labelSmall)
+        } else {
+            Text("Langkah ${step + 1} dari ${steps.size}")
+            LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
+            val b = steps[step.coerceIn(0, steps.size - 1)]
+            val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
+                Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
+            }
+            Text(b.judul, style = MaterialTheme.typography.titleMedium)
+            if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
+            // Ilustrasi skematik posisi tubuh + deskripsi (plan: tiap gerakan punya visual yang sopan).
+            Postures.of(b.id)?.let { p ->
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                    Icon(
+                        painter = painterResource(p.gambar),
+                        contentDescription = "Ilustrasi posisi: ${p.label}",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(64.dp),
+                    )
+                    Column(Modifier.padding(start = 8.dp)) {
+                        Text(p.label, style = MaterialTheme.typography.titleSmall)
+                        Text(p.deskripsi, style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
-        }
-        BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
-            showArab = showArab, kategori = b.kategori)
-        if (b.catatan.isNotBlank()) {
-            Text(b.catatan, style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 4.dp))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }
-            Button(onClick = { step = 0 }) { Text("Ulangi") }
-            Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text("Berikutnya →") }
-        }
-        if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
-            color = MaterialTheme.colorScheme.primary)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            Button(onClick = { scope.launch { userData.setProgress(KIND, id, 1) } }, enabled = !selesai) {
-                Text(if (selesai) "✓ Sudah ditandai selesai" else "Tandai selesai")
+            BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
+                showArab = showArab, kategori = b.kategori)
+            if (b.catatan.isNotBlank()) {
+                Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(top = 4.dp))
             }
-            if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, id, 0) } }) {
-                Text("Batalkan tanda")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }
+                Button(onClick = { step = 0 }) { Text("Ulangi") }
+                Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text("Berikutnya →") }
+            }
+            if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
+                color = MaterialTheme.colorScheme.primary)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+                Button(onClick = { scope.launch { userData.setProgress(KIND, id, 1) } }, enabled = !selesai) {
+                    Text(if (selesai) "✓ Sudah ditandai selesai" else "Tandai selesai")
+                }
+                if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, id, 0) } }) {
+                    Text("Batalkan tanda")
+                }
             }
         }
         // --- Setelah salam ---------------------------------------------------------------------

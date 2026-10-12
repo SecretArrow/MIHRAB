@@ -96,6 +96,24 @@ class JadwalLokasiTest {
         assertTrue("tidak ada perhitungan jarak antar koordinat", s.contains("distanceBetween("))
     }
 
+    /**
+     * Daftar kota yang gagal dibaca tidak boleh menjadi daftar kosong tanpa keterangan.
+     *
+     * Bundel konten dapat diperbarui pengguna (layar "Pembaruan konten"). Bila `repo.kota()` gagal,
+     * dahulu kegagalannya ditelan (`getOrDefault(emptyList())`) sehingga tombol "Kota: …" membuka
+     * daftar kosong tanpa satu pun penjelasan — pengguna menyimpulkan tombolnya rusak, padahal
+     * bundelnya yang bermasalah. Sebabnya kini dibawa ke layar, seperti `gagalMuat` untuk preferensi.
+     */
+    @Test
+    fun daftarKotaKosongDiberiKeterangan() {
+        val s = vm()
+        assertTrue("sebab daftar kota kosong tidak dibawa ke layar", s.contains("kotaGagal"))
+        assertFalse("kegagalan membaca daftar kota masih ditelan tanpa keterangan",
+            s.contains("runCatching { repo.kota() }.getOrDefault(emptyList())"))
+        assertTrue("layar tidak menampilkan keterangan saat daftar kota kosong",
+            layar().contains("vm.kotaGagal"))
+    }
+
     /** Memilih kota manual harus mengalahkan GPS — bukan ditimpa perbaikan berikutnya. */
     @Test
     fun memilihKotaMenghentikanIkutanGps() {

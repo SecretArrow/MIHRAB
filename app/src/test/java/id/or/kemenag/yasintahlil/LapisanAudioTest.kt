@@ -61,4 +61,27 @@ class LapisanAudioTest {
         assertTrue("ReminderWorker tidak memakai core.audio.AdzanPlayer",
             isi(worker).contains("id.or.kemenag.yasintahlil.core.audio.AdzanPlayer"))
     }
+
+    /**
+     * Kegagalan memutar adzan tidak boleh ditelan.
+     *
+     * Aplikasi tidak menyertakan berkas adzan (lisensi) — berkasnya dipilih pengguna sendiri,
+     * sehingga berkas yang dipindah atau dicabut izinnya adalah keadaan yang wajar. Dahulu nilai
+     * balik `AdzanPlayer.playOnce` **dan** kegagalan `setForeground` dibuang begitu saja: notifikasi
+     * senyap sudah tampil, tidak ada suara, dan tidak ada jejak apa pun untuk menelusuri sebabnya.
+     * Pengguna yang kehilangan suara adzan juga kehilangan cara mengetahuinya.
+     */
+    @Test
+    fun kegagalanMemutarAdzanTidakDitelan() {
+        val worker = isi(File(mainDir(), "core/data/ReminderWorker.kt"))
+        assertTrue("nilai balik AdzanPlayer.playOnce masih dibuang",
+            worker.contains("!AdzanPlayer.playOnce("))
+        assertTrue("kegagalan setForeground masih ditelan tanpa catatan",
+            worker.contains("runCatching { setForeground(foregroundInfo(nama)) }.onFailure"))
+        assertTrue("kegagalan memutar audio tidak dicatat sama sekali", worker.contains("Log.w(TAG"))
+        // Kanal notifikasi dipilih dari audio yang **benar-benar** diputar: bila audionya batal,
+        // notifikasi harus bersuara, bukan senyap.
+        assertTrue("kanal notifikasi tidak mengikuti keadaan audio yang sebenarnya",
+            worker.contains("notifyAdzan(nama, audio, metode)"))
+    }
 }

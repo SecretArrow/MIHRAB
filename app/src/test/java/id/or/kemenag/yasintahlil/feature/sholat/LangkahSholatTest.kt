@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -151,5 +152,28 @@ class LangkahSholatTest {
             "sujud", "duduk", "tasyahud_awal", "tasyahud_akhir", "sholawat_ibrahimiyah", "salam",
         ).forEach { assertTrue("langkah '$it' hilang dari bundel", id.contains(it)) }
         assertEquals("jumlah langkah berubah tanpa alasan", 14, id.size)
+    }
+
+    /**
+     * Daftar langkah yang kosong tidak boleh membuat aplikasi berhenti.
+     *
+     * Bundel konten dapat diperbarui pengguna (layar "Pembaruan konten"), sehingga id sholat yang
+     * dahulu ada bisa hilang dari `sholat_bacaan.json` dan daftar langkahnya menjadi kosong. Dahulu
+     * baris `steps[step.coerceIn(0, steps.size - 1)]` menghitung `coerceIn(0, -1)` — rentang kosong —
+     * dan aplikasi berhenti begitu layar ini dibuka. Kekosongan itu harus diberitahukan.
+     */
+    @Test
+    fun daftarLangkahKosongTidakMembuatAplikasiBerhenti() {
+        // Tanpa komentar: penjelasan di layar menyebut pola lama itu, dan penjelasan bukan pelanggaran.
+        val layar = KodeSumber.kodeTanpaKomentar(File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/SholatDetailScreen.kt").readText())
+        assertTrue("layar tidak lagi menampilkan langkah", layar.contains("val b = steps["))
+        assertTrue("layar tidak menangani daftar langkah yang kosong",
+            layar.contains("if (steps.isEmpty())"))
+        // Penjaganya harus berada **sebelum** indeks dihitung. Pada daftar kosong,
+        // `coerceIn(0, steps.size - 1)` menjadi `coerceIn(0, -1)` — rentang kosong — dan aplikasi
+        // berhenti begitu layar ini dibuka.
+        assertTrue("indeks langkah dihitung sebelum daftar kosong ditangani",
+            layar.substringBefore("val b = steps[").contains("if (steps.isEmpty())"))
     }
 }

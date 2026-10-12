@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
@@ -65,14 +66,28 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
 
         val uri = store.get(Store.ADZAN_URI, BawaanPreferensi.BERKAS_ADZAN)
         val vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
-        val playAudio = uri.isNotBlank()
-        if (playAudio) {
-            runCatching { setForeground(foregroundInfo(nama)) }
+        val metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT)).label
+
+        // Audio hanya diputar bila pekerjaan ini benar-benar menjadi layanan latar. Sejak Android 12
+        // sistem boleh menolak permintaan itu, dan pemutaran tanpa layanan latar dimatikan bersama
+        // prosesnya — inilah "adzan tidak berbunyi" yang dahulu tidak meninggalkan jejak apa pun.
+        var audio = uri.isNotBlank()
+        if (audio) {
+            runCatching { setForeground(foregroundInfo(nama)) }.onFailure {
+                audio = false
+                Log.w(TAG, "layanan latar adzan ditolak sistem; audio tidak diputar", it)
+            }
         }
-        notifyAdzan(nama, playAudio,
-            PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT)).label)
-        if (playAudio) {
-            AdzanPlayer.playOnce(applicationContext, uri, vol)
+        notifyAdzan(nama, audio, metode)
+        // Bila audio batal diputar, `notifyAdzan` di atas memakai kanal bersuara sehingga pengguna
+        // tetap dikejutkan tepat waktu meski berkasnya bermasalah — bukan notifikasi senyap.
+        if (audio && !AdzanPlayer.playOnce(applicationContext, uri, vol)) {
+            // Dahulu nilai balik ini dibuang: notifikasi senyap sudah tampil, tidak ada suara, dan
+            // tidak ada cara mengetahui sebabnya. Sekarang sebabnya dicatat dan diberitahukan.
+            Log.w(TAG, "berkas adzan tidak dapat diputar: $uri")
+            notifyAdzan(nama, false, metode,
+                "Berkas adzan pilihan Anda tidak dapat diputar — periksa berkasnya di menu Adzan. " +
+                    "Segerakan sholat.")
         }
         PrayerScheduler.rescheduleOne(applicationContext, nama)
         return Result.success()
@@ -104,19 +119,22 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         }
     }
 
-    private fun notifyAdzan(nama: String, playAudio: Boolean, metode: String) {
+    private fun notifyAdzan(nama: String, playAudio: Boolean, metode: String, catatan: String? = null) {
         // Bila audio adzan diputar lewat ExoPlayer, pakai kanal senyap agar suara tidak ganda.
         val channel = if (playAudio) NotifChannels.ADZAN_SILENT else NotifChannels.ADZAN
         val notif = NotificationCompat.Builder(applicationContext, channel)
             .setContentTitle("Waktu $nama telah tiba")
             // Nama metode dibaca dari preferensi: menyebut "Kemenag/SIHAT" secara tetap akan
             // berbohong begitu pengguna memilih metode lain di menu Jadwal.
-            .setContentText("Segerakan sholat. Jadwal dihitung di perangkat dengan metode $metode.")
+            .setContentText(catatan
+                ?: "Segerakan sholat. Jadwal dihitung di perangkat dengan metode $metode.")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentIntent(contentIntent())
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
             .build()
+        // Id yang sama dipakai untuk mengganti, bukan menumpuk: notifikasi "audio gagal" menggantikan
+        // notifikasi senyap yang sudah tampil, sehingga pengguna tidak melihat dua pemberitahuan.
         post(nama.hashCode() + 1000, notif)
     }
 
@@ -171,5 +189,10 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         val mgr = NotificationManagerCompat.from(applicationContext)
         if (!mgr.areNotificationsEnabled()) return
         runCatching { mgr.notify(id, notif) }
+    }
+
+    private companion object {
+        /** Penanda `logcat` untuk kegagalan yang tidak dapat ditampilkan sebagai notifikasi. */
+        const val TAG = "ReminderWorker"
     }
 }
