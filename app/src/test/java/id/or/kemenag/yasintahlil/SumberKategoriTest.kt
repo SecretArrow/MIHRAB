@@ -119,4 +119,61 @@ class SumberKategoriTest {
         assertFalse(SumberKategori.dikenal("hadits"))
         SumberKategori.SEMUA.forEach { assertTrue(it, SumberKategori.dikenal(it)) }
     }
+
+    // ---- Dokumen yang mengulang kosakata ini ----
+
+    private fun dokumen(relatif: String): String = File(repoRoot(), relatif).readText()
+
+    /**
+     * Tabel kategori di `docs/CONTENT_SOURCES.md` — kunci, arti, dan **label yang dilihat pengguna**.
+     *
+     * Barisnya dikenali dari sel pertamanya yang berupa satu kunci berkurung kutip; tabel lain di
+     * dokumen yang sama (provenans berkas, kekurangan yang menunggu sumber) tidak ikut terbaca.
+     */
+    private fun tabelKategori(): List<Pair<String, String>> =
+        dokumen("docs/CONTENT_SOURCES.md").lines()
+            .filter { it.startsWith("|") }
+            .mapNotNull { baris ->
+                val sel = baris.split("|").map { it.trim() }
+                if (sel.size < 5) return@mapNotNull null
+                val kunci = Regex("^`([a-z_]+)`$").find(sel[1])?.groupValues?.get(1)
+                    ?: return@mapNotNull null
+                kunci to sel[3]
+            }
+
+    /**
+     * Tabel kategori di dokumen harus sama dengan yang dipakai aplikasi — kuncinya **dan** labelnya.
+     *
+     * `docs/CONTENT_SOURCES.md` menjanjikan tabel ini sebagai penjelasan kategori yang wajib
+     * dinyatakan tiap berkas ber-Arab, dan label di kolom ketiga adalah **teks yang benar-benar
+     * tampil di layar**. Kategori yang ditambahkan di kode tanpa barisnya di sini membuat dokumen
+     * berbohong tentang apa yang dapat dilihat pengguna; label yang diubah di kode tanpa ikut
+     * disunting di sini membuat dokumen menuliskan tulisan layar yang tak pernah muncul.
+     */
+    @Test
+    fun tabelKategoriDiDokumenSelarasDenganAplikasi() {
+        val tabel = tabelKategori()
+        assertTrue("tabel kategori tidak terbaca dari docs/CONTENT_SOURCES.md", tabel.size >= 4)
+
+        assertEquals("kunci kategori di dokumen berbeda dari yang dipakai aplikasi",
+            SumberKategori.SEMUA, tabel.map { it.first })
+        assertEquals("label di dokumen berbeda dari label yang benar-benar tampil di layar",
+            SumberKategori.SEMUA.map { SumberKategori.label(it) }, tabel.map { it.second })
+    }
+
+    /**
+     * `docs/CONTENT_UPDATE.md` menyebut daftar kategori yang sah di baris aturan bundel. Daftar itu
+     * adalah salinan kedua dari [SumberKategori.SEMUA] di dokumen lain, dan dahulu tak diperiksa
+     * sama sekali — padahal berkas bundel yang memakai kategori tak dikenal justru ditolak.
+     */
+    @Test
+    fun daftarKategoriDiDokumenPembaruanSelaras() {
+        val isi = dokumen("docs/CONTENT_UPDATE.md")
+        assertTrue("docs/CONTENT_UPDATE.md tidak lagi memuat aturan 'kategori yang dikenal'",
+            isi.contains("`kategori` yang dikenal"))
+        val daftar = isi.substringAfter("`kategori` yang dikenal").substringBefore(")")
+        val dariDokumen = Regex("`([a-z_]+)`").findAll(daftar).map { it.groupValues[1] }.toList()
+        assertEquals("kategori di docs/CONTENT_UPDATE.md berbeda dari yang dipakai aplikasi",
+            SumberKategori.SEMUA, dariDokumen)
+    }
 }
