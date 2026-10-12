@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
+import id.or.kemenag.yasintahlil.core.util.TeksArab
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -99,12 +100,8 @@ object BundelKonten {
     /** Pemisah jalur, supaya nama berkas tidak dapat menunjuk ke luar direktori konten. */
     val PEMISAH_NAMA_DILARANG = listOf("/", "\\", ":")
 
-    private val ARAB = Regex("[\\u0600-\\u06FF\\u0750-\\u077F]+")
 
-    /** Fathatan..sukun + alef khanjariyah dan tanda maddah. */
-    private val HARAKAT: Set<Char> =
-        (0x064B..0x0652).map { it.toChar() }.toSet() +
-            listOf(0x0670, 0x0653, 0x0654, 0x0655, 0x0656).map { it.toChar() }
+    private val ARAB = TeksArab.regexArab
 
     /** Ringkasan satu dokumen yang lolos pemeriksaan. */
     data class Berkas(val nama: String, val sumberUrl: String, val kategori: List<String>)
@@ -338,14 +335,15 @@ object BundelKonten {
         else -> false
     }
 
-    /** Kata Arab (>= 3 huruf) yang sama sekali tanpa tanda harakat. */
+    /**
+     * Kata Arab tanpa tanda harakat pada field `arab`/`latin` (rekursif).
+     *
+     * Aturannya — rentang Arab, rentang huruf, tanda harakat, dan panjang kata minimum — ada di
+     * [TeksArab], dipakai bersama gate konten dan uji assets. Yang tinggal di sini hanyalah **field
+     * mana** yang dinilai: `arab`/`latin` saja, karena field lain memang memuat prosa Indonesia.
+     */
     private fun tanpaHarakat(node: Any?, keluar: MutableList<String> = mutableListOf()): List<String> {
-        fieldTeks(node).forEach { (_, teks) ->
-            ARAB.findAll(teks).map { it.value }.forEach { run ->
-                val huruf = run.count { it.code in 0x0621..0x064A || it.code in 0x0671..0x06D3 }
-                if (huruf >= 3 && run.none { it in HARAKAT }) keluar += run
-            }
-        }
+        fieldTeks(node).forEach { (_, teks) -> keluar += TeksArab.tanpaHarakat(teks) }
         return keluar.distinct()
     }
 
