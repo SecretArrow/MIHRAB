@@ -380,6 +380,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Tabel provenans konten tidak lagi dapat ketinggalan berkas**: `docs/CONTENT_SOURCES.md`
+  menyatakan dirinya mencatat *"asal setiap file konten"*, tetapi tabelnya ditulis tangan dan
+  terpisah dari berkas yang benar-benar dikirim di dalam APK — tak ada apa pun yang membandingkan
+  keduanya. Berkas konten yang tak tercatat justru yang paling sulit ditemukan: ia ikut terkirim,
+  terbaca aplikasi, dan asalnya tak pernah diperiksa siapa pun karena tabel itu satu-satunya daftar
+  yang ada. Arah sebaliknya juga sunyi: baris yang menunjuk berkas yang sudah dihapus membuat tabel
+  tampak lebih lengkap daripada kenyataan. Kini `TabelProvenansKontenTest` menuntut kesamaan
+  **dua arah** antara tabel dan `assets/content/*.json` — termasuk menguraikan bentuk singkat
+  (`surah_001/112/113/114.json`) menjadi keempat namanya, sehingga penulisan tabel yang ringkas pun
+  tetap terbaca lengkap. Lima mutasi terverifikasi tertangkap.
 - **Dokumen yang mengulang aturan kode tidak lagi dapat menyimpang diam-diam**: dua dokumen
   manusia menyalin ulang aturan yang sudah hidup di kode, dan tak ada apa pun yang membandingkan
   keduanya. Pertama, **daftar izin**: `docs/PERMISSIONS.md` — yang ikut dibundel ke aset dan
