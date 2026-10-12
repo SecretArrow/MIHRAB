@@ -21,6 +21,15 @@ name: Auto-fix (higiene teks)
 # mingguan sebagai jaring pengaman untuk `main` (mis. bila ada yang men-push langsung tanpa PR).
 # Sapuan itu hanya meng-commit bila memang ada temuan, dan karena gate menjaga `main` tetap
 # bersih, biasanya selesai dalam hitungan detik tanpa perubahan.
+#
+# Batas yang diketahui, dinyatakan terang-terangan: commit hasil sapuan dibuat dengan
+# `GITHUB_TOKEN`, dan menurut aturan GitHub peristiwa `push` yang dipicu `GITHUB_TOKEN` tidak
+# memunculkan alur kerja baru — jadi commit perbaikan itu **tidak** divalidasi `ci.yml`. Ini
+# diterima karena alat ini hanya menyentuh spasi dan baris baru, sehingga secara rancangan tidak
+# dapat mengubah perilaku; validasi sejatinya ada pada gate di `ci.yml`, yang menjaga `main` tetap
+# bersih sehingga sapuan praktis tak pernah menemukan apa pun. Hal yang sama berlaku bila
+# `workflow_dispatch` dijalankan pada cabang PR: push hasilnya memakai `GITHUB_TOKEN`, sehingga
+# rangkaian pemeriksaan untuk commit itu dapat berhenti di `action_required`.
 
 on:
   workflow_dispatch:

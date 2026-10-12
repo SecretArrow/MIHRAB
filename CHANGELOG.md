@@ -372,8 +372,12 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   (aktor `github-actions[bot]` bukan kolaborator), sehingga commit perbaikannya justru tidak pernah
   tervalidasi lint/unit/build — melanggar prinsip "setiap commit yang digabung sudah lulus CI".
   Pemicu itu baru bersih dengan token ber-aktor kolaborator (PAT/GitHub App), yang sengaja tidak
-  disimpan di repo ini. Pembagiannya: `ci.yml` **mencegah**, alur ini **memperbaiki**. Alat ini
-  sengaja **tidak** menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
+  disimpan di repo ini. Pembagiannya: `ci.yml` **mencegah**, alur ini **memperbaiki**. Batas yang
+  diketahui (dinyatakan di komentar alur kerja): commit hasil perbaikan dibuat dengan
+  `GITHUB_TOKEN`, dan `push` yang dipicu `GITHUB_TOKEN` tidak memunculkan alur kerja baru —
+  sehingga commit itu tidak divalidasi `ci.yml`. Diterima karena alat ini hanya menyentuh spasi dan
+  baris baru sehingga secara rancangan tidak dapat mengubah perilaku. Alat ini sengaja **tidak**
+  menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
 - **`workflow_dispatch` pada alur rilis tidak lagi menerbitkan rilis palsu**: `release.yml`
