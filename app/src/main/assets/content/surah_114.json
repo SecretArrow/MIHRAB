@@ -1,48 +1,48 @@
 {
  "surah": "An-Nas",
  "ayat_count": 6,
- "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
- "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
- "sumber_latin": "api.quran.com word transliteration (English)",
+ "sumber_arab": "Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI — quran.kemenag.go.id",
+ "sumber_terjemahan": "Terjemah Kemenag edisi 2019 — quran.kemenag.go.id",
+ "sumber_latin": "Transliterasi resmi Kemenag RI — quran.kemenag.go.id",
  "verses": [
   {
    "nomor": 1,
-   "arab": "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ",
-   "latin": "qul aʿūdhu birabbi l-nāsi",
-   "terjemahan": "Katakanlah: \"Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia."
+   "arab": "قُلْ اَعُوْذُ بِرَبِّ النَّاسِۙ",
+   "latin": "Qul a‘ūżu birabbin-nās(i).",
+   "terjemahan": "Katakanlah (Nabi Muhammad), “Aku berlindung kepada Tuhan manusia,"
   },
   {
    "nomor": 2,
-   "arab": "مَلِكِ ٱلنَّاسِ",
-   "latin": "maliki l-nāsi",
-   "terjemahan": "Raja manusia."
+   "arab": "مَلِكِ النَّاسِۙ",
+   "latin": "Malikin-nās(i).",
+   "terjemahan": "raja manusia,"
   },
   {
    "nomor": 3,
-   "arab": "إِلَٰهِ ٱلنَّاسِ",
-   "latin": "ilāhi l-nāsi",
-   "terjemahan": "Sembahan manusia."
+   "arab": "اِلٰهِ النَّاسِۙ",
+   "latin": "Ilāhin-nās(i).",
+   "terjemahan": "sembahan manusia"
   },
   {
    "nomor": 4,
-   "arab": "مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ",
-   "latin": "min sharri l-waswāsi l-khanāsi",
-   "terjemahan": "Dari kejahatan (bisikan) syaitan yang biasa bersembunyi,"
+   "arab": "مِنْ شَرِّ الْوَسْوَاسِ ەۙ الْخَنَّاسِۖ",
+   "latin": "Min syarril-waswāsil-khannās(i).",
+   "terjemahan": "dari kejahatan (setan) pembisik yang bersembunyi"
   },
   {
    "nomor": 5,
-   "arab": "ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ",
-   "latin": "alladhī yuwaswisu fī ṣudūri l-nāsi",
+   "arab": "الَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِۙ",
+   "latin": "Allażī yuwaswisu fī ṣudūrin-nās(i).",
    "terjemahan": "yang membisikkan (kejahatan) ke dalam dada manusia,"
   },
   {
    "nomor": 6,
-   "arab": "مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
-   "latin": "mina l-jinati wal-nāsi",
-   "terjemahan": "dari (golongan) jin dan manusia."
+   "arab": "مِنَ الْجِنَّةِ وَالنَّاسِ ࣖ",
+   "latin": "Minal jinnati wan-nās(i).",
+   "terjemahan": "dari (golongan) jin dan manusia.”"
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
- "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+ "edisi": "Kemenag: teks Arab Mushaf Standar Indonesia (MSI), transliterasi Latin resmi, terjemah edisi 2019",
+ "catatan_verifikasi": "Teks Arab (MSI), transliterasi Latin, dan terjemahan diambil dari layanan resmi Qur'an Kemenag (quran.kemenag.go.id) lewat tools/fetch_quran_kemenag.py. Penanda catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki."
 }

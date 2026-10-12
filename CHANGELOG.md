@@ -6,6 +6,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Doa & lafaz adzan yang tadinya kosong**: doa keluar masjid (HR Abu Dawud 465), doa masuk
+  rumah (HR Abu Dawud 5096 — derajat **daif** menurut Al-Albani, dicantumkan terbuka pada field
+  `sumber`), doa bepergian/safar (HR Muslim 1342), serta **lafaz sholawat setelah adzan**
+  (HR Bukhari 3370) yang kini tampil di layar Doa Adzan. Semuanya dari sunnah.com, tanpa teks
+  yang dikarang. Lafaz menjawab adzan dipindahkan dari kode Kotlin ke `adzan.json`, dan uji baru
+  menjaga agar **tidak ada teks Arab hardcoded di seluruh kode aplikasi**.
+- **Uji instrumented lengkap** (`app/src/androidTest`) menutup kriteria pengujian `plan.txt`:
+  penyimpanan bookmark/progres/favorit/riwayat beserta backup–pulih (Room), mode offline
+  (seluruh modul konten terbaca dari aset + aplikasi terbukti tidak meminta izin `INTERNET`),
+  izin lokasi dan kiblat tanpa izin, penjadwalan pengingat (jumlah pekerjaan WorkManager per
+  saklar waktu & pra-adzan, pembatalan saat pengingat dimatikan, `BootReceiver` terdaftar),
+  serta tema terang/gelap dan lebar layar ponsel kecil maupun tablet.
+- **Aksesibilitas peta kiblat**: ringkasan peta (rute, jarak, azimut) diumumkan lewat
+  `contentDescription` karena labelnya digambar di kanvas — pembaca layar kini memahami peta.
 - **Peta arah kiblat (offline)**: peta skematik tanpa internet — menampilkan posisi pengguna,
   Ka'bah, dan rute lingkaran besar di antaranya (`QiblaCalc.greatCirclePath`/`distanceKm` +
   `MapProjection`), menjadi acuan arah bila perangkat tak punya magnetometer atau kompas belum
@@ -64,7 +78,34 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   dipasang di 2.59 (sebelumnya 2.60 — akibatnya PR dependabot mengusulkan Hilt 2.60.1 dan
   gagal dengan "only compatible with AGP version 9.0.0 or higher"). Keluarga `androidx.hilt:*`,
   `androidx.test*`, espresso, dan uiautomator (dibangun terhadap SDK 35) ikut diabaikan.
-  Alasan tiap plafon ditulis di komentar agar tidak perlu ditebak lagi.
+  **Toolchain** (AGP, Kotlin, KSP, `kotlinx-coroutines`, Compose BOM) juga dipagari: keempatnya
+  hanya boleh diabaikan **sampai minor berikutnya**, sehingga bump patch tetap mengalir sementara
+  bump minor yang mustahil hijau (PR #22 mengusulkan Kotlin 2.4 + KSP 2.3 + Hilt 2.59 sekaligus)
+  tidak lagi dibuat. Alasan tiap plafon ditulis di komentar agar tidak perlu ditebak lagi, dan
+  `DependabotConfigTest` menolak plafon basi, plafon di atas minor berikutnya, atau pola tanpa
+  pasangan kunci versi di `libs.versions.toml`.
+- **Provenans per-entri dzikir**: setiap entri di `dzikir.json` kini mencantumkan sumbernya sendiri
+  — Istighfar (HR Muslim 591), tasbih/tahmid/takbir (HR Bukhari 843 & Muslim 597), Ayat Kursi
+  (QS Al-Baqarah 255), doa masuk masjid (HR Muslim 713), doa keluar rumah (HR Abu Dawud 5095,
+  sahih), doa sebelum makan (Muwatta Malik 49/34 — atsar), dan doa sesudah makan (HR Abu Dawud
+  3850 & Ibn Majah 3283 — derajat **daif** dinyatakan terbuka). Sebelumnya sumber hanya ada di
+  tingkat berkas (`sumber_url`), sehingga pengguna tak dapat membedakan ayat Qur'an, hadis sahih,
+  dan hadis daif. Entri "Ayat Kursi + Al-Ikhlas/Al-Falaq/An-Nas" yang menyimpan prosa penunjuk di
+  field `arab`/`latin` (`"(dibaca penuh dari mushaf)"`, `"— lihat rujukan file —"`) kini bersih:
+  teksnya diambil sepenuhnya dari `rujukan`. Invarian baru dijaga gate konten
+  (`tools/validate_content.py`: sumber per-entri + deteksi placeholder) dan uji
+  `ContentSourceTest.everyDzikirItemDeclaresItsOwnSource`.
+- **Teks Al-Qur'an kini 100% dari sumber resmi**: seluruh ayat (`yasin_full.json`,
+  `surah_001/112/113/114.json`, `ayat_kursi.json`, serta ayat Qur'an di `tahlil_full.json`)
+  memakai **Mushaf Standar Indonesia (MSI) LPMQ Kemenag** beserta **transliterasi Latin resmi
+  Kemenag** dan terjemah Kemenag edisi 2019 — menggantikan teks Utsmani (Tanzil) dan
+  transliterasi Inggris dari `api.quran.com` yang non-resmi. Pengambilan data dapat diaudit dan
+  diulang lewat `tools/fetch_quran_kemenag.py` (alat pengembang, tidak dijalankan di CI);
+  invarian sumber dijaga `ContentSourceTest`. Perbaikan sampingan: BOM tersembunyi di ayat
+  pertama Al-Fatihah ikut hilang.
+- **`e2e.yml`**: grup `concurrency` kini per-ref (`e2e-${{ github.ref }}`), bukan global
+  `e2e-main`. Sebelumnya `workflow_dispatch` pada branch membatalkan run `main` yang sedang
+  berjalan, sehingga verifikasi `main` bisa hilang tanpa disadari.
 - **Gate konten diperketat**: `ci.yml` kini menjalankan `tools/validate_content.py --strict`
   pada **setiap PR** (sebelumnya hanya di rilis), sehingga entri tanpa sumber resmi tidak dapat
   masuk ke `main`. Pemeriksaan dependensi dilakukan Dependabot (Gradle + GitHub Actions), jadi

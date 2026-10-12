@@ -1,54 +1,54 @@
 {
  "surah": "Al-Fatihah",
  "ayat_count": 7,
- "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
- "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
- "sumber_latin": "api.quran.com word transliteration (English)",
+ "sumber_arab": "Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI — quran.kemenag.go.id",
+ "sumber_terjemahan": "Terjemah Kemenag edisi 2019 — quran.kemenag.go.id",
+ "sumber_latin": "Transliterasi resmi Kemenag RI — quran.kemenag.go.id",
  "verses": [
   {
    "nomor": 1,
-   "arab": "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
-   "latin": "bis'mi l-lahi l-raḥmāni l-raḥīmi",
-   "terjemahan": "Dengan menyebut nama Allah Yang Maha Pemurah lagi Maha Penyayang."
+   "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ",
+   "latin": "Bismillāhir-raḥmānir-raḥīm(i).",
+   "terjemahan": "Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang."
   },
   {
    "nomor": 2,
-   "arab": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ",
-   "latin": "al-ḥamdu lillahi rabbi l-ʿālamīna",
-   "terjemahan": "Segala puji bagi Allah, Tuhan semesta alam."
+   "arab": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَۙ",
+   "latin": "Al-ḥamdu lillāhi rabbil-‘ālamīn(a).",
+   "terjemahan": "Segala puji bagi Allah, Tuhan semesta alam"
   },
   {
    "nomor": 3,
-   "arab": "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
-   "latin": "al-raḥmāni l-raḥīmi",
-   "terjemahan": "Maha Pemurah lagi Maha Penyayang."
+   "arab": "الرَّحْمٰنِ الرَّحِيْمِۙ",
+   "latin": "Ar-raḥmānir-raḥīm(i).",
+   "terjemahan": "Yang Maha Pengasih lagi Maha Penyayang,"
   },
   {
    "nomor": 4,
-   "arab": "مَٰلِكِ يَوْمِ ٱلدِّينِ",
-   "latin": "māliki yawmi l-dīni",
-   "terjemahan": "Yang menguasai di Hari Pembalasan."
+   "arab": "مٰلِكِ يَوْمِ الدِّيْنِۗ",
+   "latin": "Māliki yaumid-dīn(i).",
+   "terjemahan": "Pemilik hari Pembalasan."
   },
   {
    "nomor": 5,
-   "arab": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-   "latin": "iyyāka naʿbudu wa-iyyāka nastaʿīnu",
-   "terjemahan": "Hanya Engkaulah yang kami sembah, dan hanya kepada Engkaulah kami meminta pertolongan."
+   "arab": "اِيَّاكَ نَعْبُدُ وَاِيَّاكَ نَسْتَعِيْنُۗ",
+   "latin": "Iyyāka na‘budu wa iyyāka nasta‘īn(u),",
+   "terjemahan": "Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami memohon pertolongan."
   },
   {
    "nomor": 6,
-   "arab": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
-   "latin": "ih'dinā l-ṣirāṭa l-mus'taqīma",
-   "terjemahan": "Tunjukilah kami jalan yang lurus,"
+   "arab": "اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيْمَۙ",
+   "latin": "Ihdinaṣ-ṣirāṭal-mustaqīm(a).",
+   "terjemahan": "Bimbinglah kami ke jalan yang lurus,"
   },
   {
    "nomor": 7,
-   "arab": "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
-   "latin": "ṣirāṭa alladhīna anʿamta ʿalayhim ghayri l-maghḍūbi ʿalayhim walā l-ḍālīna",
-   "terjemahan": "(yaitu) Jalan orang-orang yang telah Engkau beri nikmat kepada mereka; bukan (jalan) mereka yang dimurkai dan bukan (pula jalan) mereka yang sesat."
+   "arab": "صِرَاطَ الَّذِيْنَ اَنْعَمْتَ عَلَيْهِمْ ەۙ غَيْرِ الْمَغْضُوْبِ عَلَيْهِمْ وَلَا الضَّاۤلِّيْنَ ࣖ",
+   "latin": "Ṣirāṭal-lażīna an‘amta ‘alaihim, gairil-magḍūbi ‘alaihim wa laḍ-ḍāllīn(a).",
+   "terjemahan": "(yaitu) jalan orang-orang yang telah Engkau beri nikmat, bukan (jalan) mereka yang dimurkai dan bukan (pula jalan) orang-orang yang sesat."
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
- "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+ "edisi": "Kemenag: teks Arab Mushaf Standar Indonesia (MSI), transliterasi Latin resmi, terjemah edisi 2019",
+ "catatan_verifikasi": "Teks Arab (MSI), transliterasi Latin, dan terjemahan diambil dari layanan resmi Qur'an Kemenag (quran.kemenag.go.id) lewat tools/fetch_quran_kemenag.py. Penanda catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki."
 }

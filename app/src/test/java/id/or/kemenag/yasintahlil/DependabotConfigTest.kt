@@ -25,6 +25,11 @@ class DependabotConfigTest {
     /** Pola `dependency-name` → kunci versi di `[versions]` libs.versions.toml. */
     private val kunciVersi = mapOf(
         "com.google.dagger*" to "hilt",
+        "com.android.tools.build:gradle" to "agp",
+        "org.jetbrains.kotlin*" to "kotlin",
+        "com.google.devtools.ksp" to "ksp",
+        "org.jetbrains.kotlinx:*" to "coroutines",
+        "androidx.compose*" to "composeBom",
         "androidx.hilt:*" to "hiltExt",
         "androidx.core:core-ktx" to "coreKtx",
         "androidx.navigation:navigation-compose" to "navigation",
@@ -137,5 +142,30 @@ class DependabotConfigTest {
             "Pola dependabot tanpa pasangan kunci versi (tambahkan ke kunciVersi): $takDikenal",
             takDikenal.isEmpty(),
         )
+    }
+
+    /**
+     * Anggota toolchain (AGP, Kotlin, KSP, kotlinx-coroutines) hanya boleh diabaikan **sampai
+     * minor berikutnya**: bump patch tetap mengalir, bump minor tidak. Plafon yang lebih tinggi
+     * dari itu membekukan perbaikan patch yang sebenarnya aman.
+     *
+     * Dikecualikan: `com.google.dagger*` (plafonnya 2.59, ditetapkan dari catatan rilis AGP 9,
+     * bukan dari nomor minor) dan `androidx.compose*` (BOM memakai versi berbasis tanggal).
+     */
+    @Test
+    fun plafon_toolchain_tepat_di_minor_berikutnya() {
+        val toolchain = listOf("com.android.tools.build:gradle", "org.jetbrains.kotlin*",
+            "com.google.devtools.ksp", "org.jetbrains.kotlinx:*")
+        toolchain.forEach { pola ->
+            val dipakai = versi(kunciVersi.getValue(pola))
+            val plafon = plafonGradle()[pola]?.single() ?: error("Plafon '$pola' hilang")
+            val bagian = dipakai.split(".", "-")
+            val minorBerikutnya = "${bagian[0]}.${(bagian.getOrNull(1)?.toIntOrNull() ?: 0) + 1}"
+            assertTrue(
+                "Plafon '$pola' dipasang di $plafon padahal $dipakai masih dipakai — batasi tepat " +
+                    "di minor berikutnya ($minorBerikutnya) agar bump patch tetap mengalir",
+                bandingkan(plafon, minorBerikutnya) <= 0,
+            )
+        }
     }
 }
