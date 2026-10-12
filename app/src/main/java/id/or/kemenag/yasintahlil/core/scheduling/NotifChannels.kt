@@ -10,7 +10,8 @@ import androidx.core.content.getSystemService
  * - [ADZAN]: pemberitahuan masuk waktu sholat (penting, bersuara) — dipakai bila tidak ada berkas adzan.
  * - [ADZAN_SILENT]: kanal senyap untuk notifikasi foreground saat audio adzan diputar lewat ExoPlayer
  *   (mencegah suara ganda).
- * - [PRE]: pengingat beberapa menit sebelum waktu sholat (tanpa suara keras).
+ * - [PRE]: pengingat di sekitar waktu sholat yang tidak perlu bersuara keras — sebelum adzan,
+ *   ajakan membaca doa setelah adzan, dan perkiraan waktu iqomah habis.
  *
  * Catatan DND: penembusan mode Jangan Ganggu (DND) TIDAK dapat diatur aplikasi lewat API publik
  * (`setBypassDnd` adalah API sistem). Aplikasi hanya dapat meminta akses kebijakan notifikasi
@@ -34,8 +35,9 @@ object NotifChannels {
             setSound(null, null)
             enableVibration(false)
         }
-        val pre = NotificationChannel(PRE, "Sebelum adzan", NotificationManager.IMPORTANCE_DEFAULT).apply {
-            description = "Pengingat beberapa menit sebelum waktu sholat"
+        val pre = NotificationChannel(PRE, "Sebelum/sesudah adzan", NotificationManager.IMPORTANCE_DEFAULT).apply {
+            description = "Pengingat beberapa menit sebelum waktu sholat, pengingat membaca doa " +
+                "setelah adzan, dan perkiraan waktu iqomah habis"
         }
         mgr.createNotificationChannels(listOf(adzan, silent, pre))
     }

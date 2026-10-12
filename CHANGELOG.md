@@ -6,6 +6,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Pengingat waktu iqomah yang tertambat pada pengingat masuk waktu** (`plan.txt` §"Fitur
+  Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat masuk waktu sholat. Fitur
+  ini hanya berfungsi sebagai pengingat pribadi dan tidak boleh menganggap waktu Iqomah sama di
+  semua masjid"*): timer iqomah dulu **hanya hidup selama layarnya terbuka** — persis keadaan di
+  mana pengingat semacam ini paling tidak berguna, karena pengguna menutup ponsel lalu
+  meninggalkannya untuk berjamaah. Kini ada saklar **"Ingatkan saat perkiraan iqomah habis"** di
+  layar Iqomah yang mengantrekan notifikasi `IQOMAH_MIN` menit setelah pengingat masuk waktu,
+  berjalan walau aplikasi ditutup, dan ketukannya membuka layar Iqomah. Kalimatnya tidak
+  mengklaim waktu masjid mana pun: judulnya "Perkiraan waktu iqomah", isinya menyebut jumlah menit
+  yang dipilih pengguna sendiri beserta keterangan bahwa waktu iqomah tiap masjid berbeda. Panjang
+  timer kini ikut disimpan saat diubah, dan penjadwalan disusun ulang agar notifikasi latar tidak
+  memakai jeda lama yang berbeda dari angka di layar.
+
 - **Pengelompokan sholat sunnah menurut waktu, rakaat, dan tujuan** (`plan.txt` §"Sholat Sunnah":
   *"Kelompokkan sholat berdasarkan waktu pelaksanaan, jumlah rakaat, dan tujuan"*): tab Sunnah dulu
   hanya daftar datar, dan kolom `tujuan` setiap sholat sunnah — sudah ada di bundel konten dan
@@ -235,6 +248,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Tema jendela terang/gelap** (`values`/`values-night`): latar jendela disamakan dengan
   palet aplikasi sehingga tidak ada kedipan putih saat dibuka dalam mode gelap; warna bilah
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
+
+### Diperbaiki
+- **Pengingat setelah waktu masuk tidak lagi membatalkan dirinya sendiri**: pekerja adzan, begitu
+  berbunyi, menjadwalkan ulang dirinya untuk kemunculan berikutnya — dan penjadwalan ulang itu
+  ikut mengantrekan pekerjaan susulan (pengingat doa, dan kini iqomah) dengan **nama unik yang
+  sama**. Karena `ExistingWorkPolicy.REPLACE` membatalkan pekerjaan bernama sama yang masih
+  menunggu, susulan hari itu yang tinggal beberapa menit lagi berbunyi ikut terhapus, sehingga
+  **pengingat membaca doa setelah adzan tidak pernah terdengar sama sekali** sejak fitur itu ada.
+  Pekerjaan susulan kini memakai kunci bertanggal (tanggal kemunculan di zona waktu pengguna),
+  sehingga susulan hari ini tetap berjalan dan susulan besok memakai nama lain. Uji unit menolak
+  setiap pekerjaan susulan yang kembali memakai nama tetap.
+- **Layar Sunnah gagal dikompilasi**: baris pilihan pengelompokan mengoper `modifier` sebagai
+  argumen posisi sekaligus bernama, sehingga build berhenti sebelum satu pun uji berjalan.
 
 ### Diubah
 - **Tombol "Buka" di Favorit & Riwayat kini membuka layar yang benar** (`plan.txt`: *"Pastikan setiap

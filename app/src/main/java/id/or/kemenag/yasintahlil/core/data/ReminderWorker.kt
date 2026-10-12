@@ -23,8 +23,9 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * menghormati saklar per-waktu, memutar audio adzan pilihan pengguna di latar (foreground service media),
  * lalu menjadwalkan kemunculan berikutnya lewat [PrayerScheduler].
  *
- * Tiga jenis pekerjaan: [PrayerScheduler.JENIS_ADZAN] (waktu masuk), [PrayerScheduler.JENIS_PRA]
- * (pengingat sebelum waktu), dan [PrayerScheduler.JENIS_DOA] (pengingat membaca doa setelah adzan).
+ * Empat jenis pekerjaan: [PrayerScheduler.JENIS_ADZAN] (waktu masuk), [PrayerScheduler.JENIS_PRA]
+ * (pengingat sebelum waktu), [PrayerScheduler.JENIS_DOA] (pengingat membaca doa setelah adzan), dan
+ * [PrayerScheduler.JENIS_IQOMAH] (perkiraan waktu iqomah telah lewat).
  */
 class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(app, params) {
 
@@ -46,6 +47,13 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         if (jenis == PrayerScheduler.JENIS_DOA) {
             // Pengingat ini hanya masuk akal bila saklarnya masih menyala saat pekerjaan berjalan.
             if (store.get(Store.DOA_ADZAN_REMINDER, false)) notifyDoa(nama)
+            return Result.success()
+        }
+        if (jenis == PrayerScheduler.JENIS_IQOMAH) {
+            // Sama: saklar dapat dimatikan antara penjadwalan dan saat pekerjaan berjalan.
+            if (store.get(Store.IQOMAH_ON, false)) {
+                notifyIqomah(nama, store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60))
+            }
             return Result.success()
         }
 
@@ -129,6 +137,25 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
             .setAutoCancel(true)
             .build()
         post(nama.hashCode() + 3000, notif)
+    }
+
+    /**
+     * Pengingat bahwa perkiraan waktu iqomah telah lewat. Ketukannya membuka layar Iqomah.
+     *
+     * Teksnya sengaja menyebut "perkiraan" dan jumlah menit yang dipilih pengguna: waktu iqomah
+     * berbeda di tiap masjid, jadi notifikasi ini tidak boleh terdengar seperti ketentuan syariat
+     * atau jadwal masjid tempat pengguna sholat.
+     */
+    private fun notifyIqomah(nama: String, menit: Int) {
+        val notif = NotificationCompat.Builder(applicationContext, NotifChannels.PRE)
+            .setContentTitle("Perkiraan waktu iqomah $nama")
+            .setContentText("Sekitar $menit menit setelah adzan $nama. Waktu iqomah tiap masjid " +
+                "berbeda — ini pengingat pribadi.")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentIntent(contentIntent(Routes.IQOMAH))
+            .setAutoCancel(true)
+            .build()
+        post(nama.hashCode() + 4000, notif)
     }
 
     // Notifikasi hanya relevan bila izin notifikasi diberikan; kegagalan diabaikan agar pengingat lain tetap jalan.
