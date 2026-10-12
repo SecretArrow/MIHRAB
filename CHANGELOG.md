@@ -358,8 +358,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Tema jendela terang/gelap** (`values`/`values-night`): latar jendela disamakan dengan
   palet aplikasi sehingga tidak ada kedipan putih saat dibuka dalam mode gelap; warna bilah
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
+- **Perapian higiene teks otomatis** (`plan.txt` baris 1: *"auto fix"*): sebelumnya tidak ada
+  pemasang apa pun di repo ini — alur kerja `autofix.yml` yang lama hanya menjalankan
+  `./gradlew tasks`, sehingga tak pernah memperbaiki apa-apa. Kini `tools/format_teks.py` merapikan
+  lima hal yang **tidak dapat mengubah perilaku**: akhir baris LF saja, tanpa spasi/tab di akhir
+  baris, tanpa baris berisi spasi saja, tidak lebih dari dua baris kosong beruntun, dan tepat satu
+  baris baru di akhir berkas. Alat yang sama dipakai sebagai gate di `ci.yml` (mode periksa) dan
+  sebagai pemasang di `.github/workflows/autofix.yml` (mode `--fix`), jadi aturan periksa dan
+  perbaikan mustahil berbeda. Alur kerja itu berjalan pada PR dari cabang repo ini dan pada
+  `workflow_dispatch`, lalu **hanya meng-commit bila ada perubahan**; PR dari fork dan PR yang
+  dibuat bot ini dilewati, sehingga tidak ada gelung tak berujung. Alat ini sengaja **tidak**
+  menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Higiene berkas teks**: 13 berkas konten JSON (`adzan`, `ayat_kursi`, `dzikir`, `kota`,
+  `sholat_bacaan`, `sholat_daftar`, `surah_001/112/113/114`, `tahlil`, `tahlil_full`,
+  `yasin_full`) tidak diakhiri baris baru, dan `YasinApp.kt` menyisakan satu baris kosong di
+  akhir — keduanya menimbulkan "\\ No newline at end of file" pada `git diff` dan derau pada tiap
+  suntingan berikutnya. Dirapikan `tools/format_teks.py`; diff-nya murni spasi/baris baru (tidak
+  satu karakter bermakna berubah, dibuktikan `git diff -w --ignore-blank-lines` yang kosong), dan
+  ke-18 berkas JSON tetap sah dibaca. Dijaga gate `format_teks.py` di `ci.yml`.
 - **Pilihan tampilan tidak lagi lenyap saat perangkat diputar**: `MainActivity` tidak mengunci
   orientasi (`android:screenOrientation` tidak ada di manifest), jadi memutar perangkat membangun
   ulang Activity beserta seluruh komposisinya — dan apa pun yang disimpan di `remember` biasa ikut
@@ -784,8 +802,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Berkas `assets/content/yasin.json` yang yatim (metadata Yasin tak dibaca kode mana pun —
   aplikasi memakai `yasin_full.json`, yang juga sudah memuat metadata surat). Rujukan di
   `SOURCES.md` dan `docs/CONTENT_SOURCES.md` disesuaikan.
-- Alur kerja `autofix.yml` yang hanya menjalankan `./gradlew tasks` (tanpa formatter nyata);
-  pemeriksaan tetap dilakukan oleh lint & unit test di `ci.yml`.
+- Alur kerja `autofix.yml` versi lama yang hanya menjalankan `./gradlew tasks` (tanpa formatter
+  nyata). Diganti alur kerja bernama sama yang menjalankan pemasang sesungguhnya
+  (`tools/format_teks.py --fix`) — lihat bagian **Ditambahkan**.
 - Izin `INTERNET` dan `ACCESS_NETWORK_STATE` dari manifes: tidak ada kode jaringan sama sekali,
   sehingga deklarasi izin kini jujur sejalan dengan sifat aplikasi yang 100% offline.
 

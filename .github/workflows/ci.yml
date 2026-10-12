@@ -30,6 +30,8 @@ jobs:
         run: python3 tools/check_workflows.py
       - name: "Higiene komentar Kotlin (mencegah galat kompilasi karena komentar tertutup awal)"
         run: python3 tools/check_kotlin_lex.py app/src
+      - name: "Higiene teks (akhir baris LF, tanpa spasi ekor, tepat satu baris baru di akhir)"
+        run: python3 tools/format_teks.py .
       - name: "Validasi gate bundel pembaruan konten (fixture sah lolos, cacat ditolak)"
         run: |
           python3 tools/validate_bundle.py --strict tools/fixtures/bundel/sah.json
