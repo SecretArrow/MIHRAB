@@ -11,6 +11,7 @@ import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,8 +71,8 @@ class TahlilViewModel @Inject constructor(
             val id = PreferensiSusunan.idAktif(
                 store.get(Store.TAHLIL_SUSUNAN, BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH), susunan)
             val items = itemsUntuk(id, semua, pilihan)
-            val idx = userData.progress(KIND, "idx").first()?.value ?: 0
-            val count = userData.progress(KIND, "count").first()?.value ?: 0
+            val idx = userData.progress(KIND, KunciProgres.TAHLIL_POSISI).first()?.value ?: 0
+            val count = userData.progress(KIND, KunciProgres.TAHLIL_HITUNGAN).first()?.value ?: 0
             _state.value = TahlilUiState(
                 susunan = susunan,
                 susunanId = id,
@@ -98,8 +99,8 @@ class TahlilViewModel @Inject constructor(
         _state.update { it.copy(susunanId = id, items = items, idx = 0, count = 0) }
         viewModelScope.launch {
             store.set(Store.TAHLIL_SUSUNAN, id)
-            userData.setProgress(KIND, "idx", 0)
-            userData.setProgress(KIND, "count", 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_POSISI, 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_HITUNGAN, 0)
         }
     }
 
@@ -127,8 +128,8 @@ class TahlilViewModel @Inject constructor(
         viewModelScope.launch {
             store.set(Store.TAHLIL_CUSTOM, SusunanSaya.serialize(bersih))
             store.set(Store.TAHLIL_SUSUNAN, SusunanSaya.ID)
-            userData.setProgress(KIND, "idx", 0)
-            userData.setProgress(KIND, "count", 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_POSISI, 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_HITUNGAN, 0)
         }
     }
 
@@ -144,8 +145,8 @@ class TahlilViewModel @Inject constructor(
         viewModelScope.launch {
             store.set(Store.TAHLIL_CUSTOM, "")
             store.set(Store.TAHLIL_SUSUNAN, id)
-            userData.setProgress(KIND, "idx", 0)
-            userData.setProgress(KIND, "count", 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_POSISI, 0)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_HITUNGAN, 0)
         }
     }
 
@@ -175,8 +176,8 @@ class TahlilViewModel @Inject constructor(
     private fun persist() {
         val s = _state.value
         viewModelScope.launch {
-            userData.setProgress(KIND, "idx", s.idx)
-            userData.setProgress(KIND, "count", s.count)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_POSISI, s.idx)
+            userData.setProgress(KIND, KunciProgres.TAHLIL_HITUNGAN, s.count)
             s.items.getOrNull(s.idx)?.let { store.set(Store.LAST, JenisBacaan.id(JenisBacaan.TAHLIL, it.id)) }
         }
     }
@@ -198,6 +199,7 @@ class TahlilViewModel @Inject constructor(
     }
 
     // Jenis progres dan riwayat bacaan Tahlil datang dari kosakata bersama `JenisBacaan` — sama
-    // dengan yang dipakai pemetaan tujuan tombol "Buka" pada Favorit & Riwayat.
+    // dengan yang dipakai pemetaan tujuan tombol "Buka" pada Favorit & Riwayat — dan rujukan baris
+    // progresnya dari `KunciProgres`, sama dengan yang dipakai Pengaturan saat mengosongkannya.
     companion object { const val KIND = JenisBacaan.TAHLIL }
 }

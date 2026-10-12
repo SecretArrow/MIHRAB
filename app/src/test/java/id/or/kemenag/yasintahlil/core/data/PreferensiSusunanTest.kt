@@ -134,11 +134,13 @@ class PreferensiSusunanTest {
     fun pengaturanMengosongkanPenandaPosisiBacaSaatSusunanDiganti() {
         val s = settingsScreen()
         // Jenisnya kini datang dari kosakata bersama `JenisBacaan` — sama dengan yang dipakai
-        // pemetaan tujuan tombol "Buka", sehingga penandanya tidak dapat menyimpan ke jenis lain.
+        // pemetaan tujuan tombol "Buka" — dan rujukan barisnya dari `KunciProgres`, sama dengan yang
+        // dibaca `TahlilViewModel`. Keduanya harus sama persis: menulis ke jenis atau rujukan lain
+        // berarti mengosongkan baris yang tidak dibaca siapa pun, sementara posisi lama tetap utuh.
         assertTrue("posisi baca lama tidak dikosongkan saat susunan diganti",
-            s.contains("userData.setProgress(JenisBacaan.TAHLIL, \"idx\", 0)"))
+            s.contains("userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_POSISI, 0)"))
         assertTrue("hitungan bacaan lama tidak dikosongkan saat susunan diganti",
-            s.contains("userData.setProgress(JenisBacaan.TAHLIL, \"count\", 0)"))
+            s.contains("userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_HITUNGAN, 0)"))
     }
 
     /** Modul Tahlil memakai aturan yang sama, supaya keduanya tak berbeda pendapat. */

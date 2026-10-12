@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rujukan baris progres kini satu tempat**: baris progres bacaan disimpan sebagai pasangan
+  `(jenis, rujukan)`. Jenisnya sudah lama datang dari `JenisBacaan`, tetapi **rujukannya** masih
+  diketik ulang di tempat pemakaian: `"idx"` dan `"count"` muncul sepuluh kali di
+  `TahlilViewModel` — penulis sekaligus pembacanya — lalu diketik ulang lagi di `SettingsScreen`,
+  yang mengosongkan progres Tahlil saat pengguna mengganti susunan; `"wudhu"` diketik di tiga
+  tempat di `WudhuScreen` padahal jenisnya sudah dari kosakata bersama. Karena penulis dan pembaca
+  baris yang sama tinggal di berkas berbeda, satu ejaan yang berubah di salah satu sisi tidak
+  menghasilkan galat apa pun: pengguna menekan "mulai dari awal" dan penghitungnya tidak bergerak
+  (baris baru ditulis, baris lama tetap terbaca), atau tanda "sudah dipelajari" di panduan wudhu
+  hilang sendiri. Semuanya kini membaca `KunciProgres` di `core/util/`, dan aturannya dibuat lebih
+  tegas: **tidak ada satu pun pemanggilan `progress`/`setProgress` yang boleh memberi rujukan berupa
+  literal** — rujukan yang berupa id konten (mis. id sholat) tetap boleh karena ia variabel, bukan
+  ejaan yang disalin. Nilainya dibekukan karena baris itu sudah ada di perangkat pengguna. Dijaga
+  `KunciProgresSatuTempatTest` (6 uji), dengan enam mutasi terverifikasi.
 - **Jenis bacaan tersimpan kini satu tempat**: bagian sebelum `:` pada id bacaan — `yasin`, `tahlil`,
   `dzikir`, `adzan`, `iqomah`, `doa`, `ghaib`, `jenazah`, `bacaan`, `niat`, `langkah`, `search` —
   adalah **kunci sambung** antara penulis dan pembaca: layar menulisnya sebagai awalan id kartu yang

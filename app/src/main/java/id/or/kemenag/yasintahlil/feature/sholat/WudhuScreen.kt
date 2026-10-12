@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Langkah
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import kotlinx.coroutines.launch
 
 /**
@@ -24,7 +25,7 @@ fun WudhuScreen() {
     val scope = rememberCoroutineScope()
     val panduan = remember { repo.panduanBersuci() }
     var selesai by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { userData.progress(KIND, "wudhu").collect { selesai = (it?.value ?: 0) > 0 } }
+    LaunchedEffect(Unit) { userData.progress(KIND, KunciProgres.WUDHU).collect { selesai = (it?.value ?: 0) > 0 } }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Wudhu & Tayamum", style = MaterialTheme.typography.titleLarge)
@@ -56,10 +57,10 @@ fun WudhuScreen() {
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            Button(onClick = { scope.launch { userData.setProgress(KIND, "wudhu", 1) } }, enabled = !selesai) {
+            Button(onClick = { scope.launch { userData.setProgress(KIND, KunciProgres.WUDHU, 1) } }, enabled = !selesai) {
                 Text(if (selesai) "✓ Sudah ditandai dipelajari" else "Tandai sudah dipelajari")
             }
-            if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, "wudhu", 0) } }) {
+            if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, KunciProgres.WUDHU, 0) } }) {
                 Text("Batalkan tanda")
             }
         }
@@ -80,6 +81,7 @@ private fun LangkahBagian(title: String, steps: List<Langkah>) {
     }
 }
 
-// Jenis progres panduan bersuci — dari kosakata bersama `JenisBacaan`. Hanya menyimpan progres:
-// langkah wudhu tinggal di satu layar bersama tayamum, jadi tidak punya layar tujuan sendiri.
+// Jenis progres panduan bersuci — dari kosakata bersama `JenisBacaan`, dan rujukan barisnya dari
+// `KunciProgres`. Hanya menyimpan progres: langkah wudhu tinggal di satu layar bersama tayamum, jadi
+// tidak punya layar tujuan sendiri.
 private const val KIND = JenisBacaan.WUDHU

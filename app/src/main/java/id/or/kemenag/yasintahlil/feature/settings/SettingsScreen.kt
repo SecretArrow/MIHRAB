@@ -22,6 +22,7 @@ import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
@@ -287,8 +288,8 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                                 // Urutan bagiannya berbeda, jadi posisi baca yang lama tidak lagi
                                 // menunjuk bagian yang sama — dikosongkan supaya penandanya tidak
                                 // berbohong. Sama seperti saat mengganti susunan di modul Tahlil.
-                                userData.setProgress(JenisBacaan.TAHLIL, "idx", 0)
-                                userData.setProgress(JenisBacaan.TAHLIL, "count", 0)
+                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_POSISI, 0)
+                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_HITUNGAN, 0)
                             }
                         }, { Text(s.nama) })
                     }
