@@ -155,12 +155,93 @@ class JadwalHariIniTest {
         assertEquals("23:59", JadwalHariIni.geser("00:04", -5))
     }
 
+    // ---- Waktu berikutnya ----
+
+    private val contoh = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+
+    /**
+     * Urutan yang dipakai memilih waktu berikutnya adalah [JadwalHariIni.ENAM_WAKTU] yang sama dengan
+     * [JadwalHariIni.jam], [JadwalHariIni.semua], dan [JadwalHariIni.adzan].
+     *
+     * Aturan ini dahulu hidup di `PrayerCalc.next`, yang menuliskan pasangan nama→jamnya sendiri
+     * (`"Subuh" to t.subuh`, …) dan mengembalikan **nama saja**; pemanggilnya lalu mencari jamnya lagi
+     * dengan cabang cadangan `?: t.isya`. Dua daftar enam nama harus sepakat tanpa apa pun yang
+     * menjaganya, dan `next` mengembalikan Terbit sebagai "waktu berikutnya" tanpa pemanggilnya dapat
+     * tahu apakah itu memang yang dimaksud.
+     */
+    @Test
+    fun berikutnyaMengikutiUrutanBersama() {
+        fun menit(hhmm: String) = PrayerCalc.toMinutes(hhmm)
+        // Sebelum Subuh → Subuh hari itu.
+        assertEquals(
+            JadwalHariIni.Berikutnya("Subuh", "04:35", 25),
+            JadwalHariIni.berikutnya(menit("04:10"), contoh),
+        )
+        // Tepat pada waktunya dianggap sudah lewat: pengingatnya sudah berbunyi.
+        assertEquals(
+            JadwalHariIni.Berikutnya("Terbit", "05:50", 75),
+            JadwalHariIni.berikutnya(menit("04:35"), contoh),
+        )
+        listOf("05:40" to "Terbit", "05:50" to "Zuhur", "11:52" to "Asar",
+            "15:12" to "Magrib", "18:02" to "Isya").forEach { (jam, nama) ->
+            assertEquals("setelah $jam", nama, JadwalHariIni.berikutnya(menit(jam), contoh).nama)
+        }
+    }
+
+    /** Setelah Isya tak ada waktu lagi hari itu: Subuh **besok**, dengan putaran melewati tengah malam. */
+    @Test
+    fun berikutnyaSetelahIsyaMemutarKeSubuhBesok() {
+        val b = JadwalHariIni.berikutnya(PrayerCalc.toMinutes("23:00"), contoh)
+        assertEquals("Subuh", b.nama)
+        assertEquals("04:35", b.jam)
+        assertEquals(PrayerCalc.toMinutes("04:35") + 60, b.sisaMenit)
+        // Sisa menit selalu positif — termasuk tepat tengah malam, saat seluruh waktu hari itu lewat.
+        assertTrue(JadwalHariIni.berikutnya(0, contoh).sisaMenit > 0)
+    }
+
+    /**
+     * Nama dan jam datang **bersama**, jadi pemanggil tak dapat memasangkan nama dari satu aturan
+     * dengan jam dari aturan lain. Jamnya harus sama dengan [JadwalHariIni.jam] untuk nama yang sama.
+     */
+    @Test
+    fun berikutnyaMembawaJamYangSamaDenganJam() {
+        JadwalHariIni.ENAM_WAKTU.forEachIndexed { i, nama ->
+            val b = JadwalHariIni.berikutnya(PrayerCalc.toMinutes(JadwalHariIni.semua(contoh)[i]) - 1, contoh)
+            assertEquals("waktu ke-$i", nama, b.nama)
+            assertEquals("jam $nama", JadwalHariIni.jam(contoh, nama), b.jam)
+        }
+    }
+
+    /**
+     * Pasangan nama→jam hanya boleh ditulis di [JadwalHariIni]; seluruh pemakai memakainya lewat
+     * [JadwalHariIni.berikutnya], [JadwalHariIni.jam], atau [JadwalHariIni.adzan].
+     *
+     * `PrayerCalc.next` dan baris jam beranda dahulu masing-masing menuliskan keenam pasangan itu
+     * sendiri (`"Subuh" to t.subuh, …` dan `"Subuh ${times.subuh} • …"`). Bila salah satunya bergeser,
+     * hitung mundur beranda menunjuk satu waktu sementara baris jam di bawahnya menampilkan jam waktu
+     * lain — tanpa satu pun pesan galat.
+     */
+    @Test
+    fun pasanganNamaJamHanyaDitulisDiJadwalHariIni() {
+        // Batas kata penting: `s.asarHanafi` dan `p.asarFactor` memuat ".asar" tanpa mengakses medan
+        // `PrayerTimes.asar` — pencarian tanpa `\b` akan menuduh keduanya.
+        val medan = listOf("subuh", "terbit", "zuhur", "asar", "magrib", "isya").map { Regex("""\.$it\b""") }
+        val pelanggar = mutableListOf<String>()
+        File(KodeSumber.root(), "src/main/java/id/or/kemenag/yasintahlil").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" && it.name != "JadwalHariIni.kt" }
+            .forEach { f ->
+                val kode = KodeSumber.kodeTanpaKomentar(f.readText())
+                medan.filter { it.containsMatchIn(kode) }.forEach { pelanggar += "${f.name}: ${it.pattern}" }
+            }
+        assertTrue("pasangan nama→jam ditulis ulang di luar JadwalHariIni: $pelanggar", pelanggar.isEmpty())
+    }
+
     // ---- Lima waktu beradzan ----
 
     /** Terbit matahari bukan waktu sholat, jadi ia tidak boleh ikut dalam daftar adzan. */
     @Test
     fun adzanHanyaLimaWaktuTanpaTerbit() {
-        val t = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+        val t = contoh
         assertEquals(listOf("04:35", "11:52", "15:12", "18:02", "19:15"), JadwalHariIni.adzan(t))
         assertFalse("Terbit tidak beradzan", JadwalHariIni.adzan(t).contains(t.terbit))
     }
@@ -174,7 +255,7 @@ class JadwalHariIniTest {
      */
     @Test
     fun urutanNamaSejajarDenganJamnya() {
-        val t = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+        val t = contoh
         assertEquals(JadwalHariIni.LIMA_WAKTU.size, JadwalHariIni.adzan(t).size)
         assertEquals(JadwalHariIni.ENAM_WAKTU.size, JadwalHariIni.semua(t).size)
         assertEquals(5, JadwalHariIni.LIMA_WAKTU.size)
@@ -191,7 +272,7 @@ class JadwalHariIniTest {
 
     @Test
     fun namaTakDikenalTidakDiberiJamTebakan() {
-        val t = PrayerTimes("04:35", "05:50", "11:52", "15:12", "18:02", "19:15")
+        val t = contoh
         assertEquals(null, JadwalHariIni.jam(t, "Dhuha"))
         assertEquals("18:02", JadwalHariIni.jam(t, "Magrib"))
     }
