@@ -114,7 +114,28 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         if (s.infoCard) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
                 Text("Info Islami harian", style = MaterialTheme.typography.titleMedium)
-                Text("Perbanyak sholawat di hari Jumat (HR Abu Dawud). Sumber: sunnah.com")
+                // Isinya berganti mengikuti tanggal dan diambil dari pustaka dzikir yang sudah
+                // terverifikasi (`InfoHarian`) — dahulu kartu ini memuat satu kalimat tetap yang
+                // khusus hari Jumat tetapi ditampilkan setiap hari.
+                val gagal = s.infoGagal
+                val b = s.info
+                when {
+                    gagal != null -> Text(gagal, style = MaterialTheme.typography.labelSmall)
+                    b == null -> Text("Belum ada butir untuk hari ini.",
+                        style = MaterialTheme.typography.labelSmall)
+                    else -> {
+                        Text(b.judul, style = MaterialTheme.typography.titleSmall)
+                        // Ukuran Arab di kartu ini tetap: kartu beranda adalah ringkasan, bukan
+                        // permukaan bacaan — ukuran pilihan pengguna berlaku di pustaka dzikirnya.
+                        // Namun chip "Arab" di Pengaturan tetap dihormati: bila dimatikan, teks Arab
+                        // disembunyikan di sini juga, agar preferensi itu tak menjadi kontrol mati.
+                        if (s.showArab && b.arab.isNotBlank()) ArabText(b.arab, sizeSp = 20f)
+                        if (b.teks.isNotBlank()) Text(b.teks)
+                        if (b.sumber.isNotBlank()) Text("Sumber: ${b.sumber}",
+                            style = MaterialTheme.typography.labelSmall)
+                        TextButton(onClick = { go(Routes.DZIKIR) }) { Text("Buka pustaka dzikir") }
+                    }
+                }
             }
         }
     }

@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **"Info Islami harian" di beranda kini benar-benar harian**: kartu itu memuat **satu kalimat
+  tetap** — *"Perbanyak sholawat di hari Jumat (HR Abu Dawud). Sumber: sunnah.com"* — yang
+  ditampilkan setiap hari. Judulnya "harian", isinya hari Jumat: pada hari Senin pengguna membaca
+  anjuran yang menyebut hari Jumat, dan sejak hari kedua kartu itu berhenti memberi apa pun yang
+  baru — padahal `plan.txt` §"Beranda Utama" meminta *"kartu informasi Islami harian"*. Isinya kini
+  berganti mengikuti tanggal, dan **tidak satu pun teks baru dikarang**: butir harian diambil dari
+  pustaka dzikir yang sudah terverifikasi di bundel konten (lafaz berharakat, terjemahan, dan
+  sumbernya ikut ditampilkan), sedangkan hari Jumat memakai anjuran sholawat yang memang khusus hari
+  itu. Tanggalnya diikuti dari zona waktu tampilan, sama seperti jam di atasnya, sehingga kartu tidak
+  menyebut hari yang berbeda dari tanggal yang tertera. Bundel konten yang tidak terbaca menyisakan
+  kartu tanpa butir **beserta sebabnya** — bukan butir milik hari lain. Aturannya murni (tanpa
+  Android) di `InfoHarian` dan dijaga `InfoHarianTest`.
 - **Kegagalan memutar adzan tidak lagi ditelan**: aplikasi tidak menyertakan berkas adzan (lisensi),
   sehingga berkasnya dipilih pengguna sendiri dan **berkas yang dipindah atau dicabut izinnya adalah
   keadaan yang wajar**. Dahulu dua kegagalan pada jalur itu dibuang begitu saja: nilai balik
