@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil
 
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -65,10 +66,16 @@ class PengingatIqomahTest {
         val badan = pekerja.substringAfter("private fun notifyIqomah")
             .substringBefore("private fun post")
         assertTrue("notifikasi iqomah tidak menyebut perkiraan", badan.contains("Perkiraan"))
-        assertTrue("notifikasi iqomah tidak mengingatkan bahwa waktu masjid berbeda",
-            badan.contains("tiap masjid"))
+        // Kalimat batas tanggung jawabnya kini **satu** dengan yang dibaca layar Iqomah, bukan
+        // versi pendek yang hanya hidup di notifikasi ini. Ejaannya sendiri dipaku di
+        // `PengingatAdzanTest`; yang dijaga di sini adalah notifikasi ini benar-benar membacanya
+        // dari kosakata bersama, sehingga layar dan notifikasi tidak dapat berbeda lagi.
+        assertTrue("notifikasi iqomah tidak memakai keterangan bersama",
+            badan.contains("PengingatAdzan.IQOMAH_PERKIRAAN"))
         assertFalse("notifikasi iqomah menyebut waktu masjid seolah pasti",
             badan.contains("telah habis"))
+        assertTrue("keterangan bersama tidak lagi mengingatkan bahwa waktu masjid berbeda",
+            PengingatAdzan.IQOMAH_PERKIRAAN.contains("tiap masjid"))
     }
 
     /**
