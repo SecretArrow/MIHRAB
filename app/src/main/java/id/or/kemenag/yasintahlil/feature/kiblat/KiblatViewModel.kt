@@ -33,7 +33,12 @@ data class KiblatUiState(
     val bearing: Double = 295.0,
     val azimuth: Float = 0f,
     val hasCompass: Boolean = true,
-    val calibrated: Boolean = true,
+    /**
+     * Akurasi sensor terakhir: `true` layak dipercaya, `false` tidak, `null` **belum ada pembacaan**.
+     * Bukan boolean biasa: sebelum sensor mengirim nilai, statusnya belum diketahui — dan
+     * menampilkan "terkalibrasi" saat itu adalah klaim yang belum terbukti.
+     */
+    val calibrated: Boolean? = null,
     /** True bila koordinat berasal dari perbaikan GPS live, bukan lokasi manual/kota. */
     val liveFix: Boolean = false,
     /** Sedang menunggu perbaikan GPS — layar menampilkan indikator proses, bukan kompas beku. */
@@ -178,7 +183,7 @@ class KiblatViewModel @Inject constructor(
         val sm = sensorManager
         val rot = sm?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
         if (sm == null || (rot == null && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) == null)) {
-            _state.update { it.copy(hasCompass = false, calibrated = false) }
+            _state.update { it.copy(hasCompass = false, calibrated = null) }
             return
         }
         if (rot != null) {
@@ -209,7 +214,7 @@ class KiblatViewModel @Inject constructor(
         val acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         val mag = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         if (acc == null || mag == null) {
-            _state.update { it.copy(hasCompass = false, calibrated = false) }
+            _state.update { it.copy(hasCompass = false, calibrated = null) }
             return
         }
         val grav = FloatArray(3)

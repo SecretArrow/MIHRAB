@@ -30,6 +30,8 @@ import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
 import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
+import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
+import id.or.kemenag.yasintahlil.core.sensor.StatusKompas
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -104,12 +106,36 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
             }
         }
 
-        if (!s.hasCompass) Text(
-            "⚠ Perangkat tanpa magnetometer — gunakan sudut azimut di atas dengan peta. Kompas langsung tidak tersedia.",
-            color = MaterialTheme.colorScheme.error)
-        if (!s.calibrated) Text(
-            "⚠ Sensor belum terkalibrasi / ada gangguan magnet. Gerakkan perangkat pola angka 8, jauhkan dari magnet & casing magnetik.",
-            color = MaterialTheme.colorScheme.error)
+        // Indikator status kalibrasi (plan.txt §"Arah Kiblat") — ditampilkan **selalu**, bukan hanya
+        // saat bermasalah. Layar yang hanya diam saat semuanya baik membuat pengguna tak tahu apakah
+        // jarum yang dilihatnya layak dipercaya; sebaliknya, "terkalibrasi" tidak boleh diklaim
+        // sebelum ada satu pun pembacaan sensor.
+        val status = KalibrasiKompas.status(s.hasCompass, s.calibrated)
+        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Column(Modifier.padding(12.dp)) {
+                Text("Status kalibrasi sensor", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "${KalibrasiKompas.tanda(status)} ${KalibrasiKompas.label(status)}",
+                    color = when {
+                        KalibrasiKompas.perluPerhatian(status) -> MaterialTheme.colorScheme.error
+                        status == StatusKompas.TERKALIBRASI -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+                if (KalibrasiKompas.perluPolaDelapan(status)) Text(
+                    "Gerakkan perangkat membentuk pola angka delapan, jauhkan dari magnet, casing " +
+                        "magnetik, dan benda logam, lalu ulangi sampai statusnya berubah.",
+                    style = MaterialTheme.typography.labelSmall)
+                if (status == StatusKompas.TANPA_SENSOR) Text(
+                    "Perangkat ini tidak punya magnetometer, jadi kompas langsung tidak tersedia. " +
+                        "Pakai angka azimut dan peta di bawah.",
+                    style = MaterialTheme.typography.labelSmall)
+                if (status == StatusKompas.TERKALIBRASI) Text(
+                    "Akurasi kompas tetap tidak dijamin: casing magnetik, benda logam, dan medan " +
+                        "magnet di sekitar dapat menyimpangkannya. Bandingkan dengan peta dan angka azimut.",
+                    style = MaterialTheme.typography.labelSmall)
+            }
+        }
 
         // Keadaan menunggu/gagal GPS: sebelumnya layar diam saja saat GPS tak kunjung memberi
         // perbaikan, sehingga pengguna mengira aplikasinya rusak.

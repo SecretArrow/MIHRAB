@@ -6,6 +6,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Indikator status kalibrasi kompas** (`plan.txt` §"Arah Kiblat": *"Indikator status kalibrasi
+  sensor"*, *"Petunjuk menggerakkan perangkat membentuk pola angka delapan jika sensor memerlukan
+  kalibrasi"*, dan *"Jangan mengklaim arah kompas selalu akurat"*): layar Kiblat dulu hanya
+  menampilkan peringatan **saat bermasalah** — dan status awalnya bahkan "terkalibrasi" sebelum
+  sensor mengirim satu pun nilai, klaim yang belum terbukti. Kini ada kartu **"Status kalibrasi
+  sensor"** yang selalu tampil dengan empat keadaan yang dibedakan jelas: *tidak ada sensor*,
+  *menunggu pembacaan* (belum ada nilai sama sekali — bukan berarti sudah terkalibrasi),
+  *terbaca & terkalibrasi*, dan *perlu kalibrasi*. Petunjuk pola angka delapan hanya muncul pada
+  keadaan yang memang memerlukannya, keadaan "terkalibrasi" tetap disertai pengingat bahwa casing
+  magnetik dan logam di sekitar dapat menyimpangkan arah, dan setiap status punya tanda teks
+  sendiri sehingga tidak bergantung pada warna saja. Status kalibrasi awal di `KiblatUiState`
+  diubah menjadi `null` ("belum diketahui"), dan aturannya dikumpulkan di `KalibrasiKompas`
+  beserta ujinya.
 - **Tampilan kompas kiblat** (`plan.txt`: *"Pengaturan satuan dan tampilan kompas"* dan *"Dukungan
   perangkat yang tidak memiliki magnetometer melalui tampilan arah berbasis peta atau sudut hasil
   perhitungan, dengan penjelasan bahwa kompas langsung tidak tersedia"*): pengguna kini dapat
