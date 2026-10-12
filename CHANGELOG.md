@@ -6,6 +6,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Syarat, persiapan, dan penutup aurat sholat — di depan langkah pertama** (`plan.txt` §"Tata
+  Cara Sholat Langkah demi Langkah" membuka daftar langkahnya dengan *"Syarat wajib dan syarat
+  sah"*, *"Persiapan sebelum sholat"*, *"Wudhu dan hal yang membatalkannya"*, *"Penutup aurat dan
+  kebersihan tempat sholat"*, dan *"Penentuan arah kiblat"*): kelimanya dulu **tidak ada sama
+  sekali di alur belajar**. Layar tata cara langsung dimulai dari niat dan langkah pertama,
+  sedangkan wudhu dan arah kiblat hanya dapat dicapai lewat menu lain — sehingga pembaca yang
+  mengikuti tombol "Berikutnya" sampai takbir tidak pernah diberi tahu bahwa ada syarat yang harus
+  dipenuhi lebih dulu. Kini layar tata cara membuka dengan bagian **"Sebelum sholat"**: tombol
+  menuju **Wudhu & Tayamum** dan **Arah Kiblat** (kontennya **ditautkan, tidak disalin** — lafaz
+  tetap hanya ada di `wudhu.json`), serta daftar **syarat wajib, syarat sah, persiapan, penutup
+  aurat, dan kebersihan tempat sholat** dari berkas baru `sholat_syarat.json`. Di ujung rangkaian
+  ada tombol **"Dzikir & doa setelah sholat"** (`plan.txt` menutup langkahnya dengan *"Dzikir dan
+  doa setelah sholat"*). Berkas syarat itu **sengaja tanpa satu pun huruf Arab**: isinya daftar
+  periksa berbahasa Indonesia, dan aturan proyek melarang menyusun lafaz/hadis tanpa sumber resmi
+  — statusnya dinyatakan terbuka di layar lewat `catatan_verifikasi` (kerangka mengikuti Fasolatan
+  Kemenag, rincian kata masih menunggu pencocokan dengan modul resmi), bukan disembunyikan.
+  `SyaratSholatTest` menolak masuknya karakter Arab maupun kunci `arab`/`latin` ke berkas itu,
+  sehingga ia tidak dapat diam-diam berubah menjadi tempat menaruh teks agama yang belum
+  terverifikasi. Seluruh butir syarat juga masuk ke indeks **Pencarian**.
 - **Tasyahud awal dan tasyahud akhir sebagai dua langkah tersendiri** (`plan.txt` §"Tata Cara Sholat
   Langkah demi Langkah" mendaftar *"Tasyahud awal **jika relevan**"* dan *"Tasyahud akhir"* sebagai
   dua langkah): dulu keduanya satu entri "Tasyahud (awal & akhir)", sehingga pengguna yang

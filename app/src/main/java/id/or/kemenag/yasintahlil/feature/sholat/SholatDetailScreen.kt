@@ -12,16 +12,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
-/** Mode belajar langkah-demi-langkah untuk setiap sholat. */
+/**
+ * Mode belajar langkah-demi-langkah untuk setiap sholat.
+ *
+ * [go] dipakai untuk hal yang **bukan** langkah bacaan tetapi tetap bagian panduan menurut
+ * `plan.txt` §"Tata Cara Sholat Langkah demi Langkah": bersuci, penentuan arah kiblat, dan dzikir
+ * setelah sholat. Ketiganya sudah punya layar sendiri berisi konten terverifikasi; menautkannya di
+ * sini membuat pembaca langkah demi langkah tidak perlu menebak di mana mencarinya.
+ */
 @Composable
-fun SholatDetailScreen(id: String) {
+fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     val repo = rememberRepo()
     val store = rememberStore()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     val bacaan = remember { repo.sholatBacaan() }
+    val syarat = remember { repo.sholatSyarat() }
     val info = remember { (repo.sholatWajib() + repo.sholatSunnah()).find { it.id == id } }
     var step by remember { mutableStateOf(0) }
     var ringkas by remember { mutableStateOf(false) }
@@ -30,6 +39,7 @@ fun SholatDetailScreen(id: String) {
     var selesai by remember { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf("syafii") }
     var settings by remember { mutableStateOf(false) }
+    var syaratTerbuka by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
@@ -76,6 +86,56 @@ fun SholatDetailScreen(id: String) {
             ket.forEach { k ->
                 Text("• $k", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 4.dp))
+            }
+        }
+        // --- Sebelum langkah pertama ---------------------------------------------------------
+        // `plan.txt` §"Tata Cara Sholat Langkah demi Langkah" mendaftar "Syarat wajib dan syarat
+        // sah", "Persiapan sebelum sholat", "Wudhu dan hal yang membatalkannya", "Penutup aurat
+        // dan kebersihan tempat sholat", serta "Penentuan arah kiblat" sebagai bagian panduan ini.
+        // Karena itu semuanya disajikan di sini, di depan langkah pertama: pembaca yang menekan
+        // "Berikutnya" sampai takbir tanpa tahu syaratnya akan mengerjakan urutan yang belum tentu
+        // sah. Wudhu dan kiblat punya layar sendiri, jadi cukup ditautkan — kontennya tidak disalin.
+        Text("Sebelum sholat", style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(top = 8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.horizontalScroll(rememberScrollState())) {
+            OutlinedButton(onClick = { go(Routes.WUDHU) }) { Text("Wudhu & Tayamum") }
+            OutlinedButton(onClick = { go(Routes.KIBLAT) }) { Text("Arah Kiblat") }
+        }
+        if (syarat.jumlah > 0) {
+            TextButton(onClick = { syaratTerbuka = !syaratTerbuka }) {
+                Text(if (syaratTerbuka) "Sembunyikan syarat & persiapan"
+                    else "Syarat & persiapan sholat (${syarat.jumlah} butir)")
+            }
+            if (syaratTerbuka) {
+                BagianDaftar("Syarat wajib", syarat.syaratWajib)
+                BagianDaftar("Syarat sah", syarat.syaratSah)
+                BagianDaftar("Persiapan sebelum sholat", syarat.persiapan)
+                val aurat = syarat.penutupAurat
+                if (aurat.lakiLaki.isNotBlank() || aurat.perempuan.isNotBlank()) {
+                    Text(aurat.judul.ifBlank { "Penutup aurat" }, style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 8.dp))
+                    if (aurat.lakiLaki.isNotBlank()) Text("• ${aurat.lakiLaki}", style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 4.dp))
+                    if (aurat.perempuan.isNotBlank()) Text("• ${aurat.perempuan}", style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 4.dp))
+                    if (aurat.catatan.isNotBlank()) Text(aurat.catatan, style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(start = 4.dp, top = 2.dp))
+                }
+                BagianDaftar("Kebersihan tempat sholat", syarat.kebersihanTempat)
+                if (syarat.catatanMazhab.isNotBlank()) {
+                    Text(syarat.catatanMazhab, style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(top = 8.dp))
+                }
+                // Status sumber dinyatakan terbuka, bukan disembunyikan: daftar ini kerangka
+                // berbahasa Indonesia, dan pengguna berhak tahu bahwa rinciannya belum dicocokkan
+                // kata-per-kata dengan modul Fasolatan resmi.
+                if (syarat.catatanVerifikasi.isNotBlank()) {
+                    Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                        Text(syarat.catatanVerifikasi, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(12.dp))
+                    }
+                }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -138,6 +198,13 @@ fun SholatDetailScreen(id: String) {
                 Text("Batalkan tanda")
             }
         }
+        // --- Setelah salam ---------------------------------------------------------------------
+        // `plan.txt` menutup rangkaian langkah dengan "Dzikir dan doa setelah sholat". Layar Dzikir
+        // membuka kelompok "Dzikir setelah sholat" lebih dahulu (urutan kelompok pada bundel),
+        // sehingga tautan ini mendarat tepat di tempat yang dimaksud.
+        OutlinedButton(onClick = { go(Routes.DZIKIR) }, modifier = Modifier.padding(top = 8.dp)) {
+            Text("Dzikir & doa setelah sholat")
+        }
         Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Bacaan bertanda mazhab " +
             "tertentu hanya tampil bila mazhab panduan cocok — perbedaan dicatat, tidak dicampuradukkan. Lihat SOURCES.md.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
@@ -153,6 +220,19 @@ fun SholatDetailScreen(id: String) {
 }
 
 private const val KIND = "sholat"
+
+/**
+ * Satu bagian daftar syarat/persiapan. Bagian kosong tidak digambar sama sekali — judul tanpa isi
+ * hanya menambah tinggi layar tanpa memberi tahu apa pun.
+ */
+@Composable
+private fun BagianDaftar(judul: String, butir: List<String>) {
+    if (butir.isEmpty()) return
+    Text(judul, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
+    butir.forEach { b ->
+        Text("• $b", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 4.dp))
+    }
+}
 
 /** Pilihan mazhab panduan yang mengubah bacaan yang ditampilkan. */
 private val MAZHAB_OPTIONS = listOf(

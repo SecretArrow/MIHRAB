@@ -20,6 +20,10 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
+| `sholat_jenazah.json` | Sholat jenazah (syarat, langkah, niat) | **sunnah.com** (Bukhari 1335) | ✅ resmi |
+| `sholat_mayit.json` | Doa untuk mayit | **sunnah.com** (Muslim 963) | ✅ resmi |
+| `wudhu.json` | Wudhu, tayamum, rukun, pembatal | **Fasolatan Kemenag** (kerangka) | ✅ resmi (tanpa lafaz) |
+| `sholat_syarat.json` | Syarat wajib/sah, persiapan, penutup aurat, kebersihan tempat | **Fasolatan Kemenag** (kerangka) | ⚠️ kerangka, menunggu verifikasi kata-per-kata |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |
 
 ## Kategori sumber bacaan (wajib)
@@ -80,6 +84,7 @@ manusia dari sumber resmi.
 | **Penjelasan waktu membaca tiap bacaan adzan** | ✅ setiap entri di `adzan.json` (`menjawab_adzan`, `sholawat_setelah_adzan`, `doa_setelah_adzan`) punya field `waktu`, dan gate konten menolak entri yang kehilangannya | mengikuti urutan yang diperintahkan pada hadis yang **sudah dikutip entri itu sendiri** (menjawab → sholawat → doa; HR Bukhari & Muslim — sunnah.com). Field `waktu` hanya keterangan berbahasa Indonesia, **bukan lafaz atau hadis baru** |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
 | **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu, di modul Tahlil **dan** di Pengaturan (`PreferensiSusunan`) | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
+| **Rincian kata syarat/persiapan sholat** (`sholat_syarat.json`) | ⚠️ kerangka berbahasa Indonesia sudah ada dan tampil di layar detail sholat; kalimatnya **belum dicocokkan kata-per-kata** dengan modul Fasolatan resmi | modul Fasolatan Ditjen Bimas Islam (unduhan resmi) |
 
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum
 > tersedia, entri ditandai `catatan_verifikasi` dan dibiarkan apa adanya, bukan dikarang.
@@ -93,6 +98,15 @@ manusia dari sumber resmi.
 > terbuka pada field `sumber`, agar pengguna dapat menilai sendiri — bukan disembunyikan.
 > Lafaz menjawab adzan dipindahkan dari kode Kotlin ke `adzan.json` supaya tervalidasi gate
 > konten dan tidak ada teks Arab hardcoded di layar.
+>
+> **`sholat_syarat.json` sengaja tanpa satu pun huruf Arab.** Isinya daftar periksa berbahasa
+> Indonesia (syarat wajib, syarat sah, persiapan, batas aurat, kebersihan tempat) yang dibaca
+> pembaca langkah demi langkah sebelum takbiratul ihram. Aturan proyek melarang menyusun lafaz
+> atau hadis tanpa sumber resmi, jadi berkas ini tidak memuat keduanya — dan `SyaratSholatTest`
+> menolak masuknya karakter Arab maupun kunci `arab`/`latin` ke dalamnya. Statusnya dinyatakan
+> terbuka di layar lewat field `catatan_verifikasi`: kerangkanya mengikuti Fasolatan, rincian
+> katanya masih menunggu pencocokan dengan modul resmi. Menggabungkannya ke sini bukan menambah
+> klaim keagamaan baru, melainkan menaruh bagian panduan yang selama ini tidak ada di alur.
 
 ## Cara memeriksa
 

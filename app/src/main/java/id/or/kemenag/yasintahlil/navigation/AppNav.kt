@@ -90,7 +90,7 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.SHOLAT) { SholatScreen { nav.navigate(it) } }
                 composable("${Routes.SHOLAT_DETAIL}/{id}",
                     arguments = listOf(navArgument("id") { type = NavType.StringType })) {
-                    SholatDetailScreen(it.arguments?.getString("id").orEmpty())
+                    SholatDetailScreen(it.arguments?.getString("id").orEmpty()) { r -> nav.navigate(r) }
                 }
                 composable(Routes.GHAIB) { GhaibScreen() }
                 composable(Routes.JENAZAH) { JenazahScreen() }

@@ -185,6 +185,17 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
     }
     add(SearchDoc("wudhu:pembatal", "Pembatal wudhu", bersuci.pembatal, Routes.WUDHU))
 
+    // Syarat & persiapan sholat — kerangka berbahasa Indonesia tanpa lafaz (lihat
+    // `sholat_syarat.json`). Tanpa ini, kata seperti "aurat" atau "najis" tidak dapat dicari.
+    val syarat = repo.sholatSyarat()
+    add(SearchDoc("syarat:wajib", "Sholat: syarat wajib", syarat.syaratWajib, Routes.SHOLAT))
+    add(SearchDoc("syarat:sah", "Sholat: syarat sah", syarat.syaratSah, Routes.SHOLAT))
+    add(SearchDoc("syarat:persiapan", "Sholat: persiapan sebelum sholat", syarat.persiapan, Routes.SHOLAT))
+    add(SearchDoc("syarat:aurat", "Sholat: penutup aurat",
+        listOf(syarat.penutupAurat.lakiLaki, syarat.penutupAurat.perempuan, syarat.penutupAurat.catatan),
+        Routes.SHOLAT))
+    add(SearchDoc("syarat:tempat", "Sholat: kebersihan tempat sholat", syarat.kebersihanTempat, Routes.SHOLAT))
+
     // Sholat khusus (ghaib & jenazah): ketentuan, langkah, dan varian niatnya.
     listOf("sholat_ghaib.json" to Routes.GHAIB, "sholat_jenazah.json" to Routes.JENAZAH).forEach { (berkas, rute) ->
         val k = repo.sholatKhusus(berkas)

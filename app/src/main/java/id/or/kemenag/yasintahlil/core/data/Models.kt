@@ -97,6 +97,37 @@ data class PanduanBersuci(
     val catatanLafaz: String = "",
 )
 
+/** Batas aurat menurut mazhab yang dipilih panduan. */
+data class Aurat(
+    val judul: String = "",
+    val lakiLaki: String = "",
+    val perempuan: String = "",
+    val catatan: String = "",
+)
+
+/**
+ * Syarat dan persiapan sholat — kerangka berbahasa Indonesia tanpa teks Arab.
+ *
+ * `plan.txt` §"Tata Cara Sholat Langkah demi Langkah" menempatkan syarat wajib/sah, persiapan,
+ * wudhu, penutup aurat, dan penentuan kiblat **di dalam** panduan langkah demi langkah. Model ini
+ * membawa bagian yang berbentuk daftar; wudhu dan kiblat punya layarnya sendiri dan ditautkan dari
+ * layar detail.
+ */
+data class SholatSyarat(
+    val syaratWajib: List<String> = emptyList(),
+    val syaratSah: List<String> = emptyList(),
+    val persiapan: List<String> = emptyList(),
+    val penutupAurat: Aurat = Aurat(),
+    val kebersihanTempat: List<String> = emptyList(),
+    val catatanMazhab: String = "",
+    val catatanVerifikasi: String = "",
+) {
+    /** Jumlah butir yang ditampilkan, untuk label ringkasan pada tombol pembuka. */
+    val jumlah: Int
+        get() = syaratWajib.size + syaratSah.size + persiapan.size + kebersihanTempat.size +
+            listOf(penutupAurat.lakiLaki, penutupAurat.perempuan).count { it.isNotBlank() }
+}
+
 /** Konten sholat khusus (ghaib/jenazah): metadata + varian niat, dibaca dari assets. */
 data class SholatKhusus(
     val judul: String = "",

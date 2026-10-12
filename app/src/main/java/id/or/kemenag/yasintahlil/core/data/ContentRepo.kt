@@ -302,6 +302,36 @@ class ContentRepo(private val ctx: Context) {
         )
     }
 
+    /**
+     * Syarat dan persiapan sholat dari `sholat_syarat.json`.
+     *
+     * Berkasnya sengaja **tanpa teks Arab**: yang dibutuhkan pengguna di sini adalah daftar periksa
+     * berbahasa Indonesia (sudah wudhu? sudah menutup aurat? sudah masuk waktu?), bukan lafaz.
+     * Lafaznya ada di `sholat_bacaan.json` dan `wudhu.json` dengan sumbernya masing-masing.
+     */
+    fun sholatSyarat(): SholatSyarat {
+        val d = doc("sholat_syarat.json")
+        fun stringList(key: String): List<String> {
+            val arr = d.optJSONArray(key) ?: return emptyList()
+            return (0 until arr.length()).map { arr.getString(it) }
+        }
+        val aurat = d.optJSONObject("penutup_aurat")
+        return SholatSyarat(
+            syaratWajib = stringList("syarat_wajib"),
+            syaratSah = stringList("syarat_sah"),
+            persiapan = stringList("persiapan"),
+            penutupAurat = Aurat(
+                judul = aurat?.optString("judul").orEmpty(),
+                lakiLaki = aurat?.optString("laki_laki").orEmpty(),
+                perempuan = aurat?.optString("perempuan").orEmpty(),
+                catatan = aurat?.optString("catatan").orEmpty(),
+            ),
+            kebersihanTempat = stringList("kebersihan_tempat"),
+            catatanMazhab = d.optString("catatan_mazhab"),
+            catatanVerifikasi = d.optString("catatan_verifikasi"),
+        )
+    }
+
     /** Konten sholat khusus (ghaib/jenazah) dari assets — termasuk varian niat. */
     fun sholatKhusus(file: String): SholatKhusus {
         val d = doc(file)
