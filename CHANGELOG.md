@@ -234,7 +234,11 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   permintaan dari luar tak pernah membuat aplikasi berhenti. `MainActivity` memakai `launchMode`
   `singleTop` agar ketukan saat aplikasi sudah terbuka diteruskan lewat `onNewIntent` alih-alih
   menumpuk instance. Jenis pekerjaan kini eksplisit (`adzan`/`pra`/`doa`), dan pekerjaan lama dari
-  versi sebelumnya tetap terbaca lewat field `adzan` sebagai cadangan.
+  versi sebelumnya tetap terbaca lewat field `adzan` sebagai cadangan. Saklar yang sama kini juga
+  ada di **layar Doa Adzan** — di situlah orang membacanya, jadi mengaktifkannya tidak lagi
+  menuntut berpindah ke menu Adzan lebih dulu. Kedua layar menulis kunci preferensi yang sama
+  (`Store.DOA_ADZAN_REMINDER`) dan menjadwalkan ulang, sehingga tidak lahir dua sumber kebenaran;
+  dijaga `PengingatDoaAdzanTest.saklarPengingatJugaAdaDiLayarDoaAdzan`.
 - **Manajemen data offline** (`plan.txt`: *"Manajemen data offline."*): bagian baru di Pengaturan
   menampilkan **jumlah** favorit, bookmark, riwayat, dan progres yang tersimpan di perangkat
   sebelum apa pun dihapus, lalu menyediakan tombol hapus **per bagian**. Menghapus riwayat tidak
