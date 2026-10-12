@@ -37,7 +37,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         val jenis = inputData.getString("jenis")
             ?: if (inputData.getBoolean("adzan", true)) PrayerScheduler.JENIS_ADZAN else PrayerScheduler.JENIS_PRA
         val store = Store(applicationContext)
-        if (!store.get(Store.NOTIF, true)) return Result.success()
+        if (!store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)) return Result.success()
 
         NotifChannels.ensure(applicationContext)
 
@@ -49,12 +49,12 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         }
         if (jenis == PrayerScheduler.JENIS_DOA) {
             // Pengingat ini hanya masuk akal bila saklarnya masih menyala saat pekerjaan berjalan.
-            if (store.get(Store.DOA_ADZAN_REMINDER, false)) notifyDoa(nama)
+            if (store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)) notifyDoa(nama)
             return Result.success()
         }
         if (jenis == PrayerScheduler.JENIS_IQOMAH) {
             // Sama: saklar dapat dimatikan antara penjadwalan dan saat pekerjaan berjalan.
-            if (store.get(Store.IQOMAH_ON, false)) {
+            if (store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH)) {
                 // Panjang timer dibaca lewat aturan bersama: angka yang tertulis di notifikasi harus
                 // sama dengan yang dihitung penjadwal dan yang ditampilkan layar Iqomah.
                 notifyIqomah(nama, PengingatAdzan.iqomahMenit(
@@ -63,7 +63,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
             return Result.success()
         }
 
-        val uri = store.get(Store.ADZAN_URI, "")
+        val uri = store.get(Store.ADZAN_URI, BawaanPreferensi.BERKAS_ADZAN)
         val vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
         val playAudio = uri.isNotBlank()
         if (playAudio) {

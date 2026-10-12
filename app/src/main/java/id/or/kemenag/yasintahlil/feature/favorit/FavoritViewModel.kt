@@ -3,6 +3,7 @@ package id.or.kemenag.yasintahlil.feature.favorit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
@@ -43,7 +44,7 @@ class FavoritViewModel @Inject constructor(
                 _state.update { it.copy(history = h.distinctBy { i -> i.kind to i.refId }.take(20)) }
             }
         }
-        viewModelScope.launch { _state.update { it.copy(last = store.get(Store.LAST, "")) } }
+        viewModelScope.launch { _state.update { it.copy(last = store.get(Store.LAST, BawaanPreferensi.TERAKHIR_DIBACA)) } }
     }
 
     fun remove(item: FavItem) {

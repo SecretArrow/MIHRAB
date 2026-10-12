@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Kota
 import id.or.kemenag.yasintahlil.core.data.PrayerTimes
@@ -77,7 +78,7 @@ class JadwalViewModel @Inject constructor(
                 val asarH = JadwalHariIni.asarHanafi(store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT))
                 val tzId = store.get(Store.TZ, JadwalHariIni.TZ_DEFAULT)
                 val corr = JadwalHariIni.parseCorr(store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT))
-                val ikut = store.get(Store.JADWAL_IKUT, false)
+                val ikut = store.get(Store.JADWAL_IKUT, BawaanPreferensi.JADWAL_IKUT_LOKASI)
                 _state.value = _state.value.copy(
                     city = city, lat = lat, lon = lon, method = method,
                     asarHanafi = asarH, tzId = tzId, corr = corr, followGps = ikut,

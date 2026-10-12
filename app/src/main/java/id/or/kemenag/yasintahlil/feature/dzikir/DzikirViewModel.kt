@@ -3,6 +3,7 @@ package id.or.kemenag.yasintahlil.feature.dzikir
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.DzikirGroup
 import id.or.kemenag.yasintahlil.core.data.Store
@@ -17,9 +18,11 @@ import javax.inject.Inject
 
 data class DzikirUiState(
     val arabSize: Float = UkuranBacaan.ARAB_DEFAULT,
-    val showLatin: Boolean = true,
-    val showTrans: Boolean = true,
-    val showArab: Boolean = true,
+    // Sama dengan bawaan yang dibaca dari preferensi, supaya tampilan tidak sempat berubah saat
+    // DataStore selesai dimuat.
+    val showLatin: Boolean = BawaanPreferensi.TAMPIL_LATIN,
+    val showTrans: Boolean = BawaanPreferensi.TAMPIL_TERJEMAHAN,
+    val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
     val counts: Map<String, Int> = emptyMap(),
 )
 
@@ -41,9 +44,9 @@ class DzikirViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT),
-                    showLatin = store.get(Store.SHOW_LATIN, true),
-                    showTrans = store.get(Store.SHOW_TRANS, true),
-                    showArab = store.get(Store.SHOW_ARAB, true),
+                    showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN),
+                    showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN),
+                    showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB),
                 )
             }
         }

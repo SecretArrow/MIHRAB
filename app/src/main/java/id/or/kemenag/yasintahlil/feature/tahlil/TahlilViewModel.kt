@@ -3,6 +3,7 @@ package id.or.kemenag.yasintahlil.feature.tahlil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
@@ -29,9 +30,11 @@ data class TahlilUiState(
     val idx: Int = 0,
     val count: Int = 0,
     val arabSize: Float = UkuranBacaan.ARAB_DEFAULT,
-    val showLatin: Boolean = true,
-    val showTrans: Boolean = true,
-    val showArab: Boolean = true,
+    // Sama dengan bawaan yang dibaca dari preferensi, supaya tampilan tidak sempat berubah saat
+    // DataStore selesai dimuat.
+    val showLatin: Boolean = BawaanPreferensi.TAMPIL_LATIN,
+    val showTrans: Boolean = BawaanPreferensi.TAMPIL_TERJEMAHAN,
+    val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
 ) {
     /** Nama susunan yang sedang aktif — dipakai layar agar tidak menyebut susunan yang keliru. */
     val namaSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.nama.orEmpty()
@@ -61,9 +64,10 @@ class TahlilViewModel @Inject constructor(
     private fun load() {
         viewModelScope.launch {
             val semua = repo.tahlil(null)
-            val pilihan = SusunanSaya.parse(store.get(Store.TAHLIL_CUSTOM, ""))
+            val pilihan = SusunanSaya.parse(store.get(Store.TAHLIL_CUSTOM, BawaanPreferensi.SUSUNAN_SAYA))
             val susunan = PreferensiSusunan.tersedia(repo.tahlilSusunan(), SusunanSaya.susunan(pilihan))
-            val id = PreferensiSusunan.idAktif(store.get(Store.TAHLIL_SUSUNAN, ""), susunan)
+            val id = PreferensiSusunan.idAktif(
+                store.get(Store.TAHLIL_SUSUNAN, BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH), susunan)
             val items = itemsUntuk(id, semua, pilihan)
             val idx = userData.progress(KIND, "idx").first()?.value ?: 0
             val count = userData.progress(KIND, "count").first()?.value ?: 0
@@ -76,9 +80,9 @@ class TahlilViewModel @Inject constructor(
                 idx = idx.coerceIn(0, (items.size - 1).coerceAtLeast(0)),
                 count = count,
                 arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT),
-                showLatin = store.get(Store.SHOW_LATIN, true),
-                showTrans = store.get(Store.SHOW_TRANS, true),
-                showArab = store.get(Store.SHOW_ARAB, true),
+                showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN),
+                showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN),
+                showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB),
             )
         }
     }

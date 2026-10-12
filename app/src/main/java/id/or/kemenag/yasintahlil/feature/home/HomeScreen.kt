@@ -13,6 +13,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import id.or.kemenag.yasintahlil.navigation.Routes
 import java.text.SimpleDateFormat
 import java.util.*
@@ -97,7 +98,17 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         if (s.last.isNotBlank()) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
                 Text("Terakhir dibaca: ${s.last}")
-                Button(onClick = { go(if (s.last.startsWith("yasin")) Routes.YASIN else Routes.FAVORIT) }) { Text("Lanjutkan") }
+                // Tujuan ditentukan `RuteKonten` — aturan yang sama dengan layar Favorit — bukan
+                // cabang `startsWith("yasin")` yang dahulu mengirim setiap bacaan Tahlil ke Favorit.
+                val jenis = s.last.substringBefore(':')
+                val tujuan = RuteKonten.ruteTerakhir(s.last)
+                if (tujuan != null) {
+                    Text(RuteKonten.namaTujuan(jenis).orEmpty(),
+                        style = MaterialTheme.typography.labelSmall)
+                    Button(onClick = { go(tujuan) }) { Text("Lanjutkan") }
+                } else {
+                    Text("Layar tujuan tidak dikenal", style = MaterialTheme.typography.labelSmall)
+                }
             }
         }
         if (s.infoCard) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {

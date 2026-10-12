@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.AdzanDoa
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
@@ -60,8 +61,8 @@ fun IqomahScreen() {
         mins = PengingatAdzan.iqomahMenit(
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
-        showArab = store.get(Store.SHOW_ARAB, true)
-        ingatkan = store.get(Store.IQOMAH_ON, false)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        ingatkan = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH)
     }
     FullscreenEffect(fullscreen)
 
@@ -178,8 +179,8 @@ fun DoaAdzanScreen() {
     var ingatkan by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
-        showArab = store.get(Store.SHOW_ARAB, true)
-        ingatkan = store.get(Store.DOA_ADZAN_REMINDER, false)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        ingatkan = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Doa sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)

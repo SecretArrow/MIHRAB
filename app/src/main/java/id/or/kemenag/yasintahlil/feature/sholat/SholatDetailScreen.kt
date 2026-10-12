@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
@@ -49,7 +50,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     var syaratTerbuka by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
-        showArab = store.get(Store.SHOW_ARAB, true)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
     }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
