@@ -21,6 +21,7 @@ data class YasinUiState(
     val lineHeight: Float = 1.9f,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
+    val showArab: Boolean = true,
     val mark: Int = 0,
     val bookmarks: List<BookmarkItem> = emptyList(),
 )
@@ -46,6 +47,7 @@ class YasinViewModel @Inject constructor(
                     lineHeight = store.get(Store.LINE_HEIGHT, 1.9f),
                     showLatin = store.get(Store.SHOW_LATIN, true),
                     showTrans = store.get(Store.SHOW_TRANS, true),
+                    showArab = store.get(Store.SHOW_ARAB, true),
                     mark = store.get(Store.YASIN_MARK, 0),
                 )
             }
@@ -70,6 +72,11 @@ class YasinViewModel @Inject constructor(
     fun toggleTrans() {
         val v = !_state.value.showTrans
         _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) }
+    }
+
+    fun toggleArab() {
+        val v = !_state.value.showArab
+        _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) }
     }
 
     fun markRead(n: Int) {

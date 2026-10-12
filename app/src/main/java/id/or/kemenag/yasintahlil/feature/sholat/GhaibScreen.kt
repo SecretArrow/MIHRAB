@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import kotlinx.coroutines.launch
 
 /**
  * Sholat Ghaib: 4 takbir tanpa ruku/sujud, fardhu kifayah. Seluruh konten (niat & doa)
@@ -17,8 +19,15 @@ import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 @Composable
 fun GhaibScreen() {
     val repo = rememberRepo()
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
+    var showArab by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        arabSize = store.get(Store.ARAB_SIZE, 24f)
+        showArab = store.get(Store.SHOW_ARAB, true)
+    }
     FullscreenEffect(fullscreen)
     val info = remember { repo.sholatKhusus("sholat_ghaib.json") }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
@@ -41,14 +50,24 @@ fun GhaibScreen() {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh (imam)") })
-            OutlinedButton(onClick = { arabSize = (arabSize + 2).coerceAtMost(44f) }) { Text("A+") }
-            OutlinedButton(onClick = { arabSize = (arabSize - 2).coerceAtLeast(16f) }) { Text("A−") }
+            FilterChip(showArab, {
+                showArab = !showArab
+                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
+            }, { Text("Arab") })
+            OutlinedButton(onClick = {
+                arabSize = (arabSize + 2).coerceAtMost(44f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A+") }
+            OutlinedButton(onClick = {
+                arabSize = (arabSize - 2).coerceAtLeast(16f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A−") }
         }
         if (info.niat.isNotEmpty()) {
             Text("Varian niat:", style = MaterialTheme.typography.titleMedium)
             info.niat.forEach { n ->
                 BacaanCard("ghaib:niat:${n.id}", n.judul, n.arab, n.latin, n.terjemahan,
-                    true, false, arabSize, 15f, sumber = n.sumber)
+                    true, false, arabSize, 15f, sumber = n.sumber, showArab = showArab)
             }
         }
         steps.forEachIndexed { i, (judul, b) ->
@@ -59,7 +78,8 @@ fun GhaibScreen() {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
                 BacaanCard("ghaib:${b.id}", b.judul, a, l, t, true, true,
-                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber)
+                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber,
+                    showArab = showArab)
             }
         }
         if (info.catatanMazhab.isNotBlank()) {

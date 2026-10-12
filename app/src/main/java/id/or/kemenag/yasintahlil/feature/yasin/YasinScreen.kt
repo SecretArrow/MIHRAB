@@ -66,6 +66,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
             if (query.isNotBlank()) Text("${shown.size} ayat cocok", style = MaterialTheme.typography.labelSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
                 FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
                 FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
                 FilterChip(focus, { focus = !focus }, { Text("Layar penuh") })
@@ -108,7 +109,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                     Column(Modifier.weight(1f)) {
                         BacaanCard("yasin:${v.nomor}", "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
                             s.showLatin, s.showTrans, s.arabSize, s.latinSize,
-                            lineHeightFactor = s.lineHeight)
+                            lineHeightFactor = s.lineHeight, showArab = s.showArab)
                         Row {
                             TextButton(onClick = { vm.markRead(v.nomor) }) {
                                 Text(if (s.mark == v.nomor) "✓ Penanda terakhir" else "Tandai terakhir dibaca")

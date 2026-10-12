@@ -48,10 +48,11 @@ fun HomeScreen(go: (String) -> Unit) {
         tzId = store.get(Store.TZ, "")
         corr = (store.get(Store.CORR, "0,0,0,0,0,0").split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }).take(6)
         last = store.get(Store.LAST, "")
-        infoOn = store.get(Store.INFO_CARD, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         notif = store.get(Store.NOTIF, true)
     }
+    // Reaktif: kartu info langsung hilang/muncul saat diubah di Pengaturan.
+    LaunchedEffect(Unit) { store.flow(Store.INFO_CARD, true).collect { infoOn = it } }
     // Ringkasan favorit & riwayat (Room) — ikut terbarui saat berubah di layar lain.
     LaunchedEffect(Unit) { userData.favorites().collect { favCount = it.size } }
     LaunchedEffect(Unit) { userData.recentHistory(50).collect { histCount = it.size } }

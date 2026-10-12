@@ -27,6 +27,8 @@ fun SettingsScreen() {
     var latin by remember { mutableStateOf(16f) }
     var showL by remember { mutableStateOf(true) }
     var showT by remember { mutableStateOf(true) }
+    var showA by remember { mutableStateOf(true) }
+    var infoCard by remember { mutableStateOf(true) }
     var asar by remember { mutableStateOf("syafii") }
     var mazhab by remember { mutableStateOf("syafii") }
     var city by remember { mutableStateOf("Jakarta") }
@@ -38,6 +40,7 @@ fun SettingsScreen() {
         theme = store.get(Store.DARK, "sistem")
         arab = store.get(Store.ARAB_SIZE, 24f); latin = store.get(Store.LATIN_SIZE, 16f)
         showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
+        showA = store.get(Store.SHOW_ARAB, true); infoCard = store.get(Store.INFO_CARD, true)
         asar = store.get(Store.ASAR, "syafii"); city = store.get(Store.CITY, "Jakarta")
         mazhab = store.get(Store.MADHAB, "syafii")
         notif = store.get(Store.NOTIF, true)
@@ -61,8 +64,19 @@ fun SettingsScreen() {
         Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = 16f..40f)
         Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = 12f..24f)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text("Arab") })
             FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text("Latin") })
             FilterChip(showT, { showT = !showT; scope.launch { store.set(Store.SHOW_TRANS, showT) } }, { Text("Terjemahan") })
+        }
+        Text("Berlaku di semua layar bacaan (Yasin, Tahlil, Dzikir, Adzan, panduan sholat). " +
+                "Menyembunyikan Arab berguna saat ingin membaca Latin/terjemahan saja.",
+            style = MaterialTheme.typography.labelSmall)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Kartu info di beranda")
+            Switch(infoCard, {
+                infoCard = it
+                scope.launch { store.set(Store.INFO_CARD, infoCard) }
+            })
         }
         Text("Mazhab Asar:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

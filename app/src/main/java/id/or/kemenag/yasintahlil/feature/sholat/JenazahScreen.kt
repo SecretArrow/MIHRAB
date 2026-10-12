@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import kotlinx.coroutines.launch
 
 /**
  * Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. Konten (niat & doa)
@@ -17,8 +19,15 @@ import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 @Composable
 fun JenazahScreen() {
     val repo = rememberRepo()
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
+    var showArab by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        showArab = store.get(Store.SHOW_ARAB, true)
+    }
     FullscreenEffect(fullscreen)
     val info = remember { repo.sholatKhusus("sholat_jenazah.json") }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
@@ -39,12 +48,22 @@ fun JenazahScreen() {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
-            OutlinedButton(onClick = { arabSize = (arabSize + 2).coerceAtMost(44f) }) { Text("A+") }
-            OutlinedButton(onClick = { arabSize = (arabSize - 2).coerceAtLeast(16f) }) { Text("A−") }
+            FilterChip(showArab, {
+                showArab = !showArab
+                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
+            }, { Text("Arab") })
+            OutlinedButton(onClick = {
+                arabSize = (arabSize + 2).coerceAtMost(44f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A+") }
+            OutlinedButton(onClick = {
+                arabSize = (arabSize - 2).coerceAtLeast(16f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A−") }
         }
         info.niat.forEach { n ->
             BacaanCard("jenazah:niat:${n.id}", "Niat (${n.judul})", n.arab, n.latin, n.terjemahan,
-                true, true, arabSize, 15f, sumber = n.sumber)
+                true, true, arabSize, 15f, sumber = n.sumber, showArab = showArab)
             if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
         }
         steps.forEachIndexed { i, (judul, b) ->
@@ -55,7 +74,8 @@ fun JenazahScreen() {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
                 BacaanCard("jenazah:${b.id}", b.judul, a, l, t, true, true,
-                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber)
+                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber,
+                    showArab = showArab)
             }
         }
         if (info.catatanMazhab.isNotBlank()) {

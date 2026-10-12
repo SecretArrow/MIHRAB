@@ -160,6 +160,10 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun adzanCatatan(): String = doc("adzan.json").getJSONObject("adzan").optString("catatan_subuh")
+
+    /** Catatan perbedaan susunan iqomah antar mazhab/tradisi — ditampilkan apa adanya. */
+    fun iqomahCatatan(): String = doc("adzan.json").optString("catatan_mazhab")
+
     fun iqomah(): List<AdzanLafaz> {
         val arr = doc("adzan.json").getJSONObject("iqomah").getJSONArray("daftar")
         return (0 until arr.length()).map { i ->

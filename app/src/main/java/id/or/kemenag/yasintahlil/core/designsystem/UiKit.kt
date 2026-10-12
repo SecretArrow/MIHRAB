@@ -58,7 +58,8 @@ fun BacaanCard(
     arabSize: Float, latinSize: Float,
     ulangi: Int = 1, sumber: String = "",
     lineHeightFactor: Float = 1.9f,
-    onOpen: (() -> Unit)? = null
+    onOpen: (() -> Unit)? = null,
+    showArab: Boolean = true,
 ) {
     val ctx = LocalContext.current
     val userData = rememberUserData()
@@ -74,7 +75,7 @@ fun BacaanCard(
                 Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 if (ulangi > 1) AssistChip(onClick = {}, label = { Text("${ulangi}x") })
             }
-            if (arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
+            if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
             if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
                 color = MaterialTheme.colorScheme.secondary)
             if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)

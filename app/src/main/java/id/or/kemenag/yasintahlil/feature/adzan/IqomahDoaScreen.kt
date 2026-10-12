@@ -34,7 +34,12 @@ fun IqomahScreen() {
     var remaining by rememberSaveable { mutableStateOf(-1) } // detik; -1 = tidak berjalan
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
-    LaunchedEffect(Unit) { mins = store.get(Store.IQOMAH_MIN, 10) }
+    var showArab by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        mins = store.get(Store.IQOMAH_MIN, 10)
+        arabSize = store.get(Store.ARAB_SIZE, 24f)
+        showArab = store.get(Store.SHOW_ARAB, true)
+    }
     FullscreenEffect(fullscreen)
 
     // Hitung mundur nyata per detik; getar sekali saat habis.
@@ -75,9 +80,24 @@ fun IqomahScreen() {
             OutlinedButton(onClick = { mins = (mins + 1).coerceAtMost(60); remaining = -1; scope.launch { store.set(Store.IQOMAH_MIN, mins) } }) { Text("+") }
         }
 
+        Text("Ukuran Arab: ${arabSize.toInt()}", style = MaterialTheme.typography.titleMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = {
+                arabSize = (arabSize + 2).coerceAtMost(40f); scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A+") }
+            OutlinedButton(onClick = {
+                arabSize = (arabSize - 2).coerceAtLeast(16f); scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A−") }
+        }
+        if (repo.iqomahCatatan().isNotBlank()) {
+            Text(repo.iqomahCatatan(), style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 4.dp))
+        }
+
         items.forEach { l ->
             BacaanCard("iqomah:${l.arab.take(10)}", "Iqomah", l.arab, l.latin, l.terjemahan,
-                true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi)
+                true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi,
+                showArab = showArab)
         }
     }
 }
@@ -85,19 +105,47 @@ fun IqomahScreen() {
 @Composable
 fun DoaAdzanScreen() {
     val repo = rememberRepo()
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
     val (arab, latin, trans) = remember { repo.doaAdzan() }
+    var arabSize by remember { mutableStateOf(22f) }
+    var showArab by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        arabSize = store.get(Store.ARAB_SIZE, 22f)
+        showArab = store.get(Store.SHOW_ARAB, true)
+    }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Doa sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
         Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
             style = MaterialTheme.typography.labelMedium)
-        BacaanCard("jawab:adzan", "Menjawab muadzin",
-            "Menjawab seperti lafaz muadzin; saat حي على الصلاة / حي على الفلاح membaca: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(showArab, {
+                showArab = !showArab
+                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
+            }, { Text("Arab") })
+            OutlinedButton(onClick = {
+                arabSize = (arabSize + 2).coerceAtMost(40f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A+") }
+            OutlinedButton(onClick = {
+                arabSize = (arabSize - 2).coerceAtLeast(16f)
+                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+            }) { Text("A−") }
+        }
+        Text("Menjawab muadzin", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        Text("Menjawab seperti lafaz muadzin; saat حي على الصلاة / حي على الفلاح membaca:",
+            style = MaterialTheme.typography.labelMedium)
+        BacaanCard("jawab:adzan", "Jawaban saat seruan",
+            "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
             "La haula wa la quwwata illa billah.",
             "Tidak ada daya dan kekuatan kecuali dengan Allah.",
-            true, true, 22f, 15f, sumber = "HR Bukhari-Muslim — sunnah.com")
+            true, true, arabSize, 15f, sumber = "HR Bukhari-Muslim — sunnah.com",
+            showArab = showArab)
         BacaanCard("doa:adzan", "Doa setelah adzan", arab, latin, trans,
-            true, true, 22f, 15f, sumber = "HR Bukhari — sunnah.com")
-        Text("Aktifkan pengingat membaca doa setelah adzan di menu Adzan.",
+            true, true, arabSize, 15f, sumber = "HR Bukhari — sunnah.com",
+            showArab = showArab)
+        Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
 }
