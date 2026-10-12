@@ -202,16 +202,16 @@ fun DoaAdzanScreen() {
                 }
             })
         }
+        // Sebab, ikut-saklar, dan batas syariat dari aturan bersama (`PengingatAdzan`), sama dengan
+        // penjelasan di menu Adzan. Yang khas layar ini hanya ke mana ketukannya membuka ("layar
+        // ini") dan bahwa pengingatnya tetap berbunyi saat aplikasi ditutup.
         Text(if (ingatkan) {
-            "Bila aktif: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu masuk, " +
-                "berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung membuka " +
-                "layar ini, dan pengingat tetap berbunyi walau aplikasi ditutup. Mengikuti saklar " +
-                "per waktu di menu Adzan — waktu yang dimatikan tidak ikut mengingatkan. Waktunya " +
-                "pengingat pribadi, bukan ketentuan syariat."
+            "Bila aktif: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, dan " +
+                "pengingat tetap berbunyi walau aplikasi ditutup. ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
+                PengingatAdzan.DOA_BUKAN_SYARIAT
         } else {
-            "Bila diaktifkan: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu " +
-                "masuk, berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung " +
-                "membuka layar ini, dan pengingat tetap berbunyi walau aplikasi ditutup."
+            "Bila diaktifkan: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, " +
+                "dan pengingat tetap berbunyi walau aplikasi ditutup."
         }, style = MaterialTheme.typography.labelSmall)
         KartuDoa("doa:menjawab_adzan", menjawab, arabSize, showArab)
         KartuDoa("doa:sholawat_adzan", sholawat, arabSize, showArab)

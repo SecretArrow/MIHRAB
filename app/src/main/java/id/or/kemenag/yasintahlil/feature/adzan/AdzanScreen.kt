@@ -26,6 +26,7 @@ import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
+import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.launch
@@ -256,10 +257,11 @@ fun AdzanScreen() {
                 }
             })
         }
-        Text("Bila aktif: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu masuk, " +
-                "berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung membuka " +
-                "layar Doa Adzan. Mengikuti saklar per waktu di atas — waktu yang dimatikan tidak " +
-                "ikut mengingatkan. Waktunya pengingat pribadi, bukan ketentuan syariat.",
+        // Kalimat sebab, ikut-saklar, dan batas syariat datang dari aturan bersama
+        // (`PengingatAdzan`) — layar Iqomah menjelaskan saklar yang sama dengan kata-kata yang sama.
+        // Yang tetap khas layar ini hanyalah ke mana ketukannya membuka: layar Doa Adzan.
+        Text("Bila aktif: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar Doa Adzan. " +
+                "${PengingatAdzan.DOA_IKUT_SAKLAR} ${PengingatAdzan.DOA_BUKAN_SYARIAT}",
             style = MaterialTheme.typography.labelSmall)
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -301,7 +303,7 @@ fun AdzanScreen() {
         }
         if (lafaz.isEmpty()) {
             EmptyState("Lafaz adzan tidak tersedia",
-                "Berkas lafaz adzan tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
+                PesanKonten.berkasTidakAda("lafaz adzan"))
         }
         // Urutan lafaz diberi nomor, dan tiap kartu menyebut sumbernya. Sebelumnya kartu hanya
         // berjudul "Adzan" dan tanpa sumber, sehingga lafaz yang berbunyi sama berulang kali

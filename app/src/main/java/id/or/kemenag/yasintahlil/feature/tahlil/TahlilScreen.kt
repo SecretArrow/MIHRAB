@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
@@ -31,7 +32,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
 
     if (s.items.isEmpty()) {
         EmptyState("Konten tahlil tidak tersedia",
-            "Berkas susunan tahlil tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
+            PesanKonten.berkasTidakAda("susunan tahlil"))
         return
     }
     val cur = s.items[s.idx.coerceIn(0, s.items.size - 1)]

@@ -21,6 +21,7 @@ import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -261,7 +262,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
 
         Text("Susunan Tahlil", style = MaterialTheme.typography.titleMedium)
         if (susunanTersedia.isEmpty()) {
-            Text("Berkas susunan tahlil tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.",
+            Text(PesanKonten.berkasTidakAda("susunan tahlil"),
                 style = MaterialTheme.typography.labelSmall)
         } else {
             // Pemilih hanya muncul bila memang ada yang bisa dipilih; satu chip tunggal hanyalah hiasan.

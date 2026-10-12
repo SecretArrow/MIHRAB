@@ -16,6 +16,9 @@ package id.or.kemenag.yasintahlil.core.util
  *    memutar suaranya dan layar Adzan yang menampilkan slidernya.
  *  - Saklar bawaan `"1,1,1,1,1"` dan rentang jeda pengingat sebelum adzan (`0..30` menit) pun
  *    masing-masing ditulis di dua dan satu tempat, tanpa penjepitan di jalur baca.
+ *  - Penjelasan pengingat "baca doa setelah adzan" dan jedanya (`5` menit) ditulis di layar Adzan
+ *    **dan** layar Iqomah dengan kata-kata sendiri-sendiri, padahal keduanya mengatur saklar yang
+ *    sama (`Store.DOA_ADZAN_REMINDER`).
  *
  * Tanpa Android, sehingga dapat diuji langsung di JVM.
  */
@@ -77,4 +80,37 @@ object PengingatAdzan {
      * angka di layar bisa berbeda dari volume yang benar-benar berbunyi.
      */
     const val VOL_DEFAULT = 0.8f
+
+    // ---- Pengingat "baca doa setelah adzan" -------------------------------------------------
+    //
+    // Saklar pengingat ini dapat diubah dari **dua** layar (Adzan dan Iqomah) yang menulis kunci
+    // `Store.DOA_ADZAN_REMINDER` yang sama, dan keduanya menjelaskannya dengan kata-kata
+    // masing-masing. Jeda `5` menit itu sendiri tinggal di `PrayerScheduler` — pekerja yang
+    // benar-benar menjadwalkannya — sehingga penjelasan di layar menyebut angka yang tidak dapat
+    // dibaca ulang dari tempat ia ditulis.
+
+    /** Jeda pengingat "baca doa setelah adzan" dari waktu masuk, dalam menit. */
+    const val DOA_DELAY_MIN = 5
+
+    /**
+     * Inti penjelasan pengingat itu, sama di layar Adzan dan Iqomah. Sengaja berupa potongan
+     * kalimat (bukan kalimat penuh): tiap layar menempelkannya pada pembukanya sendiri
+     * (*"Bila aktif: …"* / *"Bila diaktifkan: …"*) dan menyebutkan sendiri ke mana ketukannya
+     * membuka layar — hal yang memang berbeda antarlayar.
+     */
+    const val DOA_SEBAB =
+        "pengingat kedua $DOA_DELAY_MIN menit setelah waktu masuk, berisi ajakan membaca sholawat " +
+            "dan doa setelah adzan"
+
+    /**
+     * Pengingat ini mengikuti saklar per waktu yang sama dengan pengingat adzan — satu kalimat,
+     * karena keadaan yang dijelaskan sama. Dahulu layar Adzan menyebut "saklar per waktu **di atas**"
+     * dan layar Iqomah "di menu Adzan"; keterangan tempat itu tidak menambah apa pun (saklarnya
+     * terlihat di kedua layar) tetapi membuat dua kalimat yang seharusnya sama menjadi berbeda.
+     */
+    const val DOA_IKUT_SAKLAR =
+        "Mengikuti saklar per waktu — waktu yang dimatikan tidak ikut mengingatkan."
+
+    /** Batas tanggung jawab aplikasi: waktunya anjuran, bukan ketetapan syariat. */
+    const val DOA_BUKAN_SYARIAT = "Waktunya pengingat pribadi, bukan ketentuan syariat."
 }

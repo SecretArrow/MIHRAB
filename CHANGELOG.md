@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kalimat penjelas keadaan yang sama kini tinggal di satu tempat**: tiga kalimat yang dilihat
+  pengguna ditulis berulang, dan tiap salinan dapat berbeda sendiri. *"Belum ada perbaikan lokasi
+  GPS…"* ada di `JadwalViewModel` **dan** `KiblatViewModel` — penjelasan atas satu kegagalan yang
+  sama, sehingga pengguna yang berpindah layar membaca dua sebab berbeda; kini sebabnya satu di
+  `PesanLokasi`, sedangkan **saran**nya tetap berbeda karena memang berbeda jalan keluarnya (Jadwal
+  punya pemilih kotanya sendiri, Kiblat tidak). Saran *"Berkas … tidak ditemukan di aplikasi.
+  Pasang ulang aplikasi bila ini terus terjadi."* ada di empat layar (Tahlil, Pengaturan, Dzikir,
+  Adzan), masing-masing menuliskan sebabnya sendiri; kini kalimatnya disusun `PesanKonten.berkasTidakAda(nama)`
+  dan pemanggil hanya menyebut **berkas mana** yang hilang. Penjelasan pengingat "baca doa setelah
+  adzan" ada di layar Adzan **dan** layar Doa Adzan dengan kata-kata masing-masing, padahal
+  keduanya mengatur saklar yang sama — sebab, ikut-saklar, dan batas syariatnya kini dari
+  `PengingatAdzan` (`DOA_SEBAB`/`DOA_IKUT_SAKLAR`/`DOA_BUKAN_SYARIAT`), dan jeda 5 menitnya
+  (`DOA_DELAY_MIN`) dibaca penjadwal dari konstanta yang sama dengan yang disebut penjelasan itu —
+  dahulu penjadwal menyimpan angkanya sendiri sehingga penjelasan di layar dapat menyebut angka
+  yang tidak pernah dipakai notifikasi. Dijaga `PesanKeadaanSatuTempatTest`.
 - **Urutan nama waktu sholat punya satu tempat**: pasangan nama→jam sholat (`"Subuh"` ↔
   `t.subuh`, …) ditulis di **tiga** tempat. `JadwalHariIni` adalah pemiliknya, tetapi
   `PrayerCalc.next` menyalinnya sendiri lalu mengembalikan **nama saja**, dan baris jam beranda

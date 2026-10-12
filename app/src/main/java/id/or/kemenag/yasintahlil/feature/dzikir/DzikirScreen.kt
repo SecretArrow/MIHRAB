@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
@@ -30,7 +31,7 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
 
     if (groups.isEmpty()) {
         EmptyState("Konten dzikir tidak tersedia",
-            "Berkas kumpulan dzikir tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
+            PesanKonten.berkasTidakAda("kumpulan dzikir"))
         return
     }
     Column(Modifier.fillMaxSize().padding(12.dp)) {

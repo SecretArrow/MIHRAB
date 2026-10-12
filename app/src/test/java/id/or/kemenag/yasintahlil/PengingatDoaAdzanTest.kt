@@ -64,8 +64,11 @@ class PengingatDoaAdzanTest {
         assertTrue("penjadwal tidak mengenal jenis pekerjaan doa", penjadwal.contains("JENIS_DOA"))
         assertTrue("penjadwal tidak membaca preferensi pengingat doa",
             penjadwal.contains("Store.DOA_ADZAN_REMINDER"))
+        // Jeda dari aturan bersama (`PengingatAdzan`), bukan angka yang diingat penjadwal sendiri:
+        // penjelasan di layar Adzan dan Iqomah menyebut angka yang sama, jadi keduanya harus
+        // membacanya dari tempat yang sama.
         assertTrue("jeda pengingat doa tidak memakai konstanta bersama",
-            penjadwal.contains("DOA_DELAY_MIN"))
+            penjadwal.contains("PengingatAdzan.DOA_DELAY_MIN"))
     }
 
     @Test
