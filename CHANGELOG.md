@@ -6,6 +6,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Tata letak responsif, ornamen geometris Islami, dan animasi ringan** (`plan.txt` §"Konsep dan
+  Identitas Aplikasi": *"Layout responsif untuk berbagai ukuran layar dan kepadatan piksel
+  Android"*, *"Ornamen geometris Islami yang halus, tanpa membuat antarmuka terlihat ramai"*, dan
+  *"Ikon konsisten, animasi ringan, transisi halus, serta feedback visual pada setiap interaksi"*):
+  ketiganya dulu **tidak ada sama sekali**. Yang paling merugikan adalah batas lebar — tanpa satu
+  pun batas, di tablet atau ponsel lanskap satu baris terjemahan membentang sepanjang layar,
+  sehingga mata kehilangan awal baris berikutnya saat berpindah dari ujung kanan ke kiri. Kini
+  seluruh isi dipusatkan pada kolom `LEBAR_KONTEN_MAKS` (720 dp) lewat `KolomKonten` yang dipasang
+  **sekali di `AppNav`**, dan **kartu bacaan dibatasi lebih sempit lagi** (`LEBAR_BACA_MAKS`, 640 dp)
+  karena teksnya yang terpanjang — di layar ponsel tata letaknya tidak berubah sama sekali, batas
+  ini hanya bekerja saat layar memang lebih lebar. **Ornamen**nya motif **khatam** (dua bujur
+  sangkar, satu diputar 45°): murni geometris, jadi tidak memuat lafaz yang perlu diverifikasi
+  sumbernya — `TataLetakResponsifTest` menolak masuknya karakter Arab ke berkas itu, sama seperti
+  penjaga pada `sholat_syarat.json`. Digambar sebagai garis tipis beralfa 0,07 di belakang blok
+  salam Beranda agar menjadi tekstur latar, bukan hiasan yang berebut perhatian. **Animasinya**
+  dibatasi pada tiga tempat yang memang butuh umpan balik: progres penghitung tasbih dihaluskan
+  (`animateFloatAsState`), tinggi kartu bacaan ikut beranimasi saat chip "Arab"/"Latin"/"Terjemahan"
+  dinyalakan (`animateContentSize`), dan daftar syarat sholat muncul dengan transisi
+  (`AnimatedVisibility`). Dependensi `androidx.compose.animation` dideklarasikan eksplisit alih-alih
+  mengandalkan transitif `foundation`.
 - **Syarat, persiapan, dan penutup aurat sholat — di depan langkah pertama** (`plan.txt` §"Tata
   Cara Sholat Langkah demi Langkah" membuka daftar langkahnya dengan *"Syarat wajib dan syarat
   sah"*, *"Persiapan sebelum sholat"*, *"Wudhu dan hal yang membatalkannya"*, *"Penutup aurat dan

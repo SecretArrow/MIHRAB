@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -90,7 +92,12 @@ fun BacaanCard(
     // warna hanya diganti bila halaman memang bukan "ikut tema", sehingga tak ada biaya saat mati.
     val skema = skemaHalaman(LocalTemaHalaman.current)
     val isi: @Composable () -> Unit = {
-        Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        // Kartu bacaan dibatasi lebih sempit dari isi layar (`lebarBaca`): baris Arab dan
+        // terjemahan adalah teks terpanjang di aplikasi, dan baris yang terlalu panjang melelahkan
+        // mata. `animateContentSize` membuat tinggi kartu berubah halus saat chip "Arab"/"Latin"/
+        // "Terjemahan" di Pengaturan bacaan dinyalakan atau dimatikan, bukan melompat seketika.
+        Card(Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).lebarBaca()
+            .animateContentSize().padding(vertical = 4.dp)) {
             Column(Modifier.padding(12.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -130,7 +137,13 @@ fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit,
         Button(onClick = onPlus) { Text("+") }
         OutlinedButton(onClick = onReset) { Text("Reset") }
     }
-    LinearProgressIndicator(progress = { (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f) },
+    // Progres dihaluskan agar setiap ketukan penghitung terlihat sebagai gerakan, bukan lompatan —
+    // "animasi secukupnya" (`plan.txt`) sekaligus umpan balik visual atas ketukan itu.
+    val progres by animateFloatAsState(
+        targetValue = (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f),
+        label = "progres-hitung",
+    )
+    LinearProgressIndicator(progress = { progres },
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
 }
 

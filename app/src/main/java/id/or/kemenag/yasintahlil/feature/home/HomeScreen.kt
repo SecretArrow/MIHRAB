@@ -77,9 +77,17 @@ fun HomeScreen(go: (String) -> Unit) {
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Assalamu'alaikum", style = MaterialTheme.typography.titleLarge)
-        Text("$masehi • $jam")
-        Text(HijriCalc.format(now, hijriCorr), style = MaterialTheme.typography.labelMedium)
+        // Ornamen geometris Islami halus (`plan.txt` §"Konsep dan Identitas Aplikasi"). Digambar di
+        // belakang blok salam dengan alfa sangat rendah dan mengikuti tinggi blok itu, sehingga
+        // berfungsi sebagai tekstur latar — bukan hiasan yang mengurangi keterbacaan teks di atasnya.
+        Box(Modifier.fillMaxWidth()) {
+            OrnamenIslami(Modifier.matchParentSize())
+            Column {
+                Text("Assalamu'alaikum", style = MaterialTheme.typography.titleLarge)
+                Text("$masehi • $jam")
+                Text(HijriCalc.format(now, hijriCorr), style = MaterialTheme.typography.labelMedium)
+            }
+        }
         Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
                 Text("$city — Berikutnya: $berikut $berikutJam (${sisa / 60}j ${sisa % 60}m lagi)",

@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
@@ -24,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import id.or.kemenag.yasintahlil.core.designsystem.KolomKonten
 import id.or.kemenag.yasintahlil.feature.adzan.AdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.DoaAdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.IqomahScreen
@@ -80,7 +82,11 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 }
             }
         }) { pad ->
-            NavHost(nav, Routes.HOME, Modifier.padding(pad)) {
+            // Tata letak responsif: seluruh isi dipusatkan pada kolom selebar maksimum, sehingga di
+            // tablet maupun ponsel lanskap baris bacaan tidak membentang sepanjang layar. Batas ini
+            // dipasang sekali di sini agar setiap layar ikut, tanpa pengkabelan per layar.
+            KolomKonten(Modifier.padding(pad)) {
+            NavHost(nav, Routes.HOME, Modifier.fillMaxSize()) {
                 composable(Routes.HOME) { HomeScreen { nav.navigate(it) } }
                 composable(Routes.IBADAH) { IbadahScreen { nav.navigate(it) } }
                 composable(Routes.ALAT) { AlatScreen { nav.navigate(it) } }
@@ -105,6 +111,7 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
                 composable(Routes.TENTANG) { TentangScreen() }
+            }
             }
         }
     }

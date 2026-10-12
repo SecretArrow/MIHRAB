@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -107,33 +108,37 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 Text(if (syaratTerbuka) "Sembunyikan syarat & persiapan"
                     else "Syarat & persiapan sholat (${syarat.jumlah} butir)")
             }
-            if (syaratTerbuka) {
-                BagianDaftar("Syarat wajib", syarat.syaratWajib)
-                BagianDaftar("Syarat sah", syarat.syaratSah)
-                BagianDaftar("Persiapan sebelum sholat", syarat.persiapan)
-                val aurat = syarat.penutupAurat
-                if (aurat.lakiLaki.isNotBlank() || aurat.perempuan.isNotBlank()) {
-                    Text(aurat.judul.ifBlank { "Penutup aurat" }, style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(top = 8.dp))
-                    if (aurat.lakiLaki.isNotBlank()) Text("• ${aurat.lakiLaki}", style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 4.dp))
-                    if (aurat.perempuan.isNotBlank()) Text("• ${aurat.perempuan}", style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 4.dp))
-                    if (aurat.catatan.isNotBlank()) Text(aurat.catatan, style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp, top = 2.dp))
-                }
-                BagianDaftar("Kebersihan tempat sholat", syarat.kebersihanTempat)
-                if (syarat.catatanMazhab.isNotBlank()) {
-                    Text(syarat.catatanMazhab, style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(top = 8.dp))
-                }
-                // Status sumber dinyatakan terbuka, bukan disembunyikan: daftar ini kerangka
-                // berbahasa Indonesia, dan pengguna berhak tahu bahwa rinciannya belum dicocokkan
-                // kata-per-kata dengan modul Fasolatan resmi.
-                if (syarat.catatanVerifikasi.isNotBlank()) {
-                    Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        Text(syarat.catatanVerifikasi, style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(12.dp))
+            // Dibuka-tutup dengan transisi ringan agar kemunculan daftar yang panjang tidak
+            // mengagetkan (`plan.txt`: "Gunakan animasi secukupnya dan hindari efek berlebihan").
+            AnimatedVisibility(visible = syaratTerbuka) {
+                Column {
+                    BagianDaftar("Syarat wajib", syarat.syaratWajib)
+                    BagianDaftar("Syarat sah", syarat.syaratSah)
+                    BagianDaftar("Persiapan sebelum sholat", syarat.persiapan)
+                    val aurat = syarat.penutupAurat
+                    if (aurat.lakiLaki.isNotBlank() || aurat.perempuan.isNotBlank()) {
+                        Text(aurat.judul.ifBlank { "Penutup aurat" }, style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(top = 8.dp))
+                        if (aurat.lakiLaki.isNotBlank()) Text("• ${aurat.lakiLaki}", style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 4.dp))
+                        if (aurat.perempuan.isNotBlank()) Text("• ${aurat.perempuan}", style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 4.dp))
+                        if (aurat.catatan.isNotBlank()) Text(aurat.catatan, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(start = 4.dp, top = 2.dp))
+                    }
+                    BagianDaftar("Kebersihan tempat sholat", syarat.kebersihanTempat)
+                    if (syarat.catatanMazhab.isNotBlank()) {
+                        Text(syarat.catatanMazhab, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 8.dp))
+                    }
+                    // Status sumber dinyatakan terbuka, bukan disembunyikan: daftar ini kerangka
+                    // berbahasa Indonesia, dan pengguna berhak tahu bahwa rinciannya belum dicocokkan
+                    // kata-per-kata dengan modul Fasolatan resmi.
+                    if (syarat.catatanVerifikasi.isNotBlank()) {
+                        Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                            Text(syarat.catatanVerifikasi, style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(12.dp))
+                        }
                     }
                 }
             }
