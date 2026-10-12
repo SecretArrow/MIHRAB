@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. Konten (niat & doa)
- * dibaca dari assets (sholat_jenazah.json + bacaan bersama) — tanpa teks Arab di Kotlin.
+ * dibaca dari assets ([BerkasKonten.SHOLAT_JENAZAH] + bacaan bersama) — tanpa teks Arab di Kotlin.
  */
 @Composable
 fun JenazahScreen() {
@@ -34,7 +35,7 @@ fun JenazahScreen() {
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
     }
     FullscreenEffect(fullscreen)
-    val info = remember { repo.sholatKhusus("sholat_jenazah.json") }
+    val info = remember { repo.sholatKhusus(BerkasKonten.SHOLAT_JENAZAH) }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
     val steps = listOf(

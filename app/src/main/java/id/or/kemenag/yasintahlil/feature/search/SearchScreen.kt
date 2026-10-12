@@ -11,8 +11,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -148,7 +150,7 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
         add(
             SearchDoc(
                 id = "yasin:${v.nomor}",
-                judul = "Yasin ayat ${v.nomor}",
+                judul = JudulBacaan.yasinAyat(v.nomor),
                 teks = listOf(v.terjemahan, v.latin, v.arab),
                 rute = Routes.YASIN,
                 nomor = v.nomor,
@@ -200,19 +202,21 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
         Routes.SHOLAT))
     add(SearchDoc("syarat:tempat", "Sholat: kebersihan tempat sholat", syarat.kebersihanTempat, Routes.SHOLAT))
 
-    // Sholat khusus (ghaib & jenazah): ketentuan, langkah, dan varian niatnya.
-    listOf("sholat_ghaib.json" to Routes.GHAIB, "sholat_jenazah.json" to Routes.JENAZAH).forEach { (berkas, rute) ->
-        val k = repo.sholatKhusus(berkas)
+    // Sholat khusus (ghaib & jenazah): ketentuan, langkah, dan varian niatnya. Nama berkas dan
+    // layar tujuannya datang dari `BerkasKonten` — daftar yang sama dengan yang dibaca kedua layar
+    // itu, sehingga indeks pencarian tidak dapat mendaftar modul yang layarnya membaca berkas lain.
+    BerkasKonten.SHOLAT_KHUSUS.forEach { m ->
+        val k = repo.sholatKhusus(m.berkas)
         add(
             SearchDoc(
-                id = "khusus:$berkas",
+                id = "khusus:${m.berkas}",
                 judul = "Sholat: ${k.judul}",
                 teks = listOf(k.judul, k.hukum, k.dalil) + k.syarat + k.langkah,
-                rute = rute,
+                rute = m.rute,
             )
         )
         k.niat.forEach { n ->
-            add(SearchDoc("khusus:$berkas:${n.id}", "${k.judul} — ${n.judul}", listOf(n.judul, n.terjemahan, n.latin, n.arab), rute))
+            add(SearchDoc("khusus:${m.berkas}:${n.id}", "${k.judul} — ${n.judul}", listOf(n.judul, n.terjemahan, n.latin, n.arab), m.rute))
         }
     }
 

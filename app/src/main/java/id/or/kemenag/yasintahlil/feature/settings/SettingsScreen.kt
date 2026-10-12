@@ -139,12 +139,21 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         }
         Text("Mazhab Asar:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(asar == JadwalHariIni.ASAR_SYAFII,
-                { asar = JadwalHariIni.ASAR_SYAFII; scope.launch { store.set(Store.ASAR, asar) } },
-                { Text("Syafi'i") })
-            FilterChip(asar == JadwalHariIni.ASAR_HANAFI,
-                { asar = JadwalHariIni.ASAR_HANAFI; scope.launch { store.set(Store.ASAR, asar) } },
-                { Text("Hanafi") })
+            // Nama mazhabnya dari aturan bersama (`JadwalHariIni.ASAR_SEMUA`), sama dengan chip di
+            // menu Jadwal: dua nama untuk satu nilai membuat pengguna mengira ada dua pengaturan.
+            JadwalHariIni.ASAR_SEMUA.forEach { (kunci, label) ->
+                FilterChip(asar == kunci, {
+                    asar = kunci
+                    scope.launch {
+                        store.set(Store.ASAR, kunci)
+                        // Mazhab Asar menggeser jam Asar, jadi pengingat yang sudah terjadwal harus
+                        // disusun ulang — menu Jadwal melakukannya, layar ini dahulu hanya menyimpan
+                        // nilainya, sehingga jam yang diingatkan tetap memakai mazhab lama sampai
+                        // ada hal lain yang memicu penjadwalan ulang.
+                        PrayerScheduler.scheduleAll(ctx.applicationContext)
+                    }
+                }, { Text(label) })
+            }
         }
 
         Text("Mazhab panduan ibadah", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))

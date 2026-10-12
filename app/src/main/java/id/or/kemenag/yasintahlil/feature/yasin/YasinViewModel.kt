@@ -9,6 +9,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.Surah
 import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,11 +75,11 @@ class YasinViewModel @Inject constructor(
         // tombol "Salin" pada kartu bacaan, sehingga daftar "Riwayat terbaru" tidak memuat bacaan
         // yang benar-benar dibuka. Ditulis di sini — bukan pada tiap gulir — karena `markRead`
         // hanya dipanggil saat pengguna memang menandai posisi bacaannya.
-        save { userData.pushHistory("yasin", n.toString(), "Yasin ayat $n") }
+        save { userData.pushHistory("yasin", n.toString(), JudulBacaan.yasinAyat(n)) }
     }
 
     fun toggleBookmark(n: Int) {
-        viewModelScope.launch { userData.toggleBookmark("yasin", n.toString(), "Yasin ayat $n") }
+        viewModelScope.launch { userData.toggleBookmark("yasin", n.toString(), JudulBacaan.yasinAyat(n)) }
     }
 
     private fun save(block: suspend () -> Unit) { viewModelScope.launch { block() } }

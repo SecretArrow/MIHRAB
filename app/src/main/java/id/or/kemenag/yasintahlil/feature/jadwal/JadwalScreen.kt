@@ -42,7 +42,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Jadwal Sholat", style = MaterialTheme.typography.titleLarge)
         Text(
-            "Metode: ${s.method.label} • Fajr ${s.method.fajr}° / Isya ${if (s.method.ishaIntervalMin != null) "Magrib+${s.method.ishaIntervalMin}mnt" else "${s.method.isha}°"} • Asar ${if (s.asarHanafi) "Hanafi (2)" else "Syafi'i (1)"}",
+            "Metode: ${s.method.label} • Fajr ${s.method.fajr}° / Isya ${if (s.method.ishaIntervalMin != null) "Magrib+${s.method.ishaIntervalMin}mnt" else "${s.method.isha}°"} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
             style = MaterialTheme.typography.labelMedium,
         )
 
@@ -121,10 +121,13 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             TextButton(onClick = { vm.setTimezone(id); tzDrop = false }) { Text(label) }
         }
 
-        // Mazhab Asar
+        // Mazhab Asar. Nama mazhabnya dari aturan bersama; awalan "Asar" milik layar ini karena
+        // chip di sini berdiri tanpa judul bagian (di menu Pengaturan sudah ada judul "Mazhab Asar:").
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(!s.asarHanafi, { vm.setAsarHanafi(false) }, { Text("Asar Syafi'i") })
-            FilterChip(s.asarHanafi, { vm.setAsarHanafi(true) }, { Text("Asar Hanafi") })
+            FilterChip(!s.asarHanafi, { vm.setAsarHanafi(false) },
+                { Text("Asar ${JadwalHariIni.asarLabel(false)}") })
+            FilterChip(s.asarHanafi, { vm.setAsarHanafi(true) },
+                { Text("Asar ${JadwalHariIni.asarLabel(true)}") })
         }
 
         Text("Koreksi menit per waktu", style = MaterialTheme.typography.titleSmall,

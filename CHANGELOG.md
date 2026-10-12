@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Sebutan untuk hal yang sama kini satu ejaan**: tiga sebutan ditulis di beberapa tempat
+  sekaligus. **Nama berkas modul sholat khusus** (`sholat_ghaib.json`, `sholat_jenazah.json`) ada di
+  layar Sholat Ghaib, layar Sholat Jenazah, dan indeks pencarian; nama berkas adalah kunci ke bundel
+  konten, jadi salah ketik di satu tempat membuat layar menampilkan "konten tidak tersedia"
+  sementara pencarian tetap mendaftarkannya. Kini keduanya tinggal di `BerkasKonten` — bersama
+  layar tujuannya, sebab pencarian harus menunjuk ke mana hasilnya membuka — dan sebuah uji
+  memastikan berkas yang disebutnya benar-benar ada di `assets/content`. **Judul satu ayat Yasin**
+  (`Yasin ayat 58`) ditulis di `YasinViewModel` (riwayat & favorit) dan di indeks pencarian,
+  sehingga ayat yang sama dapat muncul dengan dua nama; kini `JudulBacaan.yasinAyat(nomor)`.
+  **Nama mazhab Asar** beserta faktor bayangannya (`Syafi'i (1)`) ditulis di menu Jadwal dan menu
+  Pengaturan yang keduanya mengatur `Store.ASAR` — angkanya bahkan diketik langsung di kepala layar
+  Jadwal padahal faktor itu dipakai perhitungan; kini `JadwalHariIni.ASAR_SEMUA`/`asarLabel`/
+  `asarLabelFaktor` membacanya dari `asarFactor`. Sekalian: mengubah mazhab Asar dari menu
+  Pengaturan dahulu hanya menyimpan nilainya — pengingat yang sudah terjadwal tetap memakai mazhab
+  lama sampai ada hal lain memicu penjadwalan ulang; kini layar itu menyusun ulang pengingat seperti
+  menu Jadwal. Dijaga `SebutanSatuTempatTest`.
 - **Kalimat penjelas keadaan yang sama kini tinggal di satu tempat**: tiga kalimat yang dilihat
   pengguna ditulis berulang, dan tiap salinan dapat berbeda sendiri. *"Belum ada perbaikan lokasi
   GPS…"* ada di `JadwalViewModel` **dan** `KiblatViewModel` — penjelasan atas satu kegagalan yang

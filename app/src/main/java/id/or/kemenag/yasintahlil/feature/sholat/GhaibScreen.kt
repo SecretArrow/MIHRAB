@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Sholat Ghaib: 4 takbir tanpa ruku/sujud, fardhu kifayah. Seluruh konten (niat & doa)
- * dibaca dari assets (sholat_ghaib.json + bacaan bersama) — tidak ada teks Arab di Kotlin.
+ * dibaca dari assets ([BerkasKonten.SHOLAT_GHAIB] + bacaan bersama) — tidak ada teks Arab di Kotlin.
  */
 @Composable
 fun GhaibScreen() {
@@ -34,7 +35,7 @@ fun GhaibScreen() {
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
     }
     FullscreenEffect(fullscreen)
-    val info = remember { repo.sholatKhusus("sholat_ghaib.json") }
+    val info = remember { repo.sholatKhusus(BerkasKonten.SHOLAT_GHAIB) }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
     val steps = listOf(
