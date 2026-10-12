@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -108,8 +109,8 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.horizontalScroll(rememberScrollState())) {
-            OutlinedButton(onClick = { go(Routes.WUDHU) }) { Text("Wudhu & Tayamum") }
-            OutlinedButton(onClick = { go(Routes.KIBLAT) }) { Text("Arah Kiblat") }
+            OutlinedButton(onClick = { go(Routes.WUDHU) }) { Text(NamaLayar.WUDHU) }
+            OutlinedButton(onClick = { go(Routes.KIBLAT) }) { Text(NamaLayar.KIBLAT) }
         }
         if (syarat.jumlah > 0) {
             TextButton(onClick = { syaratTerbuka = !syaratTerbuka }) {

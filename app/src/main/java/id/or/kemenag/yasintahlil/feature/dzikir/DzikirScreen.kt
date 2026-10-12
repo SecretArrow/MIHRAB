@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -36,7 +37,7 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
         return
     }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Dzikir & Doa", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.DZIKIR, style = MaterialTheme.typography.titleLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })

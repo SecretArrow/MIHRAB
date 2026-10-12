@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.navigation
 
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 
 /**
  * Pemetaan "jenis konten tersimpan" (favorit & riwayat) ke rute layar tujuannya.
@@ -107,16 +108,16 @@ object RuteKonten {
      */
     fun namaTujuan(kind: String, grupDzikir: Set<String> = emptySet()): String? =
         when (rute(kind, grupDzikir)) {
-            Routes.YASIN -> "Surat Yasin"
-            Routes.TAHLIL -> "Tahlil"
-            Routes.DZIKIR -> "Dzikir & Doa"
-            Routes.DOA_ADZAN -> "Doa Adzan"
-            Routes.IQOMAH -> "Iqomah"
-            Routes.ADZAN -> "Adzan & Pengingat"
-            Routes.SHOLAT -> "Panduan Sholat"
-            Routes.GHAIB -> "Sholat Ghaib"
-            Routes.JENAZAH -> "Sholat Jenazah"
-            Routes.SEARCH -> "Pencarian"
+            Routes.YASIN -> NamaLayar.YASIN
+            Routes.TAHLIL -> NamaLayar.TAHLIL
+            Routes.DZIKIR -> NamaLayar.DZIKIR
+            Routes.DOA_ADZAN -> NamaLayar.DOA_ADZAN
+            Routes.IQOMAH -> NamaLayar.IQOMAH
+            Routes.ADZAN -> NamaLayar.ADZAN
+            Routes.SHOLAT -> NamaLayar.SHOLAT
+            Routes.GHAIB -> NamaLayar.GHAIB
+            Routes.JENAZAH -> NamaLayar.JENAZAH
+            Routes.SEARCH -> NamaLayar.SEARCH
             else -> null
         }
 

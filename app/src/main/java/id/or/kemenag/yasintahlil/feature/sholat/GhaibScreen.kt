@@ -13,6 +13,7 @@ import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
@@ -48,7 +49,7 @@ fun GhaibScreen() {
         "Salam kanan-kiri" to cari("salam"),
     )
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(info.judul.ifBlank { "Sholat Ghaib" } + " — ${info.takbir} takbir, tanpa ruku/sujud",
+        Text(info.judul.ifBlank { NamaLayar.GHAIB } + " — ${info.takbir} takbir, tanpa ruku/sujud",
             style = MaterialTheme.typography.titleLarge)
         Text("Dalil: ${info.dalil} Rujukan tata cara: imbauan Kemenag; syarat & kritik sanad: NU Online. Lihat SOURCES.md.",
             style = MaterialTheme.typography.labelMedium)

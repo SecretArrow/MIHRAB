@@ -26,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import id.or.kemenag.yasintahlil.core.designsystem.KolomKonten
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.feature.adzan.AdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.DoaAdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.IqomahScreen
@@ -62,10 +63,10 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
         }
     }
     val tabs = listOf(
-        Triple(Routes.HOME, "Beranda", Icons.Filled.Home),
-        Triple(Routes.IBADAH, "Ibadah", Icons.Filled.MenuBook),
-        Triple(Routes.ALAT, "Alat", Icons.Filled.Explore),
-        Triple(Routes.SETTINGS, "Pengaturan", Icons.Filled.Settings),
+        Triple(Routes.HOME, NamaLayar.BERANDA, Icons.Filled.Home),
+        Triple(Routes.IBADAH, NamaLayar.IBADAH, Icons.Filled.MenuBook),
+        Triple(Routes.ALAT, NamaLayar.ALAT, Icons.Filled.Explore),
+        Triple(Routes.SETTINGS, NamaLayar.PENGATURAN, Icons.Filled.Settings),
     )
     CompositionLocalProvider(LocalBottomBarVisible provides bottomBarVisible) {
         Scaffold(bottomBar = {

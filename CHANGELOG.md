@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama layar kini satu tempat**: nama sebuah layar ditulis ulang di tiap tempat yang menunjuknya,
+  dan salinan-salinannya sudah menyimpang — layar yang sama disebut *"Yasin"* di kartu beranda tetapi
+  *"Surat Yasin"* di label tujuan tombol "Buka"; *"Adzan"* di kartu beranda tetapi *"Adzan &
+  Pengingat"* di menu Alat; *"Kiblat"*, *"Kompas Kiblat"*, dan *"Arah Kiblat"* untuk satu layar yang
+  sama; *"Cari"* untuk layar Pencarian; *"Sholat Wajib & Sunnah"* untuk Panduan Sholat; *"Tahlil +
+  counter"* dan *"Iqomah + timer"* untuk layar yang counter dan timer-nya memang ada di dalamnya.
+  Pengguna menekan *"Kompas Kiblat"* lalu tiba di layar berjudul *"Arah Kiblat"* — tidak ada pesan
+  galat, karena aplikasinya memang berjalan benar; yang berbeda hanya **nama**-nya. Kini tinggal di
+  `NamaLayar` (`core/util`), dan setiap tempat yang menyebut sebuah layar — kartu beranda, menu
+  Ibadah/Alat, pintasan di layar sholat, tab bawah, `RuteKonten.namaTujuan`, dan judul layarnya
+  sendiri — membaca nama dari sana. Dijaga `NamaLayarSatuTempatTest` (11 uji), yang menuntut dua hal
+  terpisah: tidak ada salinan nama di luar `NamaLayar`, **dan** tidak ada nama yang tertukar — tiap
+  tempat yang menunjuk sebuah layar harus memakai nama layar itu, bukan nama layar lain. Judul menu
+  Ibadah dan Alat sekaligus memakai tipografi judul yang sama dengan layar lain. Dua belas mutasi
+  terverifikasi tertangkap.
 - **Nama kendali antarmuka kini satu tempat**: tiga nama yang muncul di lebih dari satu tempat
   masih dieja ulang di tiap pemakaian. *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet`
   **dan** label tombol yang membukanya di sepuluh layar — sebelas tulisan untuk satu nama, sehingga

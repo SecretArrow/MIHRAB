@@ -34,6 +34,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
 import id.or.kemenag.yasintahlil.core.sensor.StatusKompas
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -77,7 +78,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
     val azimutTeks = TampilanKompas.formatAzimut(kiblat, s.unit)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Arah Kiblat", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.KIBLAT, style = MaterialTheme.typography.titleLarge)
         Text("Azimut: $azimutTeks $arah dari (%.4f, %.4f)%s".format(
             s.lat, s.lon, if (s.liveFix) " • GPS live" else ""))
         // Judul dahulu berbunyi "(SIHAT Kemenag)" — melekatkan nama lembaga pada angka yang justru

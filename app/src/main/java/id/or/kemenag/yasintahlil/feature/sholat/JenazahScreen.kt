@@ -13,6 +13,7 @@ import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ fun JenazahScreen() {
         "Salam" to cari("salam"),
     )
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(info.judul.ifBlank { "Sholat Jenazah" } + " — ${info.takbir} takbir",
+        Text(info.judul.ifBlank { NamaLayar.JENAZAH } + " — ${info.takbir} takbir",
             style = MaterialTheme.typography.titleLarge)
         if (info.syarat.isNotEmpty()) {
             Text("Syarat: " + info.syarat.joinToString(", ") + ".",

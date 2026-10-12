@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -82,7 +83,7 @@ fun IqomahScreen() {
     val ss = shown % 60
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Iqomah", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.IQOMAH, style = MaterialTheme.typography.titleLarge)
         Text("Timer opsional setelah masuk waktu (± $mins mnt). Ini pengingat pribadi — waktu iqomah tiap masjid berbeda.",
             style = MaterialTheme.typography.labelMedium)
 
@@ -185,7 +186,7 @@ fun DoaAdzanScreen() {
         ingatkan = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Doa sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
+        Text("${NamaLayar.DOA_ADZAN} — sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
         Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
             style = MaterialTheme.typography.labelMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
