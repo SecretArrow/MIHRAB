@@ -77,6 +77,31 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Pengaturan tampilan bacaan kini satu bottom sheet** (`plan.txt`: *"Gunakan bottom sheet untuk
+  pengaturan singkat"*): chip Arab/Latin/Terjemahan dan slider ukuran yang tadinya berserakan di
+  badan sepuluh layar bacaan (Yasin, Tahlil, Dzikir, Adzan, Iqomah, Doa Adzan, Sholat, Tata Cara,
+  Ghaib, Jenazah) dipindahkan ke `BacaanSettingsSheet` yang dibuka dari satu tombol. Rentang ukuran
+  yang sah (`ARAB_SIZE_RANGE`, `LATIN_SIZE_RANGE`, `LINE_HEIGHT_RANGE`) kini ditulis sekali di
+  komponen bersama dan dipakai juga oleh Pengaturan, sehingga keduanya tak bisa berbeda diam-diam.
+  Layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang tak berefek.
+- **Keadaan kosong/gagal/memuat yang tadinya diam** (`plan.txt`: *"Sediakan tampilan kosong, pesan
+  kesalahan, dan tombol mencoba kembali"*, *"Berikan skeleton loading atau indikator proses saat
+  memuat data"*). Tiga jalan buntu diperbaiki sekaligus:
+  - **Jadwal** — tombol "Pakai lokasi GPS" dulu mengembalikan `false` tanpa penjelasan saat belum
+    ada perbaikan lokasi; kini layar menampilkan sebabnya + tombol coba lagi, memuat preferensi
+    ditampilkan sebagai kerangka (`SkeletonCard`), dan kegagalan membaca penyimpanan ditampilkan
+    sebagai pesan kesalahan yang bisa diulang.
+  - **Kiblat** — saat aliran lokasi berakhir tanpa satu pun perbaikan (mis. GPS perangkat mati),
+    layar dulu membeku tanpa keterangan; kini ada indikator proses selama menunggu dan penjelasan
+    setelah 20 detik tanpa perbaikan, keduanya dengan tombol coba lagi.
+  - **Adzan** — berkas audio pilihan pengguna yang tak terbaca membuat pratinjau diam saja; kini
+    sebabnya ditampilkan (`PlaybackException`) dengan tombol coba lagi.
+- **Hitungan dzikir selalu tampil**, bukan hanya untuk bacaan yang diulang lebih dari satu kali —
+  progresnya tersimpan di Room, jadi pengguna bisa melihat dan mengulang meski targetnya sekali.
+- **Tombol dekoratif dihapus**: penanda jumlah ulangan di kartu bacaan dulu `AssistChip` dengan
+  `onClick` kosong — tombol yang tampak bisa ditekan tetapi tak melakukan apa pun; kini teks biasa.
+  Invariannya dijaga `UxStateTest` (komponen keadaan harus dipakai, layar bacaan wajib membuka
+  bottom sheet-nya, dan `onClick = {}` hanya boleh pada kontrol yang memang `enabled = false`).
 - **Bacaan kini dibedakan menurut sumbernya** (`plan.txt`: *"Bedakan bacaan yang bersumber dari
   Al-Qur'an, hadis, dzikir umum, dan tradisi lokal"*): setiap berkas konten ber-Arab menyatakan
   `kategori` — di tingkat berkas, atau per entri bila berkasnya bercampur (`sholat_bacaan.json`

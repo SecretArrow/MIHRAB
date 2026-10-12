@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
@@ -42,8 +44,21 @@ fun AdzanScreen() {
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
+    var settings by remember { mutableStateOf(false) }
+    // Berkas audio pengguna bisa saja tak terbaca (URI dicabut, format tak didukung, izin hilang).
+    // Sebelumnya pratinjau diam saja saat gagal; kini sebabnya ditampilkan + tombol coba lagi.
+    var putarGagal by remember { mutableStateOf<String?>(null) }
     val player = remember { ExoPlayer.Builder(ctx.applicationContext).build() }
-    DisposableEffect(Unit) { onDispose { player.release() } }
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onPlayerError(error: PlaybackException) {
+                putarGagal = "Berkas audio tidak dapat diputar (${error.errorCodeName}). " +
+                    "Pilih berkas lain atau pastikan aplikasi masih punya izin membaca berkas itu."
+            }
+        }
+        player.addListener(listener)
+        onDispose { player.removeListener(listener); player.release() }
+    }
 
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { u: Uri? ->
         u?.let {
@@ -95,11 +110,21 @@ fun AdzanScreen() {
             Button(onClick = { pick.launch(arrayOf("audio/*")) }) { Text("Pilih audio") }
             Button(onClick = {
                 if (uri.isNotBlank()) {
+                    putarGagal = null
                     player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
                     player.volume = vol; player.prepare(); player.play()
                 }
             }, enabled = uri.isNotBlank()) { Text("Pratinjau") }
             OutlinedButton(onClick = { player.stop() }) { Text("Stop") }
+        }
+        putarGagal?.let { pesan ->
+            ErrorState(pesan, onRetry = {
+                putarGagal = null
+                runCatching {
+                    player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
+                    player.volume = vol; player.prepare(); player.play()
+                }
+            })
         }
         Text("Volume: ${(vol * 100).toInt()}%")
         Slider(vol, { vol = it; player.volume = it; scope.launch { store.set(Store.ADZAN_VOL, vol) } })
@@ -144,14 +169,26 @@ fun AdzanScreen() {
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
-        Text("Ukuran Arab: ${arabSize.toInt()}")
-        Slider(arabSize, { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, arabSize) } },
-            valueRange = 16f..40f)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+        }
+        if (lafaz.isEmpty()) {
+            EmptyState("Lafaz adzan tidak tersedia",
+                "Berkas lafaz adzan tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
+        }
         lafaz.forEach { l ->
             BacaanCard("adzan:${l.arab.take(10)}", "Adzan", l.arab, l.latin, l.terjemahan,
                 true, true, arabSize, 15f, l.ulangi, showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }
 

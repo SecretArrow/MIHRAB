@@ -64,20 +64,11 @@ class YasinViewModel @Inject constructor(
 
     fun setLineHeight(v: Float) { _state.update { it.copy(lineHeight = v) }; save { store.set(Store.LINE_HEIGHT, v) } }
 
-    fun toggleLatin() {
-        val v = !_state.value.showLatin
-        _state.update { it.copy(showLatin = v) }; save { store.set(Store.SHOW_LATIN, v) }
-    }
+    fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; save { store.set(Store.SHOW_LATIN, v) } }
 
-    fun toggleTrans() {
-        val v = !_state.value.showTrans
-        _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) }
-    }
+    fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) } }
 
-    fun toggleArab() {
-        val v = !_state.value.showArab
-        _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) }
-    }
+    fun setShowArab(v: Boolean) { _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) } }
 
     fun markRead(n: Int) {
         _state.update { it.copy(mark = n) }

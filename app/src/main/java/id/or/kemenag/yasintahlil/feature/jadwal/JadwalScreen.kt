@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 
 @Composable
@@ -25,10 +26,10 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     val permLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
-        if (result.values.any { it }) {
-            needPermission = false
-            vm.useGps()
-        }
+        needPermission = false
+        // Setelah izin diberikan, langsung coba ambil perbaikan; bila belum ada, useGps() mengisi
+        // pesanLokasi sehingga layar menampilkan penjelasan + tombol coba lagi.
+        if (result.values.any { it }) vm.useGps()
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
@@ -52,20 +53,23 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             TextButton(onClick = { vm.selectCity(k); drop = false }) { Text(k.nama) }
         }
         OutlinedButton(onClick = {
-            if (vm.hasLocationPermission() && vm.useGps()) {
-                needPermission = false
-            } else {
+            if (!vm.hasLocationPermission()) {
                 needPermission = true
                 permLauncher.launch(arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 ))
+            } else {
+                vm.useGps()
             }
         }) { Text("Pakai lokasi GPS") }
         if (needPermission) Text(
             "Izinkan lokasi agar jadwal memakai koordinat GPS perangkat; bila tidak, pilih kota secara manual.",
             style = MaterialTheme.typography.labelSmall,
         )
+        s.pesanLokasi?.let { pesan ->
+            ErrorState(pesan, onRetry = { vm.useGps() })
+        }
 
         // Zona waktu
         OutlinedButton(onClick = { tzDrop = !tzDrop; methodDrop = false; drop = false }) {
@@ -98,19 +102,40 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             }
         }
 
-        s.times?.let { t ->
-            Divider(Modifier.padding(vertical = 8.dp))
-            val rows = listOf("Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
-                "Asar" to t.asar, "Magrib" to t.magrib, "Isya" to t.isya)
-            rows.forEach { (n, j) ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(n, style = MaterialTheme.typography.titleMedium)
-                    Text(j, style = MaterialTheme.typography.titleMedium)
-                }
+        Divider(Modifier.padding(vertical = 8.dp))
+        when {
+            s.memuat -> {
+                Text("Jadwal hari ini", style = MaterialTheme.typography.titleSmall)
+                SkeletonCard(baris = 6)
             }
-            val (berikut, sisa) = PrayerCalc.next(s.nowMin, t)
-            Text("Berikutnya: $berikut dalam ${sisa / 60} jam ${sisa % 60} mnt",
-                color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
+
+            s.gagalMuat != null -> ErrorState(
+                "Jadwal gagal dimuat: ${s.gagalMuat}. Jadwal dihitung di perangkat, jadi ini bukan " +
+                    "masalah jaringan — coba muat ulang.",
+                onRetry = { vm.muatUlang() },
+            )
+
+            s.times != null -> {
+                val t = s.times!!
+                val rows = listOf("Subuh" to t.subuh, "Terbit" to t.terbit, "Zuhur" to t.zuhur,
+                    "Asar" to t.asar, "Magrib" to t.magrib, "Isya" to t.isya)
+                rows.forEach { (n, j) ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(n, style = MaterialTheme.typography.titleMedium)
+                        Text(j, style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+                val (berikut, sisa) = PrayerCalc.next(s.nowMin, t)
+                Text("Berikutnya: $berikut dalam ${sisa / 60} jam ${sisa % 60} mnt",
+                    color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
+            }
+
+            else -> EmptyState(
+                "Jadwal belum tersedia",
+                "Waktu sholat belum terhitung untuk lokasi ini.",
+                labelTombol = "Hitung ulang",
+                onTombol = { vm.muatUlang() },
+            )
         }
         Text(
             "Jadwal dihitung di perangkat (algoritma Meeus) — tetap tersedia tanpa internet. Verifikasi: sihat.kemenag.dev",

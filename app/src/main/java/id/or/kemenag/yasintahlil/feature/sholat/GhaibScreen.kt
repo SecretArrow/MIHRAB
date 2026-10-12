@@ -24,6 +24,7 @@ fun GhaibScreen() {
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
     var showArab by remember { mutableStateOf(true) }
+    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 24f)
         showArab = store.get(Store.SHOW_ARAB, true)
@@ -50,18 +51,7 @@ fun GhaibScreen() {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh (imam)") })
-            FilterChip(showArab, {
-                showArab = !showArab
-                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
-            }, { Text("Arab") })
-            OutlinedButton(onClick = {
-                arabSize = (arabSize + 2).coerceAtMost(44f)
-                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A+") }
-            OutlinedButton(onClick = {
-                arabSize = (arabSize - 2).coerceAtLeast(16f)
-                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A−") }
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         if (info.niat.isNotEmpty()) {
             Text("Varian niat:", style = MaterialTheme.typography.titleMedium)
@@ -86,5 +76,13 @@ fun GhaibScreen() {
             Text("Catatan mazhab: ${info.catatanMazhab}",
                 style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }

@@ -15,6 +15,7 @@ import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.QiblaCalc
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +35,10 @@ data class KiblatUiState(
     val calibrated: Boolean = true,
     /** True bila koordinat berasal dari perbaikan GPS live, bukan lokasi manual/kota. */
     val liveFix: Boolean = false,
+    /** Sedang menunggu perbaikan GPS — layar menampilkan indikator proses, bukan kompas beku. */
+    val mencari: Boolean = false,
+    /** Pesan bila GPS diminta tetapi belum ada perbaikan lokasi yang bisa dipakai. */
+    val pesanLokasi: String? = null,
     /** Satuan tampilan azimut: "derajat" atau "mil". */
     val unit: String = "derajat",
 )
@@ -55,6 +60,7 @@ class KiblatViewModel @Inject constructor(
         ctx.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
     private var compassListener: SensorEventListener? = null
     private var locationJob: Job? = null
+    private var watchdogJob: Job? = null
     private var rescheduled = false
 
     init {
@@ -92,28 +98,52 @@ class KiblatViewModel @Inject constructor(
             refreshLocation()
         } else {
             locationJob?.cancel()
-            _state.update { it.copy(liveFix = false) }
+            watchdogJob?.cancel()
+            _state.update { it.copy(liveFix = false, mencari = false, pesanLokasi = null) }
         }
     }
 
-    /** Muat perbaikan terakhir lalu ikuti pembaruan live (bila izin ada). */
+    /**
+     * Muat perbaikan terakhir lalu ikuti pembaruan live (bila izin ada).
+     *
+     * Aliran lokasi bisa berakhir sendiri tanpa pernah mengirim satu pun perbaikan — mis. saat
+     * GPS perangkat dimatikan. Sebelumnya layar hanya diam (kompas tampak beku, tanpa penjelasan);
+     * kini keadaan itu diisi [KiblatUiState.pesanLokasi] sehingga pengguna tahu sebabnya dan bisa
+     * mencoba lagi, dan selama menunggu [KiblatUiState.mencari] menampilkan indikator proses.
+     */
     fun refreshLocation() {
         if (!LocationProvider.hasPermission(ctx)) {
-            _state.update { it.copy(hasPermission = false) }
+            _state.update { it.copy(hasPermission = false, mencari = false, pesanLokasi = null) }
             return
         }
-        _state.update { it.copy(hasPermission = true) }
+        _state.update { it.copy(hasPermission = true, mencari = true, pesanLokasi = null) }
         LocationProvider.lastKnown(ctx)?.let { applyLocation(it, live = false) }
         locationJob?.cancel()
         locationJob = viewModelScope.launch {
             LocationProvider.updates(ctx).collect { applyLocation(it, live = true) }
+            // Berakhirnya aliran = tidak ada penyedia lokasi aktif.
+            tandaiTanpaFix()
+        }
+        watchdogJob?.cancel()
+        watchdogJob = viewModelScope.launch {
+            delay(TIMEOUT_LOKASI_MS)
+            tandaiTanpaFix()
+        }
+    }
+
+    /** Bila belum ada perbaikan sama sekali, jelaskan dan berhenti "mencari". */
+    private fun tandaiTanpaFix() {
+        _state.update { s ->
+            if (s.liveFix) s.copy(mencari = false, pesanLokasi = null)
+            else s.copy(mencari = false, pesanLokasi = PESAN_TANPA_FIX)
         }
     }
 
     private fun applyLocation(loc: Location, live: Boolean) {
         val bearing = QiblaCalc.bearing(loc.latitude, loc.longitude)
         _state.update {
-            it.copy(lat = loc.latitude, lon = loc.longitude, bearing = bearing, liveFix = live)
+            it.copy(lat = loc.latitude, lon = loc.longitude, bearing = bearing, liveFix = live,
+                mencari = false, pesanLokasi = null)
         }
         viewModelScope.launch {
             store.set(Store.LAT, loc.latitude)
@@ -205,6 +235,16 @@ class KiblatViewModel @Inject constructor(
     override fun onCleared() {
         compassListener?.let { sensorManager?.unregisterListener(it) }
         locationJob?.cancel()
+        watchdogJob?.cancel()
         super.onCleared()
+    }
+
+    companion object {
+        /** Lama menunggu perbaikan GPS sebelum layar menjelaskan bahwa belum ada perbaikan. */
+        const val TIMEOUT_LOKASI_MS = 20_000L
+
+        const val PESAN_TANPA_FIX =
+            "Belum ada perbaikan lokasi GPS. Pastikan GPS aktif dan berada di luar ruangan, " +
+                "lalu coba lagi — atau matikan GPS dan pilih kota di menu Jadwal."
     }
 }
