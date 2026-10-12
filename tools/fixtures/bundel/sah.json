@@ -1,0 +1,17 @@
+{
+  "_bundel": {
+    "skema": 1,
+    "dibuat": "2026-02-19",
+    "penerbit": "Contoh format (bukan konten asli)",
+    "catatan": "Fixture CI: bundel yang harus DITERIMA gate tools/validate_bundle.py"
+  },
+  "berkas": {
+    "kota.json": {
+      "sumber_url": "https://sihat.kemenag.dev/",
+      "kota": [
+        { "nama": "Jakarta", "lat": -6.2088, "lon": 106.8456 },
+        { "nama": "Surabaya", "lat": -7.2575, "lon": 112.7521 }
+      ]
+    }
+  }
+}

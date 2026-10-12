@@ -13,11 +13,12 @@ import id.or.kemenag.yasintahlil.BuildConfig
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(go: (String) -> Unit = {}) {
     val store = rememberStore()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
@@ -161,6 +162,13 @@ fun SettingsScreen() {
                 { Text("Mil (6400)") })
         }
         Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
+            style = MaterialTheme.typography.labelSmall)
+
+        Text("Pembaruan konten", style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp))
+        OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka pembaruan konten") }
+        Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya (domain resmi, " +
+                "kategori, harakat). Tidak ada unduhan otomatis dan tidak ada izin jaringan.",
             style = MaterialTheme.typography.labelSmall)
 
         Text("Tentang & sumber", style = MaterialTheme.typography.titleMedium,

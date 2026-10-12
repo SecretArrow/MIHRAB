@@ -1,0 +1,223 @@
+package id.or.kemenag.yasintahlil.core.data
+
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
+import org.json.JSONArray
+import org.json.JSONObject
+
+/**
+ * Bundel pembaruan konten — memenuhi `plan.txt`: *"Sediakan mekanisme pembaruan konten dengan
+ * validasi sumber."*
+ *
+ * Bundel adalah satu berkas JSON yang memuat metadata dan peta nama-berkas → dokumen konten:
+ *
+ * ```json
+ * {
+ *   "_bundel": { "skema": 1, "dibuat": "2026-02-19", "penerbit": "LPMQ Kemenag",
+ *                "catatan": "Pembaruan teks Qur'an edisi 2026" },
+ *   "berkas": { "yasin_full.json": { "sumber_url": "https://quran.kemenag.go.id/…", "verses": [ … ] } }
+ * }
+ * ```
+ *
+ * Bundel **tidak pernah diunduh otomatis**: pengguna memilih berkasnya sendiri (lihat
+ * `ContentUpdateManager`), sehingga tidak ada konten yang masuk tanpa tindakan sadar pengguna dan
+ * tanpa izin internet. Sebelum diterima, seluruh isinya melewati aturan yang sama dengan gate CI
+ * `tools/validate_content.py`:
+ *
+ * - setiap berkas harus punya `sumber_url` yang domainnya resmi (whitelist di [ContentValidator],
+ *   dengan pencocokan host persis/subdomain agar tidak bisa dipalsukan);
+ * - berkas ber-Arab wajib menyatakan `kategori` sumber ([SumberKategori]) yang dikenal;
+ * - teks Arab wajib berharakat — teks mentah yang belum divokalkan ditolak;
+ * - tidak boleh ada prosa penunjuk (placeholder) di field `arab`/`latin`;
+ * - nama berkas tidak boleh menunjuk ke luar direktori konten.
+ *
+ * Sebuah bundel diterima **utuh atau tidak sama sekali**: satu berkas yang gagal membatalkan
+ * seluruh pemasangan, sehingga konten yang sudah diverifikasi tidak pernah tercampur setengah
+ * pembaruan.
+ */
+object BundelKonten {
+
+    /** Versi skema bundel yang dipahami aplikasi ini. */
+    const val SKEMA = 1
+
+    /** Kunci metadata tingkat bundel. */
+    const val KUNCI_META = "_bundel"
+
+    /** Kunci peta nama-berkas → dokumen konten. */
+    const val KUNCI_BERKAS = "berkas"
+
+    /**
+     * Prosa penunjuk yang tidak boleh muncul di field `arab`/`latin` — sama persis dengan
+     * `PLACEHOLDER_MARKERS` di `tools/validate_content.py`.
+     */
+    val PLACEHOLDER = listOf(
+        "lihat rujukan file", "lihat rujukan berkas", "dibaca penuh dari mushaf",
+        "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
+    )
+
+    private val ARAB = Regex("[\\u0600-\\u06FF\\u0750-\\u077F]+")
+
+    /** Fathatan..sukun + alef khanjariyah dan tanda maddah. */
+    private val HARAKAT: Set<Char> =
+        (0x064B..0x0652).map { it.toChar() }.toSet() +
+            listOf(0x0670, 0x0653, 0x0654, 0x0655, 0x0656).map { it.toChar() }
+
+    /** Ringkasan satu dokumen yang lolos pemeriksaan. */
+    data class Berkas(val nama: String, val sumberUrl: String, val kategori: List<String>)
+
+    /** Hasil pembacaan sebuah bundel. */
+    data class Hasil(
+        val skema: Int = 0,
+        val dibuat: String = "",
+        val penerbit: String = "",
+        val catatan: String = "",
+        val berkas: Map<String, JSONObject> = emptyMap(),
+        val ditolak: List<String> = emptyList(),
+    ) {
+        /** Bundel hanya boleh dipasang bila tidak ada satu pun berkas yang ditolak. */
+        val sah: Boolean get() = ditolak.isEmpty() && berkas.isNotEmpty()
+    }
+
+    /**
+     * Nama berkas yang boleh masuk ke direktori konten: `*.json` polos tanpa pemisah direktori,
+     * tanpa awalan titik, dan tanpa awalan garis bawah — awalan `_` disisihkan untuk berkas
+     * internal (mis. metadata pembaruan) agar tidak bisa ditimpa oleh isi bundel.
+     */
+    fun namaBerkasSah(nama: String): Boolean =
+        nama.length in 6..64 && nama.endsWith(".json") && !nama.startsWith(".") &&
+            !nama.startsWith("_") && nama.none { it == '/' || it == '\\' || it == ':' }
+
+    /**
+     * Baca dan periksa sebuah bundel. JSON yang tidak sah tidak melempar keluar: sebabnya
+     * dikembalikan di [Hasil.ditolak] agar layar dapat menampilkannya apa adanya.
+     */
+    fun baca(teks: String): Hasil {
+        val root = runCatching { JSONObject(teks) }.getOrElse {
+            return Hasil(ditolak = listOf("Bundel bukan JSON yang sah: ${it.message.orEmpty().take(120)}"))
+        }
+        val meta = root.optJSONObject(KUNCI_META)
+        val skema = meta?.optInt("skema", 0) ?: 0
+        val tolak = mutableListOf<String>()
+        if (skema != SKEMA) {
+            tolak += "Skema bundel $skema tidak didukung — aplikasi ini membaca skema $SKEMA."
+        }
+        val peta = root.optJSONObject(KUNCI_BERKAS)
+        if (peta == null) {
+            tolak += "Bundel tidak memuat objek '$KUNCI_BERKAS'."
+            return Hasil(skema, "", "", "", emptyMap(), tolak)
+        }
+
+        val diterima = mutableMapOf<String, JSONObject>()
+        val nama = peta.keys().asSequence().toList().sorted()
+        if (nama.isEmpty()) tolak += "Bundel tidak memuat berkas apa pun."
+        nama.forEach { k ->
+            val galat = mutableListOf<String>()
+            if (!namaBerkasSah(k)) {
+                galat += "Nama berkas '$k' tidak sah (harus nama polos berakhiran .json)."
+            } else {
+                val doc = peta.optJSONObject(k)
+                if (doc == null) {
+                    galat += "Isi '$k' bukan objek JSON."
+                } else {
+                    galat += periksaBerkas(doc)
+                }
+            }
+            if (galat.isEmpty()) diterima[k] = peta.getJSONObject(k)
+            else tolak += galat.map { "$k: $it" }
+        }
+        return Hasil(
+            skema = skema,
+            dibuat = meta?.optString("dibuat").orEmpty(),
+            penerbit = meta?.optString("penerbit").orEmpty(),
+            catatan = meta?.optString("catatan").orEmpty(),
+            // Satu berkas gagal = tidak ada yang diterima, sehingga pemanggil tak mungkin
+            // memasang sebagian bundel karena keliru memakai [Hasil.berkas] tanpa [Hasil.sah].
+            berkas = if (tolak.isEmpty()) diterima else emptyMap(),
+            ditolak = tolak,
+        )
+    }
+
+    /** Aturan per-dokumen. Kosong berarti dokumen lolos. */
+    fun periksaBerkas(doc: JSONObject): List<String> {
+        val galat = mutableListOf<String>()
+
+        val sumber = listOf("sumber_url", "sumberUrl")
+            .firstNotNullOfOrNull { k -> doc.optString(k).takeIf { it.isNotBlank() } }
+            .orEmpty()
+        when {
+            sumber.isBlank() -> galat += "tidak menyatakan 'sumber_url'"
+            !ContentValidator.isOfficialSource(sumber) ->
+                galat += "'sumber_url' bukan domain resmi: $sumber"
+        }
+
+        val kategori = kumpulkan(doc, "kategori")
+        if (adaTeksArab(doc)) {
+            if (kategori.isEmpty()) {
+                galat += "memuat teks Arab tanpa 'kategori' sumber " +
+                    "(pilihan: ${SumberKategori.SEMUA.joinToString()})"
+            }
+            galat += tanpaHarakat(doc).map { "teks Arab tanpa harakat: '$it'" }
+        }
+        kategori.filterNot { SumberKategori.dikenal(it) }.forEach {
+            galat += "kategori tak dikenal: '$it' (pilihan: ${SumberKategori.SEMUA.joinToString()})"
+        }
+        galat += placeholder(doc).map { "field $it berisi prosa penunjuk, bukan bacaan" }
+        return galat
+    }
+
+    /** Semua nilai string (rekursif) di bawah [kunci] — mis. seluruh `kategori` di berkas. */
+    private fun kumpulkan(node: Any?, kunci: String, keluar: MutableList<String> = mutableListOf()): List<String> {
+        when (node) {
+            is JSONObject -> node.keys().asSequence().forEach { k ->
+                val v = node.get(k)
+                if (k == kunci && v is String && v.isNotBlank()) keluar += v.trim()
+                kumpulkan(v, kunci, keluar)
+            }
+            is JSONArray -> (0 until node.length()).forEach { kumpulkan(node.get(it), kunci, keluar) }
+        }
+        return keluar.distinct()
+    }
+
+    /** Field `arab`/`latin` (rekursif) beserta nilainya. */
+    private fun fieldTeks(node: Any?, keluar: MutableList<Pair<String, String>> = mutableListOf()): List<Pair<String, String>> {
+        when (node) {
+            is JSONObject -> node.keys().asSequence().forEach { k ->
+                val v = node.get(k)
+                if ((k == "arab" || k == "latin") && v is String) keluar += k to v
+                fieldTeks(v, keluar)
+            }
+            is JSONArray -> (0 until node.length()).forEach { fieldTeks(node.get(it), keluar) }
+        }
+        return keluar
+    }
+
+    private fun adaTeksArab(node: Any?): Boolean = when (node) {
+        is String -> ARAB.containsMatchIn(node)
+        is JSONObject -> node.keys().asSequence().any { k -> adaTeksArab(node.get(k)) }
+        is JSONArray -> (0 until node.length()).any { adaTeksArab(node.get(it)) }
+        else -> false
+    }
+
+    /** Kata Arab (>= 3 huruf) yang sama sekali tanpa tanda harakat. */
+    private fun tanpaHarakat(node: Any?, keluar: MutableList<String> = mutableListOf()): List<String> {
+        fieldTeks(node).forEach { (_, teks) ->
+            ARAB.findAll(teks).map { it.value }.forEach { run ->
+                val huruf = run.count { it.code in 0x0621..0x064A || it.code in 0x0671..0x06D3 }
+                if (huruf >= 3 && run.none { it in HARAKAT }) keluar += run
+            }
+        }
+        return keluar.distinct()
+    }
+
+    private fun placeholder(node: Any?): List<String> =
+        fieldTeks(node).filter { (_, teks) ->
+            val low = teks.lowercase()
+            PLACEHOLDER.any { it in low }
+        }.map { it.first }.distinct()
+
+    /** Ringkasan berkas yang lolos — dipakai layar untuk menampilkan sumber tiap berkas. */
+    fun ringkasan(hasil: Hasil): List<Berkas> = hasil.berkas.map { (nama, doc) ->
+        val sumber = listOf("sumber_url", "sumberUrl")
+            .firstNotNullOfOrNull { k -> doc.optString(k).takeIf { it.isNotBlank() } }.orEmpty()
+        Berkas(nama, sumber, kumpulkan(doc, "kategori"))
+    }.sortedBy { it.nama }
+}

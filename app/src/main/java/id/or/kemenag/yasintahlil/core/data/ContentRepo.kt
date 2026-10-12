@@ -4,20 +4,60 @@ import android.content.Context
 import android.util.Log
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import org.json.JSONObject
+import java.io.File
 
-/** Repository offline-first: seluruh konten dibaca dari assets/content (sumber resmi). */
+/**
+ * Repository offline-first: konten dibaca dari assets/content (sumber resmi), dengan lapisan
+ * pembaruan opsional di `filesDir/content_update/` (lihat [ContentUpdateManager]).
+ *
+ * Lapisan pembaruan hanya dipakai bila berkasnya ada **dan** masih lolos pemeriksaan sumber:
+ * berkas yang rusak, hilang, atau kehilangan `sumber_url` resmi otomatis diabaikan sehingga
+ * aplikasi kembali membaca konten bawaan yang sudah diverifikasi.
+ */
 class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
-    private fun doc(file: String): JSONObject =
-        cache.getOrPut(file) {
-            val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
-            // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
-            val src = json.optString("sumber_url", "")
-            if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
-                Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
-            }
-            json
+    private val updateDir = File(ctx.filesDir, ContentUpdateManager.DIR)
+    private val metaPembaruan = File(updateDir, ContentUpdateManager.META)
+
+    /** Cap terakhir pembaruan; berubahnya cap membatalkan cache agar tak menyajikan teks lama. */
+    private var cap = metaPembaruan.lastModified()
+
+    private fun doc(file: String): JSONObject {
+        val capKini = metaPembaruan.lastModified()
+        if (capKini != cap) {
+            cache.clear()
+            cap = capKini
         }
+        return cache.getOrPut(file) {
+            dariPembaruan(file) ?: dariAset(file)
+        }
+    }
+
+    /** Dokumen dari lapisan pembaruan, atau null bila tak ada / tak lagi layak dipakai. */
+    private fun dariPembaruan(file: String): JSONObject? {
+        val f = File(updateDir, file)
+        if (!f.isFile) return null
+        val json = runCatching { JSONObject(f.readText()) }.getOrElse {
+            Log.w("ContentRepo", "Konten pembaruan $file rusak — memakai bawaan", it)
+            return null
+        }
+        val src = json.optString("sumber_url", "")
+        if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+            Log.w("ContentRepo", "Konten pembaruan $file tanpa sumber_url resmi — memakai bawaan")
+            return null
+        }
+        return json
+    }
+
+    private fun dariAset(file: String): JSONObject {
+        val json = JSONObject(ctx.assets.open("content/$file").bufferedReader().readText())
+        // Penjaga runtime: ingatkan bila konten kehilangan atribusi sumber resmi.
+        val src = json.optString("sumber_url", "")
+        if (src.isBlank() || !ContentValidator.isOfficialSource(src)) {
+            Log.w("ContentRepo", "Konten $file tanpa sumber_url resmi — periksa SOURCES.md")
+        }
+        return json
+    }
 
     private fun verse(o: JSONObject) = Verse(
         o.getInt("nomor"), o.getString("arab"),

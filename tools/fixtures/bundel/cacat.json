@@ -1,0 +1,23 @@
+{
+  "_bundel": {
+    "skema": 1,
+    "dibuat": "2026-02-19",
+    "penerbit": "Contoh format (bukan konten asli)",
+    "catatan": "Fixture CI: bundel yang harus DITOLAK — sumber tak resmi, kategori asing, teks Arab tanpa harakat"
+  },
+  "berkas": {
+    "dzikir.json": {
+      "sumber_url": "https://blog-contoh.example/doa",
+      "kategori": "hadits",
+      "kelompok": [
+        {
+          "id": "uji",
+          "judul": "Contoh",
+          "items": [
+            { "judul": "Contoh", "arab": "الكتاب", "latin": "al-kitab", "terjemahan": "buku" }
+          ]
+        }
+      ]
+    }
+  }
+}

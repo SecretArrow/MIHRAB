@@ -20,4 +20,5 @@ object Routes {
     const val DZIKIR = "dzikir"
     const val SEARCH = "search"
     const val FAVORIT = "favorit"
+    const val KONTEN_UPDATE = "settings/konten"
 }

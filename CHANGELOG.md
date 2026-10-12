@@ -6,6 +6,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Pembaruan konten dengan validasi sumber** (`plan.txt`: *"Sediakan mekanisme pembaruan konten
+  dengan validasi sumber."*): Pengaturan → Pembaruan konten memungkinkan pengguna memasang berkas
+  bundel (`.json`) pilihannya sendiri. Bundel **tidak pernah diunduh otomatis** dan tidak menambah
+  izin apa pun — berkas dibuka lewat pemilih berkas sistem, tanpa jaringan. Sebelum dipasang,
+  setiap berkas di dalamnya diperiksa: `sumber_url` wajib dari domain resmi (pencocokan host
+  persis/subdomain, sehingga domain yang menyerupai pun ditolak), berkas ber-Arab wajib
+  menyatakan `kategori` yang dikenal, teks Arab wajib berharakat, dan field `arab`/`latin` tidak
+  boleh berisi prosa penunjuk. Satu berkas yang gagal membatalkan seluruh bundel, jadi konten
+  yang sudah diverifikasi tidak pernah tercampur setengah pembaruan. Pembaruan disimpan di
+  `filesDir/content_update/` dan dibaca lebih dulu oleh `ContentRepo`; berkas yang rusak atau
+  kehilangan sumber resmi otomatis diabaikan sehingga aplikasi kembali ke konten bawaan, dan
+  tombol "Kembalikan ke konten bawaan" menghapus seluruh pembaruan. Aturannya dijalankan dua
+  sisi dari sumber yang sama — `BundelKonten` di aplikasi (dijaga `BundelKontenTest`) dan
+  `tools/validate_bundle.py` di CI, yang memanggil pemeriksa `tools/validate_content.py`
+  sehingga tidak ada aturan yang disalin ulang. Lihat `docs/CONTENT_UPDATE.md`.
 - **Doa & lafaz adzan yang tadinya kosong**: doa keluar masjid (HR Abu Dawud 465), doa masuk
   rumah (HR Abu Dawud 5096 — derajat **daif** menurut Al-Albani, dicantumkan terbuka pada field
   `sumber`), doa bepergian/safar (HR Muslim 1342), serta **lafaz sholawat setelah adzan**

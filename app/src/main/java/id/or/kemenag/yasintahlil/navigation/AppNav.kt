@@ -34,6 +34,7 @@ import id.or.kemenag.yasintahlil.feature.ibadah.IbadahScreen
 import id.or.kemenag.yasintahlil.feature.jadwal.JadwalScreen
 import id.or.kemenag.yasintahlil.feature.kiblat.KiblatScreen
 import id.or.kemenag.yasintahlil.feature.search.SearchScreen
+import id.or.kemenag.yasintahlil.feature.settings.ContentUpdateScreen
 import id.or.kemenag.yasintahlil.feature.settings.SettingsScreen
 import id.or.kemenag.yasintahlil.feature.sholat.GhaibScreen
 import id.or.kemenag.yasintahlil.feature.sholat.JenazahScreen
@@ -72,7 +73,7 @@ fun AppNav() {
                 composable(Routes.HOME) { HomeScreen { nav.navigate(it) } }
                 composable(Routes.IBADAH) { IbadahScreen { nav.navigate(it) } }
                 composable(Routes.ALAT) { AlatScreen { nav.navigate(it) } }
-                composable(Routes.SETTINGS) { SettingsScreen() }
+                composable(Routes.SETTINGS) { SettingsScreen { nav.navigate(it) } }
                 composable(Routes.YASIN) { YasinScreen() }
                 composable(Routes.TAHLIL) { TahlilScreen() }
                 composable(Routes.SHOLAT) { SholatScreen { nav.navigate(it) } }
@@ -91,6 +92,7 @@ fun AppNav() {
                 composable(Routes.DZIKIR) { DzikirScreen() }
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
+                composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
             }
         }
     }
