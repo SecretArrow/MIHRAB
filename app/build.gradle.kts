@@ -112,9 +112,11 @@ dependencies {
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.espresso)
-    androidTestImplementation(libs.uiautomator)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+    // Tanpa `espresso`, `uiautomator`, dan `kotlinx.coroutines.test`: ketiganya dulu dideklarasikan
+    // di sini padahal tidak satu pun kelasnya dipakai uji instrumentasi. `espresso-core` dan
+    // `kotlinx-coroutines-test` tetap ada di classpath karena `compose-ui-test-junit4` menariknya
+    // sendiri; `uiautomator` tidak dipakai apa pun. Deklarasi mati hanya memperbesar APK uji dan
+    // memperlambat `e2e.yml`; `DependensiUjiTerpakaiTest` menjaganya agar tidak kembali tanpa dipakai.
     // Kerangka uji WorkManager: memeriksa pekerjaan yang benar-benar diantrekan penjadwal pengingat.
     androidTestImplementation(libs.androidx.work.testing)
     androidTestImplementation(platform(libs.compose.bom))
