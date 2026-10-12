@@ -38,18 +38,29 @@ class KlaimSumberMenuTest {
         "src/main/java/id/or/kemenag/yasintahlil/feature/ibadah/IbadahScreen.kt",
     )
 
+    /**
+     * Klaim yang tidak boleh menempel pada label menu. Dicocokkan sebagai **pola**, bukan potongan
+     * kata biasa: "Riwayat" pada "Favorit & Riwayat" juga memuat "ayat", sehingga jumlah ayat harus
+     * dicocokkan sebagai angka yang diikuti kata "ayat" — kalau tidak, label yang sah ikut tertangkap.
+     */
+    private val klaimTerlarang = listOf(
+        "nama lembaga SIHAT" to Regex("SIHAT"),
+        "nama lembaga MSI" to Regex("\\bMSI\\b"),
+        "nama lembaga Kemenag" to Regex("Kemenag"),
+        "jumlah ayat" to Regex("\\b\\d+\\s+ayat\\b"),
+    )
+
     @Test
     fun labelMenuTidakMenempelkanKlaimSumber() {
-        val terlarang = listOf("SIHAT", "MSI", "Kemenag", "ayat")
         menu.forEach { rel ->
             val baris = label(rel)
             assertTrue("$rel tidak memuat satu pun label untuk diperiksa", baris.isNotEmpty())
             baris.forEach { l ->
-                terlarang.forEach { token ->
+                klaimTerlarang.forEach { (sebutan, pola) ->
                     assertFalse(
-                        "$rel menempelkan klaim \"$token\" pada label menu — " +
-                            "sebut asal-usulnya di layar tujuan, bukan di tombol: $l",
-                        l.contains(token),
+                        "$rel menempelkan $sebutan pada label menu — sebut asal-usulnya di layar " +
+                            "tujuan, bukan di tombol: $l",
+                        pola.containsMatchIn(l),
                     )
                 }
             }
