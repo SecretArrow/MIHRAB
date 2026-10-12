@@ -21,6 +21,15 @@ class SumberKategoriTest {
     private fun root(): File =
         listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
 
+    /**
+     * Akar repositori, tempat `app/` dan `tools/` bersebelahan. Uji berjalan dengan direktori kerja
+     * modul (`app/`), jadi [root] menunjuk ke `app` — naik satu tingkat dulu sebelum mencari gate.
+     */
+    private fun repoRoot(): File =
+        generateSequence(root().absoluteFile) { it.parentFile }
+            .firstOrNull { File(it, "tools/validate_content.py").isFile }
+            ?: root().absoluteFile
+
     private fun contentDir(): File {
         val candidates = listOf(
             File("src/main/assets/content"),
@@ -45,8 +54,8 @@ class SumberKategoriTest {
      */
     @Test
     fun daftarKategoriSelarasDenganGateKonten() {
-        val script = File(root(), "tools/validate_content.py")
-        assertTrue("tools/validate_content.py tidak ditemukan di ${root().absolutePath}", script.isFile)
+        val script = File(repoRoot(), "tools/validate_content.py")
+        assertTrue("tools/validate_content.py tidak ditemukan di ${repoRoot().absolutePath}", script.isFile)
         val baris = Regex("^KATEGORI\\s*=\\s*\\(([^)]*)\\)", RegexOption.MULTILINE)
             .find(script.readText())?.groupValues?.get(1)
             ?: error("Konstanta KATEGORI tidak ditemukan di tools/validate_content.py")

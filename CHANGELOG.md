@@ -112,6 +112,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   invariannya dijaga di dua sisi yang harus tetap sepakat — gate CI
   (`tools/validate_content.py`: berkas ber-Arab tanpa `kategori` = galat) dan uji
   `SumberKategoriTest` (membandingkan `SumberKategori.SEMUA` dengan konstanta `KATEGORI` di gate).
+- **Plafon Dependabot diperbaiki**: batas versi kini diambil dari catatan rilis resmi, bukan
+  tebakan. Rilis **Dagger/Hilt 2.59** adalah yang pertama mewajibkan AGP >= 9.0.0, jadi plafon
+  dipasang di 2.59 (sebelumnya 2.60 — akibatnya PR dependabot mengusulkan Hilt 2.60.1 dan
+  gagal dengan "only compatible with AGP version 9.0.0 or higher"). Keluarga `androidx.hilt:*`,
+  `androidx.test*`, espresso, dan uiautomator (dibangun terhadap SDK 35) ikut diabaikan.
+  **Toolchain** (AGP, Kotlin, KSP, `kotlinx-coroutines`, Compose BOM) juga dipagari: keempatnya
+  hanya boleh diabaikan **sampai minor berikutnya**, sehingga bump patch tetap mengalir sementara
+  bump minor yang mustahil hijau (PR #22 mengusulkan Kotlin 2.4 + KSP 2.3 + Hilt 2.59 sekaligus)
+  tidak lagi dibuat. Alasan tiap plafon ditulis di komentar agar tidak perlu ditebak lagi, dan
+  `DependabotConfigTest` menolak plafon basi, plafon di atas minor berikutnya, atau pola tanpa
+  pasangan kunci versi di `libs.versions.toml`.
 - **Provenans per-entri dzikir**: setiap entri di `dzikir.json` kini mencantumkan sumbernya sendiri
   — Istighfar (HR Muslim 591), tasbih/tahmid/takbir (HR Bukhari 843 & Muslim 597), Ayat Kursi
   (QS Al-Baqarah 255), doa masuk masjid (HR Muslim 713), doa keluar rumah (HR Abu Dawud 5095,
