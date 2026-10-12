@@ -56,6 +56,42 @@ class AturanTeksArabSatuTempatTest {
     private val gerbangKonten: String
         get() = File(repoRoot(), "tools/validate_content.py").readText()
 
+    /** [gerbangKonten] tanpa komentar (`#`) maupun docstring — yang dicari adalah kode, bukan prosa. */
+    private val gerbangKode: String
+        get() = tanpaKomentarPython(gerbangKonten)
+
+    /**
+     * Sumber Python tanpa komentar (`#`) maupun docstring (`"""…"""`, `'''…'''`).
+     *
+     * Sama seperti [KodeSumber.kodeTanpaKomentar] untuk Kotlin, dan diperlukan karena alasan yang
+     * sama: penjaga yang mencari **nilai** sebuah aturan mudah tertipu oleh penjelasan yang
+     * menyebut nilai itu. Docstring `"""Nilai `val <nama> = listOf(0x0600 to 0x06FF, …)`…"""` yang
+     * menerangkan pola pengambil justru tampak persis seperti salinan aturan yang dicari — sehingga
+     * penjaganya gagal karena dokumentasinya bagus.
+     */
+    private fun tanpaKomentarPython(sumber: String): String {
+        val sb = StringBuilder()
+        var i = 0
+        while (i < sumber.length) {
+            when {
+                sumber.startsWith("#", i) -> {
+                    val akhir = sumber.indexOf('\n', i)
+                    i = if (akhir < 0) sumber.length else akhir
+                }
+                sumber.startsWith("\"\"\"", i) || sumber.startsWith("'''", i) -> {
+                    val tanda = sumber.substring(i, i + 3)
+                    val akhir = sumber.indexOf(tanda, i + 3)
+                    i = if (akhir < 0) sumber.length else akhir + 3
+                }
+                else -> {
+                    sb.append(sumber[i])
+                    i++
+                }
+            }
+        }
+        return sb.toString()
+    }
+
     /** Pola pengambil yang ditulis **persis sama** di gate Python. */
     private val polaRentang = """0x([0-9A-Fa-f]+)\s+to\s+0x([0-9A-Fa-f]+)"""
     private val polaKode = """0x([0-9A-Fa-f]+)"""
@@ -133,10 +169,35 @@ class AturanTeksArabSatuTempatTest {
             gerbangKonten.contains(polaKode))
         // Salinan rentang di gate akan membuat dua kebijakan yang dapat berbeda tanpa galat.
         val salinan = listOf("0x0600", "0x06FF", "0x0621", "0x064A", "0x064B", "0x0652", "0x0670")
-            .filter { gerbangKonten.contains(it) }
+            .filter { gerbangKode.contains(it) }
         assertTrue("gate konten menyimpan salinan rentang Arab: $salinan", salinan.isEmpty())
-        assertTrue("gate konten tidak memakai panjang kata minimum bersama",
-            gerbangKonten.contains("MIN_HURUF"))
+        // Setiap aturan harus benar-benar **dibaca** dari [TeksArab] — bukan hanya namanya disebut.
+        listOf("RENTANG_ARAB", "RENTANG_HURUF", "RENTANG_HARAKAT", "HARAKAT_TUNGGAL", "MIN_HURUF")
+            .forEach { nama ->
+                assertTrue("gate konten tidak membaca '$nama' dari TeksArab.kt",
+                    gerbangKode.contains("SUMBER_TEKS_ARAB, \"$nama\""))
+            }
+    }
+
+    /**
+     * Gate tidak boleh mengeja rentang Arabnya sendiri dalam bentuk apa pun.
+     *
+     * Pemeriksaan `0x0600` di atas hanya menangkap satu ejaan. Rentang yang sama dapat pula ditulis
+     * sebagai karakter Arab langsung (`"[؀-ۿ]"`) atau sebagai escape (`"؀"`), dan
+     * keduanya menyatakan aturan yang sama tanpa pernah memunculkan teks `0x0600` — salinan yang
+     * paling sulit terlihat bagi peninjau. Gate yang benar-benar membaca [TeksArab] tidak perlu satu
+     * pun karakter Arab, jadi ketiadaan keduanya sekaligus menjadi bukti bahwa aturannya tidak
+     * disalin.
+     */
+    @Test
+    fun gerbangKontenTidakMengejaRentangArabDalamBentukApaPun() {
+        val karakter = gerbangKode.filter { c ->
+            c.code in 0x0600..0x06FF || c.code in 0x0750..0x077F
+        }
+        assertTrue("gate konten memuat karakter Arab langsung: $karakter", karakter.isEmpty())
+
+        val escape = Regex("""\\u0[67][0-9A-Fa-f]{2}""").findAll(gerbangKode).map { it.value }.toList()
+        assertTrue("gate konten memuat escape rentang Arab: $escape", escape.isEmpty())
     }
 
     /** Pola pengambil benar-benar menghasilkan aturan aplikasi — bukan sekadar cocok. */
