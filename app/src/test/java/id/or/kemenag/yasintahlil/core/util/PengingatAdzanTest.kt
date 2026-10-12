@@ -104,6 +104,63 @@ class PengingatAdzanTest {
         assertTrue("Volume adzan ditulis ulang di luar PengingatAdzan: $pelanggar", pelanggar.isEmpty())
     }
 
+    // ---- Saklar bawaan ----
+
+    /**
+     * CSV saklar bawaan dahulu diketik langsung di `PrayerScheduler` dan layar Adzan. Panjangnya
+     * harus sepanjang daftar waktu: CSV yang lebih panjang memotong waktu terakhir, dan yang lebih
+     * pendek menyisakan entri yang diisi "menyala" — perbedaannya tak terlihat sampai satu waktu
+     * diam-diam mati.
+     */
+    @Test
+    fun saklarBawaanSejajarDenganDaftarWaktu() {
+        assertEquals(JadwalHariIni.LIMA_WAKTU.size, PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT).size)
+        assertEquals(List(PengingatAdzan.JUMLAH_WAKTU) { true }, PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT))
+        assertEquals("1,1,1,1,1", PengingatAdzan.ON_DEFAULT)
+        // Tulis-baca bolak-balik: bawaan yang ditulis penjadwal harus terbaca sama oleh pekerja.
+        assertEquals(PengingatAdzan.ON_DEFAULT, PengingatAdzan.serializeOn(PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT)))
+    }
+
+    // ---- Jeda pengingat sebelum adzan ----
+
+    @Test
+    fun jedaPreAdzanDijepitKeRentangSah() {
+        assertEquals(PengingatAdzan.PRE_MIN_MIN_MENIT, PengingatAdzan.preMenit(-1))
+        assertEquals(PengingatAdzan.PRE_MIN_MIN_MENIT, PengingatAdzan.preMenit(-99))
+        assertEquals(PengingatAdzan.PRE_MIN_MAKS_MENIT, PengingatAdzan.preMenit(31))
+        assertEquals(PengingatAdzan.PRE_MIN_MAKS_MENIT, PengingatAdzan.preMenit(9_999))
+        assertEquals(10, PengingatAdzan.preMenit(10))
+    }
+
+    /**
+     * Bawaan 0 berarti **tanpa** pengingat tambahan — nilai yang sah, bukan "belum diatur". Bila
+     * bawaannya keluar rentang, penjepitan akan langsung mengubahnya menjadi pengingat yang tak
+     * pernah diminta pengguna.
+     */
+    @Test
+    fun jedaPreAdzanBawaanBeradaDiDalamRentang() {
+        assertEquals(PengingatAdzan.PRE_MIN_MIN_MENIT, PengingatAdzan.PRE_MIN_DEFAULT)
+        assertEquals(PengingatAdzan.PRE_MIN_DEFAULT, PengingatAdzan.preMenit(PengingatAdzan.PRE_MIN_DEFAULT))
+        assertFalse(PengingatAdzan.PRE_MIN_MIN_MENIT > PengingatAdzan.PRE_MIN_MAKS_MENIT)
+    }
+
+    /** Saklar dan jeda bawaan tak boleh ditulis ulang di tempat yang membacanya dari `Store`. */
+    @Test
+    fun bawaanPengingatTidakDitulisUlang() {
+        val pelanggar = mutableListOf<String>()
+        val pola = listOf(
+            Regex("""Store\.ADZAN_ON\s*,\s*"[\d,]+""""),
+            Regex("""Store\.ADZAN_PRE_MIN\s*,\s*\d+"""),
+        )
+        File(root(), "src/main/java/id/or/kemenag/yasintahlil").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .forEach { f ->
+                val isi = f.readText()
+                pola.forEach { p -> p.findAll(isi).forEach { pelanggar += "${f.name}: ${it.value}" } }
+            }
+        assertTrue("Bawaan pengingat ditulis ulang di luar PengingatAdzan: $pelanggar", pelanggar.isEmpty())
+    }
+
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */
     @Test
     fun aturanPengingatTidakMenyentuhAndroid() {

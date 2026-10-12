@@ -5,6 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 import java.util.TimeZone
 
 /**
@@ -149,4 +150,97 @@ class JadwalHariIniTest {
         assertEquals(null, JadwalHariIni.jam(t, "Dhuha"))
         assertEquals("18:02", JadwalHariIni.jam(t, "Magrib"))
     }
+
+    // ---- Bawaan konfigurasi ----
+
+    /**
+     * Bawaan koordinat, kota, dan metode adalah **satu** nilai yang dipakai sembilan tempat
+     * (layar Jadwal, Beranda, Adzan, Kiblat, penjadwal, pekerja latar). Bila salah satunya bergeser
+     * tanpa yang lain, layar dan pengingat menghitung untuk tempat yang berlainan tanpa satu pun
+     * pesan galat — pengguna hanya melihat dua jam yang tidak sama untuk sholat yang sama.
+     */
+    @Test
+    fun bawaanKonfigurasiJadwalKonsisten() {
+        assertTrue("Lintang di luar rentang", JadwalHariIni.LAT_DEFAULT in -90.0..90.0)
+        assertTrue("Bujur di luar rentang", JadwalHariIni.LON_DEFAULT in -180.0..180.0)
+        assertTrue("Kota bawaan kosong", JadwalHariIni.KOTA_DEFAULT.isNotBlank())
+        // Jakarta, bukan sekadar koordinat mana pun yang sah.
+        assertEquals(-6.2, JadwalHariIni.LAT_DEFAULT, 1e-9)
+        assertEquals(106.8, JadwalHariIni.LON_DEFAULT, 1e-9)
+        // Metode bawaan harus sama dengan jatuhan kunci tak dikenal, supaya "belum diatur" dan
+        // "kunci rusak" menghasilkan jadwal yang sama.
+        assertEquals(PrayerCalc.Method.KEMENAG, PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT))
+        assertEquals(
+            PrayerCalc.Method.from("tidak-ada"),
+            PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT),
+        )
+    }
+
+    @Test
+    fun koreksiBawaanSejajarDenganEnamWaktu() {
+        val corr = JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT)
+        assertEquals(JadwalHariIni.ENAM_WAKTU.size, corr.size)
+        assertEquals(List(JadwalHariIni.ENAM_WAKTU.size) { 0 }, corr)
+    }
+
+    /**
+     * Rentang koreksi dahulu hanya hidup sebagai batas slider di layar Jadwal. Nilai tersimpan yang
+     * berada di luarnya (mis. dari backup yang disunting) harus dijepit di jalur baca juga, agar
+     * penjadwal tidak memakai koreksi yang tak dapat dipilih pengguna.
+     */
+    @Test
+    fun koreksiTersimpanDijepitKeRentang() {
+        assertTrue(JadwalHariIni.KOREKSI_MIN_MENIT < 0)
+        assertTrue(JadwalHariIni.KOREKSI_MAKS_MENIT > 0)
+        val corr = JadwalHariIni.parseCorr("999,-999,30,-30,0,0")
+        assertEquals(
+            listOf(
+                JadwalHariIni.KOREKSI_MAKS_MENIT, JadwalHariIni.KOREKSI_MIN_MENIT,
+                JadwalHariIni.KOREKSI_MAKS_MENIT, JadwalHariIni.KOREKSI_MIN_MENIT, 0, 0,
+            ),
+            corr,
+        )
+    }
+
+    @Test
+    fun asarBawaanBukanHanafi() {
+        // Jumhur (Syafi'i, Maliki, Hambali) memakai faktor 1; Hanafi adalah pilihan yang harus
+        // dinyatakan pengguna, bukan bawaan diam-diam.
+        assertFalse(JadwalHariIni.asarHanafi(JadwalHariIni.ASAR_DEFAULT))
+        assertEquals(JadwalHariIni.ASAR_SYAFII, JadwalHariIni.ASAR_DEFAULT)
+        assertTrue(JadwalHariIni.asarHanafi(JadwalHariIni.ASAR_HANAFI))
+        assertFalse(JadwalHariIni.ASAR_SYAFII == JadwalHariIni.ASAR_HANAFI)
+    }
+
+    @Test
+    fun zonaBawaanMengikutiPerangkat() {
+        assertTrue(JadwalHariIni.TZ_DEFAULT.isBlank())
+        assertEquals(TimeZone.getDefault(), JadwalHariIni.zona(JadwalHariIni.TZ_DEFAULT))
+    }
+
+    /**
+     * Bawaan konfigurasi jadwal tak boleh ditulis ulang di tempat yang membacanya dari `Store`.
+     *
+     * Inilah penjaga sesungguhnya: sembilan tempat dahulu masing-masing mengetik koordinat, metode,
+     * mazhab Asar, koreksi, dan zona waktunya sendiri. Uji ini gagal begitu ada yang kembali menulis
+     * nilai mentah di luar [JadwalHariIni] — sebelum perbedaannya sempat menjadi dua jam yang tidak
+     * sama untuk sholat yang sama.
+     */
+    @Test
+    fun bawaanJadwalTidakDitulisUlang() {
+        val pelanggar = mutableListOf<String>()
+        val pola = listOf(
+            Regex("""Store\.(LAT|LON)\s*,\s*-?\d"""),
+            Regex("""Store\.(CITY|METHOD|ASAR|CORR|TZ)\s*,\s*""""),
+        )
+        File(root(), "src/main/java/id/or/kemenag/yasintahlil").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .forEach { f ->
+                val isi = f.readText()
+                pola.forEach { p -> p.findAll(isi).forEach { pelanggar += "${f.name}: ${it.value}" } }
+            }
+        assertTrue("Bawaan jadwal ditulis ulang di luar JadwalHariIni: $pelanggar", pelanggar.isEmpty())
+    }
+
+    private fun root(): File = listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
 }

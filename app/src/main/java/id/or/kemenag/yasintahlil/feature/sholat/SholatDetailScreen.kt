@@ -13,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -39,13 +40,13 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var selesai by remember { mutableStateOf(false) }
-    var mazhab by remember { mutableStateOf("syafii") }
+    var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var settings by remember { mutableStateOf(false) }
     var syaratTerbuka by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
-        mazhab = store.get(Store.MADHAB, "syafii")
+        mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
     }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
     LaunchedEffect(id) { userData.progress(KIND, id).collect { selesai = (it?.value ?: 0) > 0 } }
@@ -62,9 +63,9 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 (it.sholatScope.isEmpty() || id in it.sholatScope)
         }
     }
-    val mazhabLabel = when (mazhab) {
-        "hanafi" -> "Hanafi"; "maliki" -> "Maliki"; "hambali" -> "Hambali"; else -> "Syafi'i"
-    }
+    // Nama mazhab dari aturan bersama: rantai `when` di sini dahulu menyalin labelnya, sehingga
+    // mengubah satu label di layar Pengaturan tidak ikut mengubah kepala layar ini.
+    val mazhabLabel = Mazhab.label(mazhab)
     // Jaga indeks langkah tetap sah bila daftar menyusut setelah ganti mazhab.
     LaunchedEffect(steps.size) { if (step > steps.size - 1) step = (steps.size - 1).coerceAtLeast(0) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
@@ -152,7 +153,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-            MAZHAB_OPTIONS.forEach { (key, label) ->
+            Mazhab.SEMUA.forEach { (key, label) ->
                 FilterChip(mazhab == key, {
                     mazhab = key
                     scope.launch { store.set(Store.MADHAB, key) }
@@ -239,11 +240,3 @@ private fun BagianDaftar(judul: String, butir: List<String>) {
         Text("• $b", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 4.dp))
     }
 }
-
-/** Pilihan mazhab panduan yang mengubah bacaan yang ditampilkan. */
-private val MAZHAB_OPTIONS = listOf(
-    "syafii" to "Syafi'i",
-    "hanafi" to "Hanafi",
-    "maliki" to "Maliki",
-    "hambali" to "Hambali",
-)

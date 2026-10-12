@@ -18,6 +18,8 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.sholat.Mazhab
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -39,12 +41,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var showT by remember { mutableStateOf(true) }
     var showA by remember { mutableStateOf(true) }
     var infoCard by remember { mutableStateOf(true) }
-    var asar by remember { mutableStateOf("syafii") }
-    var mazhab by remember { mutableStateOf("syafii") }
-    var city by remember { mutableStateOf("Jakarta") }
+    var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
+    var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
+    var city by remember { mutableStateOf(JadwalHariIni.KOTA_DEFAULT) }
     var notif by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
-    var compassUnit by remember { mutableStateOf("derajat") }
+    var compassUnit by remember { mutableStateOf(TampilanKompas.SATUAN_DEFAULT) }
     var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
     // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
     // "Susunan saya" bila pengguna pernah menyusunnya di modul Tahlil.
@@ -62,11 +64,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         pageTheme = store.get(Store.PAGE_THEME, TemaHalaman.IKUT)
         showL = store.get(Store.SHOW_LATIN, true); showT = store.get(Store.SHOW_TRANS, true)
         showA = store.get(Store.SHOW_ARAB, true); infoCard = store.get(Store.INFO_CARD, true)
-        asar = store.get(Store.ASAR, "syafii"); city = store.get(Store.CITY, "Jakarta")
-        mazhab = store.get(Store.MADHAB, "syafii")
+        asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
+        city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
+        mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
         notif = store.get(Store.NOTIF, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
-        compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
+        compassUnit = store.get(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT)
         compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
         val daftarSusunan = PreferensiSusunan.tersedia(
             repo.tahlilSusunan(),
@@ -130,13 +133,17 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         }
         Text("Mazhab Asar:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(asar == "syafii", { asar = "syafii"; scope.launch { store.set(Store.ASAR, asar) } }, { Text("Syafi'i") })
-            FilterChip(asar == "hanafi", { asar = "hanafi"; scope.launch { store.set(Store.ASAR, asar) } }, { Text("Hanafi") })
+            FilterChip(asar == JadwalHariIni.ASAR_SYAFII,
+                { asar = JadwalHariIni.ASAR_SYAFII; scope.launch { store.set(Store.ASAR, asar) } },
+                { Text("Syafi'i") })
+            FilterChip(asar == JadwalHariIni.ASAR_HANAFI,
+                { asar = JadwalHariIni.ASAR_HANAFI; scope.launch { store.set(Store.ASAR, asar) } },
+                { Text("Hanafi") })
         }
 
         Text("Mazhab panduan ibadah", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-            listOf("syafii" to "Syafi'i", "hanafi" to "Hanafi", "maliki" to "Maliki", "hambali" to "Hambali").forEach { (key, label) ->
+            Mazhab.SEMUA.forEach { (key, label) ->
                 FilterChip(mazhab == key, { mazhab = key; scope.launch { store.set(Store.MADHAB, key) } }, { Text(label) })
             }
         }
@@ -289,12 +296,11 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
 
         Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(compassUnit == "derajat",
-                { compassUnit = "derajat"; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
-                { Text("Derajat") })
-            FilterChip(compassUnit == "mil",
-                { compassUnit = "mil"; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
-                { Text("Mil (6400)") })
+            TampilanKompas.SATUAN.forEach { u ->
+                FilterChip(compassUnit == u,
+                    { compassUnit = u; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
+                    { Text(TampilanKompas.labelSatuan(u)) })
+            }
         }
         Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
             style = MaterialTheme.typography.labelSmall)

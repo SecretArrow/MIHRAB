@@ -360,6 +360,34 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Bawaan konfigurasi jadwal dan pengingat kini punya satu rumah, bukan sembilan salinan**: kuncinya
+  memang satu, tetapi **bawaannya** bercabang di mana-mana. Koordinat Jakarta (`-6.2`/`106.8`) ditulis
+  sembilan kali di `PrayerScheduler`, `HomeViewModel`, `JadwalViewModel`, `KiblatViewModel`, dan layar
+  Adzan; `"KEMENAG"` lima kali, `"syafii"` lima kali (termasuk `JadwalViewModel.setAsarHanafi` yang
+  memetakannya sendiri dari boolean), `"Jakarta"` tiga kali, `"0,0,0,0,0,0"` empat kali, zona waktu
+  `""` empat kali, `"derajat"`/`"mil"` tiga kali, dan CSV saklar `"1,1,1,1,1"` dua kali. Tak ada satu
+  pun tempat yang tahu berapa bawaannya seharusnya: bila salah satunya berbeda, layar Jadwal, arah
+  Kiblat, layar Adzan, dan pengingat latar menghitung untuk tempat yang berlainan **tanpa satu pun
+  pesan galat** — pengguna hanya melihat dua jam yang tidak sama untuk sholat yang sama. Semuanya kini
+  tinggal di rumah masing-masing: `JadwalHariIni` (`LAT_DEFAULT`, `LON_DEFAULT`, `KOTA_DEFAULT`,
+  `METODE_DEFAULT`, `ASAR_SYAFII`/`ASAR_HANAFI`/`ASAR_DEFAULT`, `CORR_DEFAULT`, `TZ_DEFAULT`),
+  `PengingatAdzan` (`ON_DEFAULT`, `PRE_MIN_DEFAULT` beserta rentangnya), `TampilanKompas`
+  (`SATUAN`/`SATUAN_DEFAULT`/`satuanSah`/`labelSatuan`), dan `Mazhab` yang baru (`core/sholat/Mazhab.kt`,
+  menggantikan daftar yang dahulu disalin di layar panduan dan layar Pengaturan). Dijaga
+  `JadwalHariIniTest`, `PengingatAdzanTest`, `TampilanKompasTest`, dan `MazhabTest`, yang masing-masing
+  menolak bawaannya ditulis ulang di luar rumahnya.
+- **Rentang yang dahulu hanya ada di slider kini juga menjepit jalur baca**: batas koreksi menit
+  (`±30`) hidup hanya sebagai `valueRange` slider di layar Jadwal, dan batas jeda pengingat sebelum
+  adzan (`0..30`) hanya sebagai `valueRange` di layar Adzan — nilai tersimpan di luar rentang itu (mis.
+  dari backup yang disunting) dihormati apa adanya oleh seluruh layar **dan** penjadwal, sehingga
+  jadwal dapat bergeser jauh lebih banyak daripada yang dapat dipilih pengguna. Keduanya kini dijepit
+  saat dibaca (`JadwalHariIni.parseCorr` dan `PengingatAdzan.preMenit`), dengan rentang dari satu
+  sumber yang sama dengan slidernya.
+- **Arah kiblat bawaan dihitung, bukan angka tetap**: `KiblatUiState` memulai dengan `295.0` yang
+  ditulis tetap — benar untuk Jakarta dan **hanya** Jakarta. Angka itu harus disunting sendiri setiap
+  kali lokasi bawaan berubah, dan bila terlewat layar sempat menampilkan arah kiblat kota lain. Kini
+  ia dihitung `QiblaCalc.bearing(LAT_DEFAULT, LON_DEFAULT)` dengan rumus yang sama dengan nilai
+  sesungguhnya.
 - **Mode tema kini punya satu daftar, satu bawaan, dan satu pemetaan**: nilai `"terang"`, `"gelap"`,
   dan `"sistem"` beserta artinya dahulu tinggal di **tiga** berkas — `MainViewModel` menulis bawaan
   `"sistem"`, `MainActivity` memetakan `"terang"`/`"gelap"` ke `dark: Boolean` lewat rantai `when`,

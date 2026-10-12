@@ -109,4 +109,48 @@ class TampilanKompasTest {
         assertTrue("ViewModel tidak menyimpan preferensi tampilan",
             vm.contains("store.set(Store.COMPASS_VIEW"))
     }
+
+    // ---- Satuan azimut ----
+
+    /**
+     * Kunci `"derajat"`/`"mil"` dahulu ditulis di tiga berkas: layar Pengaturan, layar Kiblat, dan
+     * bawaan state `KiblatViewModel`. Satu daftar bersama membuat "satuan sah" berarti hal yang sama
+     * di mana pun.
+     */
+    @Test
+    fun satuanYangDitawarkanSelarasDenganYangSah() {
+        assertEquals(listOf(TampilanKompas.DERAJAT, TampilanKompas.MIL), TampilanKompas.SATUAN)
+        TampilanKompas.SATUAN.forEach { assertTrue("'$it' seharusnya sah", TampilanKompas.satuanSah(it)) }
+        listOf("", "radian", "DERAJAT", "Mil", "derajat ").forEach {
+            assertFalse("'$it' seharusnya tidak sah", TampilanKompas.satuanSah(it))
+        }
+    }
+
+    @Test
+    fun satuanBawaanAdalahDerajatDanTerdaftar() {
+        assertEquals(TampilanKompas.DERAJAT, TampilanKompas.SATUAN_DEFAULT)
+        assertTrue(TampilanKompas.satuanSah(TampilanKompas.SATUAN_DEFAULT))
+    }
+
+    /** Nilai tak dikenal diperlakukan sebagai derajat, bukan kunci mentahnya. */
+    @Test
+    fun labelSatuanTakDikenalJatuhKeDerajat() {
+        assertEquals(TampilanKompas.labelSatuan(TampilanKompas.DERAJAT), TampilanKompas.labelSatuan("ngawur"))
+        assertEquals("Mil (6400)", TampilanKompas.labelSatuan(TampilanKompas.MIL))
+        val label = TampilanKompas.SATUAN.map { TampilanKompas.labelSatuan(it) }
+        assertEquals("label satuan harus berbeda", label.size, label.distinct().size)
+    }
+
+    /** Satuan bawaan tak boleh ditulis ulang di tempat yang membacanya dari `Store`. */
+    @Test
+    fun satuanBawaanTidakDitulisUlang() {
+        val pelanggar = mutableListOf<String>()
+        val pola = Regex("""Store\.COMPASS_UNIT\s*,\s*"(derajat|mil)"""")
+        File(root(), "src/main/java/id/or/kemenag/yasintahlil").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .forEach { f ->
+                pola.findAll(f.readText()).forEach { pelanggar += "${f.name}: ${it.value}" }
+            }
+        assertTrue("Satuan kompas ditulis ulang di luar TampilanKompas: $pelanggar", pelanggar.isEmpty())
+    }
 }

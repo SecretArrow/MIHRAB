@@ -69,7 +69,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
     val kiblat = s.bearing
     val arah = listOf("U", "TL", "T", "TG", "S", "BD", "B", "BL")[(kiblat / 45.0).roundToInt() % 8]
     val azimutTeks =
-        if (s.unit == "mil") "${(kiblat * MIL_PER_DEG).roundToInt()} mil"
+        if (s.unit == TampilanKompas.MIL) "${(kiblat * MIL_PER_DEG).roundToInt()} mil"
         else "%.1f°".format(kiblat)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
@@ -213,8 +213,9 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
                 }
             }, { Text("Pakai GPS") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
-            FilterChip(s.unit == "derajat", { vm.setUnit("derajat") }, { Text("Derajat") })
-            FilterChip(s.unit == "mil", { vm.setUnit("mil") }, { Text("Mil") })
+            TampilanKompas.SATUAN.forEach { u ->
+                FilterChip(s.unit == u, { vm.setUnit(u) }, { Text(TampilanKompas.labelSatuan(u)) })
+            }
             OutlinedButton(onClick = { vm.refreshLocation() }, enabled = s.hasPermission) { Text("Perbarui lokasi") }
         }
         // Pemilih tampilan hanya ditawarkan bila sensor memang ada: menawarkan "Kompas & peta"

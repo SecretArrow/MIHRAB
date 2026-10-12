@@ -60,18 +60,19 @@ object PrayerScheduler {
 
     private suspend fun loadCfg(ctx: Context): Cfg {
         val store = Store(ctx)
-        val tz = JadwalHariIni.zona(store.get(Store.TZ, ""))
+        val tz = JadwalHariIni.zona(store.get(Store.TZ, JadwalHariIni.TZ_DEFAULT))
         return Cfg(
             params = JadwalHariIni.params(
-                lat = store.get(Store.LAT, -6.2),
-                lon = store.get(Store.LON, 106.8),
-                methodKey = store.get(Store.METHOD, "KEMENAG"),
-                asarKey = store.get(Store.ASAR, "syafii"),
-                corrCsv = store.get(Store.CORR, "0,0,0,0,0,0"),
+                lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT),
+                lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT),
+                methodKey = store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT),
+                asarKey = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT),
+                corrCsv = store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT),
                 tz = tz,
             ),
-            on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, "1,1,1,1,1")),
-            preMin = store.get(Store.ADZAN_PRE_MIN, 0),
+            on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT)),
+            preMin = PengingatAdzan.preMenit(
+                store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT)),
             doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
             iqomahOn = store.get(Store.IQOMAH_ON, false),
             iqomahMin = PengingatAdzan.iqomahMenit(

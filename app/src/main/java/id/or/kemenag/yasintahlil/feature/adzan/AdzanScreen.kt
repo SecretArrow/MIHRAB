@@ -43,12 +43,12 @@ fun AdzanScreen() {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     val lafaz = remember { repo.adzan() }
-    var on by remember { mutableStateOf(List(5) { true }) }
+    var on by remember { mutableStateOf(List(PengingatAdzan.JUMLAH_WAKTU) { true }) }
     var uri by remember { mutableStateOf("") }
     var sounds by remember { mutableStateOf<List<SuaraAdzan>>(emptyList()) }
     var ubahNama by remember { mutableStateOf<SuaraAdzan?>(null) }
     var vol by remember { mutableStateOf(PengingatAdzan.VOL_DEFAULT) }
-    var preMin by remember { mutableStateOf(0) }
+    var preMin by remember { mutableStateOf(PengingatAdzan.PRE_MIN_DEFAULT) }
     var doaReminder by remember { mutableStateOf(false) }
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
@@ -62,11 +62,11 @@ fun AdzanScreen() {
     // `plan.txt` §"Fitur Adzan" membuka daftar fitur wajibnya dengan *"Jadwal adzan untuk Subuh,
     // Zuhur, Asar, Magrib, dan Isya"*: saklar per waktu di bawah hanya menyebut nama waktunya,
     // sehingga layar ini tidak dapat menjawab "jam berapa adzan berbunyi" tanpa membuka menu lain.
-    var lat by remember { mutableStateOf(-6.2) }
-    var lon by remember { mutableStateOf(106.8) }
-    var tzId by remember { mutableStateOf("") }
-    var corr by remember { mutableStateOf("0,0,0,0,0,0") }
-    var asar by remember { mutableStateOf("syafii") }
+    var lat by remember { mutableStateOf(JadwalHariIni.LAT_DEFAULT) }
+    var lon by remember { mutableStateOf(JadwalHariIni.LON_DEFAULT) }
+    var tzId by remember { mutableStateOf(JadwalHariIni.TZ_DEFAULT) }
+    var corr by remember { mutableStateOf(JadwalHariIni.CORR_DEFAULT) }
+    var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
     // Berkas audio pengguna bisa saja tak terbaca (URI dicabut, format tak didukung, izin hilang).
     // Sebelumnya pratinjau diam saja saat gagal; kini sebabnya ditampilkan + tombol coba lagi.
     // Pemutarannya sendiri ada di lapisan `core.audio`, bukan di layar (plan.txt: lapisan audio
@@ -103,21 +103,22 @@ fun AdzanScreen() {
     val notifPerm = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     LaunchedEffect(Unit) {
-        on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, "1,1,1,1,1"))
+        on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT))
         uri = store.get(Store.ADZAN_URI, "")
         sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, ""))
         vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
-        preMin = store.get(Store.ADZAN_PRE_MIN, 0)
+        preMin = PengingatAdzan.preMenit(
+            store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT))
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)
-        metode = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
-        lat = store.get(Store.LAT, -6.2)
-        lon = store.get(Store.LON, 106.8)
-        tzId = store.get(Store.TZ, "")
-        corr = store.get(Store.CORR, "0,0,0,0,0,0")
-        asar = store.get(Store.ASAR, "syafii")
+        metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
+        lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
+        lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
+        tzId = store.get(Store.TZ, JadwalHariIni.TZ_DEFAULT)
+        corr = store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT)
+        asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
     }
 
     // Nama lima waktu dari aturan bersama, bukan daftar lokal: indeksnya harus sama dengan CSV
@@ -234,11 +235,13 @@ fun AdzanScreen() {
         Slider(vol, { vol = it; player.setVolume(it); scope.launch { store.set(Store.ADZAN_VOL, vol) } })
 
         Text("Pengingat sebelum adzan: ${if (preMin == 0) "nonaktif" else "$preMin menit"}")
+        // Rentang dan bawaannya dari aturan bersama, sama dengan yang dijepit penjadwal & pekerja
+        // latar — sehingga angka yang dapat dipilih di sini pasti angka yang dipakai notifikasi.
         Slider(
             value = preMin.toFloat(),
             onValueChange = { preMin = it.toInt() },
-            valueRange = 0f..30f,
-            steps = 29,
+            valueRange = PengingatAdzan.PRE_MIN_MIN_MENIT.toFloat()..PengingatAdzan.PRE_MIN_MAKS_MENIT.toFloat(),
+            steps = PengingatAdzan.PRE_MIN_MAKS_MENIT - PengingatAdzan.PRE_MIN_MIN_MENIT - 1,
             onValueChangeFinished = { scope.launch { store.set(Store.ADZAN_PRE_MIN, preMin); PrayerScheduler.scheduleAll(ctx.applicationContext) } },
         )
 

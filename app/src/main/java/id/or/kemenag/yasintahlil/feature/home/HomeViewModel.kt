@@ -29,13 +29,13 @@ import javax.inject.Inject
  * langsung terlihat di beranda tanpa membuka ulang layar.
  */
 data class HomeUiState(
-    val city: String = "Jakarta",
-    val lat: Double = -6.2,
-    val lon: Double = 106.8,
-    val asarHanafi: Boolean = false,
-    val method: PrayerCalc.Method = PrayerCalc.Method.KEMENAG,
-    val tzId: String = "",
-    val corr: List<Int> = List(6) { 0 },
+    val city: String = JadwalHariIni.KOTA_DEFAULT,
+    val lat: Double = JadwalHariIni.LAT_DEFAULT,
+    val lon: Double = JadwalHariIni.LON_DEFAULT,
+    val asarHanafi: Boolean = JadwalHariIni.asarHanafi(JadwalHariIni.ASAR_DEFAULT),
+    val method: PrayerCalc.Method = PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT),
+    val tzId: String = JadwalHariIni.TZ_DEFAULT,
+    val corr: List<Int> = JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT),
     val last: String = "",
     val infoCard: Boolean = true,
     val hijriCorr: Int = 0,
@@ -57,13 +57,15 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     init {
-        alir(Store.CITY, "Jakarta") { s, v -> s.copy(city = v) }
-        alir(Store.LAT, -6.2) { s, v -> s.copy(lat = v) }
-        alir(Store.LON, 106.8) { s, v -> s.copy(lon = v) }
-        alir(Store.ASAR, "syafii") { s, v -> s.copy(asarHanafi = v == "hanafi") }
-        alir(Store.METHOD, "KEMENAG") { s, v -> s.copy(method = PrayerCalc.Method.from(v)) }
-        alir(Store.TZ, "") { s, v -> s.copy(tzId = v) }
-        alir(Store.CORR, "0,0,0,0,0,0") { s, v -> s.copy(corr = JadwalHariIni.parseCorr(v)) }
+        alir(Store.CITY, JadwalHariIni.KOTA_DEFAULT) { s, v -> s.copy(city = v) }
+        alir(Store.LAT, JadwalHariIni.LAT_DEFAULT) { s, v -> s.copy(lat = v) }
+        alir(Store.LON, JadwalHariIni.LON_DEFAULT) { s, v -> s.copy(lon = v) }
+        alir(Store.ASAR, JadwalHariIni.ASAR_DEFAULT) { s, v ->
+            s.copy(asarHanafi = JadwalHariIni.asarHanafi(v))
+        }
+        alir(Store.METHOD, JadwalHariIni.METODE_DEFAULT) { s, v -> s.copy(method = PrayerCalc.Method.from(v)) }
+        alir(Store.TZ, JadwalHariIni.TZ_DEFAULT) { s, v -> s.copy(tzId = v) }
+        alir(Store.CORR, JadwalHariIni.CORR_DEFAULT) { s, v -> s.copy(corr = JadwalHariIni.parseCorr(v)) }
         alir(Store.LAST, "") { s, v -> s.copy(last = v) }
         alir(Store.INFO_CARD, true) { s, v -> s.copy(infoCard = v) }
         alir(Store.HIJRI_CORR, 0) { s, v -> s.copy(hijriCorr = v) }
