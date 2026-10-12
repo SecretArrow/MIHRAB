@@ -163,6 +163,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Penjelasan metode hisab di layar Adzan kini benar** (`plan.txt`: *"Penjelasan metode
+  perhitungan yang sedang digunakan"*): layar Adzan selalu menulis *"Metode jadwal: Kemenag/SIHAT"*
+  dan menyuruh mencari koreksi serta zona waktu *di Pengaturan* — padahal metode, koreksi menit,
+  dan zona waktu diatur di menu **Jadwal**, dan pengguna bebas memilih metode lain (MWL, Umm
+  al-Qura, Egyptian, Makkah). Teks yang menyebut metode yang salah lebih buruk daripada tidak
+  menyebut sama sekali, karena pengguna memercayai jadwal yang bukan jadwalnya. Kini nama metode,
+  sudut Fajr, dan jeda Isya dibaca dari definisi metode yang sama dengan yang dipakai menghitung
+  (`PrayerCalc.Method`), termasuk metode berjeda seperti Umm al-Qura, dan pengguna diarahkan ke
+  layar yang benar-benar memuat pengaturan itu.
 - **Dua gate cepat sebelum kompilasi**, keduanya menangkap galat yang tadinya baru ketahuan setelah
   satu siklus CI terbuang:
   - `tools/check_workflows.py` — GitHub tidak melaporkan berkas workflow yang salah parse sebagai
