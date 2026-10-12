@@ -24,6 +24,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -101,8 +102,7 @@ fun AdzanScreen() {
     val notifPerm = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     LaunchedEffect(Unit) {
-        val parsed = store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" }
-        on = (parsed + List(5) { true }).take(5)
+        on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, "1,1,1,1,1"))
         uri = store.get(Store.ADZAN_URI, "")
         sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, ""))
         vol = store.get(Store.ADZAN_VOL, 0.8f)
@@ -155,7 +155,7 @@ fun AdzanScreen() {
                 Switch(on[i], {
                     on = on.toMutableList().also { it[i] = !it[i] }
                     scope.launch {
-                        store.set(Store.ADZAN_ON, on.map { if (it) "1" else "0" }.joinToString(","))
+                        store.set(Store.ADZAN_ON, PengingatAdzan.serializeOn(on))
                         PrayerScheduler.scheduleAll(ctx.applicationContext)
                     }
                 })

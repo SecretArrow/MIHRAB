@@ -360,6 +360,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Aturan preferensi pengingat adzan kini juga tunggal**: CSV saklar per waktu (`Store.ADZAN_ON`)
+  diurai di dua tempat — `PrayerScheduler` (pembaca) dan layar Adzan (penulis) — dengan panjang dan
+  padding yang ditulis ulang masing-masing; bila keduanya berbeda, menyalakan satu waktu di layar
+  mematikan waktu lain di penjadwal. Batas panjang timer iqomah (1–60 menit) pun ditulis di **tiga**
+  tempat: dua tombol di layar Iqomah, penjadwal pengingat, dan pekerja latar — sehingga layar dapat
+  menampilkan angka yang tidak pernah dipakai notifikasi. Keduanya kini tinggal di `PengingatAdzan`
+  (murni, tanpa Android): `parseOn`/`serializeOn` dan `iqomahMenit`, dipakai keempat berkas itu.
+  Dijaga `PengingatAdzanTest`, dan `AdzanJadwalTest` menolak salinan barunya muncul lagi.
 - **Urutan nama waktu sholat kini juga tunggal**: nama lima waktu beradzan (`Subuh, Zuhur, Asar,
   Magrib, Isya`) dan enam waktu berkoreksi (dengan `Terbit`) dahulu ditulis ulang di **empat**
   tempat — `PrayerScheduler`, layar Adzan, layar Jadwal, dan beranda. Urutan itu bukan hiasan:

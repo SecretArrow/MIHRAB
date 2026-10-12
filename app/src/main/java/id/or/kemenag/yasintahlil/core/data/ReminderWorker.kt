@@ -15,6 +15,7 @@ import id.or.kemenag.yasintahlil.MainActivity
 import id.or.kemenag.yasintahlil.core.audio.AdzanPlayer
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
 
@@ -52,7 +53,10 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         if (jenis == PrayerScheduler.JENIS_IQOMAH) {
             // Sama: saklar dapat dimatikan antara penjadwalan dan saat pekerjaan berjalan.
             if (store.get(Store.IQOMAH_ON, false)) {
-                notifyIqomah(nama, store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60))
+                // Panjang timer dibaca lewat aturan bersama: angka yang tertulis di notifikasi harus
+                // sama dengan yang dihitung penjadwal dan yang ditampilkan layar Iqomah.
+                notifyIqomah(nama, PengingatAdzan.iqomahMenit(
+                    store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)))
             }
             return Result.success()
         }

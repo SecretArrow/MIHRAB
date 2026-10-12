@@ -8,6 +8,7 @@ import androidx.work.workDataOf
 import id.or.kemenag.yasintahlil.core.data.ReminderWorker
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import java.util.Calendar
 import java.util.Locale
@@ -69,11 +70,12 @@ object PrayerScheduler {
                 corrCsv = store.get(Store.CORR, "0,0,0,0,0,0"),
                 tz = tz,
             ),
-            on = (store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" } + List(5) { true }).take(5),
+            on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, "1,1,1,1,1")),
             preMin = store.get(Store.ADZAN_PRE_MIN, 0),
             doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
             iqomahOn = store.get(Store.IQOMAH_ON, false),
-            iqomahMin = store.get(Store.IQOMAH_MIN, 10).coerceIn(1, 60),
+            iqomahMin = PengingatAdzan.iqomahMenit(
+                store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)),
         )
     }
 
