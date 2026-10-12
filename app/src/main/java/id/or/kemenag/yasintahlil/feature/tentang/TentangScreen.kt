@@ -29,8 +29,9 @@ import id.or.kemenag.yasintahlil.core.legal.SumberKonten
  * Dokumennya tidak ditulis ulang di sini. Berkas `docs/PRIVACY.md`, `docs/PERMISSIONS.md`, dan
  * `LICENSE` disalin apa adanya ke `assets/legal/` dan dijaga tetap identik oleh uji, sehingga apa
  * yang dibaca pengguna selalu sama dengan apa yang didokumentasikan di repositori. Sumber konten
- * pun dibaca dari `sumber_url` bundel, bukan dari daftar tetap, sehingga tidak dapat berbohong
- * soal dari mana teksnya berasal.
+ * pun dibaca dari **seluruh nilai bersumber** pada bundel — bukan dari daftar tetap, dan bukan
+ * hanya `sumber_url` tingkat berkas, sehingga domain yang disebut `sumber_tambahan` ikut tampil
+ * dan layar ini tidak dapat berbohong soal dari mana teksnya berasal.
  */
 @Composable
 fun TentangScreen() {
