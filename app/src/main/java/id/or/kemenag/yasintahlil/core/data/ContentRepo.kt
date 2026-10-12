@@ -120,6 +120,7 @@ class ContentRepo(private val ctx: Context) {
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
                 sholatScope = scope)
         }
@@ -176,6 +177,20 @@ class ContentRepo(private val ctx: Context) {
         val o = doc("adzan.json").getJSONObject("doa_setelah_adzan")
         return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
     }
+
+    /** Jawaban saat seruan "hayya 'alash-shalah" / "hayya 'alal-falah" (bukan mengikuti muadzin). */
+    fun menjawabAdzan(): Triple<String, String, String> {
+        val o = doc("adzan.json").getJSONObject("menjawab_adzan")
+        return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
+    }
+
+    /** Penjelasan tata cara menjawab adzan — ditampilkan apa adanya (tanpa teks Arab di Kotlin). */
+    fun menjawabAdzanCatatan(): String =
+        doc("adzan.json").getJSONObject("menjawab_adzan").optString("catatan")
+
+    /** Sumber tertulis entri adzan.json (mis. `doa_setelah_adzan`) — dibaca dari assets, bukan di kode. */
+    fun adzanSumber(key: String): String =
+        doc("adzan.json").getJSONObject(key).optString("sumber")
 
     fun kota(): List<Kota> {
         val arr = doc("kota.json").getJSONArray("kota")

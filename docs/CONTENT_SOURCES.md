@@ -62,3 +62,9 @@ python3 tools/validate_content.py --strict # gate: gagal bila ada entri tanpa su
 
 Mode `--strict` dijalankan di **setiap PR** (`ci.yml`) dan di rilis (`release.yml`), sehingga
 entri tanpa sumber resmi tidak dapat masuk ke `main`.
+
+Gate yang sama juga **menolak teks Arab tanpa harakat** (kata Arab ≥ 3 huruf yang sama sekali
+tak punya tanda baris). Teks berharakat wajib agar pemula dapat membaca; teks mentah yang belum
+divokalkan hampir pasti salah tempel. Invarian ini dijaga pula oleh uji `ArabicTextTest`, yang
+sekaligus memastikan tidak ada teks Arab yang ditulis langsung di kode Kotlin — seluruh lafaz
+harus berasal dari `assets/content` agar sumbernya dapat ditelusuri.

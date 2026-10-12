@@ -108,6 +108,7 @@ fun DoaAdzanScreen() {
     val store = rememberStore()
     val scope = rememberCoroutineScope()
     val (arab, latin, trans) = remember { repo.doaAdzan() }
+    val (jawabArab, jawabLatin, jawabTrans) = remember { repo.menjawabAdzan() }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
@@ -134,16 +135,12 @@ fun DoaAdzanScreen() {
         }
         Text("Menjawab muadzin", style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
-        Text("Menjawab seperti lafaz muadzin; saat حي على الصلاة / حي على الفلاح membaca:",
-            style = MaterialTheme.typography.labelMedium)
-        BacaanCard("jawab:adzan", "Jawaban saat seruan",
-            "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
-            "La haula wa la quwwata illa billah.",
-            "Tidak ada daya dan kekuatan kecuali dengan Allah.",
-            true, true, arabSize, 15f, sumber = "HR Bukhari-Muslim — sunnah.com",
+        Text(repo.menjawabAdzanCatatan(), style = MaterialTheme.typography.labelMedium)
+        BacaanCard("jawab:adzan", "Jawaban saat seruan", jawabArab, jawabLatin, jawabTrans,
+            true, true, arabSize, 15f, sumber = repo.adzanSumber("menjawab_adzan"),
             showArab = showArab)
         BacaanCard("doa:adzan", "Doa setelah adzan", arab, latin, trans,
-            true, true, arabSize, 15f, sumber = "HR Bukhari — sunnah.com",
+            true, true, arabSize, 15f, sumber = repo.adzanSumber("doa_setelah_adzan"),
             showArab = showArab)
         Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)

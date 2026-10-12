@@ -39,7 +39,7 @@ fun SholatDetailScreen(id: String) {
     // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i)
     // dan cakupan sholat (mis. qunut hanya untuk Subuh).
     val steps = remember(ringkas, mazhab, id) {
-        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
+        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "surat_setelah_fatihah", "rukuk", "sujud", "tasyahud", "salam") }
         else bacaan
         base.filter {
             (it.mazhab == null || it.mazhab == mazhab) &&
@@ -116,6 +116,10 @@ fun SholatDetailScreen(id: String) {
         }
         BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber,
             showArab = showArab)
+        if (b.catatan.isNotBlank()) {
+            Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 4.dp))
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }
             Button(onClick = { step = 0 }) { Text("Ulangi") }

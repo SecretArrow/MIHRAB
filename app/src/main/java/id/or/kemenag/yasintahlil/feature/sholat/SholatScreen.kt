@@ -83,6 +83,10 @@ fun SholatScreen(go: (String) -> Unit) {
                     }
                     BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f,
                         sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab)
+                    if (b.catatan.isNotBlank()) {
+                        Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(bottom = 4.dp))
+                    }
                 }
             }
         }

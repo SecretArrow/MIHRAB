@@ -36,6 +36,14 @@
    "sumber": "HR Bukhari 756, Muslim 394 (la sholata liman lam yaqra bi fatihatil kitab) — sunnah.com"
   },
   {
+   "id": "surat_setelah_fatihah",
+   "judul": "Surat atau ayat setelah Al-Fatihah",
+   "kapan": "Rakaat pertama dan kedua",
+   "rujukan_file": "surah_112.json",
+   "sumber": "HR Bukhari 759 — sunnah.com",
+   "catatan": "Sunnah membaca satu surat atau beberapa ayat setelah Al-Fatihah pada rakaat pertama dan kedua. Teks di bawah adalah contoh yang lazim (Al-Ikhlas); surat atau ayat lain dari Al-Qur'an juga sah. Pada rakaat ketiga dan keempat cukup Al-Fatihah."
+  },
+  {
    "arab": "سُبْحَانَ رَبِّيَ الْعَظِيْمِ وَبِحَمْدِهِ",
    "id": "rukuk",
    "judul": "Bacaan rukuk",
