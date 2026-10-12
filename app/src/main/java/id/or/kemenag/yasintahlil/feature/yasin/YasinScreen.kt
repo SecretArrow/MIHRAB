@@ -28,6 +28,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
     var jump by remember { mutableStateOf("") }
     var query by remember { mutableStateOf("") }
     var showBookmarks by remember { mutableStateOf(false) }
+    var settings by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
 
     FullscreenEffect(focus)
@@ -66,17 +67,11 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
             if (query.isNotBlank()) Text("${shown.size} ayat cocok", style = MaterialTheme.typography.labelSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
-                FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
-                FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
+                OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
                 FilterChip(focus, { focus = !focus }, { Text("Layar penuh") })
                 FilterChip(keepOn, { keepOn = !keepOn }, { Text("Tetap menyala") })
                 FilterChip(showBookmarks, { showBookmarks = !showBookmarks }, { Text("Bookmark ${s.bookmarks.size}") })
             }
-            Text("Ukuran Arab: ${s.arabSize.toInt()}"); Slider(s.arabSize, { vm.setArabSize(it) }, valueRange = 16f..40f)
-            Text("Ukuran Latin: ${s.latinSize.toInt()}"); Slider(s.latinSize, { vm.setLatinSize(it) }, valueRange = 12f..24f)
-            Text("Jarak antarbaris: %.1f".format(s.lineHeight))
-            Slider(s.lineHeight, { vm.setLineHeight(it) }, valueRange = 1.4f..2.6f)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (s.mark in 1..surah.ayatCount) Button(onClick = {
                     scope.launch { listState.animateScrollToItem((s.mark - 1).coerceAtLeast(0)) }
@@ -122,5 +117,17 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 }
             }
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
+            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
+            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
+            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
+            latinSize = s.latinSize, onLatinSize = { vm.setLatinSize(it) },
+            lineHeight = s.lineHeight, onLineHeight = { vm.setLineHeight(it) },
+        )
     }
 }

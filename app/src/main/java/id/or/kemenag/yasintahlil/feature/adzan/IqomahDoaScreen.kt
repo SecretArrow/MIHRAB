@@ -35,6 +35,7 @@ fun IqomahScreen() {
     var fullscreen by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(24f) }
     var showArab by remember { mutableStateOf(true) }
+    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         mins = store.get(Store.IQOMAH_MIN, 10)
         arabSize = store.get(Store.ARAB_SIZE, 24f)
@@ -80,14 +81,8 @@ fun IqomahScreen() {
             OutlinedButton(onClick = { mins = (mins + 1).coerceAtMost(60); remaining = -1; scope.launch { store.set(Store.IQOMAH_MIN, mins) } }) { Text("+") }
         }
 
-        Text("Ukuran Arab: ${arabSize.toInt()}", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = {
-                arabSize = (arabSize + 2).coerceAtMost(40f); scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A+") }
-            OutlinedButton(onClick = {
-                arabSize = (arabSize - 2).coerceAtLeast(16f); scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A−") }
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         if (repo.iqomahCatatan().isNotBlank()) {
             Text(repo.iqomahCatatan(), style = MaterialTheme.typography.labelMedium,
@@ -99,6 +94,14 @@ fun IqomahScreen() {
                 true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi,
                 showArab = showArab, kategori = l.kategori)
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }
 
@@ -112,6 +115,7 @@ fun DoaAdzanScreen() {
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
+    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
@@ -121,18 +125,7 @@ fun DoaAdzanScreen() {
         Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
             style = MaterialTheme.typography.labelMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(showArab, {
-                showArab = !showArab
-                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
-            }, { Text("Arab") })
-            OutlinedButton(onClick = {
-                arabSize = (arabSize + 2).coerceAtMost(40f)
-                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A+") }
-            OutlinedButton(onClick = {
-                arabSize = (arabSize - 2).coerceAtLeast(16f)
-                scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
-            }) { Text("A−") }
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         BacaanCard("doa:menjawab_adzan", menjawab.judul,
             menjawab.arab, menjawab.latin, menjawab.terjemahan,
@@ -151,5 +144,13 @@ fun DoaAdzanScreen() {
         }
         Text("Adzan dan pengingat sebelum adzan diatur di menu Adzan; iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }

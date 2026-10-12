@@ -29,6 +29,7 @@ fun SholatDetailScreen(id: String) {
     var showArab by remember { mutableStateOf(true) }
     var selesai by remember { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf("syafii") }
+    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
@@ -75,10 +76,7 @@ fun SholatDetailScreen(id: String) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
-            FilterChip(showArab, {
-                showArab = !showArab
-                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
-            }, { Text("Arab") })
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
         }
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))
@@ -138,6 +136,14 @@ fun SholatDetailScreen(id: String) {
         Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Bacaan bertanda mazhab " +
             "tertentu hanya tampil bila mazhab panduan cocok — perbedaan dicatat, tidak dicampuradukkan. Lihat SOURCES.md.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
+        )
     }
 }
 

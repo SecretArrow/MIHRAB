@@ -18,22 +18,20 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
     val groups = vm.groups
     var tab by remember { mutableStateOf(0) }
     var fullscreen by remember { mutableStateOf(false) }
+    var settings by remember { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
 
     if (groups.isEmpty()) {
-        Box(Modifier.fillMaxSize().padding(16.dp)) { Text("Konten dzikir tidak tersedia.") }
+        EmptyState("Konten dzikir tidak tersedia",
+            "Berkas kumpulan dzikir tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
         return
     }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Dzikir & Doa", style = MaterialTheme.typography.titleLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
-            FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
-            FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
+            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
         }
-        Text("Ukuran Arab: ${s.arabSize.toInt()}")
-        Slider(s.arabSize, { vm.setArabSize(it) }, valueRange = 16f..40f)
         ScrollableTabRow(tab) {
             groups.forEachIndexed { i, g -> Tab(tab == i, { tab = i }, text = { Text(g.judul) }) }
         }
@@ -45,13 +43,23 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
                     s.showLatin, s.showTrans, s.arabSize, 15f, it.ulangi, it.sumber,
                     showArab = s.showArab, kategori = it.kategori)
-                if (it.ulangi > 1) {
-                    CounterRow(c, it.ulangi,
-                        onPlus = { vm.setCount(key, (c + 1).coerceAtMost(it.ulangi)) },
-                        onMinus = { vm.setCount(key, (c - 1)) },
-                        onReset = { vm.reset(key) })
-                }
+                // Hitungan ditampilkan untuk semua bacaan, bukan hanya yang ulangi > 1: progresnya
+                // tersimpan di Room, jadi pengguna bisa melihat/mengulang meski targetnya satu kali.
+                CounterRow(c, it.ulangi,
+                    onPlus = { vm.setCount(key, c + 1) },
+                    onMinus = { vm.setCount(key, c - 1) },
+                    onReset = { vm.reset(key) })
             }
         }
+    }
+
+    if (settings) {
+        BacaanSettingsSheet(
+            onDismiss = { settings = false },
+            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
+            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
+            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
+            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
+        )
     }
 }

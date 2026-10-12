@@ -23,6 +23,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
+import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlin.math.cos
@@ -104,6 +106,15 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         if (!s.calibrated) Text(
             "⚠ Sensor belum terkalibrasi / ada gangguan magnet. Gerakkan perangkat pola angka 8, jauhkan dari magnet & casing magnetik.",
             color = MaterialTheme.colorScheme.error)
+
+        // Keadaan menunggu/gagal GPS: sebelumnya layar diam saja saat GPS tak kunjung memberi
+        // perbaikan, sehingga pengguna mengira aplikasinya rusak.
+        if (s.useGps && s.hasPermission && s.mencari) {
+            LoadingState("Mencari perbaikan lokasi GPS…")
+        }
+        if (s.useGps) s.pesanLokasi?.let { pesan ->
+            ErrorState(pesan, onRetry = { vm.refreshLocation() })
+        }
 
         Box(Modifier.fillMaxWidth().height(280.dp), contentAlignment = Alignment.Center) {
             Canvas(Modifier.size(240.dp)) {

@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -88,7 +89,10 @@ fun BacaanCard(
         Column(Modifier.padding(12.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                if (ulangi > 1) AssistChip(onClick = {}, label = { Text("${ulangi}x") })
+                // Penanda jumlah ulangan — teks, bukan tombol. Sebelumnya AssistChip dengan onClick
+                // kosong: tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
+                if (ulangi > 1) Text("${ulangi}x", style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary)
             }
             if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
             if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
@@ -121,4 +125,154 @@ fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit,
     }
     LinearProgressIndicator(progress = { (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f) },
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
+}
+
+// --- Keadaan layar: kosong, gagal, memuat ------------------------------------------------
+// `plan.txt`: "Berikan skeleton loading atau indikator proses saat memuat data" dan
+// "Sediakan tampilan kosong, pesan kesalahan, dan tombol mencoba kembali". Ketiganya dibuat
+// satu kali di sini agar pesan/istilahnya konsisten di seluruh layar.
+
+/**
+ * Tampilan kosong. [onTombol] diisi hanya bila keadaan itu memang bisa diulang dari layar ini;
+ * kalau tidak, tombolnya tidak ditampilkan sama sekali (tidak ada tombol dekoratif).
+ */
+@Composable
+fun EmptyState(
+    judul: String,
+    pesan: String = "",
+    labelTombol: String = "Coba lagi",
+    onTombol: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier.fillMaxWidth().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(judul, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        if (pesan.isNotBlank()) {
+            Text(pesan, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+        }
+        if (onTombol != null) OutlinedButton(onClick = onTombol) { Text(labelTombol) }
+    }
+}
+
+/** Pesan kesalahan + tombol mencoba kembali. Tombol hanya muncul bila ada yang bisa diulang. */
+@Composable
+fun ErrorState(pesan: String, onRetry: (() -> Unit)? = null, modifier: Modifier = Modifier) {
+    Column(
+        modifier.fillMaxWidth().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(pesan, style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+        if (onRetry != null) Button(onClick = onRetry) { Text("Coba lagi") }
+    }
+}
+
+/** Indikator proses saat data sedang dimuat. */
+@Composable
+fun LoadingState(pesan: String = "Memuat…", modifier: Modifier = Modifier) {
+    Column(
+        modifier.fillMaxWidth().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        CircularProgressIndicator()
+        Text(pesan, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+    }
+}
+
+/**
+ * Kerangka kartu (skeleton) sebagai penanda proses: menampilkan bentuk konten yang akan datang
+ * tanpa mengarang isinya. Dipakai saat kontennya benar-benar menunggu data yang lambat (mis.
+ * daftar hasil pencarian daring), bukan untuk menutupi jeda satu frame.
+ */
+@Composable
+fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
+    Card(modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            repeat(baris.coerceAtLeast(1)) { i ->
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth(if (i == 0) 0.5f else 1f).height(14.dp),
+                ) {}
+            }
+        }
+    }
+}
+
+// --- Bottom sheet pengaturan bacaan ------------------------------------------------------
+
+/**
+ * Bottom sheet pengaturan bacaan singkat (`plan.txt`: *"Gunakan bottom sheet untuk pengaturan
+ * singkat"*). Sebelumnya tiap layar bacaan menaruh chip dan slider-nya sendiri di badan layar;
+ * kini kontrol tampilan yang sama tinggal dibuka dari satu tombol, sehingga badan layar tetap
+ * bersih dan istilahnya seragam.
+ *
+ * Parameter opsional ([showLatin], [showTrans], [latinSize], [lineHeight]) hanya ditampilkan bila
+ * layar memang menyediakannya — layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip
+ * yang tak berefek.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BacaanSettingsSheet(
+    onDismiss: () -> Unit,
+    showArab: Boolean, onShowArab: (Boolean) -> Unit,
+    showLatin: Boolean? = null, onShowLatin: ((Boolean) -> Unit)? = null,
+    showTrans: Boolean? = null, onShowTrans: ((Boolean) -> Unit)? = null,
+    arabSize: Float, onArabSize: (Float) -> Unit,
+    latinSize: Float? = null, onLatinSize: ((Float) -> Unit)? = null,
+    lineHeight: Float? = null, onLineHeight: ((Float) -> Unit)? = null,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
+        Column(
+            Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text("Pengaturan bacaan", style = MaterialTheme.typography.titleMedium)
+            Text("Berlaku untuk semua bacaan dan tersimpan otomatis.",
+                style = MaterialTheme.typography.labelSmall)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 4.dp),
+            ) {
+                FilterChip(showArab, { onShowArab(!showArab) }, { Text("Arab") })
+                if (showLatin != null && onShowLatin != null) {
+                    FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text("Latin") })
+                }
+                if (showTrans != null && onShowTrans != null) {
+                    FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text("Terjemahan") })
+                }
+            }
+            UkuranSlider("Ukuran Arab", arabSize, ARAB_SIZE_RANGE, onArabSize)
+            if (latinSize != null && onLatinSize != null) {
+                UkuranSlider("Ukuran Latin", latinSize, LATIN_SIZE_RANGE, onLatinSize)
+            }
+            if (lineHeight != null && onLineHeight != null) {
+                UkuranSlider("Jarak antarbaris", lineHeight, LINE_HEIGHT_RANGE, onLineHeight, desimal = 1)
+            }
+        }
+    }
+}
+
+/** Rentang ukuran dan jarak antarbaris yang sah — dipakai bersama oleh sheet dan uji statis. */
+val ARAB_SIZE_RANGE = 16f..40f
+val LATIN_SIZE_RANGE = 12f..24f
+val LINE_HEIGHT_RANGE = 1.4f..2.6f
+
+@Composable
+private fun UkuranSlider(
+    label: String,
+    nilai: Float,
+    rentang: ClosedFloatingPointRange<Float>,
+    onUbah: (Float) -> Unit,
+    desimal: Int = 0,
+) {
+    Column(Modifier.fillMaxWidth()) {
+        Text("$label: ${"%.${desimal}f".format(nilai)}", style = MaterialTheme.typography.labelLarge)
+        Slider(nilai, onUbah, valueRange = rentang)
+    }
 }
