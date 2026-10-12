@@ -376,6 +376,13 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   sengaja **tidak** menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **`workflow_dispatch` pada alur rilis tidak lagi menerbitkan rilis palsu**: `release.yml`
+  mendeklarasikan `workflow_dispatch`, tetapi langkah `softprops/action-gh-release` tidak punya
+  pembatas ref — dan action itu menormalkan `github.ref_name` menjadi nama tag. Akibatnya menjalankan
+  alur rilis dari sebuah cabang (mis. untuk menguji build rilis) akan mencoba menerbitkan rilis
+  bernama cabang itu. Kini langkah rilis dijaga `github.ref_type == 'tag' || inputs.tag != ''`, dan
+  dispatch mendapat masukan **`tag`**: diisi → menerbitkan rilis untuk tag itu, dikosongkan → sekadar
+  menguji build rilis tanpa menerbitkan apa pun. Alur tag (`v*.*.*`) tidak berubah.
 - **Higiene berkas teks**: 13 berkas konten JSON (`adzan`, `ayat_kursi`, `dzikir`, `kota`,
   `sholat_bacaan`, `sholat_daftar`, `surah_001/112/113/114`, `tahlil`, `tahlil_full`,
   `yasin_full`) tidak diakhiri baris baru, dan `YasinApp.kt` menyisakan satu baris kosong di

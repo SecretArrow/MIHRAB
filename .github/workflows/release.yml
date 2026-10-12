@@ -4,6 +4,13 @@ on:
   push:
     tags: ['v*.*.*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: >-
+          Tag yang sudah ada (mis. v1.0.1) untuk benar-benar menerbitkan rilis.
+          Kosongkan untuk sekadar menguji build rilis — tidak ada rilis yang terbit.
+        required: false
+        type: string
 
 jobs:
   release:
@@ -47,8 +54,16 @@ jobs:
           "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK"
 
       - name: GitHub Release
+        # Rilis hanya terbit bila ref-nya memang tag, atau bila tag diminta eksplisit saat
+        # dispatch. Tanpa pembatas ini, `workflow_dispatch` dari cabang akan mencoba menerbitkan
+        # rilis bernama cabang: action-gh-release menormalkan `github.ref_name` menjadi nama tag,
+        # jadi pemicu yang dideklarasikan itu berujung sampah alih-alih berguna. Dengan pembatas
+        # ini dispatch menjadi uji build rilis yang aman (tanpa menerbitkan apa pun), sedangkan
+        # alur tag tidak berubah sama sekali.
+        if: github.ref_type == 'tag' || inputs.tag != ''
         uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
           files: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
