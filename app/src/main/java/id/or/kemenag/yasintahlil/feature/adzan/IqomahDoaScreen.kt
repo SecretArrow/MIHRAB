@@ -108,7 +108,8 @@ fun DoaAdzanScreen() {
     val store = rememberStore()
     val scope = rememberCoroutineScope()
     val (arab, latin, trans) = remember { repo.doaAdzan() }
-    val (jawabArab, jawabLatin, jawabTrans) = remember { repo.menjawabAdzan() }
+    val menjawab = remember { repo.menjawabAdzan() }
+    val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
@@ -133,12 +134,15 @@ fun DoaAdzanScreen() {
                 scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
             }) { Text("A−") }
         }
-        Text("Menjawab muadzin", style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
-        Text(repo.menjawabAdzanCatatan(), style = MaterialTheme.typography.labelMedium)
-        BacaanCard("jawab:adzan", "Jawaban saat seruan", jawabArab, jawabLatin, jawabTrans,
-            true, true, arabSize, 15f, sumber = repo.adzanSumber("menjawab_adzan"),
-            showArab = showArab)
+        BacaanCard("doa:menjawab_adzan", menjawab.judul,
+            menjawab.arab, menjawab.latin, menjawab.terjemahan,
+            true, true, arabSize, 15f, sumber = menjawab.sumber, showArab = showArab)
+        if (menjawab.catatan.isNotBlank()) {
+            Text(menjawab.catatan, style = MaterialTheme.typography.labelSmall)
+        }
+        BacaanCard("doa:sholawat_adzan", sholawat.judul,
+            sholawat.arab, sholawat.latin, sholawat.terjemahan,
+            true, true, arabSize, 15f, sumber = sholawat.sumber, showArab = showArab)
         BacaanCard("doa:adzan", "Doa setelah adzan", arab, latin, trans,
             true, true, arabSize, 15f, sumber = repo.adzanSumber("doa_setelah_adzan"),
             showArab = showArab)

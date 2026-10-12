@@ -103,6 +103,40 @@ def check_schema(name: str, data) -> list[str]:
             if not k.get("nama") or k.get("lat") is None or k.get("lon") is None:
                 errs.append(f"{name}: kota[{i}] butuh nama/lat/lon")
 
+    if "kelompok" in data:  # dzikir: setiap entri wajib menyebut sumbernya sendiri
+        # sumber_url tingkat berkas terlalu umum (mis. "https://sunnah.com/"); tanpa sumber
+        # per-entri, hadis daif dan ayat Qur'an tidak dapat dibedakan asalnya oleh pengguna.
+        for gi, g in enumerate(data.get("kelompok") or []):
+            for ii, it in enumerate((g or {}).get("items") or []):
+                label = it.get("judul") or f"{gi}.{ii}"
+                if not str(it.get("sumber", "")).strip():
+                    errs.append(f"{name}: kelompok[{gi}] entri '{label}' tanpa 'sumber' per-entri")
+
+    return errs
+
+
+PLACEHOLDER_MARKERS = (
+    "lihat rujukan file", "lihat rujukan berkas", "dibaca penuh dari mushaf",
+    "todo", "lorem", "... (sesuai", "lafaz niat per sholat",
+)
+
+
+def check_placeholders(name: str, node, where="") -> list[str]:
+    """Teks Arab/Latin tidak boleh berisi prosa penunjuk (placeholder) — lihat plan.txt:
+    'Jangan menghasilkan teks Arab secara acak atau merekonstruksi bacaan yang belum
+    diverifikasi'. Bila teks asli diambil dari berkas rujukan, kosongkan field inline-nya."""
+    errs: list[str] = []
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k in ("arab", "latin") and isinstance(v, str):
+                low = v.lower()
+                for m in PLACEHOLDER_MARKERS:
+                    if m in low:
+                        errs.append(f"{name}: {where}.{k} berisi placeholder '{m}'")
+            errs.extend(check_placeholders(name, v, f"{where}.{k}"))
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            errs.extend(check_placeholders(name, v, f"{where}[{i}]"))
     return errs
 
 
@@ -187,6 +221,7 @@ def main() -> int:
 
         # --- Pemeriksaan skema struktur per jenis file ---
         errors.extend(check_schema(rel.name, data))
+        errors.extend(check_placeholders(rel.name, data))
 
         # --- Semua teks Arab wajib berharakat ---
         errors.extend(check_harakat(rel.name, data))

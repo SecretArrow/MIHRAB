@@ -1,510 +1,510 @@
 {
  "surah": "Yasin",
  "ayat_count": 83,
- "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
- "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
- "sumber_latin": "api.quran.com word transliteration (English)",
+ "sumber_arab": "Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI — quran.kemenag.go.id",
+ "sumber_terjemahan": "Terjemah Kemenag edisi 2019 — quran.kemenag.go.id",
+ "sumber_latin": "Transliterasi resmi Kemenag RI — quran.kemenag.go.id",
  "verses": [
   {
    "nomor": 1,
-   "arab": "يسٓ",
-   "latin": "ya-seen",
-   "terjemahan": "Yaa siin"
+   "arab": "يٰسۤ ۚ",
+   "latin": "Yā sīn.",
+   "terjemahan": "Yā Sīn."
   },
   {
    "nomor": 2,
-   "arab": "وَٱلْقُرْءَانِ ٱلْحَكِيمِ",
-   "latin": "wal-qur'āni l-ḥakīmi",
-   "terjemahan": "Demi Al Quran yang penuh hikmah,"
+   "arab": "وَالْقُرْاٰنِ الْحَكِيْمِۙ",
+   "latin": "Wal-qur'ānil-ḥakīm(i).",
+   "terjemahan": "Demi Al-Qur’an yang penuh hikmah,"
   },
   {
    "nomor": 3,
-   "arab": "إِنَّكَ لَمِنَ ٱلْمُرْسَلِينَ",
-   "latin": "innaka lamina l-mur'salīna",
-   "terjemahan": "Sesungguhnya kamu salah seorang dari rasul-rasul,"
+   "arab": "اِنَّكَ لَمِنَ الْمُرْسَلِيْنَۙ",
+   "latin": "Innaka laminal-mursalīn(a).",
+   "terjemahan": "sesungguhnya engkau (Nabi Muhammad) benar-benar salah seorang dari rasul-rasul"
   },
   {
    "nomor": 4,
-   "arab": "عَلَىٰ صِرَٰطٍۢ مُّسْتَقِيمٍۢ",
-   "latin": "ʿalā ṣirāṭin mus'taqīmin",
-   "terjemahan": "(yang berada) diatas jalan yang lurus,"
+   "arab": "عَلٰى صِرَاطٍ مُّسْتَقِيْمٍۗ",
+   "latin": "‘Alā ṣirāṭim mustaqīm(in).",
+   "terjemahan": "(yang berada) di atas jalan yang lurus,"
   },
   {
    "nomor": 5,
-   "arab": "تَنزِيلَ ٱلْعَزِيزِ ٱلرَّحِيمِ",
-   "latin": "tanzīla l-ʿazīzi l-raḥīmi",
-   "terjemahan": "(sebagai wahyu) yang diturunkan oleh Yang Maha Perkasa lagi Maha Penyayang,"
+   "arab": "تَنْزِيْلَ الْعَزِيْزِ الرَّحِيْمِۙ",
+   "latin": "Tanzīlal-‘azīzir-raḥīm(i).",
+   "terjemahan": "(sebagai wahyu) yang diturunkan oleh (Allah) Yang Maha Perkasa lagi Maha Penyayang,"
   },
   {
    "nomor": 6,
-   "arab": "لِتُنذِرَ قَوْمًۭا مَّآ أُنذِرَ ءَابَآؤُهُمْ فَهُمْ غَٰفِلُونَ",
-   "latin": "litundhira qawman mā undhira ābāuhum fahum ghāfilūna",
-   "terjemahan": "Agar kamu memberi peringatan kepada kaum yang bapak-bapak mereka belum pernah diberi peringatan, karena itu mereka lalai."
+   "arab": "لِتُنْذِرَ قَوْمًا مَّآ اُنْذِرَ اٰبَاۤؤُهُمْ فَهُمْ غٰفِلُوْنَ",
+   "latin": "Litunżira qaumam mā unżira ābā'uhum fahum gāfilūn(a).",
+   "terjemahan": "agar engkau (Nabi Muhammad) memberi peringatan kepada suatu kaum yang nenek moyang mereka belum pernah diberi peringatan, sehingga mereka lalai."
   },
   {
    "nomor": 7,
-   "arab": "لَقَدْ حَقَّ ٱلْقَوْلُ عَلَىٰٓ أَكْثَرِهِمْ فَهُمْ لَا يُؤْمِنُونَ",
-   "latin": "laqad ḥaqqa l-qawlu ʿalā aktharihim fahum lā yu'minūna",
-   "terjemahan": "Sesungguhnya telah pasti berlaku perkataan (ketentuan Allah) terhadap kebanyakan mereka, kerena mereka tidak beriman."
+   "arab": "لَقَدْ حَقَّ الْقَوْلُ عَلٰٓى اَكْثَرِهِمْ فَهُمْ لَا يُؤْمِنُوْنَ",
+   "latin": "Laqad ḥaqqal-qaulu ‘alā akṡarihim fahum lā yu'minūn(a).",
+   "terjemahan": "Sungguh, benar-benar berlaku perkataan (ketetapan takdir) terhadap kebanyakan mereka, maka mereka tidak akan beriman."
   },
   {
    "nomor": 8,
-   "arab": "إِنَّا جَعَلْنَا فِىٓ أَعْنَٰقِهِمْ أَغْلَٰلًۭا فَهِىَ إِلَى ٱلْأَذْقَانِ فَهُم مُّقْمَحُونَ",
-   "latin": "innā jaʿalnā fī aʿnāqihim aghlālan fahiya ilā l-adhqāni fahum muq'maḥūna",
-   "terjemahan": "Sesungguhnya Kami telah memasang belenggu dileher mereka, lalu tangan mereka (diangkat) ke dagu, maka karena itu mereka tertengadah."
+   "arab": "اِنَّا جَعَلْنَا فِيْٓ اَعْنَاقِهِمْ اَغْلٰلًا فَهِيَ اِلَى الْاَذْقَانِ فَهُمْ مُّقْمَحُوْنَ",
+   "latin": "Innā ja‘alnā fī a‘nāqihim aglālan fa hiya ilal-ażqāni fahum muqmaḥūn(a).",
+   "terjemahan": "Sesungguhnya Kami telah memasang belenggu di leher mereka, lalu (tangan mereka yang terbelenggu diangkat) ke dagu, karena itu mereka tertengadah."
   },
   {
    "nomor": 9,
-   "arab": "وَجَعَلْنَا مِنۢ بَيْنِ أَيْدِيهِمْ سَدًّۭا وَمِنْ خَلْفِهِمْ سَدًّۭا فَأَغْشَيْنَٰهُمْ فَهُمْ لَا يُبْصِرُونَ",
-   "latin": "wajaʿalnā min bayni aydīhim saddan wamin khalfihim saddan fa-aghshaynāhum fahum lā yub'ṣirūna",
-   "terjemahan": "Dan Kami adakan di hadapan mereka dinding dan di belakang mereka dinding (pula), dan Kami tutup (mata) mereka sehingga mereka tidak dapat melihat."
+   "arab": "وَجَعَلْنَا مِنْۢ بَيْنِ اَيْدِيْهِمْ سَدًّا وَّمِنْ خَلْفِهِمْ سَدًّا فَاَغْشَيْنٰهُمْ فَهُمْ لَا يُبْصِرُوْنَ",
+   "latin": "Wa ja‘alnā mim baini aidīhim saddaw wa min khalfihim saddan fa agsyaināhum fahum lā yubṣirūn(a).",
+   "terjemahan": "Kami memasang penghalang di hadapan mereka dan di belakang mereka, sehingga Kami menutupi (pandangan) mereka. Mereka pun tidak dapat melihat."
   },
   {
    "nomor": 10,
-   "arab": "وَسَوَآءٌ عَلَيْهِمْ ءَأَنذَرْتَهُمْ أَمْ لَمْ تُنذِرْهُمْ لَا يُؤْمِنُونَ",
-   "latin": "wasawāon ʿalayhim a-andhartahum am lam tundhir'hum lā yu'minūna",
-   "terjemahan": "Sama saja bagi mereka apakah kamu memberi peringatan kepada mereka ataukah kamu tidak memberi peringatan kepada mereka, mereka tidak akan beriman."
+   "arab": "وَسَوَاۤءٌ عَلَيْهِمْ ءَاَنْذَرْتَهُمْ اَمْ لَمْ تُنْذِرْهُمْ لَا يُؤْمِنُوْنَ",
+   "latin": "Wa sawā'un ‘alaihim a'anżartahum am lam tunżirhum lā yu'minūn(a).",
+   "terjemahan": "Sama saja bagi mereka, apakah engkau (Nabi Muhammad) memberi peringatan kepada mereka atau tidak. Mereka (tetap) tidak akan beriman."
   },
   {
    "nomor": 11,
-   "arab": "إِنَّمَا تُنذِرُ مَنِ ٱتَّبَعَ ٱلذِّكْرَ وَخَشِىَ ٱلرَّحْمَٰنَ بِٱلْغَيْبِ ۖ فَبَشِّرْهُ بِمَغْفِرَةٍۢ وَأَجْرٍۢ كَرِيمٍ",
-   "latin": "innamā tundhiru mani ittabaʿa l-dhik'ra wakhashiya l-raḥmāna bil-ghaybi fabashir'hu bimaghfiratin wa-ajrin karīmin",
-   "terjemahan": "Sesungguhnya kamu hanya memberi peringatan kepada orang-orang yang mau mengikuti peringatan dan yang takut kepada Tuhan Yang Maha Pemurah walaupun dia tidak melihatnya. Maka berilah mereka kabar gembira dengan ampunan dan pahala yang mulia."
+   "arab": "اِنَّمَا تُنْذِرُ مَنِ اتَّبَعَ الذِّكْرَ وَخَشِيَ الرَّحْمٰنَ بِالْغَيْبِۚ فَبَشِّرْهُ بِمَغْفِرَةٍ وَّاَجْرٍ كَرِيْمٍ",
+   "latin": "Innamā tunżiru manittaba‘aż-żikra  wa khasyiyar-raḥmāna bil-gaib(i), fa basysyirhu bimagfiratiw wa ajrin karīm(in).",
+   "terjemahan": "Sesungguhnya engkau (Nabi Muhammad) hanya (bisa) memberi peringatan kepada orang-orang yang mau mengikutinya dan yang takut kepada Tuhan Yang Maha Pengasih tanpa melihat-Nya. Berilah mereka kabar gembira dengan ampunan dan pahala yang mulia."
   },
   {
    "nomor": 12,
-   "arab": "إِنَّا نَحْنُ نُحْىِ ٱلْمَوْتَىٰ وَنَكْتُبُ مَا قَدَّمُوا۟ وَءَاثَٰرَهُمْ ۚ وَكُلَّ شَىْءٍ أَحْصَيْنَٰهُ فِىٓ إِمَامٍۢ مُّبِينٍۢ",
-   "latin": "innā naḥnu nuḥ'yī l-mawtā wanaktubu mā qaddamū waāthārahum wakulla shayin aḥṣaynāhu fī imāmin mubīnin",
-   "terjemahan": "Sesungguhnya Kami menghidupkan orang-orang mati dan Kami menuliskan apa yang telah mereka kerjakan dan bekas-bekas yang mereka tinggalkan. Dan segala sesuatu Kami kumpulkan dalam Kitab Induk yang nyata (Lauh Mahfuzh)."
+   "arab": "اِنَّا نَحْنُ نُحْيِ الْمَوْتٰى وَنَكْتُبُ مَا قَدَّمُوْا وَاٰثَارَهُمْۗ وَكُلَّ شَيْءٍ اَحْصَيْنٰهُ فِيْٓ اِمَامٍ مُّبِيْنٍ ࣖ",
+   "latin": "Innā naḥnu nuḥyil-mautā wa naktubu mā qaddamū wa āṡārahum, wa kulla syai'in aḥṣaināhu fī imāmim mubīn(in).",
+   "terjemahan": "Sesungguhnya Kamilah yang menghidupkan orang-orang yang mati dan Kami (pulalah) yang mencatat apa yang telah mereka kerjakan dan bekas-bekas yang mereka (tinggalkan). Segala sesuatu Kami kumpulkan dalam kitab induk yang nyata (Lauhulmahfuz)."
   },
   {
    "nomor": 13,
-   "arab": "وَٱضْرِبْ لَهُم مَّثَلًا أَصْحَٰبَ ٱلْقَرْيَةِ إِذْ جَآءَهَا ٱلْمُرْسَلُونَ",
-   "latin": "wa-iḍ'rib lahum mathalan aṣḥāba l-qaryati idh jāahā l-mur'salūna",
-   "terjemahan": "Dan buatlah bagi mereka suatu perumpamaan, yaitu penduduk suatu negeri ketika utusan-utusan datang kepada mereka."
+   "arab": "وَاضْرِبْ لَهُمْ مَّثَلًا اَصْحٰبَ الْقَرْيَةِۘ اِذْ جَاۤءَهَا الْمُرْسَلُوْنَۚ",
+   "latin": "Waḍrib lahum maṡalan aṣḥābal-qaryah(ti), iż jā'ahal-mursalūn(a).",
+   "terjemahan": "Buatlah suatu perumpamaan bagi mereka (kaum kafir Makkah), yaitu penduduk suatu negeri, ketika para utusan datang kepada mereka,"
   },
   {
    "nomor": 14,
-   "arab": "إِذْ أَرْسَلْنَآ إِلَيْهِمُ ٱثْنَيْنِ فَكَذَّبُوهُمَا فَعَزَّزْنَا بِثَالِثٍۢ فَقَالُوٓا۟ إِنَّآ إِلَيْكُم مُّرْسَلُونَ",
-   "latin": "idh arsalnā ilayhimu ith'nayni fakadhabūhumā faʿazzaznā bithālithin faqālū innā ilaykum mur'salūna",
-   "terjemahan": "(yaitu) ketika Kami mengutus kepada mereka dua orang utusan, lalu mereka mendustakan keduanya; kemudian Kami kuatkan dengan (utusan) yang ketiga, maka ketiga utusan itu berkata: \"Sesungguhnya kami adalah orang-orang di utus kepadamu\"."
+   "arab": "اِذْ اَرْسَلْنَآ اِلَيْهِمُ اثْنَيْنِ فَكَذَّبُوْهُمَا فَعَزَّزْنَا بِثَالِثٍ فَقَالُوْٓا اِنَّآ اِلَيْكُمْ مُّرْسَلُوْنَ",
+   "latin": "Iż arsalnā ilaihimuṡnaini fa każżabūhumā fa ‘azzaznā biṡāliṡin faqālū innā ilaikum mursalūn(a).",
+   "terjemahan": "(yaitu) ketika Kami mengutus kepada mereka dua orang utusan, lalu mereka mendustakan keduanya. Kemudian Kami menguatkan dengan (utusan) yang ketiga. Maka, ketiga (utusan itu) berkata, “Sesungguhnya kami adalah orang-orang yang diutus kepadamu.”"
   },
   {
    "nomor": 15,
-   "arab": "قَالُوا۟ مَآ أَنتُمْ إِلَّا بَشَرٌۭ مِّثْلُنَا وَمَآ أَنزَلَ ٱلرَّحْمَٰنُ مِن شَىْءٍ إِنْ أَنتُمْ إِلَّا تَكْذِبُونَ",
-   "latin": "qālū mā antum illā basharun mith'lunā wamā anzala l-raḥmānu min shayin in antum illā takdhibūna",
-   "terjemahan": "Mereka menjawab: \"Kamu tidak lain hanyalah manusia seperti kami dan Allah Yang Maha Pemurah tidak menurunkan sesuatupun, kamu tidak lain hanyalah pendusta belaka\"."
+   "arab": "قَالُوْا مَآ اَنْتُمْ اِلَّا بَشَرٌ مِّثْلُنَاۙ وَمَآ اَنْزَلَ الرَّحْمٰنُ مِنْ شَيْءٍۙ اِنْ اَنْتُمْ اِلَّا تَكْذِبُوْنَ",
+   "latin": "Qālū mā antum illā basyarum miṡlunā, wa mā anzalar-raḥmānu min syai'(in), in antum illā takżibūn(a).",
+   "terjemahan": "Mereka (penduduk negeri) menjawab, “Kamu tidak lain hanyalah manusia seperti kami. (Allah) Yang Maha Pengasih tidak (pernah) menurunkan sesuatu apa pun. Kamu hanyalah berdusta.”"
   },
   {
    "nomor": 16,
-   "arab": "قَالُوا۟ رَبُّنَا يَعْلَمُ إِنَّآ إِلَيْكُمْ لَمُرْسَلُونَ",
-   "latin": "qālū rabbunā yaʿlamu innā ilaykum lamur'salūna",
-   "terjemahan": "Mereka berkata: \"Tuhan kami mengetahui bahwa sesungguhnya kami adalah orang yang diutus kepada kamu\"."
+   "arab": "قَالُوْا رَبُّنَا يَعْلَمُ اِنَّآ اِلَيْكُمْ لَمُرْسَلُوْنَ",
+   "latin": "Qālū rabbunā ya‘lamu innā ilaikum lamursalūn(a).",
+   "terjemahan": "Mereka (para rasul) berkata, “Tuhan kami mengetahui bahwa sesungguhnya kami benar-benar para utusan(-Nya) kepadamu."
   },
   {
    "nomor": 17,
-   "arab": "وَمَا عَلَيْنَآ إِلَّا ٱلْبَلَٰغُ ٱلْمُبِينُ",
-   "latin": "wamā ʿalaynā illā l-balāghu l-mubīnu",
-   "terjemahan": "Dan kewajiban kami tidak lain hanyalah menyampaikan (perintah Allah) dengan jelas\"."
+   "arab": "وَمَا عَلَيْنَآ اِلَّا الْبَلٰغُ الْمُبِيْنُ",
+   "latin": "Wa mā ‘alainā illal-balāgul-mubīn(u).",
+   "terjemahan": "Adapun kewajiban kami hanyalah menyampaikan (perintah Allah) yang jelas.”"
   },
   {
    "nomor": 18,
-   "arab": "قَالُوٓا۟ إِنَّا تَطَيَّرْنَا بِكُمْ ۖ لَئِن لَّمْ تَنتَهُوا۟ لَنَرْجُمَنَّكُمْ وَلَيَمَسَّنَّكُم مِّنَّا عَذَابٌ أَلِيمٌۭ",
-   "latin": "qālū innā taṭayyarnā bikum la-in lam tantahū lanarjumannakum walayamassannakum minnā ʿadhābun alīmun",
-   "terjemahan": "Mereka menjawab: \"Sesungguhnya kami bernasib malang karena kamu, sesungguhnya jika kamu tidak berhenti (menyeru kami), niscaya kami akan merajam kamu dan kamu pasti akan mendapat siksa yang pedih dari kami\"."
+   "arab": "قَالُوْٓا اِنَّا تَطَيَّرْنَا بِكُمْۚ  لَىِٕنْ لَّمْ تَنْتَهُوْا لَنَرْجُمَنَّكُمْ وَلَيَمَسَّنَّكُمْ مِّنَّا عَذَابٌ اَلِيْمٌ",
+   "latin": "Qālū innā taṭayyarnā bikum, la'il lam tantahū lanarjumannakum wa layamassannakum minnā ‘ażābun alīm(un).",
+   "terjemahan": "Mereka (penduduk negeri) menjawab, “Sesungguhnya kami bernasib malang karenamu. Sungguh, jika kamu tidak berhenti (menyeru kami), niscaya kami merajam kamu dan kamu pasti akan merasakan siksaan yang pedih dari kami.”"
   },
   {
    "nomor": 19,
-   "arab": "قَالُوا۟ طَٰٓئِرُكُم مَّعَكُمْ ۚ أَئِن ذُكِّرْتُم ۚ بَلْ أَنتُمْ قَوْمٌۭ مُّسْرِفُونَ",
-   "latin": "qālū ṭāirukum maʿakum a-in dhukkir'tum bal antum qawmun mus'rifūna",
-   "terjemahan": "Utusan-utusan itu berkata: \"Kemalangan kamu adalah karena kamu sendiri. Apakah jika kamu diberi peringatan (kamu bernasib malang)? Sebenarnya kamu adalah kaum yang melampui batas\"."
+   "arab": "قَالُوْا طَاۤىِٕرُكُمْ مَّعَكُمْۗ اَىِٕنْ ذُكِّرْتُمْۗ بَلْ اَنْتُمْ قَوْمٌ مُّسْرِفُوْنَ",
+   "latin": "Qālū ṭā'irukum ma‘akum, a'in żukkirtum, bal antum qaumum musrifūn(a).",
+   "terjemahan": "Mereka (para rasul) berkata, “Kemalangan kamu itu (akibat perbuatan) kamu sendiri. Apakah karena kamu diberi peringatan, (lalu kamu menjadi malang)? Sebenarnya kamu adalah kaum yang melampaui batas.”"
   },
   {
    "nomor": 20,
-   "arab": "وَجَآءَ مِنْ أَقْصَا ٱلْمَدِينَةِ رَجُلٌۭ يَسْعَىٰ قَالَ يَٰقَوْمِ ٱتَّبِعُوا۟ ٱلْمُرْسَلِينَ",
-   "latin": "wajāa min aqṣā l-madīnati rajulun yasʿā qāla yāqawmi ittabiʿū l-mur'salīna",
-   "terjemahan": "Dan datanglah dari ujung kota, seorang laki-laki dengan bergegas-gegas ia berkata: \"Hai kaumku, ikutilah utusan-utusan itu\"."
+   "arab": "وَجَاۤءَ مِنْ اَقْصَا الْمَدِيْنَةِ رَجُلٌ يَّسْعٰى قَالَ يٰقَوْمِ اتَّبِعُوا الْمُرْسَلِيْنَۙ",
+   "latin": "Wa jā'a min aqṣal-madīnati rajuluy yas‘ā qāla yā qaumittabi‘ul-mursalīn(a).",
+   "terjemahan": "Datanglah dengan bergegas dari ujung kota, seorang laki-laki. Dia berkata, “Wahai kaumku, ikutilah para rasul itu!"
   },
   {
    "nomor": 21,
-   "arab": "ٱتَّبِعُوا۟ مَن لَّا يَسْـَٔلُكُمْ أَجْرًۭا وَهُم مُّهْتَدُونَ",
-   "latin": "ittabiʿū man lā yasalukum ajran wahum muh'tadūna",
-   "terjemahan": "Ikutilah orang yang tiada minta balasan kepadamu; dan mereka adalah orang-orang yang mendapat petunjuk."
+   "arab": "اتَّبِعُوْا مَنْ لَّا يَسْـَٔلُكُمْ اَجْرًا وَّهُمْ مُّهْتَدُوْنَ  ۔",
+   "latin": "Ittabi‘ū mal lā yas'alukum ajraw wa hum muhtadūn(a).",
+   "terjemahan": "Ikutilah orang yang tidak meminta imbalan (dalam berdakwah) kepadamu. Mereka adalah orang-orang yang mendapat petunjuk."
   },
   {
    "nomor": 22,
-   "arab": "وَمَا لِىَ لَآ أَعْبُدُ ٱلَّذِى فَطَرَنِى وَإِلَيْهِ تُرْجَعُونَ",
-   "latin": "wamā liya lā aʿbudu alladhī faṭaranī wa-ilayhi tur'jaʿūna",
-   "terjemahan": "Mengapa aku tidak menyembah (Tuhan) yang telah menciptakanku dan yang hanya kepada-Nya-lah kamu (semua) akan dikembalikan?"
+   "arab": "وَمَا لِيَ لَآ اَعْبُدُ الَّذِيْ فَطَرَنِيْ وَاِلَيْهِ تُرْجَعُوْنَ",
+   "latin": "Wa mā liya lā a‘budul-lażī faṭaranī wa ilaihi turja‘ūn(a).",
+   "terjemahan": "Apa (alasanku) untuk tidak menyembah (Allah) yang telah menciptakanku dan hanya kepada-Nyalah kamu akan dikembalikan?"
   },
   {
    "nomor": 23,
-   "arab": "ءَأَتَّخِذُ مِن دُونِهِۦٓ ءَالِهَةً إِن يُرِدْنِ ٱلرَّحْمَٰنُ بِضُرٍّۢ لَّا تُغْنِ عَنِّى شَفَٰعَتُهُمْ شَيْـًۭٔا وَلَا يُنقِذُونِ",
-   "latin": "a-attakhidhu min dūnihi ālihatan in yurid'ni l-raḥmānu biḍurrin lā tugh'ni ʿannī shafāʿatuhum shayan walā yunqidhūni",
-   "terjemahan": "Mengapa aku akan menyembah tuhan-tuhan selain-Nya jika (Allah) Yang Maha Pemurah menghendaki kemudharatan terhadapku, niscaya syafa'at mereka tidak memberi manfaat sedikitpun bagi diriku dan mereka tidak (pula) dapat menyelamatkanku?"
+   "arab": "ءَاَتَّخِذُ مِنْ دُوْنِهٖٓ اٰلِهَةً اِنْ يُّرِدْنِ الرَّحْمٰنُ بِضُرٍّ لَّا تُغْنِ عَنِّيْ شَفَاعَتُهُمْ شَيْـًٔا وَّلَا يُنْقِذُوْنِۚ",
+   "latin": "A'attakhiżu min dūnihī ālihatan iy yuridnir-raḥmānu biḍurril lā tugni ‘annī syafā‘atuhum syai'aw wa lā yunqiżūn(i).",
+   "terjemahan": "Mengapa aku (harus) mengambil sembahan-sembahan selain-Nya? Jika (Allah) Yang Maha Pengasih menghendaki bencana terhadapku, pasti pertolongan mereka tidak berguna sama sekali bagi diriku dan mereka (juga) tidak dapat menyelamatkanku."
   },
   {
    "nomor": 24,
-   "arab": "إِنِّىٓ إِذًۭا لَّفِى ضَلَٰلٍۢ مُّبِينٍ",
-   "latin": "innī idhan lafī ḍalālin mubīnin",
-   "terjemahan": "Sesungguhnya aku kalau begitu pasti berada dalam kesesatan yang nyata."
+   "arab": "اِنِّيْٓ اِذًا لَّفِيْ ضَلٰلٍ مُّبِيْنٍ",
+   "latin": "Innī iżal lafī ḍalālim mubīn(in).",
+   "terjemahan": "Sesungguhnya aku (jika berbuat) begitu, pasti berada dalam kesesatan yang nyata."
   },
   {
    "nomor": 25,
-   "arab": "إِنِّىٓ ءَامَنتُ بِرَبِّكُمْ فَٱسْمَعُونِ",
-   "latin": "innī āmantu birabbikum fa-is'maʿūni",
-   "terjemahan": "Sesungguhnya aku telah beriman kepada Tuhanmu; maka dengarkanlah (pengakuan keimanan)ku."
+   "arab": "اِنِّيْٓ اٰمَنْتُ بِرَبِّكُمْ فَاسْمَعُوْنِۗ",
+   "latin": "Innī  āmantu birabbikum fasma‘ūn(i).",
+   "terjemahan": "Sesungguhnya aku telah beriman kepada Tuhanmu. Maka, dengarkanlah (pengakuan)-ku.”"
   },
   {
    "nomor": 26,
-   "arab": "قِيلَ ٱدْخُلِ ٱلْجَنَّةَ ۖ قَالَ يَٰلَيْتَ قَوْمِى يَعْلَمُونَ",
-   "latin": "qīla ud'khuli l-janata qāla yālayta qawmī yaʿlamūna",
-   "terjemahan": "Dikatakan (kepadanya): \"Masuklah ke surga\". Ia berkata: \"Alangkah baiknya sekiranya kamumku mengetahui."
+   "arab": "قِيْلَ ادْخُلِ الْجَنَّةَ ۗقَالَ يٰلَيْتَ قَوْمِيْ يَعْلَمُوْنَۙ",
+   "latin": "Qīladkhulil-jannah(ta), qāla yā laita qaumī ya‘lamūn(a).",
+   "terjemahan": "Dikatakan (kepadanya), “Masuklah ke surga.” Dia (laki-laki itu) berkata, “Aduhai, sekiranya kaumku mengetahui"
   },
   {
    "nomor": 27,
-   "arab": "بِمَا غَفَرَ لِى رَبِّى وَجَعَلَنِى مِنَ ٱلْمُكْرَمِينَ",
-   "latin": "bimā ghafara lī rabbī wajaʿalanī mina l-muk'ramīna",
-   "terjemahan": "Apa yang menyebabkan Tuhanku memberi ampun kepadaku dan menjadikan aku termasuk orang-orang yang dimuliakan\"."
+   "arab": "بِمَا غَفَرَ لِيْ رَبِّيْ وَجَعَلَنِيْ مِنَ الْمُكْرَمِيْنَ",
+   "latin": "Bimā gafaralī rabbī wa ja‘alanī minal-mukramīn(a).",
+   "terjemahan": "(bagaimana) Tuhanku mengampuniku dan menjadikanku termasuk orang-orang yang dimuliakan.”"
   },
   {
    "nomor": 28,
-   "arab": "۞ وَمَآ أَنزَلْنَا عَلَىٰ قَوْمِهِۦ مِنۢ بَعْدِهِۦ مِن جُندٍۢ مِّنَ ٱلسَّمَآءِ وَمَا كُنَّا مُنزِلِينَ",
-   "latin": "wamā anzalnā ʿalā qawmihi min baʿdihi min jundin mina l-samāi wamā kunnā munzilīna",
-   "terjemahan": "Dan kami tidak menurunkan kepada kaumnya sesudah dia (meninggal) suatu pasukanpun dari langit dan tidak layak Kami menurunkannya."
+   "arab": "۞ وَمَآ اَنْزَلْنَا عَلٰى قَوْمِهٖ مِنْۢ بَعْدِهٖ مِنْ جُنْدٍ مِّنَ السَّمَاۤءِ وَمَا كُنَّا مُنْزِلِيْنَ",
+   "latin": "Wa mā anzalnā ‘alā qaumihī mim ba‘dihī min jundim minas-samā'i wa mā kunnā munzilīn(a).",
+   "terjemahan": "Setelah dia (dibunuh), Kami tidak menurunkan satu pasukan pun dari langit kepada kaumnya dan Kami tidak perlu menurunkannya."
   },
   {
    "nomor": 29,
-   "arab": "إِن كَانَتْ إِلَّا صَيْحَةًۭ وَٰحِدَةًۭ فَإِذَا هُمْ خَٰمِدُونَ",
-   "latin": "in kānat illā ṣayḥatan wāḥidatan fa-idhā hum khāmidūna",
-   "terjemahan": "Tidak ada siksaan atas mereka melainkan satu teriakan suara saja; maka tiba-tiba mereka semuanya mati."
+   "arab": "اِنْ كَانَتْ اِلَّا صَيْحَةً وَّاحِدَةً فَاِذَا هُمْ خٰمِدُوْنَ",
+   "latin": "In kānat illā ṣaiḥataw wāḥidatan fa'iżā hum khāmidūn(a).",
+   "terjemahan": "(Azab mereka) itu cukup dengan satu teriakan saja. Maka, seketika itu mereka mati."
   },
   {
    "nomor": 30,
-   "arab": "يَٰحَسْرَةً عَلَى ٱلْعِبَادِ ۚ مَا يَأْتِيهِم مِّن رَّسُولٍ إِلَّا كَانُوا۟ بِهِۦ يَسْتَهْزِءُونَ",
-   "latin": "yāḥasratan ʿalā l-ʿibādi mā yatīhim min rasūlin illā kānū bihi yastahziūna",
-   "terjemahan": "Alangkah besarnya penyesalan terhadap hamba-hamba itu, tiada datang seorang rasulpun kepada mereka melainkan mereka selalu memperolok-olokkannya."
+   "arab": "يٰحَسْرَةً عَلَى الْعِبَادِۚ مَا يَأْتِيْهِمْ مِّنْ رَّسُوْلٍ اِلَّا كَانُوْا بِهٖ يَسْتَهْزِءُوْنَ",
+   "latin": "Yā ḥasratan ‘alal-‘ibād(i), mā ya'tīhim mir rasūlin illā kānū bihī yastahzi'ūn(a).",
+   "terjemahan": "Alangkah besar penyesalan diri para hamba itu. Setiap datang seorang rasul kepada mereka, mereka selalu memperolok-olokkannya."
   },
   {
    "nomor": 31,
-   "arab": "أَلَمْ يَرَوْا۟ كَمْ أَهْلَكْنَا قَبْلَهُم مِّنَ ٱلْقُرُونِ أَنَّهُمْ إِلَيْهِمْ لَا يَرْجِعُونَ",
-   "latin": "alam yaraw kam ahlaknā qablahum mina l-qurūni annahum ilayhim lā yarjiʿūna",
-   "terjemahan": "Tidakkah mereka mengetahui berapa banyaknya umat-umat sebelum mereka yang telah Kami binasakan, bahwasanya orang-orang (yang telah Kami binasakan) itu tiada kembali kepada mereka."
+   "arab": "اَلَمْ يَرَوْا كَمْ اَهْلَكْنَا قَبْلَهُمْ مِّنَ الْقُرُوْنِ اَنَّهُمْ اِلَيْهِمْ لَا يَرْجِعُوْنَ",
+   "latin": "Alam yarau kam ahlaknā qablahum minal-qurūni annahum ilaihim lā yarji‘ūn(a).",
+   "terjemahan": "Tidakkah mereka mengetahui berapa banyak umat sebelum mereka yang telah Kami binasakan? Mereka (setelah binasa) tidak ada yang kembali kepada mereka (di dunia)."
   },
   {
    "nomor": 32,
-   "arab": "وَإِن كُلٌّۭ لَّمَّا جَمِيعٌۭ لَّدَيْنَا مُحْضَرُونَ",
-   "latin": "wa-in kullun lammā jamīʿun ladaynā muḥ'ḍarūna",
-   "terjemahan": "Dan setiap mereka semuanya akan dikumpulkan lagi kepada Kami."
+   "arab": "وَاِنْ كُلٌّ لَّمَّا جَمِيْعٌ لَّدَيْنَا مُحْضَرُوْنَ ࣖ",
+   "latin": "Wa in kullul lammā jamī‘ul ladainā muḥḍarūn(a).",
+   "terjemahan": "Tidak ada satu (umat) pun, kecuali semuanya akan dihadirkan kepada Kami (untuk dihisab)."
   },
   {
    "nomor": 33,
-   "arab": "وَءَايَةٌۭ لَّهُمُ ٱلْأَرْضُ ٱلْمَيْتَةُ أَحْيَيْنَٰهَا وَأَخْرَجْنَا مِنْهَا حَبًّۭا فَمِنْهُ يَأْكُلُونَ",
-   "latin": "waāyatun lahumu l-arḍu l-maytatu aḥyaynāhā wa-akhrajnā min'hā ḥabban famin'hu yakulūna",
-   "terjemahan": "Dan suatu tanda (kekuasaan Allah yang besar) bagi mereka adalah bumi yang mati. Kami hidupkan bumi itu dan Kami keluarkan dari padanya biji-bijian, maka daripadanya mereka makan."
+   "arab": "وَاٰيَةٌ لَّهُمُ الْاَرْضُ الْمَيْتَةُ ۖاَحْيَيْنٰهَا وَاَخْرَجْنَا مِنْهَا حَبًّا فَمِنْهُ يَأْكُلُوْنَ",
+   "latin": "Wa āyatul lahumul-arḍul-maitah(tu), aḥyaināhā wa akhrajnā minhā ḥabban faminhu ya'kulūn(a).",
+   "terjemahan": "Suatu tanda (kekuasaan-Nya) bagi mereka adalah bumi yang mati (tandus lalu) Kami menghidupkannya dan mengeluarkan darinya biji-bijian kemudian dari (biji-bijian) itu mereka makan."
   },
   {
    "nomor": 34,
-   "arab": "وَجَعَلْنَا فِيهَا جَنَّٰتٍۢ مِّن نَّخِيلٍۢ وَأَعْنَٰبٍۢ وَفَجَّرْنَا فِيهَا مِنَ ٱلْعُيُونِ",
-   "latin": "wajaʿalnā fīhā jannātin min nakhīlin wa-aʿnābin wafajjarnā fīhā mina l-ʿuyūni",
-   "terjemahan": "Dan Kami jadikan padanya kebun-kebun kurma dan anggur dan Kami pancarkan padanya beberapa mata air,"
+   "arab": "وَجَعَلْنَا فِيْهَا جَنّٰتٍ مِّنْ نَّخِيْلٍ وَّاَعْنَابٍ وَّفَجَّرْنَا فِيْهَا مِنَ الْعُيُوْنِۙ",
+   "latin": "Wa ja‘alnā fīhā jannātim min nakhīliw wa a‘nābiw wa fajjarnā fīhā minal-‘uyūn(i).",
+   "terjemahan": "Kami (juga) menjadikan padanya (bumi) kebun-kebun kurma dan anggur serta Kami memancarkan padanya beberapa mata air"
   },
   {
    "nomor": 35,
-   "arab": "لِيَأْكُلُوا۟ مِن ثَمَرِهِۦ وَمَا عَمِلَتْهُ أَيْدِيهِمْ ۖ أَفَلَا يَشْكُرُونَ",
-   "latin": "liyakulū min thamarihi wamā ʿamilathu aydīhim afalā yashkurūna",
-   "terjemahan": "supaya mereka dapat makan dari buahnya, dan dari apa yang diusahakan oleh tangan mereka. Maka mengapakah mereka tidak bersyukur?"
+   "arab": "لِيَأْكُلُوْا مِنْ ثَمَرِهٖۙ وَمَا عَمِلَتْهُ اَيْدِيْهِمْ ۗ اَفَلَا يَشْكُرُوْنَ",
+   "latin": "Liya'kulū min ṡamarihī wa mā ‘amilathu aidīhim, afalā yasykurūn(a).",
+   "terjemahan": "agar mereka dapat makan dari buahnya, dan dari hasil usaha tangan mereka. Mengapa mereka tidak bersyukur?"
   },
   {
    "nomor": 36,
-   "arab": "سُبْحَٰنَ ٱلَّذِى خَلَقَ ٱلْأَزْوَٰجَ كُلَّهَا مِمَّا تُنۢبِتُ ٱلْأَرْضُ وَمِنْ أَنفُسِهِمْ وَمِمَّا لَا يَعْلَمُونَ",
-   "latin": "sub'ḥāna alladhī khalaqa l-azwāja kullahā mimmā tunbitu l-arḍu wamin anfusihim wamimmā lā yaʿlamūna",
-   "terjemahan": "Maha Suci Tuhan yang telah menciptakan pasangan-pasangan semuanya, baik dari apa yang ditumbuhkan oleh bumi dan dari diri mereka maupun dari apa yang tidak mereka ketahui."
+   "arab": "سُبْحٰنَ الَّذِيْ خَلَقَ الْاَزْوَاجَ كُلَّهَا مِمَّا تُنْۢبِتُ الْاَرْضُ وَمِنْ اَنْفُسِهِمْ وَمِمَّا لَا يَعْلَمُوْنَ",
+   "latin": "Subḥānal-lażī khalaqal-azwāja kullahā mimmā tumbitul-arḍu wa min anfusihim wa mimmā lā ya‘lamūn(a).",
+   "terjemahan": "Maha Suci (Allah) yang telah menciptakan semuanya berpasang-pasangan, baik dari apa yang ditumbuhkan oleh bumi dan dari diri mereka sendiri maupun dari apa yang tidak mereka ketahui."
   },
   {
    "nomor": 37,
-   "arab": "وَءَايَةٌۭ لَّهُمُ ٱلَّيْلُ نَسْلَخُ مِنْهُ ٱلنَّهَارَ فَإِذَا هُم مُّظْلِمُونَ",
-   "latin": "waāyatun lahumu al-laylu naslakhu min'hu l-nahāra fa-idhā hum muẓ'limūna",
-   "terjemahan": "Dan suatu tanda (kekuasaan Allah yang besar) bagi mereka adalah malam; Kami tanggalkan siang dari malam itu, maka dengan serta merta mereka berada dalam kegelapan."
+   "arab": "وَاٰيَةٌ لَّهُمُ الَّيْلُ ۖنَسْلَخُ مِنْهُ النَّهَارَ فَاِذَا هُمْ مُّظْلِمُوْنَۙ",
+   "latin": "Wa āyatul lahumul-lailu naslakhu minhun-nahāra fa'iżā hum muẓlimūn(a).",
+   "terjemahan": "Suatu tanda juga (atas kekuasaan Allah) bagi mereka adalah malam. Kami pisahkan siang dari (malam) itu. Maka, seketika itu mereka (berada dalam) kegelapan."
   },
   {
    "nomor": 38,
-   "arab": "وَٱلشَّمْسُ تَجْرِى لِمُسْتَقَرٍّۢ لَّهَا ۚ ذَٰلِكَ تَقْدِيرُ ٱلْعَزِيزِ ٱلْعَلِيمِ",
-   "latin": "wal-shamsu tajrī limus'taqarrin lahā dhālika taqdīru l-ʿazīzi l-ʿalīmi",
-   "terjemahan": "dan matahari berjalan ditempat peredarannya. Demikianlah ketetapan Yang Maha Perkasa lagi Maha Mengetahui."
+   "arab": "وَالشَّمْسُ تَجْرِيْ لِمُسْتَقَرٍّ لَّهَا ۗذٰلِكَ تَقْدِيْرُ الْعَزِيْزِ الْعَلِيْمِۗ",
+   "latin": "Wasy-syamsu tajrī limustaqarril lahā, żālika taqdīrul-‘azīzil-‘alīm(i).",
+   "terjemahan": "(Suatu tanda juga atas kekuasaan Allah bagi mereka adalah) matahari yang berjalan di tempat peredarannya. Demikianlah ketetapan (Allah) Yang Maha Perkasa lagi Maha Mengetahui."
   },
   {
    "nomor": 39,
-   "arab": "وَٱلْقَمَرَ قَدَّرْنَٰهُ مَنَازِلَ حَتَّىٰ عَادَ كَٱلْعُرْجُونِ ٱلْقَدِيمِ",
-   "latin": "wal-qamara qaddarnāhu manāzila ḥattā ʿāda kal-ʿur'jūni l-qadīmi",
-   "terjemahan": "Dan telah Kami tetapkan bagi bulan manzilah-manzilah, sehingga (setelah dia sampai ke manzilah yang terakhir) kembalilah dia sebagai bentuk tandan yang tua."
+   "arab": "وَالْقَمَرَ قَدَّرْنٰهُ مَنَازِلَ حَتّٰى عَادَ كَالْعُرْجُوْنِ الْقَدِيْمِ",
+   "latin": "Wal-qamara qaddarnāhu manāzila ḥattā ‘āda kal-‘urjūnil-qadīm(i).",
+   "terjemahan": "(Begitu juga) bulan, Kami tetapkan bagi(-nya) tempat-tempat peredaran sehingga (setelah ia sampai ke tempat peredaran yang terakhir,) kembalilah ia seperti bentuk tandan yang tua."
   },
   {
    "nomor": 40,
-   "arab": "لَا ٱلشَّمْسُ يَنۢبَغِى لَهَآ أَن تُدْرِكَ ٱلْقَمَرَ وَلَا ٱلَّيْلُ سَابِقُ ٱلنَّهَارِ ۚ وَكُلٌّۭ فِى فَلَكٍۢ يَسْبَحُونَ",
-   "latin": "lā l-shamsu yanbaghī lahā an tud'rika l-qamara walā al-laylu sābiqu l-nahāri wakullun fī falakin yasbaḥūna",
-   "terjemahan": "Tidaklah mungkin bagi matahari mendapatkan bulan dan malampun tidak dapat mendahului siang. Dan masing-masing beredar pada garis edarnya."
+   "arab": "لَا الشَّمْسُ يَنْۢبَغِيْ لَهَآ اَنْ تُدْرِكَ الْقَمَرَ وَلَا الَّيْلُ سَابِقُ النَّهَارِ ۗوَكُلٌّ فِيْ فَلَكٍ يَّسْبَحُوْنَ",
+   "latin": "Lasy-syamsu yambagī lahā an tudrikal-qamara wa lal-lailu sābiqun-nahār(i), wa kullun fī falakiy yasbaḥūn(a).",
+   "terjemahan": "Tidaklah mungkin bagi matahari mengejar bulan dan malam pun tidak dapat mendahului siang. Masing-masing beredar pada garis edarnya."
   },
   {
    "nomor": 41,
-   "arab": "وَءَايَةٌۭ لَّهُمْ أَنَّا حَمَلْنَا ذُرِّيَّتَهُمْ فِى ٱلْفُلْكِ ٱلْمَشْحُونِ",
-   "latin": "waāyatun lahum annā ḥamalnā dhurriyyatahum fī l-ful'ki l-mashḥūni",
-   "terjemahan": "Dan suatu tanda (kebesaran Allah yang besar) bagi mereka adalah bahwa Kami angkut keturunan mereka dalam bahtera yang penuh muatan."
+   "arab": "وَاٰيَةٌ لَّهُمْ اَنَّا حَمَلْنَا ذُرِّيَّتَهُمْ فِى الْفُلْكِ الْمَشْحُوْنِۙ",
+   "latin": "Wa āyatul lahum annā ḥamalnā żurriyyatahum fil-fulkil-masyḥūn(i).",
+   "terjemahan": "Suatu tanda (kebesaran Allah) bagi mereka adalah bahwa Kami mengangkut keturunan mereka dalam kapal yang penuh muatan."
   },
   {
    "nomor": 42,
-   "arab": "وَخَلَقْنَا لَهُم مِّن مِّثْلِهِۦ مَا يَرْكَبُونَ",
-   "latin": "wakhalaqnā lahum min mith'lihi mā yarkabūna",
-   "terjemahan": "dan Kami ciptakan untuk mereka yang akan mereka kendarai seperti bahtera itu."
+   "arab": "وَخَلَقْنَا لَهُمْ مِّنْ مِّثْلِهٖ مَا يَرْكَبُوْنَ",
+   "latin": "Wa khalaqnā lahum mim miṡlihī mā yarkabūn(a).",
+   "terjemahan": "(Begitu juga) Kami menciptakan untuk mereka dari jenis itu angkutan (lain) yang mereka kendarai."
   },
   {
    "nomor": 43,
-   "arab": "وَإِن نَّشَأْ نُغْرِقْهُمْ فَلَا صَرِيخَ لَهُمْ وَلَا هُمْ يُنقَذُونَ",
-   "latin": "wa-in nasha nugh'riq'hum falā ṣarīkha lahum walā hum yunqadhūna",
-   "terjemahan": "Dan jika Kami menghendaki niscaya Kami tenggelamkan mereka, maka tiadalah bagi mereka penolong dan tidak pula mereka diselamatkan."
+   "arab": "وَاِنْ نَّشَأْ نُغْرِقْهُمْ فَلَا صَرِيْخَ لَهُمْ وَلَاهُمْ يُنْقَذُوْنَۙ",
+   "latin": "Wa in nasya' nugriqhum falā ṣarīkha lahum wa lā hum yunqażūn(a).",
+   "terjemahan": "Jika Kami menghendaki, Kami akan menenggelamkan mereka. Kemudian, tidak ada penolong bagi mereka dan tidak (pula) mereka diselamatkan."
   },
   {
    "nomor": 44,
-   "arab": "إِلَّا رَحْمَةًۭ مِّنَّا وَمَتَٰعًا إِلَىٰ حِينٍۢ",
-   "latin": "illā raḥmatan minnā wamatāʿan ilā ḥīnin",
-   "terjemahan": "Tetapi (Kami selamatkan mereka) karena rahmat yang besar dari Kami dan untuk memberikan kesenangan hidup sampai kepada suatu ketika."
+   "arab": "اِلَّا رَحْمَةً مِّنَّا وَمَتَاعًا اِلٰى حِيْنٍ",
+   "latin": "Illā raḥmatam minnā wa matā‘an ilā ḥīn(in).",
+   "terjemahan": "Akan tetapi, (Kami menyelamatkan mereka) karena rahmat yang besar dari Kami dan untuk memberi mereka kesenangan hidup sampai waktu tertentu."
   },
   {
    "nomor": 45,
-   "arab": "وَإِذَا قِيلَ لَهُمُ ٱتَّقُوا۟ مَا بَيْنَ أَيْدِيكُمْ وَمَا خَلْفَكُمْ لَعَلَّكُمْ تُرْحَمُونَ",
-   "latin": "wa-idhā qīla lahumu ittaqū mā bayna aydīkum wamā khalfakum laʿallakum tur'ḥamūna",
-   "terjemahan": "Dan apabila dikatakan kepada mereka: \"Takutlah kamu akan siksa yang dihadapanmu dan siksa yang akan datang supaya kamu mendapat rahmat\", (niscaya mereka berpaling)."
+   "arab": "وَاِذَا قِيْلَ لَهُمُ اتَّقُوْا مَا بَيْنَ اَيْدِيْكُمْ وَمَا خَلْفَكُمْ لَعَلَّكُمْ تُرْحَمُوْنَ",
+   "latin": "Wa iżā qīla lahumuttaqū mā baina aidīkum wa mā khalfakum la‘allakum turḥamūn(a).",
+   "terjemahan": "Ketika dikatakan kepada mereka, “Takutlah kamu akan (siksa) yang ada di hadapanmu (di dunia) dan azab yang ada di belakangmu (akhirat) agar kamu mendapat rahmat,” (maka mereka berpaling)."
   },
   {
    "nomor": 46,
-   "arab": "وَمَا تَأْتِيهِم مِّنْ ءَايَةٍۢ مِّنْ ءَايَٰتِ رَبِّهِمْ إِلَّا كَانُوا۟ عَنْهَا مُعْرِضِينَ",
-   "latin": "wamā tatīhim min āyatin min āyāti rabbihim illā kānū ʿanhā muʿ'riḍīna",
-   "terjemahan": "Dan sekali-kali tiada datang kepada mereka suatu tanda dari tanda tanda kekuasaan Tuhan mereka, melainkan mereka selalu berpaling daripadanya."
+   "arab": "وَمَا تَأْتِيْهِمْ مِّنْ اٰيَةٍ مِّنْ اٰيٰتِ رَبِّهِمْ اِلَّا كَانُوْا عَنْهَا مُعْرِضِيْنَ",
+   "latin": "Wa mā ta'tīhim min āyatim min āyāti rabbihim illā kānū ‘anhā mu‘riḍīn(a).",
+   "terjemahan": "Tidak satu pun dari tanda-tanda (kebesaran) Tuhan datang kepada mereka, kecuali mereka berpaling darinya."
   },
   {
    "nomor": 47,
-   "arab": "وَإِذَا قِيلَ لَهُمْ أَنفِقُوا۟ مِمَّا رَزَقَكُمُ ٱللَّهُ قَالَ ٱلَّذِينَ كَفَرُوا۟ لِلَّذِينَ ءَامَنُوٓا۟ أَنُطْعِمُ مَن لَّوْ يَشَآءُ ٱللَّهُ أَطْعَمَهُۥٓ إِنْ أَنتُمْ إِلَّا فِى ضَلَٰلٍۢ مُّبِينٍۢ",
-   "latin": "wa-idhā qīla lahum anfiqū mimmā razaqakumu l-lahu qāla alladhīna kafarū lilladhīna āmanū anuṭ'ʿimu man law yashāu l-lahu aṭʿamahu in antum illā fī ḍalālin mubīnin",
-   "terjemahan": "Dan apabila dikatakakan kepada mereka: \"Nafkahkanlah sebahagian dari reski yang diberikan Allah kepadamu\", maka orang-orang yang kafir itu berkata kepada orang-orang yang beriman: \"Apakah kami akan memberi makan kepada orang-orang yang jika Allah menghendaki tentulah Dia akan memberinya makan, tiadalah kamu melainkan dalam kesesatan yang nyata\"."
+   "arab": "وَاِذَا قِيْلَ لَهُمْ اَنْفِقُوْا مِمَّا رَزَقَكُمُ اللّٰهُ ۙقَالَ الَّذِيْنَ كَفَرُوْا لِلَّذِيْنَ اٰمَنُوْٓا اَنُطْعِمُ مَنْ لَّوْ يَشَاۤءُ اللّٰهُ اَطْعَمَهٗٓ  ۖاِنْ اَنْتُمْ اِلَّا فِيْ ضَلٰلٍ مُّبِيْنٍ",
+   "latin": "Wa iżā qīla lahum anfiqū mimmā razaqakumullāh(u), qālal-lażīna kafarū lil-lażīna āmanū anuṭ‘imu mal lau yasyā'ullāhu aṭ‘amah(ū), in antum illā fī ḍalālim mubīn(in).",
+   "terjemahan": "Apabila dikatakan kepada mereka, “Infakkanlah sebagian rezeki yang diberikan Allah kepadamu,” orang-orang yang kufur itu berkata kepada orang-orang yang beriman, “Apakah pantas kami memberi makan kepada orang-orang yang jika Allah menghendaki, Dia akan memberinya makan? Kamu benar-benar dalam kesesatan yang nyata.”"
   },
   {
    "nomor": 48,
-   "arab": "وَيَقُولُونَ مَتَىٰ هَٰذَا ٱلْوَعْدُ إِن كُنتُمْ صَٰدِقِينَ",
-   "latin": "wayaqūlūna matā hādhā l-waʿdu in kuntum ṣādiqīna",
-   "terjemahan": "Dan mereka berkata: \"Bilakah (terjadinya) janji ini (hari berbangkit) jika kamu adalah orang-orang yang benar?\"."
+   "arab": "وَيَقُوْلُوْنَ مَتٰى هٰذَا الْوَعْدُ اِنْ كُنْتُمْ صٰدِقِيْنَ",
+   "latin": "Wa yaqūlūna matā hāżal-wa‘du in kuntum ṣādiqīn(a).",
+   "terjemahan": "Mereka berkata, “Kapankah janji (hari Kebangkitan) ini (terjadi) jika kamu orang-orang benar?”"
   },
   {
    "nomor": 49,
-   "arab": "مَا يَنظُرُونَ إِلَّا صَيْحَةًۭ وَٰحِدَةًۭ تَأْخُذُهُمْ وَهُمْ يَخِصِّمُونَ",
-   "latin": "mā yanẓurūna illā ṣayḥatan wāḥidatan takhudhuhum wahum yakhiṣṣimūna",
-   "terjemahan": "Mereka tidak menunggu melainkan satu teriakan saja yang akan membinasakan mereka ketika mereka sedang bertengkar."
+   "arab": "مَا يَنْظُرُوْنَ اِلَّا صَيْحَةً وَّاحِدَةً تَأْخُذُهُمْ وَهُمْ يَخِصِّمُوْنَ",
+   "latin": "Mā yanẓurūna illā ṣaiḥataw wāḥidatan ta'khużuhum wa hum yakhiṣṣimūn(a).",
+   "terjemahan": "Mereka hanya menunggu satu teriakan yang akan membinasakan mereka saat mereka (sibuk) bertengkar (tentang urusan dunia)."
   },
   {
    "nomor": 50,
-   "arab": "فَلَا يَسْتَطِيعُونَ تَوْصِيَةًۭ وَلَآ إِلَىٰٓ أَهْلِهِمْ يَرْجِعُونَ",
-   "latin": "falā yastaṭīʿūna tawṣiyatan walā ilā ahlihim yarjiʿūna",
-   "terjemahan": "lalu mereka tidak kuasa membuat suatu wasiatpun dan tidak (pula) dapat kembali kepada keluarganya."
+   "arab": "فَلَا يَسْتَطِيْعُوْنَ تَوْصِيَةً وَّلَآ اِلٰٓى اَهْلِهِمْ يَرْجِعُوْنَ ࣖ",
+   "latin": "Falā yastaṭī‘ūna tauṣiyataw wa lā ilā ahlihim yarji‘ūn(a).",
+   "terjemahan": "Oleh sebab itu, mereka tidak dapat berwasiat dan tidak dapat kembali kepada keluarganya."
   },
   {
    "nomor": 51,
-   "arab": "وَنُفِخَ فِى ٱلصُّورِ فَإِذَا هُم مِّنَ ٱلْأَجْدَاثِ إِلَىٰ رَبِّهِمْ يَنسِلُونَ",
-   "latin": "wanufikha fī l-ṣūri fa-idhā hum mina l-ajdāthi ilā rabbihim yansilūna",
-   "terjemahan": "Dan ditiuplah sangkalala, maka tiba-tiba mereka keluar dengan segera dari kuburnya (menuju) kepada Tuhan mereka."
+   "arab": "وَنُفِخَ فِى الصُّوْرِ فَاِذَا هُمْ مِّنَ الْاَجْدَاثِ اِلٰى رَبِّهِمْ يَنْسِلُوْنَ",
+   "latin": "Wa nufikha fiṣ-ṣūri fa'iżā hum minal-ajdāṡi ilā rabbihim yansilūn(a).",
+   "terjemahan": "Sangkakala pun ditiup dan seketika itu mereka bergerak cepat dari kuburnya menuju kepada Tuhannya."
   },
   {
    "nomor": 52,
-   "arab": "قَالُوا۟ يَٰوَيْلَنَا مَنۢ بَعَثَنَا مِن مَّرْقَدِنَا ۜ ۗ هَٰذَا مَا وَعَدَ ٱلرَّحْمَٰنُ وَصَدَقَ ٱلْمُرْسَلُونَ",
-   "latin": "qālū yāwaylanā man baʿathanā min marqadinā hādhā mā waʿada l-raḥmānu waṣadaqa l-mur'salūna",
-   "terjemahan": "Mereka berkata: \"Aduhai celakalah kami! Siapakah yang membangkitkan kami dari tempat-tidur kami (kubur)?\". Inilah yang dijanjikan (Tuhan) Yang Maha Pemurah dan benarlah Rasul-rasul(Nya)."
+   "arab": "قَالُوْا يٰوَيْلَنَا مَنْۢ بَعَثَنَا مِنْ مَّرْقَدِنَا ۜهٰذَا مَا وَعَدَ الرَّحْمٰنُ وَصَدَقَ الْمُرْسَلُوْنَ",
+   "latin": "Qālū yā wailanā mam ba‘aṡanā mim marqadinā…hāżā mā wa‘adar-raḥmānu wa ṣadaqal-mursalūn(a).",
+   "terjemahan": "Mereka berkata, “Celakalah kami! Siapakah yang membangkitkan kami dari tempat tidur kami (kubur)?” (Lalu, dikatakan kepada mereka,) “Inilah yang dijanjikan (Allah) Yang Maha Pengasih dan benarlah para rasul(-Nya).”"
   },
   {
    "nomor": 53,
-   "arab": "إِن كَانَتْ إِلَّا صَيْحَةًۭ وَٰحِدَةًۭ فَإِذَا هُمْ جَمِيعٌۭ لَّدَيْنَا مُحْضَرُونَ",
-   "latin": "in kānat illā ṣayḥatan wāḥidatan fa-idhā hum jamīʿun ladaynā muḥ'ḍarūna",
-   "terjemahan": "Tidak adalah teriakan itu selain sekali teriakan saja, maka tiba-tiba mereka semua dikumpulkan kepada Kami."
+   "arab": "اِنْ كَانَتْ اِلَّا صَيْحَةً وَّاحِدَةً فَاِذَا هُمْ جَمِيْعٌ لَّدَيْنَا مُحْضَرُوْنَ",
+   "latin": "In kānat illā ṣaiḥataw wāḥidatan fa'iżā hum jamī‘ul ladainā muḥḍarūn(a).",
+   "terjemahan": "Teriakan itu hanya sekali saja, maka seketika itu mereka semua dihadapkan kepada Kami (untuk dihisab)."
   },
   {
    "nomor": 54,
-   "arab": "فَٱلْيَوْمَ لَا تُظْلَمُ نَفْسٌۭ شَيْـًۭٔا وَلَا تُجْزَوْنَ إِلَّا مَا كُنتُمْ تَعْمَلُونَ",
-   "latin": "fal-yawma lā tuẓ'lamu nafsun shayan walā tuj'zawna illā mā kuntum taʿmalūna",
-   "terjemahan": "Maka pada hari itu seseorang tidak akan dirugikan sedikitpun dan kamu tidak dibalasi, kecuali dengan apa yang telah kamu kerjakan."
+   "arab": "فَالْيَوْمَ لَا تُظْلَمُ نَفْسٌ شَيْـًٔا وَّلَا تُجْزَوْنَ اِلَّا مَا كُنْتُمْ تَعْمَلُوْنَ",
+   "latin": "Fal-yauma lā tuẓlamu nafsun syai'aw wa lā tujzauna illā mā kuntum ta‘malūn(a).",
+   "terjemahan": "Pada hari itu tidak ada sama sekali orang yang dirugikan sedikit pun. Kamu tidak akan diberi balasan, kecuali atas apa yang telah kamu kerjakan."
   },
   {
    "nomor": 55,
-   "arab": "إِنَّ أَصْحَٰبَ ٱلْجَنَّةِ ٱلْيَوْمَ فِى شُغُلٍۢ فَٰكِهُونَ",
-   "latin": "inna aṣḥāba l-janati l-yawma fī shughulin fākihūna",
-   "terjemahan": "Sesungguhnya penghuni surga pada hari itu bersenang-senang dalam kesibukan (mereka)."
+   "arab": "اِنَّ اَصْحٰبَ الْجَنَّةِ الْيَوْمَ فِيْ شُغُلٍ فٰكِهُوْنَ ۚ",
+   "latin": "Inna aṣḥābal-jannatil-yauma fī syugulin fākihūn(a).",
+   "terjemahan": "Sesungguhnya penghuni surga pada hari itu berada dalam kesibukan (sehingga tidak sempat berpikir tentang penghuni neraka) lagi bersenang-senang."
   },
   {
    "nomor": 56,
-   "arab": "هُمْ وَأَزْوَٰجُهُمْ فِى ظِلَٰلٍ عَلَى ٱلْأَرَآئِكِ مُتَّكِـُٔونَ",
-   "latin": "hum wa-azwājuhum fī ẓilālin ʿalā l-arāiki muttakiūna",
-   "terjemahan": "Mereka dan isteri-isteri mereka berada dalam tempat yang teduh, bertelekan di atas dipan-dipan."
+   "arab": "هُمْ وَاَزْوَاجُهُمْ فِيْ ظِلٰلٍ عَلَى الْاَرَاۤىِٕكِ مُتَّكِـُٔوْنَ ۚ",
+   "latin": "Hum wa azwājuhum fī ẓilālin ‘alal-arā'iki muttaki'ūn(a).",
+   "terjemahan": "Mereka dan pasangan-pasangannya berada dalam tempat yang teduh sambil berbaring di atas ranjang berkelambu."
   },
   {
    "nomor": 57,
-   "arab": "لَهُمْ فِيهَا فَٰكِهَةٌۭ وَلَهُم مَّا يَدَّعُونَ",
-   "latin": "lahum fīhā fākihatun walahum mā yaddaʿūna",
-   "terjemahan": "Di surga itu mereka memperoleh buah-buahan dan memperoleh apa yang mereka minta."
+   "arab": "لَهُمْ فِيْهَا فَاكِهَةٌ وَّلَهُمْ مَّا يَدَّعُوْنَ ۚ",
+   "latin": "Lahum fīhā fākihatuw wa lahum mā yadda‘ūn(a).",
+   "terjemahan": "Di (surga) itu mereka memperoleh buah-buahan dan apa saja yang mereka inginkan."
   },
   {
    "nomor": 58,
-   "arab": "سَلَٰمٌۭ قَوْلًۭا مِّن رَّبٍّۢ رَّحِيمٍۢ",
-   "latin": "salāmun qawlan min rabbin raḥīmin",
-   "terjemahan": "(Kepada mereka dikatakan): \"Salam\", sebagai ucapan selamat dari Tuhan Yang Maha Penyayang."
+   "arab": "سَلٰمٌۗ قَوْلًا مِّنْ رَّبٍّ رَّحِيْمٍ",
+   "latin": "Salāmun qaulam mir rabbir raḥīm(in).",
+   "terjemahan": "(Kepada mereka dikatakan,) “Salam sejahtera” sebagai ucapan dari Tuhan Yang Maha Penyayang."
   },
   {
    "nomor": 59,
-   "arab": "وَٱمْتَٰزُوا۟ ٱلْيَوْمَ أَيُّهَا ٱلْمُجْرِمُونَ",
-   "latin": "wa-im'tāzū l-yawma ayyuhā l-muj'rimūna",
-   "terjemahan": "Dan (dikatakan kepada orang-orang kafir): \"Berpisahlah kamu (dari orang-orang mukmin) pada hari ini, hai orang-orang yang berbuat jahat."
+   "arab": "وَامْتَازُوا الْيَوْمَ اَيُّهَا الْمُجْرِمُوْنَ",
+   "latin": "Wamtāzul-yauma  ayyuhal-mujrimūn(a).",
+   "terjemahan": "(Dikatakan kepada orang-orang kafir,) “Berpisahlah kamu (dari orang-orang mukmin) pada hari ini, wahai para pendurhaka!"
   },
   {
    "nomor": 60,
-   "arab": "۞ أَلَمْ أَعْهَدْ إِلَيْكُمْ يَٰبَنِىٓ ءَادَمَ أَن لَّا تَعْبُدُوا۟ ٱلشَّيْطَٰنَ ۖ إِنَّهُۥ لَكُمْ عَدُوٌّۭ مُّبِينٌۭ",
-   "latin": "alam aʿhad ilaykum yābanī ādama an lā taʿbudū l-shayṭāna innahu lakum ʿaduwwun mubīnun",
-   "terjemahan": "Bukankah Aku telah memerintahkan kepadamu hai Bani Adam supaya kamu tidak menyembah syaitan? Sesungguhnya syaitan itu adalah musuh yang nyata bagi kamu\","
+   "arab": "۞ اَلَمْ اَعْهَدْ اِلَيْكُمْ يٰبَنِيْٓ اٰدَمَ اَنْ لَّا تَعْبُدُوا الشَّيْطٰنَۚ اِنَّهٗ لَكُمْ عَدُوٌّ مُّبِيْنٌ",
+   "latin": "Alam a‘had ilaikum yā banī ādama allā ta‘budusy-syaiṭān(a), innahū lakum ‘aduwwum mubīn(un).",
+   "terjemahan": "Bukankah Aku telah berpesan kepadamu dengan sungguh-sungguh, wahai anak cucu Adam, bahwa janganlah kamu menyembah setan? Sesungguhnya setan itu musuh yang nyata bagi kamu."
   },
   {
    "nomor": 61,
-   "arab": "وَأَنِ ٱعْبُدُونِى ۚ هَٰذَا صِرَٰطٌۭ مُّسْتَقِيمٌۭ",
-   "latin": "wa-ani uʿ'budūnī hādhā ṣirāṭun mus'taqīmun",
-   "terjemahan": "dan hendaklah kamu menyembah-Ku. Inilah jalan yang lurus."
+   "arab": "وَاَنِ اعْبُدُوْنِيْ ۗهٰذَا صِرَاطٌ مُّسْتَقِيْمٌ",
+   "latin": "Wa ani‘budūnī, hāżā ṣirāṭum mustaqīm(un).",
+   "terjemahan": "(Begitu juga bahwa) sembahlah Aku. Inilah jalan yang lurus.”"
   },
   {
    "nomor": 62,
-   "arab": "وَلَقَدْ أَضَلَّ مِنكُمْ جِبِلًّۭا كَثِيرًا ۖ أَفَلَمْ تَكُونُوا۟ تَعْقِلُونَ",
-   "latin": "walaqad aḍalla minkum jibillan kathīran afalam takūnū taʿqilūna",
-   "terjemahan": "Sesungguhnya syaitan itu telah menyesatkan sebahagian besar diantaramu, Maka apakah kamu tidak memikirkan?."
+   "arab": "وَلَقَدْ اَضَلَّ مِنْكُمْ جِبِلًّا كَثِيْرًا ۗاَفَلَمْ تَكُوْنُوْا تَعْقِلُوْنَ",
+   "latin": "Wa laqad aḍalla minkum jibillan kaṡīrā(n), afalam takūnū ta‘qilūn(a).",
+   "terjemahan": "Sungguh, ia (setan itu) benar-benar telah menyesatkan sangat banyak orang dari kamu. Maka, apakah kamu tidak mengerti?"
   },
   {
    "nomor": 63,
-   "arab": "هَٰذِهِۦ جَهَنَّمُ ٱلَّتِى كُنتُمْ تُوعَدُونَ",
-   "latin": "hādhihi jahannamu allatī kuntum tūʿadūna",
-   "terjemahan": "Inilah Jahannam yang dahulu kamu diancam (dengannya)."
+   "arab": "هٰذِهٖ جَهَنَّمُ الَّتِيْ كُنْتُمْ تُوْعَدُوْنَ",
+   "latin": "Hāżihī jahannamul-latī kuntum tū‘adūn(a).",
+   "terjemahan": "Inilah (neraka) Jahanam yang dahulu telah diperingatkan kepadamu."
   },
   {
    "nomor": 64,
-   "arab": "ٱصْلَوْهَا ٱلْيَوْمَ بِمَا كُنتُمْ تَكْفُرُونَ",
-   "latin": "iṣ'lawhā l-yawma bimā kuntum takfurūna",
-   "terjemahan": "Masuklah ke dalamnya pada hari ini disebabkan kamu dahulu mengingkarinya."
+   "arab": "اِصْلَوْهَا الْيَوْمَ بِمَا كُنْتُمْ تَكْفُرُوْنَ",
+   "latin": "Iṣlauhal-yauma bimā kuntum takfurūn(a).",
+   "terjemahan": "Masuklah ke dalamnya pada hari ini karena dahulu kamu mengingkarinya."
   },
   {
    "nomor": 65,
-   "arab": "ٱلْيَوْمَ نَخْتِمُ عَلَىٰٓ أَفْوَٰهِهِمْ وَتُكَلِّمُنَآ أَيْدِيهِمْ وَتَشْهَدُ أَرْجُلُهُم بِمَا كَانُوا۟ يَكْسِبُونَ",
-   "latin": "al-yawma nakhtimu ʿalā afwāhihim watukallimunā aydīhim watashhadu arjuluhum bimā kānū yaksibūna",
-   "terjemahan": "Pada hari ini Kami tutup mulut mereka; dan berkatalah kepada Kami tangan mereka dan memberi kesaksianlah kaki mereka terhadap apa yang dahulu mereka usahakan."
+   "arab": "اَلْيَوْمَ نَخْتِمُ عَلٰٓى اَفْوَاهِهِمْ وَتُكَلِّمُنَآ اَيْدِيْهِمْ وَتَشْهَدُ اَرْجُلُهُمْ بِمَا كَانُوْا يَكْسِبُوْنَ",
+   "latin": "Al-yauma nakhtimu ‘alā afwāhihim wa tukallimunā aidīhim wa tasyhadu arjuluhum bimā kānū yaksibūn(a).",
+   "terjemahan": "Pada hari ini Kami membungkam mulut mereka. Tangan merekalah yang berkata kepada Kami dan kaki merekalah yang akan bersaksi terhadap apa yang dahulu mereka kerjakan."
   },
   {
    "nomor": 66,
-   "arab": "وَلَوْ نَشَآءُ لَطَمَسْنَا عَلَىٰٓ أَعْيُنِهِمْ فَٱسْتَبَقُوا۟ ٱلصِّرَٰطَ فَأَنَّىٰ يُبْصِرُونَ",
-   "latin": "walaw nashāu laṭamasnā ʿalā aʿyunihim fa-is'tabaqū l-ṣirāṭa fa-annā yub'ṣirūna",
-   "terjemahan": "Dan jikalau Kami menghendaki pastilah Kami hapuskan penglihatan mata mereka; lalu mereka berlomba-lomba (mencari) jalan, Maka betapakah mereka dapat melihat(nya)."
+   "arab": "وَلَوْ نَشَاۤءُ لَطَمَسْنَا عَلٰٓى اَعْيُنِهِمْ فَاسْتَبَقُوا الصِّرَاطَ فَاَنّٰى يُبْصِرُوْنَ",
+   "latin": "Wa lau nasyā'u laṭamasnā ‘alā a‘yunihim fastabaquṣ-ṣirāṭa fa annā yubṣirūn(a).",
+   "terjemahan": "Seandainya Kami menghendaki, pastilah Kami akan menghapus penglihatan (membutakan) mereka sehingga mereka berlomba-lomba (mencari) jalan (selamat). Maka, bagaimana mungkin mereka dapat melihat?"
   },
   {
    "nomor": 67,
-   "arab": "وَلَوْ نَشَآءُ لَمَسَخْنَٰهُمْ عَلَىٰ مَكَانَتِهِمْ فَمَا ٱسْتَطَٰعُوا۟ مُضِيًّۭا وَلَا يَرْجِعُونَ",
-   "latin": "walaw nashāu lamasakhnāhum ʿalā makānatihim famā is'taṭāʿū muḍiyyan walā yarjiʿūna",
-   "terjemahan": "Dan jikalau Kami menghendaki pastilah Kami ubah mereka di tempat mereka berada; maka mereka tidak sanggup berjalan lagi dan tidak (pula) sanggup kembali."
+   "arab": "وَلَوْ نَشَاۤءُ لَمَسَخْنٰهُمْ عَلٰى مَكَانَتِهِمْ فَمَا اسْتَطَاعُوْا مُضِيًّا وَّلَا يَرْجِعُوْنَ ࣖ",
+   "latin": "Wa lau nasyā'u lamasakhnāhum ‘alā makānatihim famastaṭā‘ū muḍiyyaw wa lā yarji‘ūn(a).",
+   "terjemahan": "Seandainya Kami menghendaki, pastilah Kami akan mengubah bentuk mereka di tempat mereka berada, sehingga mereka tidak sanggup meneruskan perjalanan dan juga tidak sanggup pulang kembali."
   },
   {
    "nomor": 68,
-   "arab": "وَمَن نُّعَمِّرْهُ نُنَكِّسْهُ فِى ٱلْخَلْقِ ۖ أَفَلَا يَعْقِلُونَ",
-   "latin": "waman nuʿammir'hu nunakkis'hu fī l-khalqi afalā yaʿqilūna",
-   "terjemahan": "Dan barangsiapa yang Kami panjangkan umurnya niscaya Kami kembalikan dia kepada kejadian(nya). Maka apakah mereka tidak memikirkan?"
+   "arab": "وَمَنْ نُّعَمِّرْهُ نُنَكِّسْهُ فِى الْخَلْقِۗ اَفَلَا يَعْقِلُوْنَ",
+   "latin": "Wa man nu‘ammirhu nunakkishu fil-khalq(i), afalā ya‘qilūn(a).",
+   "terjemahan": "Siapa yang Kami panjangkan umurnya niscaya Kami balik proses penciptaannya (dari kuat menuju lemah). Maka, apakah mereka tidak mengerti?"
   },
   {
    "nomor": 69,
-   "arab": "وَمَا عَلَّمْنَٰهُ ٱلشِّعْرَ وَمَا يَنۢبَغِى لَهُۥٓ ۚ إِنْ هُوَ إِلَّا ذِكْرٌۭ وَقُرْءَانٌۭ مُّبِينٌۭ",
-   "latin": "wamā ʿallamnāhu l-shiʿ'ra wamā yanbaghī lahu in huwa illā dhik'run waqur'ānun mubīnun",
-   "terjemahan": "Dan Kami tidak mengajarkan syair kepadanya (Muhammad) dan bersyair itu tidaklah layak baginya. Al Quran itu tidak lain hanyalah pelajaran dan kitab yang memberi penerangan."
+   "arab": "وَمَا عَلَّمْنٰهُ الشِّعْرَ وَمَا يَنْۢبَغِيْ لَهٗ ۗاِنْ هُوَ اِلَّا ذِكْرٌ وَّقُرْاٰنٌ مُّبِيْنٌ ۙ",
+   "latin": "Wa mā ‘allamnāhusy-syi‘ra wa mā yambagī lah(ū), in huwa illā żikruw wa qur'ānum mubīn(un).",
+   "terjemahan": "Kami tidak mengajarkan syair kepadanya (Nabi Muhammad) dan (bersyair) itu tidaklah pantas baginya. (Wahyu yang Kami turunkan kepadanya) itu tidak lain hanyalah pelajaran dan Al-Qur’an yang jelas"
   },
   {
    "nomor": 70,
-   "arab": "لِّيُنذِرَ مَن كَانَ حَيًّۭا وَيَحِقَّ ٱلْقَوْلُ عَلَى ٱلْكَٰفِرِينَ",
-   "latin": "liyundhira man kāna ḥayyan wayaḥiqqa l-qawlu ʿalā l-kāfirīna",
-   "terjemahan": "supaya dia (Muhammad) memberi peringatan kepada orang-orang yang hidup (hatinya) dan supaya pastilah (ketetapan azab) terhadap orang-orang kafir."
+   "arab": "لِّيُنْذِرَ مَنْ كَانَ حَيًّا وَّيَحِقَّ الْقَوْلُ عَلَى الْكٰفِرِيْنَ",
+   "latin": "Liyunżira man kāna ḥayyaw wa yaḥiqqal-qaulu ‘alal-kāfirīn(a).",
+   "terjemahan": "agar dia (Nabi Muhammad) memberi peringatan kepada orang-orang yang hidup (hatinya) dan agar ketetapan (azab) terhadap orang-orang kafir itu menjadi pasti."
   },
   {
    "nomor": 71,
-   "arab": "أَوَلَمْ يَرَوْا۟ أَنَّا خَلَقْنَا لَهُم مِّمَّا عَمِلَتْ أَيْدِينَآ أَنْعَٰمًۭا فَهُمْ لَهَا مَٰلِكُونَ",
-   "latin": "awalam yaraw annā khalaqnā lahum mimmā ʿamilat aydīnā anʿāman fahum lahā mālikūna",
-   "terjemahan": "Dan apakah mereka tidak melihat bahwa sesungguhnya Kami telah menciptakan binatang ternak untuk mereka yaitu sebahagian dari apa yang telah Kami ciptakan dengan kekuasaan Kami sendiri, lalu mereka menguasainya?"
+   "arab": "اَوَلَمْ يَرَوْا اَنَّا خَلَقْنَا لَهُمْ مِّمَّا عَمِلَتْ اَيْدِيْنَآ اَنْعَامًا فَهُمْ لَهَا مٰلِكُوْنَ",
+   "latin": "Awalam yarau annā khalaqnā lahum mimmā ‘amilat aidīnā an‘āman fahum lahā mālikūn(a).",
+   "terjemahan": "Tidakkah mereka mengetahui bahwa Kami telah menciptakan untuk mereka hewan-hewan ternak dari ciptaan tangan Kami (sendiri), lalu mereka menjadi pemiliknya?"
   },
   {
    "nomor": 72,
-   "arab": "وَذَلَّلْنَٰهَا لَهُمْ فَمِنْهَا رَكُوبُهُمْ وَمِنْهَا يَأْكُلُونَ",
-   "latin": "wadhallalnāhā lahum famin'hā rakūbuhum wamin'hā yakulūna",
-   "terjemahan": "Dan Kami tundukkan binatang-binatang itu untuk mereka; maka sebahagiannya menjadi tunggangan mereka dan sebahagiannya mereka makan."
+   "arab": "وَذَلَّلْنٰهَا لَهُمْ فَمِنْهَا رَكُوْبُهُمْ وَمِنْهَا يَأْكُلُوْنَ",
+   "latin": "Wa żallalnāhā lahum fa minhā rakūbuhum wa minhā ya'kulūn(a).",
+   "terjemahan": "Kami menjadikannya (hewan-hewan itu) tunduk kepada mereka. Sebagian di antaranya menjadi tunggangan mereka dan sebagian (lagi) mereka makan."
   },
   {
    "nomor": 73,
-   "arab": "وَلَهُمْ فِيهَا مَنَٰفِعُ وَمَشَارِبُ ۖ أَفَلَا يَشْكُرُونَ",
-   "latin": "walahum fīhā manāfiʿu wamashāribu afalā yashkurūna",
-   "terjemahan": "Dan mereka memperoleh padanya manfaat-manfaat dan minuman. Maka mengapakah mereka tidak bersyukur?"
+   "arab": "وَلَهُمْ فِيْهَا مَنَافِعُ وَمَشَارِبُۗ اَفَلَا يَشْكُرُوْنَ",
+   "latin": "Wa lahum fīhā manāfi‘u wa masyārib(u), afalā yasykurūn(a).",
+   "terjemahan": "Pada dirinya (hewan-hewan ternak itu) terdapat berbagai manfaat dan minuman untuk mereka. Apakah mereka tidak bersyukur?"
   },
   {
    "nomor": 74,
-   "arab": "وَٱتَّخَذُوا۟ مِن دُونِ ٱللَّهِ ءَالِهَةًۭ لَّعَلَّهُمْ يُنصَرُونَ",
-   "latin": "wa-ittakhadhū min dūni l-lahi ālihatan laʿallahum yunṣarūna",
-   "terjemahan": "Mereka mengambil sembahan-sembahan selain Allah, agar mereka mendapat pertolongan."
+   "arab": "وَاتَّخَذُوْا مِنْ دُوْنِ اللّٰهِ اٰلِهَةً لَّعَلَّهُمْ يُنْصَرُوْنَ ۗ",
+   "latin": "Wattakhażū min dūnillāhi ālihatal la‘allahum yunṣarūn(a).",
+   "terjemahan": "Mereka menjadikan sesembahan selain Allah agar mereka mendapat pertolongan."
   },
   {
    "nomor": 75,
-   "arab": "لَا يَسْتَطِيعُونَ نَصْرَهُمْ وَهُمْ لَهُمْ جُندٌۭ مُّحْضَرُونَ",
-   "latin": "lā yastaṭīʿūna naṣrahum wahum lahum jundun muḥ'ḍarūna",
-   "terjemahan": "Berhala-berhala itu tiada dapat menolong mereka; padahal berhala-berhala itu menjadi tentara yang disiapkan untuk menjaga mereka."
+   "arab": "لَا يَسْتَطِيْعُوْنَ نَصْرَهُمْۙ وَهُمْ لَهُمْ جُنْدٌ مُّحْضَرُوْنَ",
+   "latin": "Lā yastaṭī‘ūna naṣrahum, wa hum lahum jundum muḥḍarūn(a).",
+   "terjemahan": "(Sesembahan) itu tidak mampu menolong mereka, padahal (sesembahan) itu adalah tentara yang dihadirkan untuk menjaganya."
   },
   {
    "nomor": 76,
-   "arab": "فَلَا يَحْزُنكَ قَوْلُهُمْ ۘ إِنَّا نَعْلَمُ مَا يُسِرُّونَ وَمَا يُعْلِنُونَ",
-   "latin": "falā yaḥzunka qawluhum innā naʿlamu mā yusirrūna wamā yuʿ'linūna",
-   "terjemahan": "Maka janganlah ucapan mereka menyedihkan kamu. Sesungguhnya Kami mengetahui apa yang mereka rahasiakan dan apa yang mereka nyatakan."
+   "arab": "فَلَا يَحْزُنْكَ قَوْلُهُمْ ۘاِنَّا نَعْلَمُ مَا يُسِرُّوْنَ وَمَا يُعْلِنُوْنَ",
+   "latin": "Falā yaḥzunka qauluhum, innā na‘lamu mā yusirrūna wa mā yu‘linūn(a).",
+   "terjemahan": "Maka, jangan sampai ucapan mereka membuat engkau (Nabi Muhammad) bersedih hati. Sesungguhnya Kami mengetahui apa yang mereka rahasiakan dan apa yang mereka nyatakan."
   },
   {
    "nomor": 77,
-   "arab": "أَوَلَمْ يَرَ ٱلْإِنسَٰنُ أَنَّا خَلَقْنَٰهُ مِن نُّطْفَةٍۢ فَإِذَا هُوَ خَصِيمٌۭ مُّبِينٌۭ",
-   "latin": "awalam yara l-insānu annā khalaqnāhu min nuṭ'fatin fa-idhā huwa khaṣīmun mubīnun",
-   "terjemahan": "Dan apakah manusia tidak memperhatikan bahwa Kami menciptakannya dari setitik air (mani), maka tiba-tiba ia menjadi penantang yang nyata!"
+   "arab": "اَوَلَمْ يَرَ الْاِنْسَانُ اَنَّا خَلَقْنٰهُ مِنْ نُّطْفَةٍ فَاِذَا هُوَ خَصِيْمٌ مُّبِيْنٌ",
+   "latin": "Awalam yaral-insānu annā khalaqnāhu min nuṭfatin fa'iżā huwa khaṣīmum mubīn(un).",
+   "terjemahan": "Tidakkah manusia mengetahui bahwa Kami menciptakannya dari setetes mani? Kemudian tiba-tiba saja dia menjadi musuh yang nyata."
   },
   {
    "nomor": 78,
-   "arab": "وَضَرَبَ لَنَا مَثَلًۭا وَنَسِىَ خَلْقَهُۥ ۖ قَالَ مَن يُحْىِ ٱلْعِظَٰمَ وَهِىَ رَمِيمٌۭ",
-   "latin": "waḍaraba lanā mathalan wanasiya khalqahu qāla man yuḥ'yī l-ʿiẓāma wahiya ramīmun",
-   "terjemahan": "Dan ia membuat perumpamaan bagi Kami; dan dia lupa kepada kejadiannya; ia berkata: \"Siapakah yang dapat menghidupkan tulang belulang, yang telah hancur luluh?\""
+   "arab": "وَضَرَبَ لَنَا مَثَلًا وَّنَسِيَ خَلْقَهٗۗ قَالَ مَنْ يُّحْيِ الْعِظَامَ وَهِيَ رَمِيْمٌ",
+   "latin": "Wa ḍaraba lanā maṡalaw wa nasiya khalqah(ū), qāla may yuḥyil-‘iẓāma wa hiya ramīm(un).",
+   "terjemahan": "Dia membuat perumpamaan bagi Kami dan melupakan asal penciptaannya. Dia berkata, “Siapakah yang bisa menghidupkan tulang-belulang yang telah hancur luluh?”"
   },
   {
    "nomor": 79,
-   "arab": "قُلْ يُحْيِيهَا ٱلَّذِىٓ أَنشَأَهَآ أَوَّلَ مَرَّةٍۢ ۖ وَهُوَ بِكُلِّ خَلْقٍ عَلِيمٌ",
-   "latin": "qul yuḥ'yīhā alladhī ansha-ahā awwala marratin wahuwa bikulli khalqin ʿalīmun",
-   "terjemahan": "Katakanlah: \"Ia akan dihidupkan oleh Tuhan yang menciptakannya kali yang pertama. Dan Dia Maha Mengetahui tentang segala makhluk."
+   "arab": "قُلْ يُحْيِيْهَا الَّذِيْٓ اَنْشَاَهَآ اَوَّلَ مَرَّةٍ ۗوَهُوَ بِكُلِّ خَلْقٍ عَلِيْمٌ ۙ",
+   "latin": "Qul yuḥyīhal-lażī ansya'ahā awwala marrah(tin), wa huwa bikulli khalqin ‘alīm(un).",
+   "terjemahan": "Katakanlah (Nabi Muhammad), “Yang akan menghidupkannya adalah Zat yang menciptakannya pertama kali. Dia Maha Mengetahui setiap makhluk."
   },
   {
    "nomor": 80,
-   "arab": "ٱلَّذِى جَعَلَ لَكُم مِّنَ ٱلشَّجَرِ ٱلْأَخْضَرِ نَارًۭا فَإِذَآ أَنتُم مِّنْهُ تُوقِدُونَ",
-   "latin": "alladhī jaʿala lakum mina l-shajari l-akhḍari nāran fa-idhā antum min'hu tūqidūna",
-   "terjemahan": "yaitu Tuhan yang menjadikan untukmu api dari kayu yang hijau, maka tiba-tiba kamu nyalakan (api) dari kayu itu\"."
+   "arab": "ۨالَّذِيْ جَعَلَ لَكُمْ مِّنَ الشَّجَرِ الْاَخْضَرِ نَارًاۙ فَاِذَآ اَنْتُمْ مِّنْهُ تُوْقِدُوْنَ",
+   "latin": "Allażī ja‘ala lakum minasy-syajaril-akhḍari nārā(n), fa'iżā antum minhu tūqidūn(a).",
+   "terjemahan": "(Dialah) yang menjadikan api untukmu dari kayu yang hijau. Kemudian, seketika itu kamu menyalakan (api) darinya.”"
   },
   {
    "nomor": 81,
-   "arab": "أَوَلَيْسَ ٱلَّذِى خَلَقَ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ بِقَٰدِرٍ عَلَىٰٓ أَن يَخْلُقَ مِثْلَهُم ۚ بَلَىٰ وَهُوَ ٱلْخَلَّٰقُ ٱلْعَلِيمُ",
-   "latin": "awalaysa alladhī khalaqa l-samāwāti wal-arḍa biqādirin ʿalā an yakhluqa mith'lahum balā wahuwa l-khalāqu l-ʿalīmu",
-   "terjemahan": "Dan tidaklah Tuhan yang menciptakan langit dan bumi itu berkuasa menciptakan yang serupa dengan itu? Benar, Dia berkuasa. Dan Dialah Maha Pencipta lagi Maha Mengetahui."
+   "arab": "اَوَلَيْسَ الَّذِيْ خَلَقَ السَّمٰوٰتِ وَالْاَرْضَ بِقٰدِرٍ عَلٰٓى اَنْ يَّخْلُقَ مِثْلَهُمْ ۗبَلٰى وَهُوَ الْخَلّٰقُ الْعَلِيْمُ",
+   "latin": "Awa laisal-lażī khalaqas-samāwāti wal-arḍa biqādirin ‘alā ay yakhluqa miṡlahum, balā wa huwal-khallāqul-‘alīm(u).",
+   "terjemahan": "Bukankah Zat yang menciptakan langit dan bumi mampu menciptakan manusia yang serupa mereka itu (di akhirat kelak)? Benar. Dialah yang Maha Banyak Mencipta lagi Maha Mengetahui."
   },
   {
    "nomor": 82,
-   "arab": "إِنَّمَآ أَمْرُهُۥٓ إِذَآ أَرَادَ شَيْـًٔا أَن يَقُولَ لَهُۥ كُن فَيَكُونُ",
-   "latin": "innamā amruhu idhā arāda shayan an yaqūla lahu kun fayakūnu",
-   "terjemahan": "Sesungguhnya keadaan-Nya apabila Dia menghendaki sesuatu hanyalah berkata kepadanya: \"Jadilah!\" maka terjadilah ia."
+   "arab": "اِنَّمَآ اَمْرُهٗٓ اِذَآ اَرَادَ شَيْـًٔاۖ اَنْ يَّقُوْلَ لَهٗ كُنْ فَيَكُوْنُ",
+   "latin": "Innamā amruhū iżā arāda syai'an ay yaqūla lahū kun fa yakūn(u).",
+   "terjemahan": "Sesungguhnya ketetapan-Nya, jika Dia menghendaki sesuatu, Dia hanya berkata kepadanya, “Jadilah!” Maka, jadilah (sesuatu) itu."
   },
   {
    "nomor": 83,
-   "arab": "فَسُبْحَٰنَ ٱلَّذِى بِيَدِهِۦ مَلَكُوتُ كُلِّ شَىْءٍۢ وَإِلَيْهِ تُرْجَعُونَ",
-   "latin": "fasub'ḥāna alladhī biyadihi malakūtu kulli shayin wa-ilayhi tur'jaʿūna",
-   "terjemahan": "Maka Maha Suci (Allah) yang di tangan-Nya kekuasaaan atas segala sesuatu dan kepada-Nya-lah kamu dikembalikan."
+   "arab": "فَسُبْحٰنَ الَّذِيْ بِيَدِهٖ مَلَكُوْتُ كُلِّ شَيْءٍ وَّاِلَيْهِ تُرْجَعُوْنَ ࣖ",
+   "latin": "Fa subḥānal-lażī biyadihī malakūtu kulli syai'iw wa ilaihi turja‘ūn(a).",
+   "terjemahan": "Maka, Maha Suci (Allah) yang di tangan-Nya kekuasaan atas segala sesuatu dan kepada-Nya kamu dikembalikan."
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
- "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+ "edisi": "Kemenag: teks Arab Mushaf Standar Indonesia (MSI), transliterasi Latin resmi, terjemah edisi 2019",
+ "catatan_verifikasi": "Teks Arab (MSI), transliterasi Latin, dan terjemahan diambil dari layanan resmi Qur'an Kemenag (quran.kemenag.go.id) lewat tools/fetch_quran_kemenag.py. Penanda catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki."
 }

@@ -1,42 +1,42 @@
 {
  "surah": "Al-Falaq",
  "ayat_count": 5,
- "sumber_arab": "Tanzil Uthmani (via api.alquran.cloud)",
- "sumber_terjemahan": "Kemenag RI edisi 2019 (via api.alquran.cloud id.indonesian)",
- "sumber_latin": "api.quran.com word transliteration (English)",
+ "sumber_arab": "Mushaf Standar Indonesia (MSI) LPMQ Kemenag RI — quran.kemenag.go.id",
+ "sumber_terjemahan": "Terjemah Kemenag edisi 2019 — quran.kemenag.go.id",
+ "sumber_latin": "Transliterasi resmi Kemenag RI — quran.kemenag.go.id",
  "verses": [
   {
    "nomor": 1,
-   "arab": "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ",
-   "latin": "qul aʿūdhu birabbi l-falaqi",
-   "terjemahan": "Katakanlah: \"Aku berlindung kepada Tuhan Yang Menguasai subuh,"
+   "arab": "قُلْ اَعُوْذُ بِرَبِّ الْفَلَقِۙ",
+   "latin": "Qul a‘ūżu birabbil-falaq(i).",
+   "terjemahan": "Katakanlah (Nabi Muhammad), “Aku berlindung kepada Tuhan yang (menjaga) fajar (subuh)"
   },
   {
    "nomor": 2,
-   "arab": "مِن شَرِّ مَا خَلَقَ",
-   "latin": "min sharri mā khalaqa",
-   "terjemahan": "dari kejahatan makhluk-Nya,"
+   "arab": "مِنْ شَرِّ مَا خَلَقَۙ",
+   "latin": "Min syarri mā khalaq(a).",
+   "terjemahan": "dari kejahatan (makhluk yang) Dia ciptakan,"
   },
   {
    "nomor": 3,
-   "arab": "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ",
-   "latin": "wamin sharri ghāsiqin idhā waqaba",
-   "terjemahan": "dan dari kejahatan malam apabila telah gelap gulita,"
+   "arab": "وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ",
+   "latin": "Wa min syarri gāsiqin iżā waqab(a).",
+   "terjemahan": "dari kejahatan malam apabila telah gelap gulita,"
   },
   {
    "nomor": 4,
-   "arab": "وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ",
-   "latin": "wamin sharri l-nafāthāti fī l-ʿuqadi",
-   "terjemahan": "dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul,"
+   "arab": "وَمِنْ شَرِّ النَّفّٰثٰتِ فِى الْعُقَدِۙ",
+   "latin": "Wa min syarrin-naffāṡāti fil-‘uqad(i).",
+   "terjemahan": "dari kejahatan perempuan-perempuan (penyihir) yang meniup pada buhul-buhul (talinya),"
   },
   {
    "nomor": 5,
-   "arab": "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-   "latin": "wamin sharri ḥāsidin idhā ḥasada",
-   "terjemahan": "dan dari kejahatan pendengki bila ia dengki\"."
+   "arab": "وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ ࣖ",
+   "latin": "Wa min syarri ḥāsidin iżā ḥasad(a).",
+   "terjemahan": "dan dari kejahatan orang yang dengki apabila dia dengki.”"
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Kemenag 2019 (terjemahan) — teks Arab standar Utsmani",
- "catatan_verifikasi": "Teks Arab mengikuti standar Utsmani; transliterasi Latin saat ini sumber non-resmi (Inggris). Wajib dicocokkan dengan Mushaf Standar Indonesia (MSI) LPMQ Kemenag sebelum rilis."
+ "edisi": "Kemenag: teks Arab Mushaf Standar Indonesia (MSI), transliterasi Latin resmi, terjemah edisi 2019",
+ "catatan_verifikasi": "Teks Arab (MSI), transliterasi Latin, dan terjemahan diambil dari layanan resmi Qur'an Kemenag (quran.kemenag.go.id) lewat tools/fetch_quran_kemenag.py. Penanda catatan kaki dibuang karena aplikasi belum menampilkan catatan kaki."
 }

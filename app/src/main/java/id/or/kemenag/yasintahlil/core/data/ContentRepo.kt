@@ -178,15 +178,19 @@ class ContentRepo(private val ctx: Context) {
         return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
     }
 
-    /** Jawaban saat seruan "hayya 'alash-shalah" / "hayya 'alal-falah" (bukan mengikuti muadzin). */
-    fun menjawabAdzan(): Triple<String, String, String> {
+    /** Lafaz menjawab adzan beserta catatan kapan lafaz ini dibaca. */
+    fun menjawabAdzan(): AdzanDoa {
         val o = doc("adzan.json").getJSONObject("menjawab_adzan")
-        return Triple(o.getString("arab"), o.getString("latin"), o.getString("terjemahan"))
+        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
+            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
     }
 
-    /** Penjelasan tata cara menjawab adzan — ditampilkan apa adanya (tanpa teks Arab di Kotlin). */
-    fun menjawabAdzanCatatan(): String =
-        doc("adzan.json").getJSONObject("menjawab_adzan").optString("catatan")
+    /** Sholawat yang dibaca setelah menjawab adzan (sebelum doa setelah adzan). */
+    fun sholawatAdzan(): AdzanDoa {
+        val o = doc("adzan.json").getJSONObject("sholawat_setelah_adzan")
+        return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
+            o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
+    }
 
     /** Sumber tertulis entri adzan.json (mis. `doa_setelah_adzan`) — dibaca dari assets, bukan di kode. */
     fun adzanSumber(key: String): String =

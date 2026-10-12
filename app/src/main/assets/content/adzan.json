@@ -116,10 +116,18 @@
   "judul": "Menjawab adzan",
   "catatan": "Menjawab setiap lafaz muadzin dengan lafaz yang sama; khusus pada seruan hayya 'alash-shalah dan hayya 'alal-falah jawabannya adalah lafaz di bawah ini, bukan mengikuti muadzin.",
   "latin": "La haula wa la quwwata illa billah.",
-  "sumber": "HR Bukhari-Muslim — sunnah.com",
+  "catatan": "Menjawab seperti lafaz muadzin; saat \"hayya 'alash-shalah\" dan \"hayya 'alal-falah\" membaca:",
+  "sumber": "HR Bukhari & Muslim — sunnah.com",
   "terjemahan": "Tidak ada daya dan kekuatan kecuali dengan Allah."
  },
  "sumber_url": "https://sunnah.com/",
  "edisi": "Lafaz adzan/iqomah & doa dari hadis sahih (sunnah.com); acuan Fasolatan Kemenag",
- "catatan_mazhab": "Susunan iqomah dapat berbeda menurut mazhab/tradisi; perbedaan dicatat apa adanya."
+ "catatan_mazhab": "Susunan iqomah dapat berbeda menurut mazhab/tradisi; perbedaan dicatat apa adanya.",
+ "sholawat_setelah_adzan": {
+  "arab": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ، وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ، وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ، وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
+  "judul": "Sholawat setelah adzan",
+  "latin": "Allahumma shalli 'ala Muhammad wa 'ala ali Muhammad, kama shallaita 'ala Ibrahim wa 'ala ali Ibrahim, innaka hamidun majid. Allahumma barik 'ala Muhammad wa 'ala ali Muhammad, kama barakta 'ala Ibrahim wa 'ala ali Ibrahim, innaka hamidun majid.",
+  "sumber": "HR Bukhari 3370 — sunnah.com",
+  "terjemahan": "Ya Allah, limpahkanlah rahmat kepada Muhammad dan keluarga Muhammad, sebagaimana Engkau melimpahkan rahmat kepada Ibrahim dan keluarganya. Sesungguhnya Engkau Maha Terpuji dan Maha Mulia. Ya Allah, berkahilah Muhammad dan keluarga Muhammad, sebagaimana Engkau memberkahi Ibrahim dan keluarganya. Sesungguhnya Engkau Maha Terpuji dan Maha Mulia."
+ }
 }
