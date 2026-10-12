@@ -371,6 +371,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   argumen posisi sekaligus bernama, sehingga build berhenti sebelum satu pun uji berjalan.
 
 ### Diubah
+- **Beranda dipindahkan ke `HomeViewModel`** (`plan.txt` §"Teknologi dan Arsitektur" meminta
+  *"ViewModel dan StateFlow"* dan *"state management yang terstruktur"*): beranda adalah satu-satunya
+  layar inti tanpa ViewModel — belasan `remember { mutableStateOf(...) }` diisi sekali lewat satu
+  `LaunchedEffect(Unit)`. Akibatnya nilai Store tidak reaktif (mengubah lokasi atau metode hisab di
+  layar Jadwal baru terlihat setelah beranda dibuka ulang) dan seluruh keadaan hilang saat
+  konfigurasi berubah (rotasi). Kini setiap preferensi dibaca `HomeViewModel` sebagai aliran dari
+  `Store`, ringkasan favorit/riwayat mengikuti aliran Room, saklar pengingat menjadwalkan ulang
+  pekerja latar dari ViewModel, dan jam beranda berdetak di sana — bukan membangun ulang layar tiap
+  detik. Layar hanya menggambar `HomeUiState`. Dijaga `BerandaViewModelTest`, yang juga menolak
+  kembalinya `mutableStateOf`/`rememberStore()` di layar beranda.
 - **"Ukuran Latin" dan "Jarak antarbaris" kini benar-benar global** (`plan.txt` §"Pengaturan
   Aplikasi" meminta pengaturan *"Ukuran teks Arab dan Latin"*, dan §"Pustaka Doa dan Dzikir"
   meminta setiap bacaan mendukung transliterasi): hanya layar Yasin yang membaca
