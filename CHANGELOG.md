@@ -380,6 +380,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Dokumen yang mengulang aturan kode tidak lagi dapat menyimpang diam-diam**: dua dokumen
+  manusia menyalin ulang aturan yang sudah hidup di kode, dan tak ada apa pun yang membandingkan
+  keduanya. Pertama, **daftar izin**: `docs/PERMISSIONS.md` — yang ikut dibundel ke aset dan
+  ditampilkan apa adanya di bagian *"Izin aplikasi dan alasannya"* pada layar Tentang — menyalin
+  daftar `<uses-permission>` dari `AndroidManifest.xml`; pemeriksaan yang ada hanya satu arah
+  (setiap izin di dokumen harus ada di manifes), sehingga izin baru yang ditambahkan ke manifes
+  akan membuat aplikasi meminta akses yang **tak pernah diterangkan** kepada pengguna maupun
+  peninjau toko aplikasi. Kedua, **daftar host resmi**: `SOURCES.md` §6 dan
+  `docs/CONTENT_SOURCES.md` sama-sama menuliskan daftar host yang diizinkan gate, padahal daftar
+  yang sebenarnya dipakai aplikasi ada di `ContentValidator.allowedHosts`; penjaga yang ada hanya
+  menelusuri berkas `.kt`, sehingga kedua dokumen itu luput. Akibatnya mengenai penulis konten:
+  host yang ditambahkan di kode membuat dokumen berbohong, dan orang yang mengikuti dokumen
+  menambahkan entri dengan domain yang justru **ditolak** aplikasi — berkasnya tampak terpasang,
+  lalu pembaca diam-diam kembali ke konten bawaan. Kini arah manifes→dokumen diperiksa
+  (`MarkdownRingkasTest.setiapIzinDiManifestDijelaskanDiDokumen`) dan kesepadanan kedua dokumen
+  dengan `ContentValidator.allowedHosts` dijaga
+  (`SumberResmiSatuTempatTest.dokumenMengulangDaftarHostYangSama`). Enam mutasi terverifikasi
+  tertangkap, dua arah.
 - **Kunci preferensi baru tidak lagi luput dari pemulihan backup**: `Store.exportJson` menulis
   seluruh isi DataStore apa adanya (`d.asMap()`), sehingga ia lengkap dengan sendirinya; `importJson`
   tidak — ia menyebut satu per satu kunci yang dipulihkan. Dua daftar itu — deklarasi kunci di
