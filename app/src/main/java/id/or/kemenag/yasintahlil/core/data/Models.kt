@@ -15,8 +15,16 @@ data class TahlilItem(
     val kategori: String = ""
 )
 
-/** Susunan rangkaian tahlil (urut) — merujuk id pada daftar bagian tahlil. */
-data class TahlilSusunan(val id: String, val nama: String, val bagian: List<String>)
+/**
+ * Susunan rangkaian tahlil (urut) — merujuk id pada daftar bagian tahlil.
+ *
+ * [sumber] menyebut asal susunan ini (`plan.txt` §"Fitur Tahlil Lengkap": *"Sediakan beberapa
+ * susunan Tahlil berdasarkan sumber atau tradisi yang jelas"*). Susunan buatan pengguna
+ * ("Susunan saya") tidak mengklaim sumber apa pun, jadi nilainya kosong.
+ */
+data class TahlilSusunan(
+    val id: String, val nama: String, val bagian: List<String>, val sumber: String = "",
+)
 
 data class Niat(
     val arab: String, val latin: String, val terjemahan: String,

@@ -27,9 +27,14 @@ object PreferensiSusunan {
     fun serialize(ids: List<String>): String =
         ids.map { it.trim() }.filter { it.isNotBlank() }.distinct().joinToString(",")
 
-    /** Susunan buatan pengguna untuk ditampilkan di pemilih, atau null bila belum disusun. */
+    /**
+     * Susunan buatan pengguna untuk ditampilkan di pemilih, atau null bila belum disusun.
+     *
+     * Sumbernya sengaja kosong: susunan ini disusun sendiri oleh pengguna dari bagian yang sudah
+     * ada, jadi ia tidak boleh tampil seolah berasal dari rujukan atau tradisi tertentu.
+     */
     fun susunanSaya(pilihan: List<String>): TahlilSusunan? =
-        if (pilihan.isEmpty()) null else TahlilSusunan(ID_SAYA, NAMA_SAYA, pilihan)
+        if (pilihan.isEmpty()) null else TahlilSusunan(ID_SAYA, NAMA_SAYA, pilihan, sumber = "")
 
     /** Susunan yang boleh dipilih: dari bundel konten, ditambah susunan buatan pengguna bila ada. */
     fun tersedia(dariBerkas: List<TahlilSusunan>, susunanSaya: TahlilSusunan?): List<TahlilSusunan> =
@@ -48,5 +53,15 @@ object PreferensiSusunan {
     fun namaAktif(disimpan: String, tersedia: List<TahlilSusunan>): String {
         val id = idAktif(disimpan, tersedia)
         return tersedia.firstOrNull { it.id == id }?.nama ?: ""
+    }
+
+    /**
+     * Sumber susunan yang aktif (`plan.txt` §"Fitur Tahlil Lengkap": *"berdasarkan sumber atau
+     * tradisi yang jelas"*). Kosong berarti susunan itu tidak mengklaim sumber apa pun — mis.
+     * "Susunan saya" — dan layar harus mengatakannya, bukan mengarang rujukan.
+     */
+    fun sumberAktif(disimpan: String, tersedia: List<TahlilSusunan>): String {
+        val id = idAktif(disimpan, tersedia)
+        return tersedia.firstOrNull { it.id == id }?.sumber.orEmpty()
     }
 }

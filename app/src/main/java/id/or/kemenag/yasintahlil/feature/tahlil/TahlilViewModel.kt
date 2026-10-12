@@ -35,6 +35,13 @@ data class TahlilUiState(
     /** Nama susunan yang sedang aktif — dipakai layar agar tidak menyebut susunan yang keliru. */
     val namaSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.nama.orEmpty()
 
+    /**
+     * Sumber susunan yang sedang aktif (`plan.txt` §"Fitur Tahlil Lengkap": *"berdasarkan sumber
+     * atau tradisi yang jelas"*). Kosong untuk "Susunan saya" — susunan buatan pengguna tidak
+     * mengklaim rujukan apa pun, dan layar harus mengatakannya alih-alih mengarang sumber.
+     */
+    val sumberSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.sumber.orEmpty()
+
     val adaSusunanSaya: Boolean get() = susunanId == SusunanSaya.ID
 }
 

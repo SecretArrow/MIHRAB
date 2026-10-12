@@ -76,6 +76,21 @@ class OfflineContentTest {
         }
     }
 
+    /**
+     * `plan.txt` §"Fitur Tahlil Lengkap": susunan harus *"berdasarkan sumber atau tradisi yang
+     * jelas"*. Susunan dari bundel konten wajib menyebut sumbernya (per-susunan atau keterangan
+     * `edisi` tingkat modul) — susunan tanpa asal-usul tidak boleh tampil sebagai rangkaian telanjang.
+     */
+    @Test
+    fun susunanDariBundelMenyebutSumbernya() {
+        repo.tahlilSusunan().forEach { susunan ->
+            assertTrue(
+                "susunan ${susunan.id} tidak menyebut sumber apa pun",
+                susunan.sumber.isNotBlank(),
+            )
+        }
+    }
+
     @Test
     fun aplikasiTidakMemintaIzinInternet() {
         @Suppress("DEPRECATION")

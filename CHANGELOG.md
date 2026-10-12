@@ -345,6 +345,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Susunan Tahlil kini menyebut sumbernya di layar** (`plan.txt` §"Fitur Tahlil Lengkap":
+  *"Sediakan beberapa susunan Tahlil berdasarkan sumber atau tradisi yang jelas"*): layar Tahlil
+  hanya mencetak **nama** susunan (*"Susunan tahlil lazim Indonesia; susunan dapat berbeda menurut
+  tradisi"*), dan Pengaturan hanya *"Susunan aktif: …"*. Nama bukan sumber — berkas
+  `assets/content/tahlil.json` sudah memuat keterangan asal-usulnya (`edisi` tingkat modul), tetapi
+  keterangan itu **tidak pernah sampai ke layar mana pun**, sehingga pengguna tidak dapat memeriksa
+  dari mana rangkaian itu berasal. `TahlilSusunan` kini membawa `sumber`, diisi dari `sumber`
+  per-susunan bila ada dan jatuh ke `edisi` tingkat modul bila tidak (jadi tidak ada teks baru yang
+  dikarang di bundel), lalu ditampilkan di modul Tahlil **dan** di Pengaturan. "Susunan saya" sengaja
+  bersumber kosong dan layar mengatakannya terus terang — susunan buatan pengguna tidak boleh tampil
+  seolah berasal dari rujukan atau tradisi tertentu. Dijaga `AtribusiSusunanTahlilTest` dan uji
+  instrumented `OfflineContentTest.susunanDariBundelMenyebutSumbernya`.
 - **Riwayat "terakhir dibaca" akhirnya terisi oleh bacaan yang benar-benar dibaca** (`plan.txt`
   §"Pencarian, Favorit, dan Riwayat": *"Sediakan favorit, riwayat terakhir dibaca, bookmark, dan
   pencarian terbaru"*): satu-satunya penulis riwayat adalah tombol **"Salin"** pada kartu bacaan
