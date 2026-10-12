@@ -46,6 +46,8 @@ class Store(private val ctx: Context) {
         val IQOMAH_MIN = intPreferencesKey("iqomah_min")
         val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
         val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
+        /** Susunan tahlil buatan pengguna: CSV id bagian, urut. Kosong = belum disusun. */
+        val TAHLIL_CUSTOM = stringPreferencesKey("tahlil_custom")
         val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
         val INFO_CARD = booleanPreferencesKey("info_card")
         val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
@@ -103,6 +105,7 @@ class Store(private val ctx: Context) {
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
             str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
+            str(TAHLIL_CUSTOM)
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)

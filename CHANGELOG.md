@@ -6,6 +6,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Susunan tahlil yang dapat dikonfigurasi** (`plan.txt`: *"Sediakan susunan bacaan yang dapat
+  dikonfigurasi"*, *"Izinkan pengguna memilih susunan bacaan tanpa mengubah teks sumber secara
+  otomatis"*, dan *"Jangan menyatakan bahwa satu susunan Tahlil merupakan satu-satunya susunan yang
+  benar"*): layar Tahlil kini punya tombol **"Sesuaikan susunan"** yang membuka penyusun berisi
+  seluruh bagian tahlil. Pengguna memilih bagian mana yang dibaca, mengatur urutannya, lalu
+  menyimpannya sebagai **"Susunan saya"** yang muncul berdampingan dengan susunan lazim di tab
+  pemilih susunan. Yang berubah hanya **pilihan dan urutan** bagian — teks tiap bagian tetap dibaca
+  apa adanya dari berkas sumbernya beserta atribusinya, sehingga tidak ada teks keagamaan yang
+  dikarang atau disusun ulang. Susunan kosong tidak dapat disimpan (akan membuat layar buntu), id
+  bagian yang tak dikenal dilewati alih-alih membuat layar gagal, dan teks penjelas menegaskan bahwa
+  susunan ini buatan pengguna — bukan susunan satu-satunya yang benar dan bukan pula susunan suatu
+  tradisi. Aturannya diuji terpisah (`SusunanSayaTest`) karena penyusunnya sengaja murni tanpa
+  Android, dan pilihan tersimpan mengikuti mekanisme backup/pemulihan preferensi yang sudah ada.
 - **Pengingat membaca doa setelah adzan** (`plan.txt`: *"Tambahkan tombol untuk menyalin bacaan,
   membagikan doa, menyimpan favorit, dan mengaktifkan pengingat membaca doa setelah adzan"*):
   menu Adzan kini punya saklar yang menjadwalkan pengingat **kedua** lima menit setelah waktu masuk
