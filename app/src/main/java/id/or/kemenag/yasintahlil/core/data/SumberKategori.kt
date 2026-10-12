@@ -4,10 +4,10 @@ package id.or.kemenag.yasintahlil.core.data
  * Kategori sumber bacaan — memenuhi `plan.txt`: *"Bedakan bacaan yang bersumber dari Al-Qur'an,
  * hadis, dzikir umum, dan tradisi lokal."*
  *
- * Kuncinya sama persis dengan field `kategori` di `assets/content/*.json`; nilainya dijaga gate
- * `tools/validate_content.py` (nilai tak dikenal = gagal) dan `SumberKategoriTest`. Sebuah berkas
- * boleh menyatakan kategori sekali di tingkat berkas, dan entri boleh menimpanya (mis.
- * `sholat_bacaan.json` mayoritas hadis, tetapi lafaz niatnya tradisi).
+ * Kuncinya sama persis dengan field `kategori` di berkas aset `assets/content` (JSON); nilainya
+ * dijaga gate `tools/validate_content.py` (nilai tak dikenal = gagal) dan `SumberKategoriTest`.
+ * Sebuah berkas boleh menyatakan kategori sekali di tingkat berkas, dan entri boleh menimpanya
+ * (mis. `sholat_bacaan.json` mayoritas hadis, tetapi lafaz niatnya tradisi).
  */
 object SumberKategori {
 
