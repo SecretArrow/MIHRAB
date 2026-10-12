@@ -27,6 +27,7 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Dzikir & Doa", style = MaterialTheme.typography.titleLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
             FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
             FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
@@ -42,7 +43,8 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 val key = "${group.id}:${it.judul}"
                 val c = s.counts[key] ?: 0
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
-                    s.showLatin, s.showTrans, s.arabSize, 15f, it.ulangi, it.sumber)
+                    s.showLatin, s.showTrans, s.arabSize, 15f, it.ulangi, it.sumber,
+                    showArab = s.showArab)
                 if (it.ulangi > 1) {
                     CounterRow(c, it.ulangi,
                         onPlus = { vm.setCount(key, (c + 1).coerceAtMost(it.ulangi)) },

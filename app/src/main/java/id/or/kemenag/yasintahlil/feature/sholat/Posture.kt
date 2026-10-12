@@ -66,6 +66,7 @@ object Postures {
         "takbir" to TAKBIR,
         "iftitah" to BERDIRI,
         "fatihah" to BERDIRI,
+        "surat_setelah_fatihah" to BERDIRI,
         "rukuk" to RUKUK,
         "itidal" to BERDIRI,
         "sujud" to SUJUD,

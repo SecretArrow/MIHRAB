@@ -25,6 +25,7 @@ data class TahlilUiState(
     val arabSize: Float = 24f,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
+    val showArab: Boolean = true,
 )
 
 @HiltViewModel
@@ -56,6 +57,7 @@ class TahlilViewModel @Inject constructor(
                 arabSize = store.get(Store.ARAB_SIZE, 24f),
                 showLatin = store.get(Store.SHOW_LATIN, true),
                 showTrans = store.get(Store.SHOW_TRANS, true),
+                showArab = store.get(Store.SHOW_ARAB, true),
             )
         }
     }
@@ -91,6 +93,7 @@ class TahlilViewModel @Inject constructor(
     fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; viewModelScope.launch { store.set(Store.ARAB_SIZE, v) } }
     fun toggleLatin() { val v = !_state.value.showLatin; _state.update { it.copy(showLatin = v) }; viewModelScope.launch { store.set(Store.SHOW_LATIN, v) } }
     fun toggleTrans() { val v = !_state.value.showTrans; _state.update { it.copy(showTrans = v) }; viewModelScope.launch { store.set(Store.SHOW_TRANS, v) } }
+    fun toggleArab() { val v = !_state.value.showArab; _state.update { it.copy(showArab = v) }; viewModelScope.launch { store.set(Store.SHOW_ARAB, v) } }
 
     private fun persist() {
         val s = _state.value

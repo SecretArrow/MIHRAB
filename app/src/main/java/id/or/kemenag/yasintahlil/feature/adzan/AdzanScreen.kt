@@ -41,6 +41,7 @@ fun AdzanScreen() {
     var preMin by remember { mutableStateOf(0) }
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
+    var showArab by remember { mutableStateOf(true) }
     val player = remember { ExoPlayer.Builder(ctx.applicationContext).build() }
     DisposableEffect(Unit) { onDispose { player.release() } }
 
@@ -67,6 +68,7 @@ fun AdzanScreen() {
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
+        showArab = store.get(Store.SHOW_ARAB, true)
     }
 
     val names = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
@@ -142,9 +144,12 @@ fun AdzanScreen() {
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
+        Text("Ukuran Arab: ${arabSize.toInt()}")
+        Slider(arabSize, { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, arabSize) } },
+            valueRange = 16f..40f)
         lafaz.forEach { l ->
             BacaanCard("adzan:${l.arab.take(10)}", "Adzan", l.arab, l.latin, l.terjemahan,
-                true, true, arabSize, 15f, l.ulangi)
+                true, true, arabSize, 15f, l.ulangi, showArab = showArab)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
     }

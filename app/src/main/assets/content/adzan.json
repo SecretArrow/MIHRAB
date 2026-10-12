@@ -1,6 +1,6 @@
 {
  "adzan": {
-  "catatan_subuh": "Pada adzan Subuh ditambahkan setelah حي على الفلاح: الصلاة خير من النوم (2x).",
+  "catatan_subuh": "Pada adzan Subuh ditambahkan setelah حَيَّ عَلَى الْفَلَاحِ: الصَّلَاةُ خَيْرٌ مِنَ النَّوْمِ (2x).",
   "daftar": [
    {
     "arab": "اللهُ أَكْبَرُ",
@@ -114,6 +114,7 @@
  "menjawab_adzan": {
   "arab": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ",
   "judul": "Menjawab adzan",
+  "catatan": "Menjawab setiap lafaz muadzin dengan lafaz yang sama; khusus pada seruan hayya 'alash-shalah dan hayya 'alal-falah jawabannya adalah lafaz di bawah ini, bukan mengikuti muadzin.",
   "latin": "La haula wa la quwwata illa billah.",
   "catatan": "Menjawab seperti lafaz muadzin; saat \"hayya 'alash-shalah\" dan \"hayya 'alal-falah\" membaca:",
   "sumber": "HR Bukhari & Muslim — sunnah.com",

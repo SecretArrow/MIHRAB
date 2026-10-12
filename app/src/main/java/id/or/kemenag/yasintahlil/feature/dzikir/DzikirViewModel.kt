@@ -18,6 +18,7 @@ data class DzikirUiState(
     val arabSize: Float = 22f,
     val showLatin: Boolean = true,
     val showTrans: Boolean = true,
+    val showArab: Boolean = true,
     val counts: Map<String, Int> = emptyMap(),
 )
 
@@ -41,6 +42,7 @@ class DzikirViewModel @Inject constructor(
                     arabSize = store.get(Store.ARAB_SIZE, 22f),
                     showLatin = store.get(Store.SHOW_LATIN, true),
                     showTrans = store.get(Store.SHOW_TRANS, true),
+                    showArab = store.get(Store.SHOW_ARAB, true),
                 )
             }
         }
@@ -61,6 +63,11 @@ class DzikirViewModel @Inject constructor(
     fun toggleTrans() {
         val v = !_state.value.showTrans
         _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) }
+    }
+
+    fun toggleArab() {
+        val v = !_state.value.showArab
+        _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) }
     }
 
     fun setCount(key: String, value: Int) {

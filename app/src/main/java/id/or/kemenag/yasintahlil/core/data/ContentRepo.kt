@@ -120,6 +120,7 @@ class ContentRepo(private val ctx: Context) {
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
+                catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
                 sholatScope = scope)
         }
@@ -160,6 +161,10 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun adzanCatatan(): String = doc("adzan.json").getJSONObject("adzan").optString("catatan_subuh")
+
+    /** Catatan perbedaan susunan iqomah antar mazhab/tradisi — ditampilkan apa adanya. */
+    fun iqomahCatatan(): String = doc("adzan.json").optString("catatan_mazhab")
+
     fun iqomah(): List<AdzanLafaz> {
         val arr = doc("adzan.json").getJSONObject("iqomah").getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
@@ -186,6 +191,10 @@ class ContentRepo(private val ctx: Context) {
         return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
             o.getString("terjemahan"), o.optString("catatan"), o.optString("sumber"))
     }
+
+    /** Sumber tertulis entri adzan.json (mis. `doa_setelah_adzan`) — dibaca dari assets, bukan di kode. */
+    fun adzanSumber(key: String): String =
+        doc("adzan.json").getJSONObject(key).optString("sumber")
 
     fun kota(): List<Kota> {
         val arr = doc("kota.json").getJSONArray("kota")

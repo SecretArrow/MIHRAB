@@ -18,6 +18,7 @@ Sumber resmi: *.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -139,6 +140,42 @@ def check_placeholders(name: str, node, where="") -> list[str]:
     return errs
 
 
+# Harakat/baris: fathatan..sukun + alef khanjariyah dan tanda maddah.
+HARAKAT = set(range(0x064B, 0x0653)) | {0x0670, 0x0653, 0x0654, 0x0655, 0x0656}
+ARABIC_RUN = re.compile("[\u0600-\u06FF\u0750-\u077F]+")
+
+
+def unvocalized_words(text: str) -> list[str]:
+    """Kata Arab (>= 3 huruf) yang sama sekali tanpa harakat.
+
+    Teks Arab pada aplikasi harus berharakat agar dapat dibaca pemula; kata
+    tanpa satu pun tanda baris hampir pasti salah ketik atau teks mentah yang
+    belum divokalkan. Huruf mad (ا و ي ى) tidak dihitung sebagai penanda.
+    """
+    out: list[str] = []
+    for run in ARABIC_RUN.findall(text):
+        letters = [c for c in run if 0x0621 <= ord(c) <= 0x064A or 0x0671 <= ord(c) <= 0x06D3]
+        if len(letters) >= 3 and not any(ord(c) in HARAKAT for c in run):
+            out.append(run)
+    return out
+
+
+def check_harakat(name: str, node, where="") -> list[str]:
+    """Tolak teks Arab tanpa harakat (di kunci mana pun, termasuk catatan)."""
+    errs: list[str] = []
+    if isinstance(node, dict):
+        for k, v in node.items():
+            errs.extend(check_harakat(name, v, f"{where}.{k}"))
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            errs.extend(check_harakat(name, v, f"{where}[{i}]"))
+    elif isinstance(node, str):
+        bad = unvocalized_words(node)
+        if bad:
+            errs.append(f"{name}: {where.lstrip('.')} memuat teks Arab tanpa harakat — {bad}")
+    return errs
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CONTENT_DIR.exists():
@@ -185,6 +222,9 @@ def main() -> int:
         # --- Pemeriksaan skema struktur per jenis file ---
         errors.extend(check_schema(rel.name, data))
         errors.extend(check_placeholders(rel.name, data))
+
+        # --- Semua teks Arab wajib berharakat ---
+        errors.extend(check_harakat(rel.name, data))
 
     for w in warnings:
         print(f"[peringatan] {w}")

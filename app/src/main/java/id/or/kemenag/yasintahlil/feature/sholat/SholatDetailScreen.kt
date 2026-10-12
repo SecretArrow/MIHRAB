@@ -26,10 +26,12 @@ fun SholatDetailScreen(id: String) {
     var step by remember { mutableStateOf(0) }
     var ringkas by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
+    var showArab by remember { mutableStateOf(true) }
     var selesai by remember { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf("syafii") }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
+        showArab = store.get(Store.SHOW_ARAB, true)
         mazhab = store.get(Store.MADHAB, "syafii")
     }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
@@ -37,7 +39,7 @@ fun SholatDetailScreen(id: String) {
     // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i)
     // dan cakupan sholat (mis. qunut hanya untuk Subuh).
     val steps = remember(ringkas, mazhab, id) {
-        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "rukuk", "sujud", "tasyahud", "salam") }
+        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "surat_setelah_fatihah", "rukuk", "sujud", "tasyahud", "salam") }
         else bacaan
         base.filter {
             (it.mazhab == null || it.mazhab == mazhab) &&
@@ -53,7 +55,8 @@ fun SholatDetailScreen(id: String) {
         Text(info?.nama ?: id, style = MaterialTheme.typography.titleLarge)
         Text("${info?.rakaat.orEmpty()} • ${info?.waktu.orEmpty()}")
         info?.niat?.let { n ->
-            BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f)
+            BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f,
+                showArab = showArab)
         }
         if (info?.niat == null) {
             info?.niatCatatan?.takeIf { it.isNotBlank() }?.let {
@@ -72,6 +75,10 @@ fun SholatDetailScreen(id: String) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
+            FilterChip(showArab, {
+                showArab = !showArab
+                scope.launch { store.set(Store.SHOW_ARAB, showArab) }
+            }, { Text("Arab") })
         }
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))
@@ -107,7 +114,12 @@ fun SholatDetailScreen(id: String) {
                 }
             }
         }
-        BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber)
+        BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber,
+            showArab = showArab)
+        if (b.catatan.isNotBlank()) {
+            Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 4.dp))
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }
             Button(onClick = { step = 0 }) { Text("Ulangi") }

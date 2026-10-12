@@ -52,6 +52,11 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
             FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
         }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(s.showArab, { vm.toggleArab() }, { Text("Arab") })
+            FilterChip(s.showLatin, { vm.toggleLatin() }, { Text("Latin") })
+            FilterChip(s.showTrans, { vm.toggleTrans() }, { Text("Terjemahan") })
+        }
         CounterRow(s.count, cur.ulangi,
             onPlus = { vm.setCount(s.count + 1) },
             onMinus = { vm.setCount(s.count - 1) },
@@ -64,11 +69,12 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         LazyColumn(Modifier.fillMaxSize()) {
             item {
                 if (jamaah) {
-                    ArabText(arab, (s.arabSize + 8).coerceAtMost(44f))
-                    if (trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
+                    if (s.showArab && arab.isNotBlank()) ArabText(arab, (s.arabSize + 8).coerceAtMost(44f))
+                    if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
                 } else {
                     BacaanCard("tahlil:${cur.id}", cur.judul, arab, latin, trans,
-                        s.showLatin, s.showTrans, s.arabSize, 16f, cur.ulangi, cur.sumber)
+                        s.showLatin, s.showTrans, s.arabSize, 16f, cur.ulangi, cur.sumber,
+                        showArab = s.showArab)
                 }
                 if (selesai) Text("✓ Selesai — lanjut ke bagian berikutnya.",
                     color = MaterialTheme.colorScheme.primary)

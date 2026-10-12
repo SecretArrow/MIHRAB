@@ -7,15 +7,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.navigation.Routes
+import kotlinx.coroutines.launch
 
 @Composable
 fun SholatScreen(go: (String) -> Unit) {
     val repo = rememberRepo()
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
     val wajib = remember { repo.sholatWajib() }
     val sunnah = remember { repo.sholatSunnah() }
     var tab by remember { mutableStateOf(0) }
+    var showArab by remember { mutableStateOf(true) }
+    var arabSize by remember { mutableStateOf(22f) }
+    LaunchedEffect(Unit) {
+        showArab = store.get(Store.SHOW_ARAB, true)
+        arabSize = store.get(Store.ARAB_SIZE, 22f)
+    }
     val bacaan = remember { repo.sholatBacaan() }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Panduan Sholat (Fasolatan Kemenag)", style = MaterialTheme.typography.titleLarge)
@@ -50,11 +60,33 @@ fun SholatScreen(go: (String) -> Unit) {
                 }
             }
             if (tab == 2) {
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(vertical = 4.dp)) {
+                        FilterChip(showArab, {
+                            showArab = !showArab
+                            scope.launch { store.set(Store.SHOW_ARAB, showArab) }
+                        }, { Text("Arab") })
+                        OutlinedButton(onClick = {
+                            arabSize = (arabSize + 2).coerceAtMost(40f)
+                            scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+                        }) { Text("A+") }
+                        OutlinedButton(onClick = {
+                            arabSize = (arabSize - 2).coerceAtLeast(16f)
+                            scope.launch { store.set(Store.ARAB_SIZE, arabSize) }
+                        }) { Text("A−") }
+                    }
+                }
                 items(bacaan) { b ->
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }
-                    BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, 22f, 15f, sumber = b.sumber.ifBlank { b.kapan })
+                    BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f,
+                        sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab)
+                    if (b.catatan.isNotBlank()) {
+                        Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(bottom = 4.dp))
+                    }
                 }
             }
         }
