@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kunci entri bacaan adzan tidak lagi dapat menyimpang dari bundel, pembaca, dan gate**: tiga
+  bacaan setelah adzan — menjawab adzan, sholawat, dan doa setelah adzan — punya kunci yang ditulis
+  di **empat** tempat: `adzan.json`, pembaca `ContentRepo.adzanDoa("…")`, daftar kunci di gate
+  `tools/validate_content.py` (yang menuntut tiap entri menyatakan **kapan dibaca**), dan daftar di
+  dalam ujinya sendiri. Tiap salinan bergerak sendiri-sendiri, dan yang paling sunyi adalah gate:
+  `data.get(k)` mengembalikan `None` untuk kunci yang salah tulis, syarat `isinstance(entri, dict)`
+  tak terpenuhi, dan pemeriksaan "kapan dibaca" **dilewati tanpa satu pun galat** — padahal justru
+  itu yang diminta `plan.txt`. Kini `WaktuBacaanAdzanTest` mengikat keempatnya: daftar uji harus
+  sama dengan entri ber-`waktu` di bundel, daftar gate harus sama dengan bundel, dan pembaca di
+  `ContentRepo` harus sama dengan daftar gate — sehingga kunci yang berubah di sisi mana pun
+  sendirian akan tertangkap. Sekaligus dua pemeriksaan render diperketat: pencarian biasa
+  `"KartuDoa("` juga cocok dengan **definisi** fungsinya, dan `"entri.catatan"` juga cocok dengan
+  `entri.catatanKaki`, sehingga entri yang diam-diam dirender lewat helper lain — atau catatannya
+  tak pernah tampil — tetap hijau. Sembilan mutasi terverifikasi tertangkap.
 - **Kosakata kategori bacaan di dokumen tidak lagi dapat menyimpang dari yang tampil di layar**:
   `docs/CONTENT_SOURCES.md` memuat tabel kategori (kunci, arti, **label di layar**) sebagai
   penjelasan kategori yang wajib dinyatakan tiap berkas ber-Arab, dan `docs/CONTENT_UPDATE.md`
