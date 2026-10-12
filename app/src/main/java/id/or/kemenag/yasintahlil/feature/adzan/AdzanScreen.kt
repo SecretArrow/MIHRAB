@@ -252,9 +252,17 @@ fun AdzanScreen() {
             EmptyState("Lafaz adzan tidak tersedia",
                 "Berkas lafaz adzan tidak ditemukan di aplikasi. Pasang ulang aplikasi bila ini terus terjadi.")
         }
-        lafaz.forEach { l ->
-            BacaanCard("adzan:${l.arab.take(10)}", "Adzan", l.arab, l.latin, l.terjemahan,
-                true, true, arabSize, ulangi = l.ulangi, showArab = showArab, kategori = l.kategori)
+        // Urutan lafaz diberi nomor, dan tiap kartu menyebut sumbernya. Sebelumnya kartu hanya
+        // berjudul "Adzan" dan tanpa sumber, sehingga lafaz yang berbunyi sama berulang kali
+        // (takbir, syahadat, dan seruan hayya) tak dapat dibedakan satu sama lain. Karena judulnya
+        // sama, id kartunya pun bertabrakan (`l.arab.take(10)`), dan kartu dengan id kembar berbagi
+        // satu entri favorit — menandai satu lafaz membuat lafaz lain ikut bertanda. Nomor urut
+        // menjadikan id-nya unik.
+        lafaz.forEachIndexed { i, l ->
+            BacaanCard("adzan:${i + 1}", "Lafaz adzan ${i + 1} dari ${lafaz.size}",
+                l.arab, l.latin, l.terjemahan,
+                true, true, arabSize, ulangi = l.ulangi, sumber = l.sumber,
+                showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
     }

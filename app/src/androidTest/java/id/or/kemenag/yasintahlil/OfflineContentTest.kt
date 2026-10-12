@@ -91,6 +91,51 @@ class OfflineContentTest {
         }
     }
 
+    /**
+     * Lafaz adzan dan iqomah berasal dari hadis, jadi tiap lafaz dari bundel wajib menyebut
+     * rujukannya. `adzan.json` mencatatnya di tingkat bagian (`adzan`/`iqomah`), dan pembacaan
+     * berkas menjatuhkan diri ke keterangan itu bila entri tidak menyebut sumbernya sendiri —
+     * tanpa cadangan tersebut, seluruh lafaz tampil tanpa asal-usulnya.
+     */
+    @Test
+    fun lafazAdzanDanIqomahMenyebutSumbernya() {
+        (repo.adzan().map { "adzan" to it } + repo.iqomah().map { "iqomah" to it }).forEach { (bagian, l) ->
+            assertTrue(
+                "lafaz $bagian \"${l.arab.take(12)}\" tidak menyebut sumber apa pun",
+                l.sumber.isNotBlank(),
+            )
+        }
+    }
+
+    /**
+     * Teks Qur'an wajib menyebut asal teks Arab, transliterasi, dan terjemahannya — ketiganya
+     * dicatat terpisah di berkas dan berasal dari bagian berbeda layanan resmi Kemenag. Bila salah
+     * satu kosong, layar tidak dapat menyebutkannya, dan pengguna kehilangan asal-usul teks yang
+     * ia baca.
+     */
+    @Test
+    fun surahYasinMenyebutSumberKetigaTeksnya() {
+        val yasin = repo.yasin
+        assertTrue("Surat Yasin tidak menyebut sumber teks Arab", yasin.sumberArab.isNotBlank())
+        assertTrue("Surat Yasin tidak menyebut sumber transliterasi", yasin.sumberLatin.isNotBlank())
+        assertTrue("Surat Yasin tidak menyebut sumber terjemahan", yasin.sumber.isNotBlank())
+    }
+
+    /**
+     * Keterangan sumber tingkat modul wajib ada di bundel — sebagian besar bagian tahlil dan
+     * seluruh daftar sholat tidak menyebut sumbernya sendiri, jadi keterangan modul inilah satu-
+     * satunya yang dapat ditampilkan untuk mereka.
+     */
+    @Test
+    fun keteranganSumberTingkatModulTersedia() {
+        assertTrue("tahlil_full.json tidak menyediakan sumber bacaan tingkat modul",
+            repo.tahlilSumberBacaan().isNotBlank())
+        assertTrue("tahlil.json tidak menyediakan catatan tradisi tingkat modul",
+            repo.tahlilCatatanTradisi().isNotBlank())
+        assertTrue("sholat_daftar.json tidak menyediakan sumber panduan tingkat modul",
+            repo.sholatPanduan().isNotBlank())
+    }
+
     @Test
     fun aplikasiTidakMemintaIzinInternet() {
         @Suppress("DEPRECATION")

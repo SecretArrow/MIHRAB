@@ -72,6 +72,10 @@ class ContentRepo(private val ctx: Context) {
             (0 until arr.length()).map { verse(arr.getJSONObject(it)) },
             d.optString("sumber_terjemahan", ""),
             d.optString("kategori", ""),
+            // Asal teks Arab & transliterasi dicatat terpisah dari terjemahan di berkasnya; tanpa
+            // keduanya, hanya asal terjemahan yang dapat ditampilkan.
+            d.optString("sumber_arab", ""),
+            d.optString("sumber_latin", ""),
         )
     }
 
@@ -157,6 +161,35 @@ class ContentRepo(private val ctx: Context) {
     fun sholatWajib(): List<SholatInfo> = sholatList("wajib")
     fun sholatSunnah(): List<SholatInfo> = sholatList("sunnah")
 
+    /**
+     * Sumber panduan tingkat modul dari `sholat_daftar.json` (`panduan`).
+     *
+     * Layar Panduan Sholat mencetak "(Fasolatan Kemenag)" sebagai teks hardcode, sementara
+     * berkasnya sudah mencatat keterangan yang lebih tepat — *"Fasolatan Ditjen Bimas Islam Kemenag;
+     * verifikasi hadis via sunnah.com"*. Keterangan itu ditulis, divalidasi gerbang konten, lalu
+     * tak pernah sampai ke layar. Kosong = tidak diklaim.
+     */
+    fun sholatPanduan(): String = doc("sholat_daftar.json").optString("panduan", "")
+
+    /**
+     * Catatan tradisi tingkat modul dari `tahlil.json` (`catatan_tradisi`).
+     *
+     * Layar Tahlil mencetak *"susunan dapat berbeda menurut tradisi"* sebagai teks hardcode —
+     * kalimat yang sudah ada di bundel dengan bunyi yang lebih lengkap (*"…; bukan satu-satunya
+     * versi yang benar"*). Membacanya dari berkas menjaga agar peringatan itu ikut berubah bila
+     * bundelnya diperbarui, bukan tertinggal sebagai salinan di kode.
+     */
+    fun tahlilCatatanTradisi(): String = doc("tahlil.json").optString("catatan_tradisi", "")
+
+    /**
+     * Sumber bacaan tingkat modul dari `tahlil_full.json` (`sumber_umum`).
+     *
+     * Sebagian besar bagian tahlil tidak menyebut sumbernya sendiri; keterangan tingkat modul
+     * inilah yang berlaku untuk mereka (*"Bacaan Qur'an dari Mushaf Standar Indonesia LPMQ Kemenag;
+     * doa dari khazanah sunnah"*). Tanpa dibaca, kartu bagian itu tampil tanpa asal-usul apa pun.
+     */
+    fun tahlilSumberBacaan(): String = doc("tahlil_full.json").optString("sumber_umum", "")
+
     private fun sholatList(key: String): List<SholatInfo> {
         val d = doc("sholat_daftar.json")
         val defKategori = d.optString("kategori", "")
@@ -237,11 +270,14 @@ class ContentRepo(private val ctx: Context) {
     fun adzan(): List<AdzanLafaz> {
         val d = doc("adzan.json")
         val def = d.optString("kategori", "")
-        val arr = d.getJSONObject("adzan").getJSONArray("daftar")
+        val bagian = d.getJSONObject("adzan")
+        val defSumber = bagian.optString("sumber", "")
+        val arr = bagian.getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
-                o.optInt("ulangi", 1), o.optString("kategori", def))
+                o.optInt("ulangi", 1), o.optString("sumber", defSumber),
+                o.optString("kategori", def))
         }
     }
 
@@ -253,11 +289,14 @@ class ContentRepo(private val ctx: Context) {
     fun iqomah(): List<AdzanLafaz> {
         val d = doc("adzan.json")
         val def = d.optString("kategori", "")
-        val arr = d.getJSONObject("iqomah").getJSONArray("daftar")
+        val bagian = d.getJSONObject("iqomah")
+        val defSumber = bagian.optString("sumber", "")
+        val arr = bagian.getJSONArray("daftar")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             AdzanLafaz(o.getString("arab"), o.getString("latin"), o.optString("terjemahan"),
-                o.optInt("ulangi", 1), o.optString("kategori", def))
+                o.optInt("ulangi", 1), o.optString("sumber", defSumber),
+                o.optString("kategori", def))
         }
     }
 
