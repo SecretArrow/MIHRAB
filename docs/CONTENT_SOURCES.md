@@ -16,7 +16,7 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `tahlil_full.json` | 15 bagian susunan tahlil | Qur'an Kemenag (MSI) + hadis sunnah.com | ✅ resmi |
 | `tahlil.json` | Deskriptor susunan (id merujuk `tahlil_full`) | — | ✅ metadata |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
-| `dzikir.json` | Dzikir & doa harian | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
+| `dzikir.json` | Dzikir & doa harian — 5 kelompok: *setelah sholat*, *pagi & petang*, *harian*, *doa khusus*, *doa memohon ampunan* | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
@@ -93,6 +93,15 @@ manusia dari sumber resmi.
 > **"Doa khusus"** ditambahkan, doa jenazah juga tampil sebagai entri tersendiri di pustaka
 > dzikir — tetapi **tidak disalin**: entri itu menunjuk `sholat_mayit.json#doa_mayit`, sehingga
 > hanya ada satu salinan teks yang terverifikasi di seluruh aplikasi.
+>
+> **"Doa memohon ampunan"** (`plan.txt` §"Pustaka Doa dan Dzikir") kini menjadi kelompok
+> tersendiri di `dzikir.json`. Isinya juga **tidak ada yang baru**: ketiga entrinya menunjuk
+> lafaz yang sudah terverifikasi — Istighfar 3x (`tahlil_full.json#istighfar`, HR Muslim 591),
+> Sayyidul Istighfar, dan Subhanallahi wa bihamdih 100x (HR Bukhari-Muslim) — yang dua terakhir
+> ada di kelompok *Dzikir pagi & petang* di berkas yang sama. Agar rujukan seperti itu mungkin,
+> setiap entri `dzikir.json` diberi `id` stabil dan `ContentRepo` mencari `#id` juga di dalam
+> `kelompok[].items[]` (sebelumnya hanya `bagian`/`bacaan`); `RujukanTest` menguji penyelesai itu
+> dan `DzikirRujukanTest` menjaga agar **tidak satu pun** entri penunjuk menyalin teksnya sendiri.
 >
 > **Doa masuk rumah** disertakan beserta derajat hadisnya (daif menurut Al-Albani) secara
 > terbuka pada field `sumber`, agar pengguna dapat menilai sendiri — bukan disembunyikan.

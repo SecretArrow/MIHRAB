@@ -94,9 +94,7 @@ class ContentRepo(private val ctx: Context) {
         val d = doc(nama)
         val id = pisah.getOrNull(1)?.trim()?.takeIf { it.isNotBlank() }
         if (id != null) {
-            val arr = d.optJSONArray("bagian") ?: d.optJSONArray("bacaan") ?: return Triple("", "", "")
-            val o = (0 until arr.length()).map { arr.getJSONObject(it) }
-                .firstOrNull { it.optString("id") == id } ?: return Triple("", "", "")
+            val o = entriRujukan(d, id) ?: return Triple("", "", "")
             return Triple(o.optString("arab"), o.optString("latin"), o.optString("terjemahan"))
         }
         return if (d.has("verses")) {

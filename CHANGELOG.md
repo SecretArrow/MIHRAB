@@ -6,6 +6,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **"Doa memohon ampunan" sebagai koleksi bernama** (`plan.txt` §"Pustaka Doa dan Dzikir"
+  mendaftarnya sebagai salah satu koleksi yang harus disediakan): lafaznya sudah ada dan
+  terverifikasi, tetapi **tersebar** — Istighfar di "Dzikir setelah sholat", Sayyidul Istighfar dan
+  Subhanallahi wa bihamdih di "Dzikir pagi & petang", Istighfar 3x di modul Tahlil — sehingga
+  pengguna yang mencari "doa ampunan" tidak menemukan tempat yang menjawabnya. Kini ada kelompok
+  **"Doa memohon ampunan"** di pustaka dzikir berisi ketiganya. Isinya **tidak satu pun disalin**:
+  setiap entri hanya menunjuk lafaz yang sudah ada (`tahlil_full.json#istighfar`,
+  `dzikir.json#sayyidul_istighfar`, `dzikir.json#subhanallahi_wa_bihamdih`), jadi seluruh aplikasi
+  tetap memuat **satu salinan** per doa — `DzikirRujukanTest` menolak entri penunjuk yang menyimpan
+  teksnya sendiri maupun yang menunjuk id tidak ada. Agar rujukan ke berkas yang sama mungkin,
+  setiap entri `dzikir.json` kini punya `id` stabil dan penyelesai rujukan dipisahkan ke
+  `entriRujukan()` (`core/data/Rujukan.kt`) yang mencari `#id` di `bagian`, `bacaan`, **dan**
+  `kelompok[].items[]` — sebelumnya bentuk ketiga tidak dikenali, sehingga rujukan di dalam pustaka
+  dzikir akan menjadi tautan mati. `RujukanTest` menguji penyelesai itu langsung (tanpa `Context`)
+  sekaligus memastikan `ContentRepo` benar-benar memakainya, bukan menyalin logikanya.
 - **Tata letak responsif, ornamen geometris Islami, dan animasi ringan** (`plan.txt` §"Konsep dan
   Identitas Aplikasi": *"Layout responsif untuk berbagai ukuran layar dan kepadatan piksel
   Android"*, *"Ornamen geometris Islami yang halus, tanpa membuat antarmuka terlihat ramai"*, dan
