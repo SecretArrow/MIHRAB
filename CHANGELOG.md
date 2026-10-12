@@ -360,6 +360,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Pilihan tampilan tidak lagi lenyap saat perangkat diputar**: `MainActivity` tidak mengunci
+  orientasi (`android:screenOrientation` tidak ada di manifest), jadi memutar perangkat membangun
+  ulang Activity beserta seluruh komposisinya — dan apa pun yang disimpan di `remember` biasa ikut
+  hilang. Yang paling merugikan adalah posisi **langkah panduan sholat**: pengguna yang sedang di
+  langkah ketujuh terlempar kembali ke langkah pertama hanya karena memutar ponsel. Hal yang sama
+  terjadi pada tab panduan sholat dan kelompok dzikir, cara pengelompokan, mode layar penuh
+  (Yasin, Tahlil, Kiblat, Dzikir, Ghaib, Jenazah, Iqomah), mode jamaah dan panel susunan Tahlil,
+  mode ringkas dan tanda selesai panduan sholat, mode baca fokus dan layar tetap menyala Yasin,
+  daftar bookmark, serta kata kunci yang sedang diketik di Yasin dan Pencarian — semuanya kini
+  `rememberSaveable`. Keadaan yang **sengaja** tetap `remember` (panel pengaturan modal, indeks
+  pencarian dan pesan galat yang dibangun ulang oleh efek, penghitung percobaan ulang) dinyatakan
+  terang-terangan di `KeadaanLayarSaatDiputarTest`, supaya tidak ada yang "memperbaikinya" keliru.
 - **Bilah sistem tidak lagi memakan tepi layar**: `plan.txt` §"UI/UX dan Navigasi" meminta *"Layout
   responsif untuk berbagai ukuran layar"*, tetapi yang dijaga baru **lebarnya** — inset bilah sistem
   sama sekali tidak dihitung. Jendela memakai bilah berlatar warna, sehingga pita di sekitar poni

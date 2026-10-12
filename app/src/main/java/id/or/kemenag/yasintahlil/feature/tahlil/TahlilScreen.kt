@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,10 +21,12 @@ import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
-    var jamaah by remember { mutableStateOf(false) }
-    var fullscreen by remember { mutableStateOf(false) }
+    // rememberSaveable: pilihan tampilan (mode jamaah, layar penuh, panel susunan) tidak hilang
+    // saat layar diputar ulang.
+    var jamaah by rememberSaveable { mutableStateOf(false) }
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
-    var susun by remember { mutableStateOf(false) }
+    var susun by rememberSaveable { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
 
     if (s.items.isEmpty()) {

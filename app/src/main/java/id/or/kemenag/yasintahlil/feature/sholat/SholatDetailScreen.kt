@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,14 +36,17 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     val bacaan = remember { repo.sholatBacaan() }
     val syarat = remember { repo.sholatSyarat() }
     val info = remember { (repo.sholatWajib() + repo.sholatSunnah()).find { it.id == id } }
-    var step by remember { mutableStateOf(0) }
-    var ringkas by remember { mutableStateOf(false) }
+    // rememberSaveable: posisi langkah, mode ringkas, dan tanda selesai tidak hilang saat layar
+    // diputar ulang. Kehilangan `step` berarti pengguna yang sedang di langkah ketujuh terlempar
+    // kembali ke langkah pertama hanya karena memutar perangkat.
+    var step by rememberSaveable { mutableStateOf(0) }
+    var ringkas by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
-    var selesai by remember { mutableStateOf(false) }
+    var selesai by rememberSaveable { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var settings by remember { mutableStateOf(false) }
-    var syaratTerbuka by remember { mutableStateOf(false) }
+    var syaratTerbuka by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, true)

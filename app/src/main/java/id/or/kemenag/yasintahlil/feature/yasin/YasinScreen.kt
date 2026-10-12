@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -22,11 +23,14 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val surah = vm.surah
     val ctx = LocalContext.current
-    var focus by remember { mutableStateOf(false) }
-    var keepOn by remember { mutableStateOf(false) }
-    var jump by remember { mutableStateOf("") }
-    var query by remember { mutableStateOf("") }
-    var showBookmarks by remember { mutableStateOf(false) }
+    // rememberSaveable: mode baca, kata kunci, dan daftar bookmark tidak hilang saat diputar ulang.
+    // `jump` khususnya: angka yang sudah diketik pengguna untuk melompat ke ayat tertentu lenyap
+    // begitu perangkat diputar, dan ia harus mengetiknya lagi.
+    var focus by rememberSaveable { mutableStateOf(false) }
+    var keepOn by rememberSaveable { mutableStateOf(false) }
+    var jump by rememberSaveable { mutableStateOf("") }
+    var query by rememberSaveable { mutableStateOf("") }
+    var showBookmarks by rememberSaveable { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
 

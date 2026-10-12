@@ -27,8 +27,9 @@ fun SholatScreen(go: (String) -> Unit) {
     val scope = rememberCoroutineScope()
     val wajib = remember { repo.sholatWajib() }
     val sunnah = remember { repo.sholatSunnah() }
-    var tab by remember { mutableStateOf(0) }
-    var cara by remember { mutableStateOf(CaraKelompok.WAKTU) }
+    // rememberSaveable: tab dan cara pengelompokan pilihan pengguna tidak hilang saat diputar ulang.
+    var tab by rememberSaveable { mutableStateOf(0) }
+    var cara by rememberSaveable { mutableStateOf(CaraKelompok.WAKTU) }
     var showArab by remember { mutableStateOf(true) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var settings by remember { mutableStateOf(false) }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -43,7 +44,8 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var fullscreen by remember { mutableStateOf(false) }
+    // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
 
     val permLauncher = rememberLauncherForActivityResult(

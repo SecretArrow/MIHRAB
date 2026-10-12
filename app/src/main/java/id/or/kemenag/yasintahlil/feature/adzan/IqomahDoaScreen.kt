@@ -50,7 +50,8 @@ fun IqomahScreen() {
     val items = remember { repo.iqomah() }
     var mins by remember { mutableStateOf(PengingatAdzan.IQOMAH_DEFAULT_MENIT) }
     var remaining by rememberSaveable { mutableStateOf(-1) } // detik; -1 = tidak berjalan
-    var fullscreen by remember { mutableStateOf(false) }
+    // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
+    var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(true) }
     var settings by remember { mutableStateOf(false) }

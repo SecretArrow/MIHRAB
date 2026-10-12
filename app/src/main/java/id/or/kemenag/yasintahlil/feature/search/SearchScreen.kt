@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,10 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
     val repo = rememberRepo()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
-    var q by remember { mutableStateOf(q0) }
+    // rememberSaveable: kata kunci yang sedang diketik tidak hilang saat layar diputar ulang.
+    // `recent`, `indeks`, `galat`, dan `ulang` sengaja tetap `remember` — ketiganya dibangun ulang
+    // oleh efek di bawah, bukan pilihan pengguna yang perlu dipertahankan.
+    var q by rememberSaveable { mutableStateOf(q0) }
     var recent by remember { mutableStateOf(listOf<String>()) }
     var indeks by remember { mutableStateOf<List<SearchDoc>?>(null) }
     var galat by remember { mutableStateOf<String?>(null) }
