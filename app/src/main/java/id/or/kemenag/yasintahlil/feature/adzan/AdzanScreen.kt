@@ -23,8 +23,10 @@ import id.or.kemenag.yasintahlil.core.data.SuaraAdzan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 /**
  * Pengaturan adzan & pengingat: saklar per waktu, daftar **jenis suara** (berkas audio pilihan
@@ -54,6 +56,15 @@ fun AdzanScreen() {
     // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
     // memilih metode lain di menu Jadwal.
     var metode by remember { mutableStateOf(PrayerCalc.Method.KEMENAG) }
+    // Sisa parameter hisab, dibaca dari kunci yang sama dengan menu Jadwal & penjadwal pengingat.
+    // `plan.txt` §"Fitur Adzan" membuka daftar fitur wajibnya dengan *"Jadwal adzan untuk Subuh,
+    // Zuhur, Asar, Magrib, dan Isya"*: saklar per waktu di bawah hanya menyebut nama waktunya,
+    // sehingga layar ini tidak dapat menjawab "jam berapa adzan berbunyi" tanpa membuka menu lain.
+    var lat by remember { mutableStateOf(-6.2) }
+    var lon by remember { mutableStateOf(106.8) }
+    var tzId by remember { mutableStateOf("") }
+    var corr by remember { mutableStateOf("0,0,0,0,0,0") }
+    var asar by remember { mutableStateOf("syafii") }
     // Berkas audio pengguna bisa saja tak terbaca (URI dicabut, format tak didukung, izin hilang).
     // Sebelumnya pratinjau diam saja saat gagal; kini sebabnya ditampilkan + tombol coba lagi.
     // Pemutarannya sendiri ada di lapisan `core.audio`, bukan di layar (plan.txt: lapisan audio
@@ -101,15 +112,44 @@ fun AdzanScreen() {
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
         metode = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
+        lat = store.get(Store.LAT, -6.2)
+        lon = store.get(Store.LON, 106.8)
+        tzId = store.get(Store.TZ, "")
+        corr = store.get(Store.CORR, "0,0,0,0,0,0")
+        asar = store.get(Store.ASAR, "syafii")
     }
 
     val names = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
+    // Jadwal hari ini dihitung dengan aturan yang sama persis dengan penjadwal pengingat
+    // (`JadwalHariIni`), jadi jam yang terlihat di sini adalah jam yang benar-benar dijadwalkan —
+    // bukan perkiraan terpisah yang bisa menyimpang diam-diam.
+    val tz = remember(tzId) { JadwalHariIni.zona(tzId) }
+    val jam = remember(lat, lon, metode, asar, corr, tz) {
+        JadwalHariIni.adzan(PrayerCalc.compute(Calendar.getInstance(tz), JadwalHariIni.params(
+            lat = lat, lon = lon, method = metode, asarHanafi = JadwalHariIni.asarHanafi(asar),
+            corr = JadwalHariIni.parseCorr(corr), tz = tz,
+        )))
+    }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Adzan & Pengingat", style = MaterialTheme.typography.titleLarge)
         Text("Aktif/nonaktif per waktu:", style = MaterialTheme.typography.titleMedium)
         names.forEachIndexed { i, n ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(n)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text(n)
+                    // Jam adzan dan (bila aktif) jam pengingat sebelum adzan, keduanya dihitung
+                    // dari koreksi yang sama dengan pekerja latar.
+                    Text(
+                        buildString {
+                            append("Adzan ${jam[i]}")
+                            if (preMin > 0) {
+                                append(" • pengingat ${JadwalHariIni.geser(jam[i], -preMin)}")
+                            }
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
                 Switch(on[i], {
                     on = on.toMutableList().also { it[i] = !it[i] }
                     scope.launch {
@@ -119,6 +159,10 @@ fun AdzanScreen() {
                 })
             }
         }
+        Text("Jam di atas dihitung di perangkat untuk hari ini dari lokasi, metode, mazhab Asar, " +
+                "koreksi menit, dan zona waktu yang sama dengan menu Jadwal (metode ${metode.label}). " +
+                "Menonaktifkan sebuah waktu mematikan adzan sekaligus pengingatnya.",
+            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 4.dp))
 
         // `plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang legal digunakan"*
         // dan *"Pengaturan volume dan jenis suara"*. Aplikasi tidak menyertakan audio bawaan, jadi

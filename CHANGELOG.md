@@ -360,6 +360,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Aturan jadwal sholat kini tunggal, tidak lagi disalin ke tiga tempat**: `parseCorr`, pemetaan
+  mazhab Asar ke faktor bayangan, dan pemilihan zona waktu dahulu identik di **tiga** berkas —
+  `PrayerScheduler` (penjadwal pengingat), `JadwalViewModel` (menu Jadwal), dan `HomeViewModel`
+  (beranda) — masing-masing menyalin ulang aturan yang sama. Tiga salinan berarti tiga kesempatan
+  untuk berbeda: satu koma yang salah ketik, atau mazhab Asar yang diubah di layar tetapi tidak di
+  penjadwal, membuat **pengingat berbunyi pada menit yang tidak sama dengan jam yang ditampilkan
+  layar** — persis kegagalan yang paling sulit terlihat pengguna. Aturannya kini hidup di satu
+  tempat, `JadwalHariIni` (murni, tanpa Android, sehingga dapat diuji langsung di JVM), dan keempat
+  pemakainya — termasuk layar Adzan — menyusun `PrayerCalc.Params` lewat fungsi yang sama.
+  Dijaga `JadwalHariIniTest` (termasuk kasus tepi: CSV cacat, koreksi melewati tengah malam) dan
+  `AdzanJadwalTest` yang menolak salinan `parseCorr` maupun pemetaan mazhab Asar baru muncul lagi.
+- **Layar Adzan kini menjawab "jam berapa adzan berbunyi"** (`plan.txt` §"Fitur Adzan" membuka
+  daftar fitur wajibnya dengan *"Jadwal adzan untuk Subuh, Zuhur, Asar, Magrib, dan Isya"*): layar
+  yang mengatur kapan adzan berbunyi dahulu hanya menampilkan **saklar** per waktu beserta namanya,
+  sehingga untuk mengetahui jamnya pengguna harus membuka menu lain. Kini setiap waktu menampilkan
+  jam adzan **dan** jam pengingatnya (bila diaktifkan), dihitung di perangkat dari lokasi, metode,
+  mazhab Asar, koreksi menit, dan zona waktu yang **sama persis** dengan penjadwal pengingat.
 - **Keterangan sumber tingkat modul kini dibaca, bukan disalin ke kode**: tiga berkas mencatat
   keterangan yang berlaku untuk seluruh isinya, dan ketiganya tidak pernah dibaca kode — jadi layar
   mengarang versi yang lebih pendek atau tidak menyebut asal-usulnya sama sekali. Layar Tahlil
