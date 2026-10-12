@@ -56,6 +56,12 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
 
         // Kota
         OutlinedButton(onClick = { drop = !drop; methodDrop = false; tzDrop = false }) { Text("Kota: ${s.city} ▾") }
+        // Daftar kosong diberi keterangan, bukan dibiarkan tampak seperti tombol yang rusak: sebabnya
+        // dibawa dari `JadwalViewModel.kotaGagal` (bundel konten tidak terbaca).
+        if (drop && vm.kota.isEmpty()) {
+            Text(vm.kotaGagal ?: "Daftar kota pada bundel konten kosong.",
+                style = MaterialTheme.typography.labelSmall)
+        }
         if (drop) vm.kota.forEach { k ->
             TextButton(onClick = { vm.selectCity(k); drop = false }) { Text(k.nama) }
         }

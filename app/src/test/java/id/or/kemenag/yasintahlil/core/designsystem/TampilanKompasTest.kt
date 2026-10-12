@@ -153,4 +153,29 @@ class TampilanKompasTest {
             }
         assertTrue("Satuan kompas ditulis ulang di luar TampilanKompas: $pelanggar", pelanggar.isEmpty())
     }
+
+    /**
+     * Angka azimut yang dibaca pengguna juga bagian dari aturan ini: faktor konversinya tinggal di
+     * sini, bukan dihitung ulang di layar Kiblat. Angka yang diperiksa ditulis apa adanya (bukan
+     * dihitung dari [TampilanKompas.MIL_PER_DEG]) supaya perubahan faktornya benar-benar ketahuan.
+     */
+    @Test
+    fun azimutDiformatMenurutSatuanYangDipilih() {
+        assertEquals("100.0°", TampilanKompas.formatAzimut(100.0, TampilanKompas.DERAJAT))
+        assertEquals("100.0°", TampilanKompas.formatAzimut(100.0, "ngawur"))
+        assertEquals("1778 mil", TampilanKompas.formatAzimut(100.0, TampilanKompas.MIL))
+        // Lingkaran penuh: 360° = 6400 mil artileri.
+        assertEquals("6400 mil", TampilanKompas.formatAzimut(360.0, TampilanKompas.MIL))
+        // 295,15° — azimut kiblat dari Jakarta — dibulatkan ke mil terdekat, bukan dipotong.
+        assertEquals("5247 mil", TampilanKompas.formatAzimut(295.15, TampilanKompas.MIL))
+    }
+
+    /** Konversi satuan tidak boleh kembali dituliskan di layar, seperti kunci satuannya dahulu. */
+    @Test
+    fun konversiSatuanTidakDitulisUlangDiLayar() {
+        val layar = kiblatScreen()
+        assertTrue("KiblatScreen tidak memakai formatAzimut bersama",
+            layar.contains("TampilanKompas.formatAzimut("))
+        assertFalse("KiblatScreen menuliskan sendiri faktor mil-nya", layar.contains("17.7778"))
+    }
 }

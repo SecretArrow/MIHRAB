@@ -70,9 +70,10 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
 
     val kiblat = s.bearing
     val arah = listOf("U", "TL", "T", "TG", "S", "BD", "B", "BL")[(kiblat / 45.0).roundToInt() % 8]
-    val azimutTeks =
-        if (s.unit == TampilanKompas.MIL) "${(kiblat * MIL_PER_DEG).roundToInt()} mil"
-        else "%.1f°".format(kiblat)
+    // Satuan dan konversinya adalah satu aturan bersama (`TampilanKompas`), bukan perhitungan yang
+    // ditulis ulang di layar ini: chip satuan di Pengaturan dan angka di sini harus tidak dapat
+    // berbeda pendapat soal apa arti "mil".
+    val azimutTeks = TampilanKompas.formatAzimut(kiblat, s.unit)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text("Arah Kiblat", style = MaterialTheme.typography.titleLarge)
@@ -234,6 +235,3 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         }
     }
 }
-
-/** 1 derajat = 17,7778 mil (lingkaran penuh 6400 mil). */
-private const val MIL_PER_DEG = 17.7778

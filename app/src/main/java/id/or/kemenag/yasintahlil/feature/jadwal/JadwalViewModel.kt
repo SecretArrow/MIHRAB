@@ -51,7 +51,22 @@ class JadwalViewModel @Inject constructor(
     @ApplicationContext private val ctx: Context,
 ) : ViewModel() {
 
-    val kota: List<Kota> = runCatching { repo.kota() }.getOrDefault(emptyList())
+    /**
+     * Kota yang dapat dipilih, dibaca dari bundel konten.
+     *
+     * Bundel konten dapat diperbarui atau diganti pengguna (layar "Pembaruan konten"); bila gagal
+     * dibaca, daftarnya kosong. Dahulu kegagalan itu ditelan (`getOrDefault(emptyList())`) sehingga
+     * tombol "Kota: …" membuka daftar kosong **tanpa satu pun keterangan** — pengguna menyimpulkan
+     * tombolnya rusak, padahal bundelnya yang bermasalah. Sebabnya kini ikut dibawa ke layar lewat
+     * [kotaGagal], sama seperti kegagalan membaca preferensi yang sudah punya `gagalMuat`.
+     */
+    private val hasilKota: Result<List<Kota>> = runCatching { repo.kota() }
+
+    val kota: List<Kota> = hasilKota.getOrDefault(emptyList())
+
+    /** Sebab daftar kota kosong, atau `null` bila bundel konten terbaca normal. */
+    val kotaGagal: String? = hasilKota.exceptionOrNull()
+        ?.let { "Daftar kota tidak dapat dibaca dari bundel konten (${it.message ?: it::class.java.simpleName})." }
 
     private val _state = MutableStateFlow(JadwalUiState())
     val state: StateFlow<JadwalUiState> = _state.asStateFlow()
