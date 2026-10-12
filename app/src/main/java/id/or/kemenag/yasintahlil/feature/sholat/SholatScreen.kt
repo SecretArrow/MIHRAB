@@ -144,7 +144,7 @@ fun SholatScreen(go: (String) -> Unit) {
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }
-                    BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f,
+                    BacaanCard("bacaan:${b.id}", b.judul, a, l, t, true, true, arabSize,
                         sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab, kategori = b.kategori)
                     if (b.catatan.isNotBlank()) {
                         Text(b.catatan, style = MaterialTheme.typography.labelSmall,

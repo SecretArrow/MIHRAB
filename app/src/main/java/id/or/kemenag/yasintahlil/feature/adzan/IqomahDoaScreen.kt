@@ -133,7 +133,7 @@ fun IqomahScreen() {
 
         items.forEach { l ->
             BacaanCard("iqomah:${l.arab.take(10)}", "Iqomah", l.arab, l.latin, l.terjemahan,
-                true, true, if (fullscreen) arabSize + 8 else arabSize, 15f, l.ulangi,
+                true, true, if (fullscreen) arabSize + 8 else arabSize, ulangi = l.ulangi,
                 showArab = showArab, kategori = l.kategori)
         }
     }
@@ -195,7 +195,7 @@ fun DoaAdzanScreen() {
 @Composable
 private fun KartuDoa(id: String, entri: AdzanDoa, arabSize: Float, showArab: Boolean) {
     BacaanCard(id, entri.judul, entri.arab, entri.latin, entri.terjemahan,
-        true, true, arabSize, 15f, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
+        true, true, arabSize, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
     if (entri.waktu.isNotBlank()) Text(
         "Kapan dibaca: ${entri.waktu}", style = MaterialTheme.typography.labelMedium)
     if (entri.catatan.isNotBlank()) Text(

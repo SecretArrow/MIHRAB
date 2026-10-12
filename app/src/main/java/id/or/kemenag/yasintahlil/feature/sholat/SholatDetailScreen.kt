@@ -72,7 +72,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         // Sholat wajib tidak punya kolom tujuan, jadi baris ini hanya muncul untuk sholat sunnah.
         info?.tujuan?.takeIf { it.isNotBlank() }?.let { Text("Tujuan: $it") }
         info?.niat?.let { n ->
-            BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f,
+            BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize,
                 showArab = showArab, kategori = n.kategori)
         }
         if (info?.niat == null) {
@@ -182,7 +182,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 }
             }
         }
-        BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, 15f, sumber = b.sumber,
+        BacaanCard("langkah:$id:${b.id}", b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
             showArab = showArab, kategori = b.kategori)
         if (b.catatan.isNotBlank()) {
             Text(b.catatan, style = MaterialTheme.typography.labelSmall,

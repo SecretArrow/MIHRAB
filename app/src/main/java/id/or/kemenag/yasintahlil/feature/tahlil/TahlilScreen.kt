@@ -78,7 +78,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
                     if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
                 } else {
                     BacaanCard("tahlil:${cur.id}", cur.judul, arab, latin, trans,
-                        s.showLatin, s.showTrans, s.arabSize, 16f, cur.ulangi, cur.sumber,
+                        s.showLatin, s.showTrans, s.arabSize, ulangi = cur.ulangi, sumber = cur.sumber,
                         showArab = s.showArab, kategori = cur.kategori)
                 }
                 if (selesai) Text("✓ Selesai — lanjut ke bagian berikutnya.",

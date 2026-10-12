@@ -117,8 +117,8 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                         modifier = Modifier.padding(end = 8.dp, top = 12.dp))
                     Column(Modifier.weight(1f)) {
                         BacaanCard("yasin:${v.nomor}", "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
-                            s.showLatin, s.showTrans, s.arabSize, s.latinSize,
-                            lineHeightFactor = s.lineHeight, showArab = s.showArab, kategori = surah.kategori)
+                            s.showLatin, s.showTrans, s.arabSize,
+                            showArab = s.showArab, kategori = surah.kategori)
                         Row {
                             TextButton(onClick = { vm.markRead(v.nomor) }) {
                                 Text(if (s.mark == v.nomor) "✓ Penanda terakhir" else "Tandai terakhir dibaca")
@@ -140,8 +140,6 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
             showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
             showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
             arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
-            latinSize = s.latinSize, onLatinSize = { vm.setLatinSize(it) },
-            lineHeight = s.lineHeight, onLineHeight = { vm.setLineHeight(it) },
         )
     }
 }

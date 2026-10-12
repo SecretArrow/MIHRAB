@@ -57,7 +57,7 @@ fun GhaibScreen() {
             Text("Varian niat:", style = MaterialTheme.typography.titleMedium)
             info.niat.forEach { n ->
                 BacaanCard("ghaib:niat:${n.id}", n.judul, n.arab, n.latin, n.terjemahan,
-                    true, false, arabSize, 15f, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
+                    true, false, arabSize, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
             }
         }
         steps.forEachIndexed { i, (judul, b) ->
@@ -68,7 +68,7 @@ fun GhaibScreen() {
                     Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                 }
                 BacaanCard("ghaib:${b.id}", b.judul, a, l, t, true, true,
-                    if (fullscreen) arabSize + 8 else arabSize, 15f, sumber = b.sumber,
+                    if (fullscreen) arabSize + 8 else arabSize, sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
         }

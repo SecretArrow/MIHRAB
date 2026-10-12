@@ -132,8 +132,12 @@ class KelompokSholatTest {
             "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/SholatScreen.kt").readText()
         assertTrue("layar tidak menawarkan cara pengelompokan",
             s.contains("CaraKelompok.entries.forEach"))
-        assertTrue("layar tidak mengelompokkan daftar sunnah",
-            s.contains("KelompokSholat.kelompok(sunnah, cara)"))
+        // Dikelompokkan dari daftar yang **tersaring**, bukan daftar mentah: bila keduanya
+        // berbeda, kotak pencarian di halaman ini akan berbenturan dengan pengelompokannya.
+        assertTrue("layar tidak mengelompokkan daftar sunnah yang tampil",
+            s.contains("KelompokSholat.kelompok(sunnahTampil, cara)"))
+        assertTrue("hasil pengelompokan tidak dipakai saat menggambar daftar",
+            s.contains("kelompokSunnah.forEach"))
         assertTrue("tujuan tidak ditampilkan", s.contains("s.tujuan"))
         assertTrue("judul tujuan tidak ada", s.contains("\"Tujuan: "))
     }

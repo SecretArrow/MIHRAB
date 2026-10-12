@@ -371,6 +371,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   argumen posisi sekaligus bernama, sehingga build berhenti sebelum satu pun uji berjalan.
 
 ### Diubah
+- **"Ukuran Latin" dan "Jarak antarbaris" kini benar-benar global** (`plan.txt` §"Pengaturan
+  Aplikasi" meminta pengaturan *"Ukuran teks Arab dan Latin"*, dan §"Pustaka Doa dan Dzikir"
+  meminta setiap bacaan mendukung transliterasi): hanya layar Yasin yang membaca
+  `Store.LATIN_SIZE`/`Store.LINE_HEIGHT`; seluruh layar bacaan lain — Dzikir & Doa, Panduan Sholat,
+  detail sholat, Ghaib, Jenazah, Adzan, Iqomah, dan Tahlil — menuliskan angka tetap (`15f`/`16f`)
+  pada panggilan `BacaanCard`. Jadi slider "Ukuran Latin" di Pengaturan hanya mengubah satu layar,
+  dan label sheet "berlaku untuk semua bacaan" tidak benar. Kini `BacaanCard` membaca kedua
+  preferensi itu sendiri (nilai yang dioper layar, bila ada, tetap menang), dan slider-nya
+  ditulis langsung oleh `BacaanSettingsSheet` — sama seperti "tema halaman" — sehingga tersedia di
+  semua layar bacaan tanpa dioper satu per satu. `YasinViewModel` tidak lagi menyimpan salinannya,
+  supaya hanya ada satu sumber kebenaran. Dijaga `UkuranBacaanGlobalTest`, yang juga menolak angka
+  tetap pada panggilan `BacaanCard` mana pun.
 - **Lapisan audio dipisahkan dari penjadwalan dan dari UI** (`plan.txt` §"Teknologi dan Arsitektur":
   *"Terapkan arsitektur modular yang memisahkan UI, domain, data, penjadwalan, audio, lokasi, dan
   sensor"*): pemutaran adzan sebelumnya tinggal di `core/scheduling/AdzanPlayer.kt` — satu paket

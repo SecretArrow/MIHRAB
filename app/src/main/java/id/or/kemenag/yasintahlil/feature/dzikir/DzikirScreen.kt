@@ -73,7 +73,8 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 val key = "${group.id}:${it.judul}"
                 val c = s.counts[key] ?: 0
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
-                    s.showLatin, s.showTrans, s.arabSize, 15f, it.ulangi, it.sumber,
+                    s.showLatin, s.showTrans, s.arabSize,
+                    ulangi = it.ulangi, sumber = it.sumber,
                     showArab = s.showArab, kategori = it.kategori)
                 // Hitungan ditampilkan untuk semua bacaan, bukan hanya yang ulangi > 1: progresnya
                 // tersimpan di Room, jadi pengguna bisa melihat/mengulang meski targetnya satu kali.

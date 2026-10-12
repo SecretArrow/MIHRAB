@@ -68,14 +68,25 @@ fun SumberKategoriLabel(kategori: String, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Satu bacaan: judul, Arab, transliterasi, terjemahan, sumber, penanda favorit, dan tombol
+ * salin/bagikan.
+ *
+ * [latinSize] dan [lineHeightFactor] boleh dibiarkan `null`: keduanya adalah preferensi bacaan
+ * **global** (Pengaturan → "Ukuran Latin" dan "Jarak antarbaris", juga disediakan tiap sheet
+ * pengaturan bacaan) yang dibaca langsung dari preferensi di sini. Layar yang tidak mengoper
+ * nilainya karena itu tetap menghormati pilihan pengguna, bukan angka tetap — sebelumnya hanya
+ * layar Yasin yang menyediakannya, sehingga mengubah ukuran Latin tidak berpengaruh di layar
+ * bacaan lain meski pengaturannya mengatakan "berlaku untuk semua bacaan".
+ */
 @Composable
 fun BacaanCard(
     id: String, judul: String,
     arab: String, latin: String, terjemahan: String,
     showLatin: Boolean, showTrans: Boolean,
-    arabSize: Float, latinSize: Float,
+    arabSize: Float, latinSize: Float? = null,
     ulangi: Int = 1, sumber: String = "",
-    lineHeightFactor: Float = 1.9f,
+    lineHeightFactor: Float? = null,
     onOpen: (() -> Unit)? = null,
     showArab: Boolean = true,
     kategori: String = "",
@@ -88,6 +99,13 @@ fun BacaanCard(
     LaunchedEffect(id) {
         userData.isFavorite(favKind, favRef).collect { fav = it }
     }
+    // Preferensi bacaan global — lihat KDoc di atas. Dibaca reaktif agar perubahan dari sheet
+    // pengaturan bacaan (atau layar Pengaturan) langsung terlihat tanpa membuka ulang layar.
+    val store = rememberStore()
+    val latinGlobal by store.flow(Store.LATIN_SIZE, 16f).collectAsStateWithLifecycle(16f)
+    val tinggiGlobal by store.flow(Store.LINE_HEIGHT, 1.9f).collectAsStateWithLifecycle(1.9f)
+    val ukuranLatin = latinSize ?: latinGlobal
+    val tinggiBaris = lineHeightFactor ?: tinggiGlobal
     // "Tema halaman" (plan.txt): kartu bacaan digambar di atas kertas pilihan pengguna. Skema
     // warna hanya diganti bila halaman memang bukan "ikut tema", sehingga tak ada biaya saat mati.
     val skema = skemaHalaman(LocalTemaHalaman.current)
@@ -106,10 +124,10 @@ fun BacaanCard(
                     if (ulangi > 1) Text("${ulangi}x", style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary)
                 }
-                if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
-                if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
+                if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = tinggiBaris)
+                if (showLatin && latin.isNotBlank()) Text(latin, fontSize = ukuranLatin.sp,
                     color = MaterialTheme.colorScheme.secondary)
-                if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)
+                if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = ukuranLatin.sp)
                 if (sumber.isNotBlank()) Text("Sumber: $sumber", style = MaterialTheme.typography.labelSmall)
                 SumberKategoriLabel(kategori)
                 Row {
@@ -232,9 +250,11 @@ fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
  * kini kontrol tampilan yang sama tinggal dibuka dari satu tombol, sehingga badan layar tetap
  * bersih dan istilahnya seragam.
  *
- * Parameter opsional ([showLatin], [showTrans], [latinSize], [lineHeight]) hanya ditampilkan bila
- * layar memang menyediakannya — layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip
- * yang tak berefek.
+ * Parameter opsional ([showLatin], [showTrans]) hanya ditampilkan bila layar memang menyediakannya —
+ * layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang tak berefek.
+ *
+ * "Ukuran Latin" dan "jarak antarbaris" tidak dioper dari layar: keduanya preferensi bacaan global
+ * yang ditulis sheet ini sendiri, sama seperti "tema halaman".
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,8 +264,6 @@ fun BacaanSettingsSheet(
     showLatin: Boolean? = null, onShowLatin: ((Boolean) -> Unit)? = null,
     showTrans: Boolean? = null, onShowTrans: ((Boolean) -> Unit)? = null,
     arabSize: Float, onArabSize: (Float) -> Unit,
-    latinSize: Float? = null, onLatinSize: ((Float) -> Unit)? = null,
-    lineHeight: Float? = null, onLineHeight: ((Float) -> Unit)? = null,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
         Column(
@@ -268,12 +286,21 @@ fun BacaanSettingsSheet(
                 }
             }
             UkuranSlider("Ukuran Arab", arabSize, ARAB_SIZE_RANGE, onArabSize)
-            if (latinSize != null && onLatinSize != null) {
-                UkuranSlider("Ukuran Latin", latinSize, LATIN_SIZE_RANGE, onLatinSize)
-            }
-            if (lineHeight != null && onLineHeight != null) {
-                UkuranSlider("Jarak antarbaris", lineHeight, LINE_HEIGHT_RANGE, onLineHeight, desimal = 1)
-            }
+            // "Ukuran Latin" dan "jarak antarbaris" adalah preferensi bacaan **global**: satu nilai
+            // dipakai semua layar bacaan dan [BacaanCard] membacanya sendiri. Ditulis langsung ke
+            // preferensi di sini — bukan dioper dari tiap layar — karena sebelumnya hanya layar Yasin
+            // yang menampilkannya, sehingga mengubahnya tak berpengaruh di layar bacaan lain meski
+            // labelnya berbunyi "berlaku untuk semua bacaan".
+            val store = rememberStore()
+            val scope = rememberCoroutineScope()
+            val latin by store.flow(Store.LATIN_SIZE, 16f).collectAsStateWithLifecycle(16f)
+            val tinggi by store.flow(Store.LINE_HEIGHT, 1.9f).collectAsStateWithLifecycle(1.9f)
+            UkuranSlider("Ukuran Latin", latin, LATIN_SIZE_RANGE, onUbah = { v ->
+                scope.launch { store.set(Store.LATIN_SIZE, v) }
+            })
+            UkuranSlider("Jarak antarbaris", tinggi, LINE_HEIGHT_RANGE, onUbah = { v ->
+                scope.launch { store.set(Store.LINE_HEIGHT, v) }
+            }, desimal = 1)
             TemaHalamanChips()
         }
     }
