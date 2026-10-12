@@ -6,6 +6,30 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Jadwal sholat mengikuti perubahan lokasi** (`plan.txt` §"Jadwal Sholat dan Pengaturan Adzan":
+  *"Pembaruan jadwal saat lokasi berubah"*): sebelumnya tombol "Pakai lokasi GPS" hanya membaca
+  **satu** perbaikan terakhir (`LocationProvider.lastKnown`) lalu diam — jadwal tetap memakai
+  koordinat tempat pengguna pertama kali menekannya sampai ia menekan tombol itu lagi, meskipun
+  ia sudah berpindah kota. Layar Kiblat sudah lama mengikuti aliran lokasi live; Jadwal kini
+  melakukan hal yang sama lewat saklar **"Ikuti perubahan lokasi"**. Hitung ulang hanya terjadi
+  bila perpindahan melewati **1 km** (`AMBANG_PINDAH_METER`): GPS bergoyang beberapa meter saat
+  perangkat diam, dan menghitung ulang sekaligus menjadwalkan ulang pengingat pada setiap goyangan
+  hanya membuang baterai. Memilih kota secara manual menghentikan ikutan ini (lokasi manual menang
+  atas GPS), dan bila penyedia lokasi mati saklarnya dikembalikan sendiri agar tidak menyala
+  sementara tak ada yang diperbarui. Pilihannya disimpan di kunci **baru** `Store.JADWAL_IKUT` —
+  bukan menumpang `Store.USE_GPS` yang berarti "koordinat berasal dari GPS" dan dipakai bersama
+  layar Kiblat — dan ikut backup/pemulihan. Dijaga `JadwalLokasiTest`.
+- **Penyaring di dalam halaman Dzikir & Panduan Sholat** (`plan.txt` §"UI/UX dan Navigasi":
+  *"Sediakan pencarian dan akses cepat pada halaman yang memiliki banyak konten"*): pencarian
+  terpadu sudah ada di menu Pencarian, tetapi ia menjawab pertanyaan lain ("di mana bacaan X di
+  seluruh aplikasi") dan berpindah layar. Dua halaman terpadat — Pustaka Dzikir (31 entri dalam 5
+  kelompok) dan Panduan Sholat (puluhan entri dalam 3 tab) — sebelumnya hanya bisa ditelusuri
+  dengan menggulir dan berpindah tab. Kini masing-masing punya kotak pencarian yang menyaring
+  daftar **di tempat**, mencocokkan judul, teks Arab, transliterasi, dan terjemahan; jumlah hasil
+  ditampilkan, dan kata kunci yang tak menemukan apa pun dijelaskan beserta tombol mengosongkan.
+  Logikanya dipisahkan ke `core/util/Saring.kt` yang murni tanpa Android sehingga dapat diuji
+  langsung (`SaringTest`) — kata kunci kosong berarti **semua** entri, bukan nol: daftar yang
+  sedang dibaca tidak boleh mendadak kosong hanya karena kotak pencariannya belum diisi.
 - **"Doa memohon ampunan" sebagai koleksi bernama** (`plan.txt` §"Pustaka Doa dan Dzikir"
   mendaftarnya sebagai salah satu koleksi yang harus disediakan): lafaznya sudah ada dan
   terverifikasi, tetapi **tersebar** — Istighfar di "Dzikir setelah sholat", Sayyidul Istighfar dan
@@ -347,6 +371,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   argumen posisi sekaligus bernama, sehingga build berhenti sebelum satu pun uji berjalan.
 
 ### Diubah
+- **Lapisan audio dipisahkan dari penjadwalan dan dari UI** (`plan.txt` §"Teknologi dan Arsitektur":
+  *"Terapkan arsitektur modular yang memisahkan UI, domain, data, penjadwalan, audio, lokasi, dan
+  sensor"*): pemutaran adzan sebelumnya tinggal di `core/scheduling/AdzanPlayer.kt` — satu paket
+  dengan penjadwalan yang mengubah *kapan* berbunyi — dan layar Adzan membuat `ExoPlayer` sendiri
+  untuk pratinjaunya. Akibatnya perubahan lisensi berkas adzan menyentuh kode penjadwalan, dan
+  lapisan UI memegang pemutar media. Kini ada paket **`core/audio`** berisi `AdzanPlayer`
+  (pemutaran latar oleh pekerja pengingat) dan `AdzanPreview` (pratinjau dengan pelaporan galat
+  yang sama); layar hanya memanggil play/stop/volume. `LapisanAudioTest` menolak `AdzanPlayer`
+  kembali ke `core/scheduling` dan menolak pemakaian `androidx.media3` langsung di `feature/`.
 - **Tombol "Buka" di Favorit & Riwayat kini membuka layar yang benar** (`plan.txt`: *"Pastikan setiap
   tombol memiliki fungsi nyata"*): pemetaan jenis konten ke rute ada di dalam layar Favorit dan
   ditutup `else -> HOME`, sehingga tombolnya **membuka layar yang salah tanpa memberi tahu siapa

@@ -12,7 +12,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import id.or.kemenag.yasintahlil.MainActivity
-import id.or.kemenag.yasintahlil.core.scheduling.AdzanPlayer
+import id.or.kemenag.yasintahlil.core.audio.AdzanPlayer
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc

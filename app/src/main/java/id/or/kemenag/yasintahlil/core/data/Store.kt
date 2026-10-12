@@ -36,6 +36,14 @@ class Store(private val ctx: Context) {
         val LAT = doublePreferencesKey("lat")
         val LON = doublePreferencesKey("lon")
         val USE_GPS = booleanPreferencesKey("use_gps")
+        /**
+         * Jadwal sholat mengikuti perubahan lokasi (GPS live), bukan hanya satu perbaikan terakhir.
+         *
+         * Terpisah dari [USE_GPS]: [USE_GPS] berarti "koordinat yang dipakai berasal dari GPS"
+         * (dipakai bersama layar Kiblat), sedangkan kunci ini berarti "hitung ulang saat pengguna
+         * berpindah tempat". Menggabungkannya membuat satu saklar mengubah dua hal sekaligus.
+         */
+        val JADWAL_IKUT = booleanPreferencesKey("jadwal_ikut_lokasi")
         val TZ = stringPreferencesKey("tz") // id zona waktu, kosong = default perangkat
         val CORR = stringPreferencesKey("corr") // koreksi menit csv 6 angka
         val SOURCE = stringPreferencesKey("source") // lokal|online
@@ -118,7 +126,7 @@ class Store(private val ctx: Context) {
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)
-            bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS)
+            bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
             bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {

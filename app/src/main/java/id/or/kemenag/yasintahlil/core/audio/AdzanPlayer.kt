@@ -1,4 +1,4 @@
-package id.or.kemenag.yasintahlil.core.scheduling
+package id.or.kemenag.yasintahlil.core.audio
 
 import android.content.Context
 import android.net.Uri
@@ -16,6 +16,12 @@ import kotlin.coroutines.resume
  * Memutar berkas adzan pilihan pengguna satu kali lalu berhenti.
  * Aplikasi TIDAK menyertakan audio adzan bawaan (lisensi) — berkas dipilih pengguna di menu Adzan.
  * Semua interaksi ExoPlayer dilakukan di main thread (syarat Media3).
+ *
+ * Berkas ini berada di paket `core.audio`, bukan `core.scheduling`: `plan.txt` §"Teknologi dan
+ * Arsitektur" meminta *"arsitektur modular yang memisahkan UI, domain, data, penjadwalan, audio,
+ * lokasi, dan sensor"*. Penjadwalan (kapan berbunyi) dan pemutaran (bagaimana berbunyi) berubah
+ * karena alasan yang berbeda — menyatukannya membuat perubahan lisensi audio menyentuh kode
+ * penjadwalan, dan sebaliknya.
  */
 object AdzanPlayer {
     suspend fun playOnce(ctx: Context, uri: String, volume: Float, maxMillis: Long = 300_000): Boolean {

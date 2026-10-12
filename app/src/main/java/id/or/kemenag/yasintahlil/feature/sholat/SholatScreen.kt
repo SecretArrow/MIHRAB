@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,6 +15,7 @@ import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
 import id.or.kemenag.yasintahlil.core.sholat.KelompokSholat
+import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
@@ -29,12 +31,25 @@ fun SholatScreen(go: (String) -> Unit) {
     var showArab by remember { mutableStateOf(true) }
     var arabSize by remember { mutableStateOf(22f) }
     var settings by remember { mutableStateOf(false) }
+    // Penyaring di layar (`plan.txt`: "pencarian dan akses cepat pada halaman yang memiliki banyak
+    // konten"). Panduan sholat memuat puluhan entri dalam tiga tab; kotak ini menyaring tab yang
+    // sedang dibuka tanpa berpindah ke layar Pencarian.
+    var q by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         showArab = store.get(Store.SHOW_ARAB, true)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
     }
     val bacaan = remember { repo.sholatBacaan() }
-    val kelompokSunnah = remember(sunnah, cara) { KelompokSholat.kelompok(sunnah, cara) }
+    val wajibTampil = remember(q, wajib) {
+        Saring.tapis(q, wajib) { listOf(it.nama, it.deskripsi, it.waktu, it.rakaat) }
+    }
+    val sunnahTampil = remember(q, sunnah) {
+        Saring.tapis(q, sunnah) { listOf(it.nama, it.deskripsi, it.waktu, it.rakaat, it.tujuan) }
+    }
+    val bacaanTampil = remember(q, bacaan) {
+        Saring.tapis(q, bacaan) { listOf(it.judul, it.arab, it.latin, it.terjemahan, it.kapan, it.catatan) }
+    }
+    val kelompokSunnah = remember(sunnahTampil, cara) { KelompokSholat.kelompok(sunnahTampil, cara) }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Panduan Sholat (Fasolatan Kemenag)", style = MaterialTheme.typography.titleLarge)
         TabRow(tab) {
@@ -42,8 +57,33 @@ fun SholatScreen(go: (String) -> Unit) {
             Tab(tab == 1, { tab = 1 }, text = { Text("Sunnah") })
             Tab(tab == 2, { tab = 2 }, text = { Text("Bacaan") })
         }
+        OutlinedTextField(
+            q, { q = it },
+            label = { Text("Cari di tab ini (nama, arti, keterangan)") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        )
+        val jumlahTab = when (tab) {
+            0 -> wajibTampil.size
+            1 -> sunnahTampil.size
+            else -> bacaanTampil.size
+        }
+        if (q.isNotBlank()) Text(
+            "$jumlahTab hasil untuk \"${q.trim()}\"",
+            style = MaterialTheme.typography.labelSmall,
+        )
+        if (jumlahTab == 0) {
+            if (q.isBlank()) EmptyState("Tab ini kosong", "Belum ada entri pada tab ini.")
+            else EmptyState(
+                "Tidak ada yang cocok",
+                "Tidak ada entri di tab ini yang memuat \"${q.trim()}\". Coba kata lain, atau " +
+                    "kosongkan kotak pencarian.",
+                labelTombol = "Kosongkan",
+                onTombol = { q = "" },
+            )
+        }
         LazyColumn(Modifier.fillMaxSize()) {
-            if (tab == 0) items(wajib) { s ->
+            if (tab == 0) items(wajibTampil) { s ->
                 Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                     Column(Modifier.padding(12.dp)) {
                         Text(s.nama, style = MaterialTheme.typography.titleMedium)
@@ -100,7 +140,7 @@ fun SholatScreen(go: (String) -> Unit) {
                         OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
                     }
                 }
-                items(bacaan) { b ->
+                items(bacaanTampil) { b ->
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }

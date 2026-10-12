@@ -15,10 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import id.or.kemenag.yasintahlil.core.audio.AdzanPreview
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
@@ -53,18 +50,11 @@ fun AdzanScreen() {
     var metode by remember { mutableStateOf(PrayerCalc.Method.KEMENAG) }
     // Berkas audio pengguna bisa saja tak terbaca (URI dicabut, format tak didukung, izin hilang).
     // Sebelumnya pratinjau diam saja saat gagal; kini sebabnya ditampilkan + tombol coba lagi.
+    // Pemutarannya sendiri ada di lapisan `core.audio`, bukan di layar (plan.txt: lapisan audio
+    // terpisah) — layar hanya memanggil play/stop/volume.
     var putarGagal by remember { mutableStateOf<String?>(null) }
-    val player = remember { ExoPlayer.Builder(ctx.applicationContext).build() }
-    DisposableEffect(player) {
-        val listener = object : Player.Listener {
-            override fun onPlayerError(error: PlaybackException) {
-                putarGagal = "Berkas audio tidak dapat diputar (${error.errorCodeName}). " +
-                    "Pilih berkas lain atau pastikan aplikasi masih punya izin membaca berkas itu."
-            }
-        }
-        player.addListener(listener)
-        onDispose { player.removeListener(listener); player.release() }
-    }
+    val player = remember { AdzanPreview(ctx) { putarGagal = it } }
+    DisposableEffect(player) { onDispose { player.release() } }
 
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { u: Uri? ->
         u?.let {
@@ -119,8 +109,7 @@ fun AdzanScreen() {
             Button(onClick = {
                 if (uri.isNotBlank()) {
                     putarGagal = null
-                    player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
-                    player.volume = vol; player.prepare(); player.play()
+                    player.play(uri, vol)
                 }
             }, enabled = uri.isNotBlank()) { Text("Pratinjau") }
             OutlinedButton(onClick = { player.stop() }) { Text("Stop") }
@@ -128,14 +117,11 @@ fun AdzanScreen() {
         putarGagal?.let { pesan ->
             ErrorState(pesan, onRetry = {
                 putarGagal = null
-                runCatching {
-                    player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
-                    player.volume = vol; player.prepare(); player.play()
-                }
+                player.play(uri, vol)
             })
         }
         Text("Volume: ${(vol * 100).toInt()}%")
-        Slider(vol, { vol = it; player.volume = it; scope.launch { store.set(Store.ADZAN_VOL, vol) } })
+        Slider(vol, { vol = it; player.setVolume(it); scope.launch { store.set(Store.ADZAN_VOL, vol) } })
 
         Text("Pengingat sebelum adzan: ${if (preMin == 0) "nonaktif" else "$preMin menit"}")
         Slider(
