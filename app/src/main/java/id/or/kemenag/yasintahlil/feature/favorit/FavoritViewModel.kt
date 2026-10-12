@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
 import id.or.kemenag.yasintahlil.core.domain.model.HistItem
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 data class FavoritUiState(
     val favorites: List<FavItem> = emptyList(),
+    val bookmarks: List<BookmarkItem> = emptyList(),
     val history: List<HistItem> = emptyList(),
     val last: String = "",
 )
@@ -31,12 +33,17 @@ class FavoritViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { userData.favorites().collect { f -> _state.update { it.copy(favorites = f) } } }
+        viewModelScope.launch { userData.allBookmarks().collect { b -> _state.update { it.copy(bookmarks = b) } } }
         viewModelScope.launch { userData.recentHistory(20).collect { h -> _state.update { it.copy(history = h) } } }
         viewModelScope.launch { _state.update { it.copy(last = store.get(Store.LAST, "")) } }
     }
 
     fun remove(item: FavItem) {
         viewModelScope.launch { userData.toggleFavorite(item.kind, item.refId, item.title) }
+    }
+
+    fun removeBookmark(item: BookmarkItem) {
+        viewModelScope.launch { userData.toggleBookmark(item.kind, item.refId, item.label) }
     }
 
     fun clearHistory() {

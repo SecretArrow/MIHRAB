@@ -14,6 +14,8 @@ interface UserDataRepository {
     suspend fun toggleFavorite(kind: String, refId: String, title: String)
 
     fun bookmarks(kind: String): Flow<List<BookmarkItem>>
+    /** Seluruh bookmark, lintas jenis — `plan.txt`: "Sediakan favorit, riwayat terakhir dibaca, bookmark, …". */
+    fun allBookmarks(): Flow<List<BookmarkItem>>
     fun isBookmarked(kind: String, refId: String): Flow<Boolean>
     suspend fun toggleBookmark(kind: String, refId: String, label: String)
 

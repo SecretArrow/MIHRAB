@@ -6,6 +6,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Bookmark terlihat di layar Favorit** (`plan.txt` §"Pencarian": *"Sediakan favorit, riwayat
+  terakhir dibaca, bookmark, dan pencarian terbaru"*; §"Yasin": *"Bookmark ayat"*): bookmark memang
+  sudah disimpan di Room sejak lama, tetapi **tidak pernah tampil di satu pun layar daftar** —
+  pengguna hanya melihat jumlahnya di Pengaturan, tanpa cara membukanya. Data yang tersimpan tetapi
+  tak dapat dijangkau sama saja dengan hilang. Kini layar Favorit punya bagian **Bookmark** dengan
+  judul, tujuan, tombol Buka, dan tombol Hapus, sama seperti bagian Favorit; daftarnya dibaca lintas
+  jenis (`allBookmarks()`), sebab bookmark ditulis dari layar bacaan mana pun dan jenisnya beragam —
+  bukan hanya `yasin`. Bagian ini ikut dalam satu daftar bergulir bersama favorit dan riwayat,
+  sehingga tak ada bagian yang mendorong bagian lain keluar layar.
+- **Lompat ke ayat yang benar saat pencarian aktif** (`plan.txt` §"Yasin"): tombol "Ke ayat", tombol
+  "Lanjut ayat N", dan daftar bookmark dulu menghitung indeks gulir sebagai `n - 1`. Itu hanya benar
+  bila tak ada pencarian aktif: daftar yang digulir adalah hasil penyaringan, sehingga dengan
+  pencarian aktif ayat ke-n bukan lagi item ke-(n-1) dan pengguna mendarat di ayat yang salah tanpa
+  diberi tahu — persis kelas kerusakan "tombol membawa ke tempat yang salah" yang sudah diperbaiki
+  pada tombol "Buka" di Favorit. Sekarang nomor ayat dicari pada daftar yang **sedang tampil**;
+  bila ayat itu sedang tersaring, penyaringnya dibuka lalu lompatan diulang; bila nomornya di luar
+  surat ini (mis. bookmark dari bundel lain), lompatan dibatalkan alih-alih menebak ayat terdekat.
+  Ketiga jalur lompat kini lewat satu fungsi, dan `LompatKeAyatTest` menjaga indeksnya tidak kembali
+  dihitung mentah.
 - **Penjelasan waktu membaca tiap bacaan adzan** (`plan.txt` §"Bacaan Setelah Adzan": *"Penjelasan
   waktu membacanya"*): layar Doa Adzan hanya menyebut urutannya dalam satu kalimat, sehingga
   pengguna yang membukanya saat adzan sedang berkumandang tidak tahu bacaan mana yang berlaku

@@ -35,6 +35,9 @@ class RoomUserDataRepository @Inject constructor(
     override fun bookmarks(kind: String): Flow<List<BookmarkItem>> =
         mark.observeByKind(kind).map { list -> list.map { BookmarkItem(it.kind, it.refId, it.label, it.createdAt) } }
 
+    override fun allBookmarks(): Flow<List<BookmarkItem>> =
+        mark.observeAll().map { list -> list.map { BookmarkItem(it.kind, it.refId, it.label, it.createdAt) } }
+
     override fun isBookmarked(kind: String, refId: String): Flow<Boolean> = mark.observeIsBookmarked(kind, refId)
 
     override suspend fun toggleBookmark(kind: String, refId: String, label: String) {
