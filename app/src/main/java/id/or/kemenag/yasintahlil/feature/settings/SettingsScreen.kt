@@ -39,6 +39,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var notif by remember { mutableStateOf(true) }
     var hijriCorr by remember { mutableStateOf(0) }
     var compassUnit by remember { mutableStateOf("derajat") }
+    var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
     var backup by remember { mutableStateOf("") }
     var ringkasan by remember { mutableStateOf<RingkasanData?>(null) }
     var ringkasanUlang by remember { mutableStateOf(0) }
@@ -53,6 +54,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         notif = store.get(Store.NOTIF, true)
         hijriCorr = store.get(Store.HIJRI_CORR, 0)
         compassUnit = store.get(Store.COMPASS_UNIT, "derajat")
+        compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
     }
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
@@ -215,6 +217,17 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 { Text("Mil (6400)") })
         }
         Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
+            style = MaterialTheme.typography.labelSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
+            TampilanKompas.SEMUA.forEach { t ->
+                FilterChip(compassView == t,
+                    { compassView = t; scope.launch { store.set(Store.COMPASS_VIEW, t) } },
+                    { Text(TampilanKompas.label(t)) })
+            }
+        }
+        Text("Menentukan apakah jarum kompas digambar di layar Kiblat. Pada perangkat tanpa " +
+                "magnetometer jarum tidak pernah digambar, karena tanpa sensor arahnya hanya " +
+                "dugaan yang tampak meyakinkan.",
             style = MaterialTheme.typography.labelSmall)
 
         Text("Pembaruan konten", style = MaterialTheme.typography.titleMedium,

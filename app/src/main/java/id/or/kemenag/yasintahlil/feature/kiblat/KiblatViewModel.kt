@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.QiblaCalc
@@ -41,6 +42,8 @@ data class KiblatUiState(
     val pesanLokasi: String? = null,
     /** Satuan tampilan azimut: "derajat" atau "mil". */
     val unit: String = "derajat",
+    /** Tampilan kompas: jarum digambar atau hanya angka & peta (lihat [TampilanKompas]). */
+    val tampilan: String = TampilanKompas.KOMPAS,
 )
 
 /**
@@ -74,6 +77,7 @@ class KiblatViewModel @Inject constructor(
                     hasPermission = LocationProvider.hasPermission(ctx),
                     bearing = QiblaCalc.bearing(lat, lon),
                     unit = store.get(Store.COMPASS_UNIT, "derajat"),
+                    tampilan = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS),
                 )
             }
             if (useGps) refreshLocation()
@@ -161,6 +165,13 @@ class KiblatViewModel @Inject constructor(
     fun setUnit(u: String) {
         _state.update { it.copy(unit = u) }
         viewModelScope.launch { store.set(Store.COMPASS_UNIT, u) }
+    }
+
+    /** Tampilan kompas: jarum & peta, atau angka & peta saja. */
+    fun setTampilan(v: String) {
+        if (!TampilanKompas.sah(v)) return
+        _state.update { it.copy(tampilan = v) }
+        viewModelScope.launch { store.set(Store.COMPASS_VIEW, v) }
     }
 
     private fun startCompass() {

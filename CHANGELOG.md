@@ -6,6 +6,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Tampilan kompas kiblat** (`plan.txt`: *"Pengaturan satuan dan tampilan kompas"* dan *"Dukungan
+  perangkat yang tidak memiliki magnetometer melalui tampilan arah berbasis peta atau sudut hasil
+  perhitungan, dengan penjelasan bahwa kompas langsung tidak tersedia"*): pengguna kini dapat
+  memilih **"Kompas & peta"** atau **"Angka & peta"** — tersedia di layar Kiblat maupun di
+  Pengaturan. Lebih penting lagi, **perangkat tanpa magnetometer tidak lagi menggambar jarum**:
+  tanpa sensor, sudut hadap perangkat tidak diketahui, sehingga jarum yang tetap digambar hanya
+  menunjuk arah dugaan yang tampak meyakinkan. Layar lalu menjelaskan bahwa jarum tidak tersedia
+  dan mengarahkan ke angka azimut beserta peta — persis yang diminta `plan.txt`. Jarum juga
+  mendapat label `contentDescription` agar pembaca layar tetap menyampaikan arahnya (TalkBack).
+  Aturan "jarum butuh sensor **dan** pilihan pengguna" dikumpulkan di satu fungsi dan diuji
+  terpisah, termasuk pemilih yang sengaja tidak ditawarkan pada perangkat tanpa sensor.
 - **Doa untuk orang yang meninggal di pustaka dzikir** (`plan.txt` §"Pustaka Doa dan Dzikir":
   *"Doa untuk orang yang meninggal"*): layar Dzikir & Doa kini punya kelompok **"Doa khusus"**
   berisi doa jenazah (takbir ke-3) dan doa tambahannya (takbir ke-4), yang sebelumnya hanya dapat

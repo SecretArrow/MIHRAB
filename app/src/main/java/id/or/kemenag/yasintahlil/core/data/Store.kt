@@ -51,6 +51,8 @@ class Store(private val ctx: Context) {
         /** Susunan tahlil buatan pengguna: CSV id bagian, urut. Kosong = belum disusun. */
         val TAHLIL_CUSTOM = stringPreferencesKey("tahlil_custom")
         val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
+        /** Tampilan kompas kiblat: `kompas`|`angka` (lihat `TampilanKompas` di paket designsystem). */
+        val COMPASS_VIEW = stringPreferencesKey("compass_view")
         val INFO_CARD = booleanPreferencesKey("info_card")
         val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
         val FAV = stringSetPreferencesKey("fav") // warisan (legacy) — migrasi ke Room
@@ -107,7 +109,7 @@ class Store(private val ctx: Context) {
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
             str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
-            str(TAHLIL_CUSTOM); str(PAGE_THEME)
+            str(TAHLIL_CUSTOM); str(PAGE_THEME); str(COMPASS_VIEW)
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)
