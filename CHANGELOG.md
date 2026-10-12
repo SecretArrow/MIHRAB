@@ -360,6 +360,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Bilah sistem tidak lagi memakan tepi layar**: `plan.txt` §"UI/UX dan Navigasi" meminta *"Layout
+  responsif untuk berbagai ukuran layar"*, tetapi yang dijaga baru **lebarnya** — inset bilah sistem
+  sama sekali tidak dihitung. Jendela memakai bilah berlatar warna, sehingga pita di sekitar poni
+  (notch) dan di belakang bilah gestur menjadi ruang mati, dan ikon bilah sistem mengikuti tema
+  **perangkat** — bukan tema yang dipilih pengguna, sehingga memilih tema yang berlawanan dengan
+  perangkatnya meninggalkan ikon status bar terang di atas latar terang. Kini `MainActivity`
+  memanggil `enableEdgeToEdge()` **sebelum** `setContent` (jendela harus diatur sebelum bingkai
+  pertama digambar), warna ikon bilah status dan navigasi disinkronkan dari nilai `dark` yang sama
+  dengan tema aplikasi lewat `SideEffect`, dan inset-nya ditambahkan sekali di `AppNav` oleh
+  `Scaffold` — yang bawaannya memang `WindowInsets.systemBars` — sehingga setiap layar ikut tanpa
+  pengkabelan per layar. Warna bilah di `themes.xml` sengaja **dibiarkan**: itu nilai untuk jendela
+  pembuka sebelum Compose menggambar, dan zamrud `#0B7A55` memang butuh ikon terang. Ini juga
+  menyiapkan aplikasi bila `targetSdk` kelak dinaikkan: mulai API 35 tepi-ke-tepi diberlakukan
+  sistem, dan tata letak yang tak menghitung inset akan tertutup bilah. Dijaga
+  `TataLetakResponsifTest` (`aplikasiMenggambarTepiKeTepi`, `insetSistemDitambahkanDiNavigasi`,
+  `ikonBilahSistemMengikutiTemaAplikasi`), yang juga menolak `Scaffold` yang mematikan insetnya
+  sendiri dengan `WindowInsets(0)`.
 - **Bawaan konfigurasi jadwal dan pengingat kini punya satu rumah, bukan sembilan salinan**: kuncinya
   memang satu, tetapi **bawaannya** bercabang di mana-mana. Koordinat Jakarta (`-6.2`/`106.8`) ditulis
   sembilan kali di `PrayerScheduler`, `HomeViewModel`, `JadwalViewModel`, `KiblatViewModel`, dan layar

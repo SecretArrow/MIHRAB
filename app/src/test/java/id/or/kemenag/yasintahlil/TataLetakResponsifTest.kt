@@ -165,6 +165,60 @@ class TataLetakResponsifTest {
             sumber(sholatDetail).contains("AnimatedVisibility("))
     }
 
+    // ---- Tepi-ke-tepi (inset bilah sistem) ----
+
+    private val main = "src/main/java/id/or/kemenag/yasintahlil/MainActivity.kt"
+
+    /**
+     * Batas lebar saja belum cukup untuk "berbagai ukuran layar": bilah sistem juga memakan tepi
+     * layar. Tanpa tepi-ke-tepi, area di sekitar poni (notch) dan di belakang bilah gestur tidak
+     * terpakai — dan bila `targetSdk` kelak dinaikkan ke 35, tepi-ke-tepi diberlakukan sistem
+     * sehingga tata letak yang tak menghitung inset akan tertutup bilah.
+     */
+    @Test
+    fun aplikasiMenggambarTepiKeTepi() {
+        val src = sumber(main)
+        val tepi = src.indexOf("enableEdgeToEdge()")
+        assertTrue("MainActivity tidak memanggil enableEdgeToEdge()", tepi >= 0)
+        val isi = src.indexOf("setContent {")
+        assertTrue("setContent tidak ditemukan di MainActivity", isi >= 0)
+        // Jendela harus diatur sebelum frame pertama digambar; memanggilnya di dalam komposisi
+        // berarti bingkai pertama masih memakai bilah berlatar warna.
+        assertTrue("enableEdgeToEdge() harus dipanggil sebelum setContent", tepi < isi)
+    }
+
+    /**
+     * Inset bilah sistem ditambahkan sekali di navigasi, bukan diabaikan. `Scaffold` Material3 sudah
+     * memakai `WindowInsets.systemBars` sebagai bawaan; yang berbahaya adalah menimpanya dengan inset
+     * nol, karena itu mematikan penambahan inset untuk **setiap** layar sekaligus.
+     */
+    @Test
+    fun insetSistemDitambahkanDiNavigasi() {
+        val nav = sumber(appNav)
+        assertTrue("Scaffold hilang dari AppNav", nav.contains("Scaffold("))
+        assertTrue("Scaffold menonaktifkan inset bilah sistem (WindowInsets(0))",
+            !nav.contains("contentWindowInsets = WindowInsets(0"))
+        assertTrue("isi layar tidak memakai padding inset dari Scaffold",
+            nav.contains("KolomKonten(Modifier.padding(pad))"))
+    }
+
+    /**
+     * Warna latar bilah sistem kini tembus pandang, jadi keterbacaan ikonnya ditentukan **tema
+     * aplikasi** — bukan tema sistem. Pengguna dapat memilih tema yang berlawanan dengan
+     * perangkatnya; tanpa sinkronisasi ini ikon status bar tetap terang di atas latar terang.
+     */
+    @Test
+    fun ikonBilahSistemMengikutiTemaAplikasi() {
+        val src = sumber(main)
+        assertTrue("ikon bilah status tidak disinkronkan dengan tema aplikasi",
+            src.contains("isAppearanceLightStatusBars = !dark"))
+        assertTrue("ikon bilah navigasi tidak disinkronkan dengan tema aplikasi",
+            src.contains("isAppearanceLightNavigationBars = !dark"))
+        // Diambil dari aturan tema bersama, bukan pembacaan kedua `Store.DARK` yang dapat berbeda.
+        assertTrue("warna ikon bilah sistem tidak berasal dari aturan tema bersama",
+            src.contains("TemaAplikasi.gelap("))
+    }
+
     /** Isi berkas relatif terhadap akar repositori — uji dijalankan dari `app/` maupun akar. */
     private fun berkasRepo(relatif: String): String =
         listOf(File("."), File("app"), File("..")).map { File(it, relatif) }
