@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.RuteKonten
 
 @Composable
@@ -24,7 +25,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
     // sehingga tak satu pun bagian boleh mendorong bagian lain keluar layar.
     LazyColumn(Modifier.fillMaxSize().padding(12.dp)) {
         item {
-            Text("Favorit, Bookmark, Riwayat & Terakhir dibaca",
+            Text("${NamaLayar.FAVORIT} — Bookmark & terakhir dibaca",
                 style = MaterialTheme.typography.titleLarge)
         }
         // Kegagalan membaca bundel konten diberitahukan di atas daftar: tanpa ini baris dzikir di

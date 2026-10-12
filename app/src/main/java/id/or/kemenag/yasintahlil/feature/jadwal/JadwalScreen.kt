@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 
 @Composable
@@ -40,7 +41,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Jadwal Sholat", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.JADWAL, style = MaterialTheme.typography.titleLarge)
         Text(
             "Metode: ${s.method.label} • Fajr ${s.method.fajr}° / Isya ${if (s.method.ishaIntervalMin != null) "Magrib+${s.method.ishaIntervalMin}mnt" else "${s.method.isha}°"} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
             style = MaterialTheme.typography.labelMedium,

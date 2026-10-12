@@ -105,8 +105,8 @@ class TataLetakResponsifTest {
         val nav = sumber(appNav)
         assertTrue("NavigationBar hilang", nav.contains("NavigationBar {"))
         assertTrue("NavigationBarItem hilang", nav.contains("NavigationBarItem("))
-        listOf("Beranda", "Ibadah", "Alat", "Pengaturan").forEach { label ->
-            assertTrue("tab '$label' hilang dari navigasi bawah", nav.contains("\"$label\""))
+        listOf("BERANDA", "IBADAH", "ALAT", "PENGATURAN").forEach { nama ->
+            assertTrue("tab $nama hilang dari navigasi bawah", nav.contains("NamaLayar.$nama"))
         }
         assertTrue("ikon navigasi bawah tanpa label aksesibilitas",
             nav.contains("contentDescription = label"))

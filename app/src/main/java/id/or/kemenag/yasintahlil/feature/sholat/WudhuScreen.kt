@@ -11,6 +11,7 @@ import id.or.kemenag.yasintahlil.core.data.Langkah
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import kotlinx.coroutines.launch
 
 /**
@@ -28,7 +29,7 @@ fun WudhuScreen() {
     LaunchedEffect(Unit) { userData.progress(KIND, KunciProgres.WUDHU).collect { selesai = (it?.value ?: 0) > 0 } }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Wudhu & Tayamum", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.WUDHU, style = MaterialTheme.typography.titleLarge)
         Text("Kerangka tata cara mengikuti program Fasolatan Ditjen Bimas Islam Kemenag; urutan rukun mazhab Syafi'i (umum di Indonesia).",
             style = MaterialTheme.typography.labelMedium)
 

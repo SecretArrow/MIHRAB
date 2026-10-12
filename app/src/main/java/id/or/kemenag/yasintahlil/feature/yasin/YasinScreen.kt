@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
 @Composable
@@ -80,7 +81,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         if (!focus) {
-            Text("Surat Yasin — ${surah.ayatCount} ayat", style = MaterialTheme.typography.titleLarge)
+            Text("${NamaLayar.YASIN} — ${surah.ayatCount} ayat", style = MaterialTheme.typography.titleLarge)
             // Sumber teks ditampilkan apa adanya dari bundel: teks Arab, transliterasi, dan
             // terjemahan dicatat terpisah di berkasnya (MSI LPMQ Kemenag / transliterasi resmi
             // Kemenag / terjemah edisi 2019). Sebelumnya layar hanya menuliskan "(MSI Kemenag)"

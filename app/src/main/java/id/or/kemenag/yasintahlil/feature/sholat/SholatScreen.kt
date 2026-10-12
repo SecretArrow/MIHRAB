@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
 import id.or.kemenag.yasintahlil.core.sholat.KelompokSholat
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
@@ -55,7 +56,7 @@ fun SholatScreen(go: (String) -> Unit) {
     }
     val kelompokSunnah = remember(sunnahTampil, cara) { KelompokSholat.kelompok(sunnahTampil, cara) }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Panduan Sholat", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.SHOLAT, style = MaterialTheme.typography.titleLarge)
         // Sumber panduan dibaca dari bundel (`sholat_daftar.json` → `panduan`): sebelumnya layar
         // hanya menulis "(Fasolatan Kemenag)" sebagai teks hardcode, sedangkan berkasnya mencatat
         // keterangan yang lebih tepat — termasuk bahwa hadisnya diverifikasi lewat sunnah.com.

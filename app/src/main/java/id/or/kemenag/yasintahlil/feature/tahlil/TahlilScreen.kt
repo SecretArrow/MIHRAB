@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
@@ -45,7 +46,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     val selesai = s.count >= cur.ulangi
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Tahlil — bagian ${s.idx + 1} dari ${s.items.size}", style = MaterialTheme.typography.titleLarge)
+        Text("${NamaLayar.TAHLIL} — bagian ${s.idx + 1} dari ${s.items.size}", style = MaterialTheme.typography.titleLarge)
         // Catatan tradisi dibaca dari bundel (`tahlil.json` → `catatan_tradisi`) dengan kalimat
         // cadangan bila berkasnya kosong: sebelumnya kalimat ini ditulis di kode, jadi ia tidak
         // ikut berubah bila bundelnya diperbarui — dan bundelnya memuat versi yang lebih lengkap.

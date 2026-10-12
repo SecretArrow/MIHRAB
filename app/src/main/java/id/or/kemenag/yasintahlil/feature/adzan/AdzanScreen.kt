@@ -26,6 +26,7 @@ import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
@@ -138,7 +139,7 @@ fun AdzanScreen() {
         )))
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Adzan & Pengingat", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.ADZAN, style = MaterialTheme.typography.titleLarge)
         Text("Aktif/nonaktif per waktu:", style = MaterialTheme.typography.titleMedium)
         names.forEachIndexed { i, n ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,

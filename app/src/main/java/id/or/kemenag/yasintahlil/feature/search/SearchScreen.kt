@@ -16,6 +16,7 @@ import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,7 +69,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("Pencarian", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.SEARCH, style = MaterialTheme.typography.titleLarge)
         OutlinedTextField(
             value = q,
             onValueChange = { q = it },

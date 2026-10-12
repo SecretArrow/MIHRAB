@@ -12,10 +12,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
-import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import id.or.kemenag.yasintahlil.navigation.Routes
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -82,10 +83,12 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
             }
         }
         Text("Aksi cepat:", style = MaterialTheme.typography.titleMedium)
-        listOf("Yasin" to Routes.YASIN, "Tahlil" to Routes.TAHLIL, "Panduan Sholat" to Routes.SHOLAT,
-            "Sholat Ghaib" to Routes.GHAIB, "Adzan" to Routes.ADZAN, "Doa Adzan" to Routes.DOA_ADZAN,
-            "Iqomah" to Routes.IQOMAH, "Kiblat" to Routes.KIBLAT, "Dzikir & Doa" to Routes.DZIKIR,
-            "Cari" to Routes.SEARCH, "Favorit & Riwayat" to Routes.FAVORIT).chunked(2).forEach { row ->
+        listOf(NamaLayar.YASIN to Routes.YASIN, NamaLayar.TAHLIL to Routes.TAHLIL,
+            NamaLayar.SHOLAT to Routes.SHOLAT, NamaLayar.GHAIB to Routes.GHAIB,
+            NamaLayar.ADZAN to Routes.ADZAN, NamaLayar.DOA_ADZAN to Routes.DOA_ADZAN,
+            NamaLayar.IQOMAH to Routes.IQOMAH, NamaLayar.KIBLAT to Routes.KIBLAT,
+            NamaLayar.DZIKIR to Routes.DZIKIR, NamaLayar.SEARCH to Routes.SEARCH,
+            NamaLayar.FAVORIT to Routes.FAVORIT).chunked(2).forEach { row ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { (label, r) -> Button(onClick = { go(r) }, modifier = Modifier.weight(1f)) { Text(label) } }
                 if (row.size == 1) Spacer(Modifier.weight(1f))

@@ -23,6 +23,7 @@ import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
@@ -90,7 +91,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Pengaturan", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.PENGATURAN, style = MaterialTheme.typography.titleLarge)
         Text("Tema:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TemaAplikasi.SEMUA.forEach { t ->
