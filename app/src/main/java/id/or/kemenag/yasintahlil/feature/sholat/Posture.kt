@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
 import id.or.kemenag.yasintahlil.R
+import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 
 /**
  * Ilustrasi skematik posisi tubuh tiap gerakan sholat.
@@ -75,21 +76,27 @@ object Postures {
             "pandangan ke arah jari telunjuk.",
     )
 
+    /**
+     * Id bacaan datang dari [BacaanSholat] — kosakata yang sama dengan yang dipakai bundel konten
+     * dan daftar langkah di layar, sehingga tidak ada ejaan kedua yang bisa menyimpang. Peta ini
+     * sendiri harus mencakup **seluruh** [BacaanSholat.SEMUA]: id yang tak punya posisi membuat
+     * ilustrasi gerakannya hilang tanpa keterangan (lihat `PostureTest`).
+     */
     private val byId: Map<String, Posture> = mapOf(
-        "niat" to BERDIRI,
-        "takbir" to TAKBIR,
-        "iftitah" to BERDIRI,
-        "fatihah" to BERDIRI,
-        "surat_setelah_fatihah" to BERDIRI,
-        "rukuk" to RUKUK,
-        "itidal" to BERDIRI,
-        "sujud" to SUJUD,
-        "duduk" to DUDUK,
-        "tasyahud_awal" to DUDUK,
-        "tasyahud_akhir" to DUDUK_AKHIR,
-        "sholawat_ibrahimiyah" to DUDUK_AKHIR,
-        "qunut" to TAKBIR,
-        "salam" to SALAM,
+        BacaanSholat.NIAT to BERDIRI,
+        BacaanSholat.TAKBIR to TAKBIR,
+        BacaanSholat.IFTITAH to BERDIRI,
+        BacaanSholat.FATIHAH to BERDIRI,
+        BacaanSholat.SURAT_SETELAH_FATIHAH to BERDIRI,
+        BacaanSholat.RUKUK to RUKUK,
+        BacaanSholat.ITIDAL to BERDIRI,
+        BacaanSholat.SUJUD to SUJUD,
+        BacaanSholat.DUDUK to DUDUK,
+        BacaanSholat.TASYAHUD_AWAL to DUDUK,
+        BacaanSholat.TASYAHUD_AKHIR to DUDUK_AKHIR,
+        BacaanSholat.SHOLAWAT_IBRAHIMIYAH to DUDUK_AKHIR,
+        BacaanSholat.QUNUT to TAKBIR,
+        BacaanSholat.SALAM to SALAM,
     )
 
     /** Posisi untuk id bacaan tertentu, atau null bila tidak ada (tak seharusnya terjadi). */

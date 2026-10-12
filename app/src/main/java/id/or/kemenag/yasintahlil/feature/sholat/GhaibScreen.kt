@@ -8,15 +8,31 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.Bacaan
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlinx.coroutines.launch
+
+/**
+ * Judul langkah takbir yang khas layar ini — sholat ghaib membaca ta'awudz sebelum Al-Fatihah dan
+ * salamnya menoleh ke dua sisi. Kuncinya adalah id bacaan dari [BacaanSholat.TAKBIR_MAYIT], jadi
+ * setiap id pada urutan bersama itu pasti punya judul; `BacaanSholatTest` menjaga keduanya tetap
+ * sepadan sehingga `getValue` tidak pernah gagal.
+ */
+private val judulLangkah: Map<String, String> = mapOf(
+    BacaanSholat.FATIHAH to "Takbir 1 → ta'awudz + Al-Fatihah (HR Bukhari 756, Muslim 394)",
+    BacaanSholat.SHOLAWAT_IBRAHIMIYAH to "Takbir 2 → Sholawat Ibrahimiyah",
+    BacaanSholat.DOA_MAYIT to "Takbir 3 → Doa untuk mayit",
+    BacaanSholat.DOA_MAYIT_TAMBAHAN to "Takbir 4 → Doa tambahan",
+    BacaanSholat.SALAM to "Salam kanan-kiri",
+)
 
 /**
  * Sholat Ghaib: 4 takbir tanpa ruku/sujud, fardhu kifayah. Seluruh konten (niat & doa)
@@ -40,14 +56,12 @@ fun GhaibScreen() {
     val info = remember { repo.sholatKhusus(BerkasKonten.SHOLAT_GHAIB) }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
-    val steps = listOf(
-        "Niat dalam hati (varian di bawah) — fardhu kifayah" to null,
-        "Takbir 1 → ta'awudz + Al-Fatihah (HR Bukhari 756, Muslim 394)" to cari("fatihah"),
-        "Takbir 2 → Sholawat Ibrahimiyah" to cari("sholawat_ibrahimiyah"),
-        "Takbir 3 → Doa untuk mayit" to cari("doa_mayit"),
-        "Takbir 4 → Doa tambahan" to cari("doa_mayit_tambahan"),
-        "Salam kanan-kiri" to cari("salam"),
-    )
+    val steps: List<Pair<String, Bacaan?>> =
+        listOf("Niat dalam hati (varian di bawah) — fardhu kifayah" to null) +
+            // Urutan bacaan takbir datang dari `BacaanSholat.TAKBIR_MAYIT`; yang khas layar ini
+            // hanya judulnya. Sebelumnya kelima idnya diketik ulang di sini, sehingga satu salah
+            // eja cukup untuk menghilangkan satu takbir — kartunya tak muncul, judulnya tetap ada.
+            BacaanSholat.TAKBIR_MAYIT.map { judulLangkah.getValue(it) to cari(it) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(info.judul.ifBlank { NamaLayar.GHAIB } + " — ${info.takbir} takbir, tanpa ruku/sujud",
             style = MaterialTheme.typography.titleLarge)

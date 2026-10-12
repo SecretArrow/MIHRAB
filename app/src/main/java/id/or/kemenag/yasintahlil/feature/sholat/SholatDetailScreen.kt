@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -60,11 +61,13 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     // Saring bacaan menurut mazhab panduan (mis. qunut hanya mazhab Syafi'i)
     // dan cakupan sholat (mis. qunut hanya untuk Subuh).
     val steps = remember(ringkas, mazhab, id) {
-        // Mode ringkas memuat langkah pokok saja. Tasyahud awal sengaja tidak ikut: ia hanya
-        // relevan pada sholat lebih dari dua rakaat, sedangkan ringkasan harus berlaku untuk
-        // semua sholat. Keduanya langkah tersendiri — lihat `tasyahud_awal` dan `tasyahud_akhir`.
-        val base = if (ringkas) bacaan.filter { it.id in listOf("niat", "takbir", "fatihah", "surat_setelah_fatihah", "rukuk", "sujud", "tasyahud_akhir", "salam") }
-        else bacaan
+        // Mode ringkas memuat langkah pokok saja. Daftarnya datang dari `BacaanSholat.RINGKAS` —
+        // id bacaan yang sama dengan yang dibaca bundel konten, sehingga tidak ada ejaan kedua yang
+        // bisa menyimpang dan diam-diam membuang satu langkah dari ringkasan. Tasyahud awal sengaja
+        // tidak ikut: ia hanya relevan pada sholat lebih dari dua rakaat, sedangkan ringkasan harus
+        // berlaku untuk semua sholat. Keduanya langkah tersendiri — lihat `tasyahud_awal` dan
+        // `tasyahud_akhir`.
+        val base = if (ringkas) bacaan.filter { it.id in BacaanSholat.RINGKAS } else bacaan
         base.filter {
             (it.mazhab == null || it.mazhab == mazhab) &&
                 (it.sholatScope.isEmpty() || id in it.sholatScope)
