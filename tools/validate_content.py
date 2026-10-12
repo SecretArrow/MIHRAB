@@ -3,6 +3,7 @@
 
 Aturan:
 - Setiap JSON di app/src/main/assets/content/ harus JSON valid.
+- Tidak boleh ada kunci objek yang ditulis dua kali (nilainya hilang tanpa jejak).
 - Setiap "entri" (objek yang memuat teks keagamaan) sebaiknya punya `sumber_url`
   yang domainnya termasuk whitelist resmi.
 - Nilai yang tampak URL (kunci apa pun berisi "sumber") harus domain resmi.
@@ -237,6 +238,41 @@ def check_kategori(name: str, data) -> list[str]:
     return errs
 
 
+class _KunciGanda(Exception):
+    def __init__(self, kunci: str, jumlah: int):
+        super().__init__(kunci)
+        self.kunci = kunci
+        self.jumlah = jumlah
+
+
+def _cek_pasangan(pairs):
+    hitung: dict[str, int] = {}
+    for k, _ in pairs:
+        hitung[k] = hitung.get(k, 0) + 1
+    for k, n in hitung.items():
+        if n > 1:
+            raise _KunciGanda(k, n)
+    return dict(pairs)
+
+
+def check_duplicate_keys(name: str, text: str) -> list[str]:
+    """Kunci objek JSON yang ditulis dua kali dalam satu objek.
+
+    JSON tidak melarangnya, tetapi parser mana pun (termasuk `org.json` di aplikasi)
+    hanya menyimpan **yang terakhir** — sehingga nilai pertama hilang tanpa galat,
+    tanpa peringatan, dan tanpa jejak. Persis itu yang pernah terjadi pada
+    `adzan.json`: penjelasan lengkap cara menjawab adzan tertimpa versi pendek yang
+    tertinggal, dan yang dibaca pengguna adalah versi yang lebih sedikit menjelaskan.
+    Karena kerusakannya sunyi, ia harus ditolak di sini.
+    """
+    try:
+        json.loads(text, object_pairs_hook=_cek_pasangan)
+    except _KunciGanda as e:
+        return [f"{name}: kunci '{e.kunci}' ditulis {e.jumlah}x dalam satu objek "
+                f"(hanya yang terakhir terbaca)"]
+    return []
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CONTENT_DIR.exists():
@@ -249,8 +285,10 @@ def main() -> int:
 
     for path in sorted(CONTENT_DIR.glob("*.json")):
         rel = path.relative_to(ROOT)
+        teks = path.read_text(encoding="utf-8")
+        errors.extend(check_duplicate_keys(rel.name, teks))
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(teks)
         except json.JSONDecodeError as e:
             errors.append(f"{rel}: JSON tidak valid — {e}")
             continue

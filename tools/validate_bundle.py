@@ -46,8 +46,12 @@ def nama_berkas_sah(nama: str) -> bool:
 
 def validasi(path: Path, strict: bool) -> list[str]:
     errs: list[str] = []
+    teks = path.read_text(encoding="utf-8")
+    # Kunci ganda di mana pun di dalam berkas bundel — termasuk di dalam dokumen kontennya,
+    # yang teksnya ada apa adanya di sini. Setelah di-parse, jejaknya sudah hilang.
+    errs += vc.check_duplicate_keys(str(path), teks)
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(teks)
     except json.JSONDecodeError as e:
         return [f"{path}: JSON tidak valid — {e}"]
 

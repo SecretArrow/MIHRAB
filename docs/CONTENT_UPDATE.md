@@ -72,7 +72,8 @@ python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/ca
 ```
 
 Fixture `sah.json` harus lolos; `cacat.json` (sumber tak resmi, kategori asing, teks Arab tanpa
-harakat) harus ditolak — bila gate-nya longgar, `--harus-gagal` justru gagal dan CI merah.
+harakat, kunci JSON ganda) harus ditolak — bila gate-nya longgar, `--harus-gagal` justru gagal dan
+CI merah.
 
 ## Yang tidak dilakukan aplikasi
 

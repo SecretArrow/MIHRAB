@@ -163,6 +163,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Keterangan cara menjawab adzan kembali utuh** (`plan.txt`: *"Jangan menghasilkan teks Arab
+  secara acak"* dan §"Akurasi Konten Keagamaan"): `adzan.json` menulis kunci `catatan` **dua kali**
+  pada entri "Menjawab adzan". JSON tidak melarangnya, tetapi setiap parser — termasuk `org.json`
+  yang dipakai aplikasi — hanya menyimpan yang terakhir, sehingga penjelasan lengkapnya (menjawab
+  setiap lafaz dengan lafaz yang sama, **kecuali** dua seruan *hayya* yang dijawab dengan lafaz
+  lain) tertimpa versi pendek yang tertinggal. Yang dibaca pengguna adalah versi yang lebih sedikit
+  menjelaskan, dan tak ada satu pun galat atau peringatan yang menandainya. Nilai yang benar kini
+  dipertahankan, dan **kerusakan sunyi seperti ini ditolak oleh gate**: `tools/validate_content.py`
+  (serta `tools/validate_bundle.py` atas teks mentah bundel) menolak kunci yang ditulis dua kali di
+  objek mana pun, fixture `cacat.json` ikut memuat contohnya agar aturannya benar-benar dijalankan
+  CI, dan `KontenTanpaKunciGandaTest` memindai teks mentah berkas konten karena jejaknya sudah
+  hilang begitu JSON di-parse.
 - **Preferensi susunan Tahlil kini ada di Pengaturan — dan tidak lagi berbohong** (`plan.txt`
   §"Pengaturan Aplikasi": *"Preferensi susunan Tahlil"*): Pengaturan dulu hanya mencetak satu baris
   tetap, *"Susunan Tahlil: lazim Indonesia (lihat modul Tahlil)"*, yang menyebut nama susunan tanpa
