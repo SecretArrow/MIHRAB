@@ -53,10 +53,6 @@ updates:
         versions: [">= 1.5"]
       - dependency-name: "androidx.test*"                        # dibangun terhadap SDK 35
         versions: [">= 1.7"]
-      - dependency-name: "androidx.test.espresso:*"              # dibangun terhadap SDK 35
-        versions: [">= 3.7"]
-      - dependency-name: "androidx.test.uiautomator:*"           # dibangun terhadap SDK 35
-        versions: [">= 2.4"]
 
   # Versi action di .github/workflows (checkout, setup-java, gradle/actions, dsb.)
   - package-ecosystem: github-actions

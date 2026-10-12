@@ -37,8 +37,6 @@ class DependabotConfigTest {
         "androidx.work:*" to "workmanager",
         "androidx.media3:*" to "media3",
         "androidx.test*" to "androidx-test-core",
-        "androidx.test.espresso:*" to "espresso",
-        "androidx.test.uiautomator:*" to "uiautomator",
     )
 
     private fun berkasRepo(path: String): File {

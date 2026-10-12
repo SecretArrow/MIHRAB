@@ -947,6 +947,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   konten; tidak ada lagi teks Arab hardcoded di layar.
 
 ### Dihapus
+- Dependensi uji instrumentasi yang **tidak dipakai** — `espresso-core`, `uiautomator`, dan
+  `kotlinx-coroutines-test` — beserta plafon Dependabot untuk dua yang terakhir. Ketiganya
+  dideklarasikan di `androidTestImplementation` padahal tidak satu pun kelasnya diimpor berkas di
+  `src/androidTest` (uji UI memakai `compose-ui-test-junit4`; uji yang ada memakai `runBlocking`,
+  bukan `runTest`). `espresso-core` dan `kotlinx-coroutines-test` tetap ada di classpath karena
+  `androidx.compose.ui:ui-test-junit4` menariknya sendiri — diperiksa pada POM-nya — sedangkan
+  `uiautomator` tidak dipakai apa pun, sehingga deklarasinya hanya memperbesar APK uji dan
+  memperlambat `e2e.yml` tanpa menambah satu pun kemampuan. Aturan barunya satu untuk semua:
+  `DependensiUjiTerpakaiTest` menolak alias `libs.*` pada `androidTestImplementation` yang tidak
+  diimpor uji instrumentasi, dan menolak alias baru yang belum punya padanan paket.
 - Berkas `assets/content/yasin.json` yang yatim (metadata Yasin tak dibaca kode mana pun —
   aplikasi memakai `yasin_full.json`, yang juga sudah memuat metadata surat). Rujukan di
   `SOURCES.md` dan `docs/CONTENT_SOURCES.md` disesuaikan.
