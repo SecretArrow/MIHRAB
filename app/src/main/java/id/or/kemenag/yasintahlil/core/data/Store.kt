@@ -28,6 +28,8 @@ class Store(private val ctx: Context) {
         val SHOW_LATIN = booleanPreferencesKey("show_latin")
         val SHOW_TRANS = booleanPreferencesKey("show_trans")
         val SHOW_ARAB = booleanPreferencesKey("show_arab")
+        /** Tema halaman bacaan: `ikut`|`krem`|`gelap` (lihat `TemaHalaman` di paket designsystem). */
+        val PAGE_THEME = stringPreferencesKey("page_theme")
         val ASAR = stringPreferencesKey("asar") // syafii|hanafi
         val METHOD = stringPreferencesKey("method") // kemenag|mwl|umm_al_qura|egyptian|makkah
         val CITY = stringPreferencesKey("city")
@@ -105,7 +107,7 @@ class Store(private val ctx: Context) {
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
             str(ADZAN_ON); str(ADZAN_URI); str(MADHAB); str(TAHLIL_SUSUNAN); str(COMPASS_UNIT)
-            str(TAHLIL_CUSTOM)
+            str(TAHLIL_CUSTOM); str(PAGE_THEME)
             str(HIST); str(LAST); str(TAHLIL_PROG)
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
@@ -85,34 +86,40 @@ fun BacaanCard(
     LaunchedEffect(id) {
         userData.isFavorite(favKind, favRef).collect { fav = it }
     }
-    Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                // Penanda jumlah ulangan — teks, bukan tombol. Sebelumnya AssistChip dengan onClick
-                // kosong: tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
-                if (ulangi > 1) Text("${ulangi}x", style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary)
-            }
-            if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
-            if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
-                color = MaterialTheme.colorScheme.secondary)
-            if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)
-            if (sumber.isNotBlank()) Text("Sumber: $sumber", style = MaterialTheme.typography.labelSmall)
-            SumberKategoriLabel(kategori)
-            Row {
-                TextButton(onClick = {
-                    ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
-                    scope.launch { userData.pushHistory(favKind, favRef, judul) }
-                }) { Text("Salin") }
-                TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) { Text("Bagikan") }
-                TextButton(onClick = {
-                    scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
-                }) { Text(if (fav) "★ Favorit" else "☆ Favorit") }
-                if (onOpen != null) TextButton(onClick = onOpen) { Text("Buka") }
+    // "Tema halaman" (plan.txt): kartu bacaan digambar di atas kertas pilihan pengguna. Skema
+    // warna hanya diganti bila halaman memang bukan "ikut tema", sehingga tak ada biaya saat mati.
+    val skema = skemaHalaman(LocalTemaHalaman.current)
+    val isi: @Composable () -> Unit = {
+        Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+            Column(Modifier.padding(12.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    // Penanda jumlah ulangan — teks, bukan tombol. Sebelumnya AssistChip dengan onClick
+                    // kosong: tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
+                    if (ulangi > 1) Text("${ulangi}x", style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary)
+                }
+                if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = lineHeightFactor)
+                if (showLatin && latin.isNotBlank()) Text(latin, fontSize = latinSize.sp,
+                    color = MaterialTheme.colorScheme.secondary)
+                if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = latinSize.sp)
+                if (sumber.isNotBlank()) Text("Sumber: $sumber", style = MaterialTheme.typography.labelSmall)
+                SumberKategoriLabel(kategori)
+                Row {
+                    TextButton(onClick = {
+                        ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
+                        scope.launch { userData.pushHistory(favKind, favRef, judul) }
+                    }) { Text("Salin") }
+                    TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) { Text("Bagikan") }
+                    TextButton(onClick = {
+                        scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
+                    }) { Text(if (fav) "★ Favorit" else "☆ Favorit") }
+                    if (onOpen != null) TextButton(onClick = onOpen) { Text("Buka") }
+                }
             }
         }
     }
+    if (skema == null) isi() else MaterialTheme(colorScheme = skema) { isi() }
 }
 
 @Composable
@@ -253,6 +260,34 @@ fun BacaanSettingsSheet(
             }
             if (lineHeight != null && onLineHeight != null) {
                 UkuranSlider("Jarak antarbaris", lineHeight, LINE_HEIGHT_RANGE, onLineHeight, desimal = 1)
+            }
+            TemaHalamanChips()
+        }
+    }
+}
+
+/**
+ * Pemilih "tema halaman" (`plan.txt`: *"Pengaturan jarak antarbaris dan tema halaman"*).
+ *
+ * Menulis sendiri ke preferensi — seperti tombol favorit di [BacaanCard] — supaya tak perlu
+ * dioper dari tiap layar. Efeknya langsung terlihat karena akar aplikasi ([ProvideTemaHalaman])
+ * membaca preferensi yang sama secara reaktif, dan setiap [BacaanCard] menghormatinya.
+ */
+@Composable
+private fun TemaHalamanChips() {
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
+    val aktif by store.flow(Store.PAGE_THEME, TemaHalaman.IKUT)
+        .collectAsStateWithLifecycle(TemaHalaman.IKUT)
+    Column(Modifier.fillMaxWidth()) {
+        Text("Tema halaman: ${TemaHalaman.label(aktif)}", style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TemaHalaman.SEMUA.forEach { t ->
+                FilterChip(
+                    aktif == t,
+                    { scope.launch { store.set(Store.PAGE_THEME, t) } },
+                    { Text(TemaHalaman.label(t)) },
+                )
             }
         }
     }

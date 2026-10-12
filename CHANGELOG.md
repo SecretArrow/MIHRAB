@@ -6,6 +6,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Tema halaman bacaan** (`plan.txt`: *"Pengaturan jarak antarbaris dan tema halaman"*): bottom
+  sheet pengaturan bacaan kini punya pilihan **Ikut tema / Krem / Gelap** yang mengubah "kertas"
+  halaman bacaan — krem gading dengan tinta cokelat, atau halaman gelap — terlepas dari tema
+  antarmuka, supaya nyaman dibaca lama tanpa mengubah seluruh aplikasi. Hanya warna permukaan dan
+  aksen yang diganti (tipografi, ukuran, dan jarak antarbaris tetap), dan setiap pasangan warna
+  baru diuji rasio kontras WCAG AA-nya. Pilihan dibaca di akar aplikasi lewat satu penyedia
+  bersama, sehingga **setiap** kartu bacaan menghormatinya tanpa pengkabelan per layar; kunci
+  preferensinya ikut serta dalam backup/pemulihan.
 - **Susunan tahlil yang dapat dikonfigurasi** (`plan.txt`: *"Sediakan susunan bacaan yang dapat
   dikonfigurasi"*, *"Izinkan pengguna memilih susunan bacaan tanpa mengubah teks sumber secara
   otomatis"*, dan *"Jangan menyatakan bahwa satu susunan Tahlil merupakan satu-satunya susunan yang

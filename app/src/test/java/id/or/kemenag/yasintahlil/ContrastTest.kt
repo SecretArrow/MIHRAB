@@ -49,4 +49,26 @@ class ContrastTest {
         assertTrue("EmasTerang/latarGelap = ${ratio(Palette.EMAS_TERANG, Palette.DARK_BG)}",
             ratio(Palette.EMAS_TERANG, Palette.DARK_BG) >= 4.5)
     }
+
+    /**
+     * "Tema halaman" (`plan.txt`) memakai kertas gading dan kertas gelap. Keduanya harus tetap
+     * memenuhi ambang teks normal: tinta isi bacaan, aksen nomor/jumlah ulangan (primary), dan
+     * warna teks Latin (secondary) — termasuk emas yang lebih gelap khusus kertas krem.
+     */
+    @Test
+    fun temaHalamanKontrasTeksCukup() {
+        assertTrue("TintaKrem/KertasKrem = ${ratio(Palette.TINTA_KREM, Palette.KERTAS_KREM)}",
+            ratio(Palette.TINTA_KREM, Palette.KERTAS_KREM) >= 4.5)
+        assertTrue("Zamrud/KertasKrem = ${ratio(Palette.ZAMRUD, Palette.KERTAS_KREM)}",
+            ratio(Palette.ZAMRUD, Palette.KERTAS_KREM) >= 4.5)
+        assertTrue("EmasKertas/KertasKrem = ${ratio(Palette.EMAS_KERTAS, Palette.KERTAS_KREM)}",
+            ratio(Palette.EMAS_KERTAS, Palette.KERTAS_KREM) >= 4.5)
+
+        assertTrue("TintaGelap/KertasGelap = ${ratio(Palette.TINTA_GELAP, Palette.KERTAS_GELAP)}",
+            ratio(Palette.TINTA_GELAP, Palette.KERTAS_GELAP) >= 4.5)
+        assertTrue("ZamrudTerang/KertasGelap = ${ratio(Palette.ZAMRUD_TERANG, Palette.KERTAS_GELAP)}",
+            ratio(Palette.ZAMRUD_TERANG, Palette.KERTAS_GELAP) >= 4.5)
+        assertTrue("EmasTerang/KertasGelap = ${ratio(Palette.EMAS_TERANG, Palette.KERTAS_GELAP)}",
+            ratio(Palette.EMAS_TERANG, Palette.KERTAS_GELAP) >= 4.5)
+    }
 }

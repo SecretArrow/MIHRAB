@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import id.or.kemenag.yasintahlil.core.designsystem.IslamiTheme
+import id.or.kemenag.yasintahlil.core.designsystem.ProvideTemaHalaman
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.navigation.AppNav
@@ -52,8 +53,11 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
             val route by pendingRoute.collectAsStateWithLifecycle()
+            val pageTheme by vm.pageTheme.collectAsStateWithLifecycle()
             IslamiTheme(dark = dark) {
-                AppNav(pendingRoute = route, onRouteConsumed = { pendingRoute.value = null })
+                ProvideTemaHalaman(pageTheme) {
+                    AppNav(pendingRoute = route, onRouteConsumed = { pendingRoute.value = null })
+                }
             }
         }
     }
