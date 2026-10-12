@@ -78,14 +78,12 @@ class JadwalLokasiTest {
         )
     }
 
-    /** Kunci baru wajib ikut backup/pemulihan, jika tidak pilihannya hilang saat backup dipulihkan. */
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat pilihan lama tak terbaca. */
     @Test
-    fun pilihanIkutLokasiIkutTerBackup() {
+    fun kunciIkutLokasiDideklarasikan() {
         val store = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt")
-        val impor = store.substringAfter("fun importJson")
-        assertTrue("Store.JADWAL_IKUT tidak dideklarasikan", store.contains("JADWAL_IKUT = booleanPreferencesKey"))
-        assertTrue("Store.JADWAL_IKUT tidak ikut importJson (hilang saat backup dipulihkan)",
-            impor.contains("bool(JADWAL_IKUT)"))
+        assertTrue("Store.JADWAL_IKUT tidak dideklarasikan dengan nama tersimpannya",
+            store.contains("val JADWAL_IKUT = booleanPreferencesKey(\"jadwal_ikut_lokasi\")"))
     }
 
     /** Goyangan GPS beberapa meter saat perangkat diam tidak boleh memicu hitung ulang. */

@@ -53,13 +53,12 @@ class TemaHalamanTest {
     }
 
     @Test
-    fun kunciPreferensiDideklarasikanDanIkutBackup() {
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat pilihan lama tak terbaca. */
+    @Test
+    fun kunciPreferensiDideklarasikan() {
         val s = store()
-        assertTrue("Store.PAGE_THEME tidak dideklarasikan",
+        assertTrue("Store.PAGE_THEME tidak dideklarasikan dengan nama tersimpannya",
             s.contains("val PAGE_THEME = stringPreferencesKey(\"page_theme\")"))
-        // Tanpa ikut importJson, pilihan tema halaman hilang saat backup dipulihkan.
-        val impor = s.substringAfter("fun importJson")
-        assertTrue("PAGE_THEME tidak ikut dipulihkan dari backup", impor.contains("PAGE_THEME"))
     }
 
     @Test

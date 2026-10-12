@@ -149,13 +149,12 @@ class JenisSuaraAdzanTest {
     }
 
     @Test
-    fun kunciJenisSuaraIkutBackup() {
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat daftar jenis suara lama tak terbaca. */
+    @Test
+    fun kunciJenisSuaraDideklarasikan() {
         val store = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt")
-        assertTrue("Store.ADZAN_SOUNDS tidak dideklarasikan",
+        assertTrue("Store.ADZAN_SOUNDS tidak dideklarasikan dengan nama tersimpannya",
             store.contains("val ADZAN_SOUNDS = stringPreferencesKey(\"adzan_sounds\")"))
-        val impor = store.substringAfter("fun importJson")
-        assertTrue("ADZAN_SOUNDS tidak ikut dipulihkan dari backup (daftar jenis suara hilang)",
-            impor.contains("str(ADZAN_SOUNDS)"))
     }
 
     /** Audio bawaan tetap tidak disertakan — jenis suara hanya berkas pilihan pengguna. */

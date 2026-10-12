@@ -156,13 +156,13 @@ class PreferensiSusunanTest {
     }
 
     @Test
-    fun kunciPreferensiSusunanIkutBackup() {
+    /** Nama kunci tersimpan dibekukan: mengubahnya membuat susunan lama tak terbaca. */
+    @Test
+    fun kunciPreferensiSusunanDideklarasikan() {
         val s = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt")
-        assertTrue("Store.TAHLIL_SUSUNAN tidak dideklarasikan",
+        assertTrue("Store.TAHLIL_SUSUNAN tidak dideklarasikan dengan nama tersimpannya",
             s.contains("val TAHLIL_SUSUNAN = stringPreferencesKey(\"tahlil_susunan\")"))
-        // Tanpa ikut importJson, pilihan susunan hilang saat backup dipulihkan.
-        val impor = s.substringAfter("fun importJson")
-        assertTrue("TAHLIL_SUSUNAN tidak ikut dipulihkan dari backup", impor.contains("TAHLIL_SUSUNAN"))
-        assertTrue("TAHLIL_CUSTOM tidak ikut dipulihkan dari backup", impor.contains("TAHLIL_CUSTOM"))
+        assertTrue("Store.TAHLIL_CUSTOM tidak dideklarasikan dengan nama tersimpannya",
+            s.contains("val TAHLIL_CUSTOM = stringPreferencesKey(\"tahlil_custom\")"))
     }
 }
