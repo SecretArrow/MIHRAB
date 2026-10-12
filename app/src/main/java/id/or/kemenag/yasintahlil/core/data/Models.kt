@@ -29,7 +29,15 @@ data class SholatInfo(
     /** Ketentuan khusus (mis. Jumat, qashar/jamak safar) — prosedural, tanpa teks Arab. */
     val ketentuan: List<String> = emptyList(),
     /** Catatan bila niat sengaja belum disertakan (menunggu verifikasi sumber resmi). */
-    val niatCatatan: String = ""
+    val niatCatatan: String = "",
+    /**
+     * Maksud sholat sunnah (mis. "Ampunan dosa", "Penghormatan masjid").
+     *
+     * `plan.txt` §"Sholat Sunnah": *"Kelompokkan sholat berdasarkan waktu pelaksanaan, jumlah
+     * rakaat, dan tujuan."* Sebelumnya kolom ini ada di bundel tetapi tak pernah dibaca kode —
+     * data yang ditulis, divalidasi gerbang konten, lalu tak sampai ke pengguna sama sekali.
+     */
+    val tujuan: String = "",
 )
 data class Bacaan(
     val id: String, val judul: String, val kapan: String = "",

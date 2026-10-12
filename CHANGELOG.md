@@ -6,6 +6,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Pengelompokan sholat sunnah menurut waktu, rakaat, dan tujuan** (`plan.txt` §"Sholat Sunnah":
+  *"Kelompokkan sholat berdasarkan waktu pelaksanaan, jumlah rakaat, dan tujuan"*): tab Sunnah dulu
+  hanya daftar datar, dan kolom `tujuan` setiap sholat sunnah — sudah ada di bundel konten dan
+  lolos gerbang konten sejak awal — **tidak pernah dibaca kode sama sekali**: data yang ditulis,
+  divalidasi, lalu tak sampai ke pengguna. Kini tujuannya tampil di kartu dan di layar tata cara,
+  dan daftarnya dapat dikelompokkan menurut **Waktu**, **Rakaat**, atau **Tujuan**. Ketiganya
+  ditawarkan karena satu cara tidak menjawab semua pertanyaan: "mana yang dikerjakan malam ini"
+  berbeda dari "mana yang tujuannya memohon ampunan". Pengelompokannya tidak mengarang keterangan
+  baru: rakaat dan tujuan memakai nilai yang sudah tertulis di entri itu sendiri, sedangkan waktu
+  memetakan teks `waktu` yang terlalu khusus ("Sepertiga malam terakhir", "Saat masuk masjid") ke
+  rentang yang lebih kasar **berdasarkan kata-kata pada teks itu sendiri**. Entri yang tidak
+  terbaca tidak ditebak ke rentang mana pun, dan uji memakai daftar sholat sungguhan untuk
+  memastikan setiap sholat sunnah jatuh ke satu kelompok bernama serta tidak ada yang hilang atau
+  berganda pada ketiga cara.
 - **Layar Tentang: kebijakan privasi, izin, lisensi, dan sumber konten** (`plan.txt` §"Pengaturan
   Aplikasi": *"Tentang aplikasi, sumber konten, lisensi, serta kebijakan privasi"*; §"Keamanan dan
   Privasi": *"Dokumentasikan izin Android dan alasan penggunaannya"*): Pengaturan dulu hanya

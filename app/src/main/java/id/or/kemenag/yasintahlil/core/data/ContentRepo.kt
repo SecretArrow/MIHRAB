@@ -167,7 +167,8 @@ class ContentRepo(private val ctx: Context) {
                 },
                 o.optString("rujukan_file", null).takeIf { o.has("rujukan_file") },
                 ketentuan = ket,
-                niatCatatan = o.optString("niat_catatan", "")
+                niatCatatan = o.optString("niat_catatan", ""),
+                tujuan = o.optString("tujuan"),
             )
         }
     }

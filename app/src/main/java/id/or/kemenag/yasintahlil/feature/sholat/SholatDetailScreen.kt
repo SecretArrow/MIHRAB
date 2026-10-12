@@ -55,6 +55,8 @@ fun SholatDetailScreen(id: String) {
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(info?.nama ?: id, style = MaterialTheme.typography.titleLarge)
         Text("${info?.rakaat.orEmpty()} • ${info?.waktu.orEmpty()}")
+        // Sholat wajib tidak punya kolom tujuan, jadi baris ini hanya muncul untuk sholat sunnah.
+        info?.tujuan?.takeIf { it.isNotBlank() }?.let { Text("Tujuan: $it") }
         info?.niat?.let { n ->
             BacaanCard("niat:$id", "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize, 15f,
                 showArab = showArab, kategori = n.kategori)
