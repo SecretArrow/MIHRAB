@@ -62,7 +62,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         }
 
         val uri = store.get(Store.ADZAN_URI, "")
-        val vol = store.get(Store.ADZAN_VOL, 0.8f)
+        val vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
         val playAudio = uri.isNotBlank()
         if (playAudio) {
             runCatching { setForeground(foregroundInfo(nama)) }

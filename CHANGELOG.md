@@ -360,6 +360,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diperbaiki
+- **Mode tema kini punya satu daftar, satu bawaan, dan satu pemetaan**: nilai `"terang"`, `"gelap"`,
+  dan `"sistem"` beserta artinya dahulu tinggal di **tiga** berkas — `MainViewModel` menulis bawaan
+  `"sistem"`, `MainActivity` memetakan `"terang"`/`"gelap"` ke `dark: Boolean` lewat rantai `when`,
+  dan layar Pengaturan menyusun sendiri daftar chip `listOf("terang", "gelap", "sistem")`. Kuncinya
+  memang satu (`Store.DARK`), tetapi daftarnya tiga; menambah satu mode berarti harus ingat
+  menyunting ketiganya, dan mode yang lolos dari pemetaan diam-diam jatuh ke "ikut sistem" —
+  pilihan pengguna tampak tersimpan, chip-nya terlihat aktif, tetapi tema tidak berubah. Ketiganya
+  kini di `TemaAplikasi` (murni, tanpa Android, dapat diuji di JVM), termasuk pemetaannya
+  (`gelap(v, sistemGelap)`), sehingga mode yang tak dikenal pun jatuh dengan cara yang sama di mana
+  pun. Dijaga `TemaAplikasiTest`.
 - **Ukuran bacaan kini punya satu bawaan dan satu rentang**: `Store.ARAB_SIZE` dibaca di **sebelas**
   tempat dengan bawaan yang bercabang — enam memakai `22f`, lima `24f` — ditambah tiga nilai awal di
   ViewModel (22/24/24). Kuncinya memang satu, tetapi selama pengguna belum pernah menyentuh
@@ -371,6 +381,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   di empat layar (Ghaib, Jenazah, Iqomah, Tahlil) — tiga di antaranya bahkan tanpa batas atas,
   sehingga ukuran maksimum 40 melompat ke 48 dan melewati lebar kartu. Dijaga `UkuranBacaanTest`,
   yang juga menolak bawaan maupun angka jarak jauh itu ditulis ulang di luar `UkuranBacaan`.
+  Bawaan jarak antarbaris yang sama (`1.9f`) pun masih tertulis di tanda tangan `ArabText` — satu
+  salinan lagi yang tak terlihat oleh layar Pengaturan; kini diambil dari
+  `UkuranBacaan.JARAK_DEFAULT`.
 - **Aturan preferensi pengingat adzan kini juga tunggal**: CSV saklar per waktu (`Store.ADZAN_ON`)
   diurai di dua tempat — `PrayerScheduler` (pembaca) dan layar Adzan (penulis) — dengan panjang dan
   padding yang ditulis ulang masing-masing; bila keduanya berbeda, menyalakan satu waktu di layar
@@ -378,7 +391,10 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   tempat: dua tombol di layar Iqomah, penjadwal pengingat, dan pekerja latar — sehingga layar dapat
   menampilkan angka yang tidak pernah dipakai notifikasi. Keduanya kini tinggal di `PengingatAdzan`
   (murni, tanpa Android): `parseOn`/`serializeOn` dan `iqomahMenit`, dipakai keempat berkas itu.
-  Dijaga `PengingatAdzanTest`, dan `AdzanJadwalTest` menolak salinan barunya muncul lagi.
+  Dijaga `PengingatAdzanTest`, dan `AdzanJadwalTest` menolak salinan barunya muncul lagi. Hal yang
+  sama berlaku untuk volume suara: bawaan `0.8f` ditulis di **dua** tempat — pekerja latar yang
+  benar-benar memutar suaranya dan layar Adzan yang menampilkan slidernya — sehingga angka di layar
+  bisa berbeda dari volume yang berbunyi; kini satu, `PengingatAdzan.VOL_DEFAULT`.
 - **Urutan nama waktu sholat kini juga tunggal**: nama lima waktu beradzan (`Subuh, Zuhur, Asar,
   Magrib, Isya`) dan enam waktu berkoreksi (dengan `Terbit`) dahulu ditulis ulang di **empat**
   tempat — `PrayerScheduler`, layar Adzan, layar Jadwal, dan beranda. Urutan itu bukan hiasan:

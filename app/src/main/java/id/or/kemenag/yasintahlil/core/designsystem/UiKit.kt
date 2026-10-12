@@ -37,7 +37,12 @@ fun rememberStore(): Store {
 }
 
 @Composable
-fun ArabText(arab: String, sizeSp: Float, modifier: Modifier = Modifier, lineHeightFactor: Float = 1.9f) {
+fun ArabText(
+    arab: String,
+    sizeSp: Float,
+    modifier: Modifier = Modifier,
+    lineHeightFactor: Float = UkuranBacaan.JARAK_DEFAULT,
+) {
     // Teks Arab ditata arah kanan-ke-kiri agar tanda baca & angka menempel benar.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Text(arab, fontSize = sizeSp.sp, lineHeight = (sizeSp * lineHeightFactor).sp,

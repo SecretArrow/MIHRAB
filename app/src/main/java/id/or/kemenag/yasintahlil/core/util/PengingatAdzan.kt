@@ -12,6 +12,8 @@ package id.or.kemenag.yasintahlil.core.util
  *  - Batas panjang timer iqomah (1–60 menit) dahulu ditulis di tiga tempat: dua tombol di layar
  *    Iqomah, penjadwal pengingat, dan pekerja latar. Bila salah satunya berbeda, layar menampilkan
  *    angka yang tidak pernah dipakai notifikasi.
+ *  - Volume suara adzan bawaan (`0.8f`) ditulis di dua tempat: pekerja latar yang benar-benar
+ *    memutar suaranya dan layar Adzan yang menampilkan slidernya.
  *
  * Tanpa Android, sehingga dapat diuji langsung di JVM.
  */
@@ -40,4 +42,11 @@ object PengingatAdzan {
 
     /** Jepit nilai tersimpan ke rentang yang sah, sehingga layar dan notifikasi memakai angka sama. */
     fun iqomahMenit(mentah: Int): Int = mentah.coerceIn(IQOMAH_MIN_MENIT, IQOMAH_MAKS_MENIT)
+
+    /**
+     * Volume suara adzan bawaan, 0–1. Dibaca pekerja latar saat memutar suara dan layar Adzan saat
+     * menampilkan slidernya — dua tempat yang sama-sama menuliskan `0.8f` sendiri-sendiri, sehingga
+     * angka di layar bisa berbeda dari volume yang benar-benar berbunyi.
+     */
+    const val VOL_DEFAULT = 0.8f
 }

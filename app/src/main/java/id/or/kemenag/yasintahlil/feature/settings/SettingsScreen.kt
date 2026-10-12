@@ -30,10 +30,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
-    var theme by remember { mutableStateOf("sistem") }
-    var arab by remember { mutableStateOf(24f) }
-    var latin by remember { mutableStateOf(16f) }
-    var lineHeight by remember { mutableStateOf(1.9f) }
+    var theme by remember { mutableStateOf(TemaAplikasi.SISTEM) }
+    var arab by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
+    var latin by remember { mutableStateOf(UkuranBacaan.LATIN_DEFAULT) }
+    var lineHeight by remember { mutableStateOf(UkuranBacaan.JARAK_DEFAULT) }
     var pageTheme by remember { mutableStateOf(TemaHalaman.IKUT) }
     var showL by remember { mutableStateOf(true) }
     var showT by remember { mutableStateOf(true) }
@@ -55,7 +55,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var ringkasanUlang by remember { mutableStateOf(0) }
     var hapusTarget by remember { mutableStateOf<BagianData?>(null) }
     LaunchedEffect(Unit) {
-        theme = store.get(Store.DARK, "sistem")
+        theme = store.get(Store.DARK, TemaAplikasi.SISTEM)
         arab = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         latin = store.get(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
         lineHeight = store.get(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
@@ -81,7 +81,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         Text("Pengaturan", style = MaterialTheme.typography.titleLarge)
         Text("Tema:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("terang", "gelap", "sistem").forEach { t ->
+            TemaAplikasi.SEMUA.forEach { t ->
                 FilterChip(theme == t, { theme = t; scope.launch { store.set(Store.DARK, t) } }, { Text(t) })
             }
         }

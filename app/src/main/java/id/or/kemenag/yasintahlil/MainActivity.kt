@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import id.or.kemenag.yasintahlil.core.designsystem.IslamiTheme
 import id.or.kemenag.yasintahlil.core.designsystem.ProvideTemaHalaman
+import id.or.kemenag.yasintahlil.core.designsystem.TemaAplikasi
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.navigation.AppNav
@@ -47,11 +48,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val vm: MainViewModel = hiltViewModel()
             val theme by vm.theme.collectAsStateWithLifecycle()
-            val dark = when (theme) {
-                "terang" -> false
-                "gelap" -> true
-                else -> isSystemInDarkTheme()
-            }
+            // Pemetaannya dari aturan bersama: mode yang tak dikenal jatuh ke "ikut sistem",
+            // bukan ke tema tebakan.
+            val dark = TemaAplikasi.gelap(theme, isSystemInDarkTheme())
             val route by pendingRoute.collectAsStateWithLifecycle()
             val pageTheme by vm.pageTheme.collectAsStateWithLifecycle()
             IslamiTheme(dark = dark) {

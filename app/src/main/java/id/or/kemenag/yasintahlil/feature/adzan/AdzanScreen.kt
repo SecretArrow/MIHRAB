@@ -47,7 +47,7 @@ fun AdzanScreen() {
     var uri by remember { mutableStateOf("") }
     var sounds by remember { mutableStateOf<List<SuaraAdzan>>(emptyList()) }
     var ubahNama by remember { mutableStateOf<SuaraAdzan?>(null) }
-    var vol by remember { mutableStateOf(0.8f) }
+    var vol by remember { mutableStateOf(PengingatAdzan.VOL_DEFAULT) }
     var preMin by remember { mutableStateOf(0) }
     var doaReminder by remember { mutableStateOf(false) }
     var dnd by remember { mutableStateOf(false) }
@@ -106,7 +106,7 @@ fun AdzanScreen() {
         on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, "1,1,1,1,1"))
         uri = store.get(Store.ADZAN_URI, "")
         sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, ""))
-        vol = store.get(Store.ADZAN_VOL, 0.8f)
+        vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)

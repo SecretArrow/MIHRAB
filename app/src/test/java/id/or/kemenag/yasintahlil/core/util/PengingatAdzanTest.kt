@@ -7,14 +7,17 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Aturan preferensi pengingat adzan: saklar per waktu (`Store.ADZAN_ON`) dan panjang timer iqomah.
+ * Aturan preferensi pengingat adzan: saklar per waktu (`Store.ADZAN_ON`), panjang timer iqomah, dan
+ * volume suara bawaan.
  *
- * Keduanya dahulu diurai/dijepit di beberapa tempat sekaligus — `PrayerScheduler` dan layar Adzan
- * untuk CSV-nya, tiga tempat untuk batas menit iqomah. Bila salinannya berbeda, layar dapat
- * menampilkan angka yang tak pernah dipakai notifikasi, atau menyalakan satu waktu mematikan waktu
- * lain. Uji ini menjaga agar aturannya tetap satu.
+ * Ketiganya dahulu ditulis di beberapa tempat sekaligus — `PrayerScheduler` dan layar Adzan untuk
+ * CSV-nya, tiga tempat untuk batas menit iqomah, dan dua tempat untuk volume (`0.8f`). Bila salinannya
+ * berbeda, layar dapat menampilkan angka yang tak pernah dipakai notifikasi, atau menyalakan satu waktu
+ * mematikan waktu lain. Uji ini menjaga agar aturannya tetap satu.
  */
 class PengingatAdzanTest {
+
+    private fun root(): File = listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
 
     // ---- Saklar per waktu ----
 
@@ -78,11 +81,34 @@ class PengingatAdzanTest {
         assertFalse(PengingatAdzan.IQOMAH_MIN_MENIT > PengingatAdzan.IQOMAH_MAKS_MENIT)
     }
 
+    // ---- Volume suara ----
+
+    /** Volume di luar 0–1 akan dijepit pemutar suara, sehingga angka di layar tak lagi berarti. */
+    @Test
+    fun volumeBawaanBeradaDiDalamRentang() {
+        assertTrue("volume bawaan harus terdengar", PengingatAdzan.VOL_DEFAULT > 0f)
+        assertTrue("volume bawaan tak boleh melebihi 1", PengingatAdzan.VOL_DEFAULT <= 1f)
+    }
+
+    /** Volume bawaan tak boleh ditulis ulang di tempat yang membaca `Store.ADZAN_VOL`. */
+    @Test
+    fun volumeBawaanTidakDitulisUlang() {
+        val pelanggar = mutableListOf<String>()
+        val pola = Regex("""Store\.ADZAN_VOL\s*,\s*[\d.]+f""")
+        File(root(), "src/main/java/id/or/kemenag/yasintahlil").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .forEach { f ->
+                val isi = f.readText()
+                pola.findAll(isi).forEach { pelanggar += "${f.name}: ${it.value}" }
+            }
+        assertTrue("Volume adzan ditulis ulang di luar PengingatAdzan: $pelanggar", pelanggar.isEmpty())
+    }
+
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */
     @Test
     fun aturanPengingatTidakMenyentuhAndroid() {
         val berkas = File(
-            listOf(File("."), File("app")).first { File(it, "src/main").isDirectory },
+            root(),
             "src/main/java/id/or/kemenag/yasintahlil/core/util/PengingatAdzan.kt",
         ).readText()
         assertFalse("PengingatAdzan mengimpor Android sehingga tak dapat diuji di JVM",

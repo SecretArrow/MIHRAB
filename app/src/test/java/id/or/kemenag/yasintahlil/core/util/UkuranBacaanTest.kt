@@ -59,6 +59,10 @@ class UkuranBacaanTest {
             Regex("""Store\.ARAB_SIZE\s*,\s*[\d.]+f"""),
             Regex("""Store\.LATIN_SIZE\s*,\s*[\d.]+f"""),
             Regex("""Store\.LINE_HEIGHT\s*,\s*[\d.]+f"""),
+            // Nilai awal `remember { mutableStateOf(...) }` dan nilai awal state ViewModel pun
+            // bercabang sebelum ini (22/24/24): keduanya sama-sama terlihat pengguna.
+            Regex("""(arabSize|arab|latin|latinSize|lineHeight|tinggi)\s*by remember \{ mutableStateOf\([\d.]+f\)"""),
+            Regex("""val (arabSize|latinSize|lineHeight)\s*:\s*Float\s*=\s*[\d.]+f"""),
             Regex("""arabSize\s*\+\s*8"""),
             Regex("""coerceAtMost\(44f\)"""),
         )
