@@ -12,6 +12,7 @@ import id.or.kemenag.yasintahlil.core.data.PrayerTimes
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,7 +76,7 @@ class JadwalViewModel @Inject constructor(
                 val method = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG"))
                 val asarH = store.get(Store.ASAR, "syafii") == "hanafi"
                 val tzId = store.get(Store.TZ, "")
-                val corr = parseCorr(store.get(Store.CORR, "0,0,0,0,0,0"))
+                val corr = JadwalHariIni.parseCorr(store.get(Store.CORR, "0,0,0,0,0,0"))
                 val ikut = store.get(Store.JADWAL_IKUT, false)
                 _state.value = _state.value.copy(
                     city = city, lat = lat, lon = lon, method = method,
@@ -95,19 +96,17 @@ class JadwalViewModel @Inject constructor(
         }
     }
 
-    private fun parseCorr(csv: String): List<Int> =
-        (csv.split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }).take(6)
-
-    private fun currentTz(): TimeZone =
-        _state.value.tzId.takeIf { it.isNotBlank() }?.let { TimeZone.getTimeZone(it) } ?: TimeZone.getDefault()
+    private fun currentTz(): TimeZone = JadwalHariIni.zona(_state.value.tzId)
 
     fun recompute() {
         val s = _state.value
         val now = Calendar.getInstance(currentTz())
         val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-        val times = PrayerCalc.compute(now, PrayerCalc.Params(
+        // Aturan hisab disusun lewat `JadwalHariIni` — sama persis dengan penjadwal pengingat,
+        // sehingga jam yang terlihat di layar ini adalah jam yang benar-benar dijadwalkan.
+        val times = PrayerCalc.compute(now, JadwalHariIni.params(
             lat = s.lat, lon = s.lon, method = s.method,
-            asarFactor = if (s.asarHanafi) 2.0 else 1.0, corr = s.corr, tz = currentTz(),
+            asarHanafi = s.asarHanafi, corr = s.corr, tz = currentTz(),
         ))
         _state.value = s.copy(times = times, nowMin = nowMin)
     }

@@ -7,10 +7,10 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import id.or.kemenag.yasintahlil.core.data.ReminderWorker
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import java.util.Calendar
 import java.util.Locale
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 /**
@@ -38,22 +38,31 @@ object PrayerScheduler {
     const val DOA_DELAY_MIN = 5
 
     private data class Cfg(
-        val lat: Double, val lon: Double, val method: PrayerCalc.Method,
-        val asarFactor: Double, val corr: List<Int>, val tz: TimeZone,
+        /**
+         * Parameter hisab yang sudah jadi, bukan potongan-potongan nilai mentah.
+         *
+         * Dahulu `Cfg` menyimpan `lat`/`lon`/`method`/`asarFactor`/`corr`/`tz` terpisah lalu
+         * menyusunnya kembali menjadi `PrayerCalc.Params` di tempat pemakaian. Menyusunnya sekali di
+         * sini membuat pengingat memakai **persis** aturan yang sama dengan layar Jadwal, Beranda,
+         * dan menu Adzan — bukan salinan yang bisa berbeda diam-diam.
+         */
+        val params: PrayerCalc.Params,
         val on: List<Boolean>, val preMin: Int, val doaReminder: Boolean,
         val iqomahOn: Boolean, val iqomahMin: Int,
     )
 
     private suspend fun loadCfg(ctx: Context): Cfg {
         val store = Store(ctx)
-        val tzId = store.get(Store.TZ, "")
+        val tz = JadwalHariIni.zona(store.get(Store.TZ, ""))
         return Cfg(
-            lat = store.get(Store.LAT, -6.2),
-            lon = store.get(Store.LON, 106.8),
-            method = PrayerCalc.Method.from(store.get(Store.METHOD, "KEMENAG")),
-            asarFactor = if (store.get(Store.ASAR, "syafii") == "hanafi") 2.0 else 1.0,
-            corr = parseCorr(store.get(Store.CORR, "0,0,0,0,0,0")),
-            tz = if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId),
+            params = JadwalHariIni.params(
+                lat = store.get(Store.LAT, -6.2),
+                lon = store.get(Store.LON, 106.8),
+                methodKey = store.get(Store.METHOD, "KEMENAG"),
+                asarKey = store.get(Store.ASAR, "syafii"),
+                corrCsv = store.get(Store.CORR, "0,0,0,0,0,0"),
+                tz = tz,
+            ),
             on = (store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" } + List(5) { true }).take(5),
             preMin = store.get(Store.ADZAN_PRE_MIN, 0),
             doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
@@ -83,12 +92,9 @@ object PrayerScheduler {
     }
 
     private fun enqueueNext(ctx: Context, cfg: Cfg, nama: String) {
-        val now = Calendar.getInstance(cfg.tz)
+        val now = Calendar.getInstance(cfg.params.tz)
         val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
-        val times = PrayerCalc.compute(now, PrayerCalc.Params(
-            lat = cfg.lat, lon = cfg.lon, method = cfg.method,
-            asarFactor = cfg.asarFactor, corr = cfg.corr, tz = cfg.tz,
-        ))
+        val times = PrayerCalc.compute(now, cfg.params)
         val map = mapOf(
             "Subuh" to times.subuh, "Zuhur" to times.zuhur, "Asar" to times.asar,
             "Magrib" to times.magrib, "Isya" to times.isya,
@@ -141,7 +147,4 @@ object PrayerScheduler {
             .build()
         WorkManager.getInstance(ctx).enqueueUniqueWork(unique, ExistingWorkPolicy.REPLACE, req)
     }
-
-    private fun parseCorr(csv: String): List<Int> =
-        (csv.split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }).take(6)
 }

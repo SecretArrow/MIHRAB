@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,7 +63,7 @@ class HomeViewModel @Inject constructor(
         alir(Store.ASAR, "syafii") { s, v -> s.copy(asarHanafi = v == "hanafi") }
         alir(Store.METHOD, "KEMENAG") { s, v -> s.copy(method = PrayerCalc.Method.from(v)) }
         alir(Store.TZ, "") { s, v -> s.copy(tzId = v) }
-        alir(Store.CORR, "0,0,0,0,0,0") { s, v -> s.copy(corr = parseCorr(v)) }
+        alir(Store.CORR, "0,0,0,0,0,0") { s, v -> s.copy(corr = JadwalHariIni.parseCorr(v)) }
         alir(Store.LAST, "") { s, v -> s.copy(last = v) }
         alir(Store.INFO_CARD, true) { s, v -> s.copy(infoCard = v) }
         alir(Store.HIJRI_CORR, 0) { s, v -> s.copy(hijriCorr = v) }
@@ -99,8 +100,4 @@ class HomeViewModel @Inject constructor(
             store.flow(key, def).collect { v -> _state.update { ubah(it, v) } }
         }
     }
-
-    /** "1,0,1,…" → enam angka; panjang selalu tepat enam agar indeks koreksi tak bergeser. */
-    private fun parseCorr(csv: String): List<Int> =
-        (csv.split(",").map { it.trim().toIntOrNull() ?: 0 } + List(6) { 0 }).take(6)
 }

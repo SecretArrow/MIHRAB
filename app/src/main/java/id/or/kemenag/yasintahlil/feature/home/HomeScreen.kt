@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
+import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.navigation.Routes
 import java.text.SimpleDateFormat
@@ -32,9 +33,12 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
     val jam = SimpleDateFormat("HH:mm", Locale("id")).format(now.time)
     val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id")).format(now.time)
     val times = remember(s.lat, s.lon, s.asarHanafi, s.method, tz, s.corr, now.get(Calendar.DAY_OF_YEAR)) {
-        PrayerCalc.compute(now, PrayerCalc.Params(
+        // Parameter disusun lewat `JadwalHariIni` yang sama dengan penjadwal pengingat & menu
+        // Adzan, sehingga hitung mundur di beranda tidak dapat berbeda dari jam yang benar-benar
+        // dijadwalkan hanya karena aturannya ditulis ulang di sini.
+        PrayerCalc.compute(now, JadwalHariIni.params(
             lat = s.lat, lon = s.lon, method = s.method,
-            asarFactor = if (s.asarHanafi) 2.0 else 1.0, corr = s.corr, tz = tz,
+            asarHanafi = s.asarHanafi, corr = s.corr, tz = tz,
         ))
     }
     val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)

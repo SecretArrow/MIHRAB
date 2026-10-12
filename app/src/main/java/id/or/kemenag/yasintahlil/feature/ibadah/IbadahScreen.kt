@@ -15,7 +15,12 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 fun IbadahScreen(go: (String) -> Unit) {
     Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
         Text("Menu Ibadah")
-        Button(onClick = { go(Routes.YASIN) }) { Text("Yasin (83 ayat, MSI Kemenag)") }
+        // Judul menu bukan tempat mengarang asal-usul teks. Dahulu tombol ini menulis
+        // "(83 ayat, MSI Kemenag)": jumlah ayat dan nama sumbernya dipatok di kode, sehingga tidak
+        // dapat ikut berubah bila bundelnya diperbarui — dan layar Yasin sendiri sudah menolak
+        // hardcode serupa (`AtribusiTeksQuranTest`). Atribusi teks Arab, transliterasi, dan
+        // terjemahan kini tampil di layar Yasin, dibaca dari bundelnya.
+        Button(onClick = { go(Routes.YASIN) }) { Text("Yasin") }
         Button(onClick = { go(Routes.TAHLIL) }) { Text("Tahlil + counter") }
         Button(onClick = { go(Routes.SHOLAT) }) { Text("Sholat Wajib & Sunnah") }
         Button(onClick = { go(Routes.WUDHU) }) { Text("Wudhu & Tayamum") }

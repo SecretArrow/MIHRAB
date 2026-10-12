@@ -15,8 +15,13 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 fun AlatScreen(go: (String) -> Unit) {
     Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
         Text("Menu Alat")
-        Button(onClick = { go(Routes.KIBLAT) }) { Text("Kompas Kiblat (SIHAT)") }
-        Button(onClick = { go(Routes.JADWAL) }) { Text("Jadwal Sholat (SIHAT)") }
+        // Label menu adalah penunjuk arah, bukan kutipan sumber. Dahulu kedua tombol ini menulis
+        // "(SIHAT)" — padahal jadwal sholat dihitung **di perangkat** (algoritma Meeus, sudut
+        // Kemenag) dan aplikasi tidak pernah menghubungi SIHAT; layar Pengaturan bahkan menyatakan
+        // sumber online resmi belum diaktifkan. Klaim sumber yang tak dapat ditepati lebih buruk
+        // daripada tanpa klaim: asal-usulnya kini disebut di layar masing-masing, dibaca dari bundel.
+        Button(onClick = { go(Routes.KIBLAT) }) { Text("Kompas Kiblat") }
+        Button(onClick = { go(Routes.JADWAL) }) { Text("Jadwal Sholat") }
         Button(onClick = { go(Routes.ADZAN) }) { Text("Adzan & Pengingat") }
         Button(onClick = { go(Routes.IQOMAH) }) { Text("Iqomah + timer") }
         Button(onClick = { go(Routes.SEARCH) }) { Text("Pencarian") }
