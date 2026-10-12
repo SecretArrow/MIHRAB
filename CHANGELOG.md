@@ -414,6 +414,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   sebagai literal — kecuali dua kata yang sekaligus kunci skema konten (`niat`, `takbir`), yang
   berkas pemakainya dipaku hanya `ContentRepo.kt` dan `JenisBacaan.kt` supaya pengecualiannya tidak
   melebar. Empat belas mutasi terverifikasi tertangkap.
+- **Daftar host sumber resmi kini satu daftar**: aplikasi menolak berkas konten yang `sumber_url`-nya
+  di luar daftar host resmi saat runtime, sementara gate CI menilai berkas yang sama saat dibangun —
+  tetapi keduanya menyimpan **salinan** daftar itu sendiri-sendiri, satu di Kotlin
+  (`ContentValidator.allowedHosts`) dan satu di Python (`tools/validate_content.py`), tanpa apa pun
+  yang membandingkannya. Dua salinan berarti dua kebijakan: berkas dengan domain yang hanya ada di
+  daftar Python **lolos gate**, tampak *"terpasang"* bagi pengguna, lalu setiap berkasnya ditolak
+  pembaca dan aplikasi diam-diam kembali memakai konten bawaan — persis kegagalan sunyi yang sudah
+  pernah terjadi pada ejaan kunci `sumber_url`. Sebaliknya, host yang ditambahkan di Kotlin tanpa ikut
+  di gate membuat CI gagal pada berkas yang justru sah. Gate kini **membaca** daftarnya dari
+  `ContentValidator.kt` — dan gagal keras bila tidak terbaca, supaya gate yang kehilangan daftarnya
+  tidak diam-diam meloloskan segalanya; `tools/validate_bundle.py` memakai modul gate itu, jadi ikut
+  terbawa. Dijaga `SumberResmiSatuTempatTest`: gate harus menyebut `ContentValidator.kt`, tidak boleh
+  memuat salinan daftar, harus memakai pola pengambil yang **sama persis** dengan yang dipaku di uji,
+  pola itu harus benar-benar menghasilkan daftar aplikasi, dan berkas Kotlin ketiga yang mulai
+  mengeja host resmi harus ketahuan. Tujuh mutasi terverifikasi tertangkap. e50ca26 (fix(konten): daftar host sumber resmi satu daftar)
 - **Nama rentang waktu sholat sunnah kini satu tempat**: pengelompokan sholat sunnah menuliskan
   keenam nama rentangnya **dua kali** — sekali sebagai literal pada cabang `KelompokSholat.waktu`,
   sekali lagi pada daftar urutan tampilnya. Keduanya adalah daftar teks yang sama, jadi tak ada yang

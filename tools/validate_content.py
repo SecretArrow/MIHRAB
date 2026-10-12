@@ -14,7 +14,8 @@ Mode:
   --strict   -> entri tanpa sumber_url juga menggagalkan (dipakai setelah
                 seluruh konten dilengkapi).
 
-Sumber resmi: *.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id
+Sumber resmi: daftar tunggalnya ada di `ContentValidator.allowedHosts` (Kotlin) dan dibaca dari
+sana — lihat `load_allowed_hosts()`.
 """
 from __future__ import annotations
 
@@ -26,8 +27,43 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT_DIR = ROOT / "app" / "src" / "main" / "assets" / "content"
+CONTENT_VALIDATOR = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+                     / "yasintahlil" / "core" / "util" / "ContentValidator.kt")
 
-ALLOWED_HOSTS = ["kemenag.go.id", "kemenag.dev", "sunnah.com", "bmkg.go.id", "nu.or.id"]
+# Pola pengambil daftar host dari sumber Kotlin. Ditulis persis sama di penjaga Kotlin
+# (`SumberResmiSatuTempatTest`) supaya kedua sisi tidak dapat memakai pola yang berbeda.
+ALLOWED_HOSTS_RE = r'allowedHosts\s*=\s*listOf\(([^)]*)\)'
+
+
+def load_allowed_hosts() -> list[str]:
+    """Daftar host resmi, dibaca dari satu-satunya tempat yang menyatakannya.
+
+    Aplikasi menolak berkas konten yang `sumber_url`-nya di luar daftar ini saat runtime
+    (`ContentValidator.isOfficialSource` dipakai `ContentRepo` dan `BundelKonten`); gate ini
+    harus menilai dengan daftar yang **sama**. Dua salinan daftar berarti berkas dapat lolos
+    gate tetapi ditolak aplikasi — pembaruan tampak terpasang, setiap berkasnya dilewati, dan
+    aplikasi diam-diam kembali memakai konten bawaan tanpa satu pun pesan yang menyebut sebabnya.
+    Sebaliknya, host yang ditambahkan di Kotlin tanpa ikut di sini membuat gate gagal pada berkas
+    yang justru sah.
+
+    Sengaja **gagal keras** bila daftarnya tidak terbaca: gate yang diam-diam memakai daftar
+    kosong akan meloloskan segalanya.
+    """
+    try:
+        sumber = CONTENT_VALIDATOR.read_text(encoding="utf-8")
+    except OSError as e:
+        raise SystemExit(f"[validate_content] tidak dapat membaca {CONTENT_VALIDATOR}: {e}")
+    m = re.search(ALLOWED_HOSTS_RE, sumber)
+    if not m:
+        raise SystemExit(f"[validate_content] 'allowedHosts = listOf(...)' tidak ditemukan di "
+                         f"{CONTENT_VALIDATOR}")
+    hosts = re.findall(r'"([^"]+)"', m.group(1))
+    if not hosts:
+        raise SystemExit(f"[validate_content] daftar host resmi kosong di {CONTENT_VALIDATOR}")
+    return hosts
+
+
+ALLOWED_HOSTS = load_allowed_hosts()
 ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 
 
