@@ -41,6 +41,8 @@ class Store(private val ctx: Context) {
         val ADZAN_URI = stringPreferencesKey("adzan_uri")
         val ADZAN_VOL = floatPreferencesKey("adzan_vol")
         val ADZAN_PRE_MIN = intPreferencesKey("adzan_pre_min")
+        /** Pengingat membaca doa setelah adzan, beberapa menit setelah waktu sholat masuk. */
+        val DOA_ADZAN_REMINDER = booleanPreferencesKey("doa_adzan_reminder")
         val IQOMAH_MIN = intPreferencesKey("iqomah_min")
         val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
         val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
@@ -105,7 +107,7 @@ class Store(private val ctx: Context) {
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS)
-            bool(INFO_CARD); bool(NOTIF)
+            bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)

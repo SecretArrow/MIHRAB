@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,9 +46,18 @@ import id.or.kemenag.yasintahlil.feature.tahlil.TahlilScreen
 import id.or.kemenag.yasintahlil.feature.yasin.YasinScreen
 
 @Composable
-fun AppNav() {
+fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
     val nav = rememberNavController()
     val bottomBarVisible = remember { mutableStateOf(true) }
+    // Ketukan notifikasi membawa rute; hanya rute yang dikenal yang dibuka, sisanya diabaikan
+    // supaya permintaan dari luar tak pernah membuat aplikasi berhenti.
+    LaunchedEffect(pendingRoute) {
+        val r = pendingRoute
+        if (r != null) {
+            if (r in Routes.LANGSUNG) nav.navigate(r)
+            onRouteConsumed()
+        }
+    }
     val tabs = listOf(
         Triple(Routes.HOME, "Beranda", Icons.Filled.Home),
         Triple(Routes.IBADAH, "Ibadah", Icons.Filled.MenuBook),

@@ -27,10 +27,18 @@ object PrayerScheduler {
     const val TAG = "sholat"
     private val NAMES = listOf("Subuh", "Zuhur", "Asar", "Magrib", "Isya")
 
+    /** Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa (setelah adzan). */
+    const val JENIS_ADZAN = "adzan"
+    const val JENIS_PRA = "pra"
+    const val JENIS_DOA = "doa"
+
+    /** Jeda pengingat "baca doa setelah adzan" dari waktu masuk, dalam menit. */
+    const val DOA_DELAY_MIN = 5
+
     private data class Cfg(
         val lat: Double, val lon: Double, val method: PrayerCalc.Method,
         val asarFactor: Double, val corr: List<Int>, val tz: TimeZone,
-        val on: List<Boolean>, val preMin: Int,
+        val on: List<Boolean>, val preMin: Int, val doaReminder: Boolean,
     )
 
     private suspend fun loadCfg(ctx: Context): Cfg {
@@ -45,6 +53,7 @@ object PrayerScheduler {
             tz = if (tzId.isBlank()) TimeZone.getDefault() else TimeZone.getTimeZone(tzId),
             on = (store.get(Store.ADZAN_ON, "1,1,1,1,1").split(",").map { it.trim() == "1" } + List(5) { true }).take(5),
             preMin = store.get(Store.ADZAN_PRE_MIN, 0),
+            doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false),
         )
     }
 
@@ -82,18 +91,26 @@ object PrayerScheduler {
         val target = PrayerCalc.toMinutes(map.getValue(nama))
         var delta = target - nowMin
         if (delta <= 0) delta += 1440
-        enqueue(ctx, "sholat_$nama", nama, delta.toLong(), adzan = true)
+        enqueue(ctx, "sholat_$nama", nama, delta.toLong(), JENIS_ADZAN)
         if (cfg.preMin > 0) {
             var d = delta - cfg.preMin
             if (d <= 0) d += 1440
-            enqueue(ctx, "pre_$nama", nama, d.toLong(), adzan = false)
+            enqueue(ctx, "pre_$nama", nama, d.toLong(), JENIS_PRA)
+        }
+        // Pengingat membaca doa setelah adzan: [DOA_DELAY_MIN] menit sesudah waktu masuk.
+        // Tanpa penjagaan tengah malam — bila waktu sholat baru saja lewat (selisih ≤ 5 menit),
+        // jedanya melewati 1440 menit dan pekerjaan adzan pun jatuh ke kemunculan berikutnya,
+        // jadi keduanya tetap sepasang. Nama uniknya sama, sehingga penjadwalan berikutnya
+        // menggantikan pekerjaan lama, bukan menumpuk.
+        if (cfg.doaReminder) {
+            enqueue(ctx, "doa_$nama", nama, (delta + DOA_DELAY_MIN).toLong(), JENIS_DOA)
         }
     }
 
-    private fun enqueue(ctx: Context, unique: String, nama: String, delayMin: Long, adzan: Boolean) {
+    private fun enqueue(ctx: Context, unique: String, nama: String, delayMin: Long, jenis: String) {
         val req = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMin, TimeUnit.MINUTES)
-            .setInputData(workDataOf("nama" to nama, "adzan" to adzan))
+            .setInputData(workDataOf("nama" to nama, "jenis" to jenis))
             .addTag(TAG)
             .build()
         WorkManager.getInstance(ctx).enqueueUniqueWork(unique, ExistingWorkPolicy.REPLACE, req)

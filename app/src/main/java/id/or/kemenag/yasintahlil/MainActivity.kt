@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -17,10 +18,18 @@ import id.or.kemenag.yasintahlil.core.designsystem.IslamiTheme
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.navigation.AppNav
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Rute yang diminta dari luar layar (mis. ketukan notifikasi "Baca doa setelah adzan").
+     * Diset dari intent pembuka maupun [onNewIntent], lalu dikosongkan setelah dibuka.
+     */
+    private val pendingRoute = MutableStateFlow<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -33,6 +42,7 @@ class MainActivity : ComponentActivity() {
             // Susun ulang pengingat sesuai lokasi/metode/koreksi terkini.
             PrayerScheduler.scheduleAll(applicationContext)
         }
+        pendingRoute.value = routeOf(intent)
         setContent {
             val vm: MainViewModel = hiltViewModel()
             val theme by vm.theme.collectAsStateWithLifecycle()
@@ -41,7 +51,24 @@ class MainActivity : ComponentActivity() {
                 "gelap" -> true
                 else -> isSystemInDarkTheme()
             }
-            IslamiTheme(dark = dark) { AppNav() }
+            val route by pendingRoute.collectAsStateWithLifecycle()
+            IslamiTheme(dark = dark) {
+                AppNav(pendingRoute = route, onRouteConsumed = { pendingRoute.value = null })
+            }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingRoute.value = routeOf(intent)
+    }
+
+    private fun routeOf(intent: Intent?): String? =
+        intent?.getStringExtra(EXTRA_ROUTE)?.takeIf { it.isNotBlank() }
+
+    companion object {
+        /** Nama extra intent berisi rute tujuan (lihat [Routes.LANGSUNG]). */
+        const val EXTRA_ROUTE = "rute"
     }
 }

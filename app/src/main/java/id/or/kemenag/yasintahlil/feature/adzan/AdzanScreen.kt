@@ -41,6 +41,7 @@ fun AdzanScreen() {
     var uri by remember { mutableStateOf("") }
     var vol by remember { mutableStateOf(0.8f) }
     var preMin by remember { mutableStateOf(0) }
+    var doaReminder by remember { mutableStateOf(false) }
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(22f) }
     var showArab by remember { mutableStateOf(true) }
@@ -81,6 +82,7 @@ fun AdzanScreen() {
         uri = store.get(Store.ADZAN_URI, "")
         vol = store.get(Store.ADZAN_VOL, 0.8f)
         preMin = store.get(Store.ADZAN_PRE_MIN, 0)
+        doaReminder = store.get(Store.DOA_ADZAN_REMINDER, false)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, 22f)
         showArab = store.get(Store.SHOW_ARAB, true)
@@ -137,6 +139,22 @@ fun AdzanScreen() {
             steps = 29,
             onValueChangeFinished = { scope.launch { store.set(Store.ADZAN_PRE_MIN, preMin); PrayerScheduler.scheduleAll(ctx.applicationContext) } },
         )
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Pengingat membaca doa setelah adzan")
+            Switch(doaReminder, {
+                doaReminder = it
+                scope.launch {
+                    store.set(Store.DOA_ADZAN_REMINDER, doaReminder)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            })
+        }
+        Text("Bila aktif: pengingat kedua ${PrayerScheduler.DOA_DELAY_MIN} menit setelah waktu masuk, " +
+                "berisi ajakan membaca sholawat dan doa setelah adzan. Ketukannya langsung membuka " +
+                "layar Doa Adzan. Mengikuti saklar per waktu di atas — waktu yang dimatikan tidak " +
+                "ikut mengingatkan. Waktunya pengingat pribadi, bukan ketentuan syariat.",
+            style = MaterialTheme.typography.labelSmall)
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Tembus mode senyap/DND")

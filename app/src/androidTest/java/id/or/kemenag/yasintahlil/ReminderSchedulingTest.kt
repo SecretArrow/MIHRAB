@@ -43,6 +43,7 @@ class ReminderSchedulingTest {
         store.set(Store.NOTIF, true)
         store.set(Store.ADZAN_ON, "1,1,1,1,1")
         store.set(Store.ADZAN_PRE_MIN, 0)
+        store.set(Store.DOA_ADZAN_REMINDER, false)
     }
 
     /** Pekerjaan yang belum selesai/dibatalkan — pekerjaan CANCELLED tetap tersimpan di database. */
@@ -87,6 +88,28 @@ class ReminderSchedulingTest {
             PrayerScheduler.scheduleAll(ctx)
         }
         assertEquals("pengingat nonaktif harus membatalkan seluruh pekerjaan", 0, pending())
+    }
+
+    @Test
+    fun pengingatDoaSetelahAdzanMenambahSatuJadwalPerWaktu() {
+        runBlocking {
+            store.set(Store.DOA_ADZAN_REMINDER, true)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("5 adzan + 5 pengingat doa", 10, pending())
+    }
+
+    @Test
+    fun mematikanPengingatDoaMenghapusJadwalnya() {
+        runBlocking {
+            store.set(Store.DOA_ADZAN_REMINDER, true)
+            PrayerScheduler.scheduleAll(ctx)
+            assertEquals(10, pending())
+
+            store.set(Store.DOA_ADZAN_REMINDER, false)
+            PrayerScheduler.scheduleAll(ctx)
+        }
+        assertEquals("kembali ke 5 jadwal adzan saja", 5, pending())
     }
 
     @Test

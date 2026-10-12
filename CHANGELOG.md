@@ -6,6 +6,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 ## [Unreleased]
 
 ### Ditambahkan
+- **Pengingat membaca doa setelah adzan** (`plan.txt`: *"Tambahkan tombol untuk menyalin bacaan,
+  membagikan doa, menyimpan favorit, dan mengaktifkan pengingat membaca doa setelah adzan"*):
+  menu Adzan kini punya saklar yang menjadwalkan pengingat **kedua** lima menit setelah waktu masuk
+  — satu per waktu sholat, mengikuti saklar per waktu di atasnya. Ketukan pada notifikasinya
+  **membuka layar Doa Adzan**, bukan hanya beranda: intent notifikasi membawa rute tujuan, dan
+  aplikasi hanya membuka rute yang dikenal (`Routes.LANGSUNG`, tanpa rute berargumen) sehingga
+  permintaan dari luar tak pernah membuat aplikasi berhenti. `MainActivity` memakai `launchMode`
+  `singleTop` agar ketukan saat aplikasi sudah terbuka diteruskan lewat `onNewIntent` alih-alih
+  menumpuk instance. Jenis pekerjaan kini eksplisit (`adzan`/`pra`/`doa`), dan pekerjaan lama dari
+  versi sebelumnya tetap terbaca lewat field `adzan` sebagai cadangan.
 - **Manajemen data offline** (`plan.txt`: *"Manajemen data offline."*): bagian baru di Pengaturan
   menampilkan **jumlah** favorit, bookmark, riwayat, dan progres yang tersimpan di perangkat
   sebelum apa pun dihapus, lalu menyediakan tombol hapus **per bagian**. Menghapus riwayat tidak

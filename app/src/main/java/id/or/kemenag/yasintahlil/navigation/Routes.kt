@@ -21,4 +21,16 @@ object Routes {
     const val SEARCH = "search"
     const val FAVORIT = "favorit"
     const val KONTEN_UPDATE = "settings/konten"
+
+    /**
+     * Rute yang boleh dituju langsung dari luar layar (mis. ketukan notifikasi pengingat).
+     *
+     * [SHOLAT_DETAIL] sengaja tidak ada di sini: rutenya butuh argumen `{id}`, sehingga membuka
+     * `"sholat_detail"` tanpa id akan gagal. Notifikasi yang menyebut rute di luar daftar ini
+     * diabaikan (aplikasi tetap terbuka di beranda) alih-alih membuat aplikasi berhenti.
+     */
+    val LANGSUNG: Set<String> = setOf(
+        HOME, IBADAH, ALAT, SETTINGS, YASIN, TAHLIL, SHOLAT, WUDHU, GHAIB, JENAZAH,
+        ADZAN, DOA_ADZAN, IQOMAH, KIBLAT, JADWAL, DZIKIR, SEARCH, FAVORIT, KONTEN_UPDATE,
+    )
 }
