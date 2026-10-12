@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kosakata kategori bacaan di dokumen tidak lagi dapat menyimpang dari yang tampil di layar**:
+  `docs/CONTENT_SOURCES.md` memuat tabel kategori (kunci, arti, **label di layar**) sebagai
+  penjelasan kategori yang wajib dinyatakan tiap berkas ber-Arab, dan `docs/CONTENT_UPDATE.md`
+  menyebut daftar kategori yang sah di baris aturan bundel. Keduanya salinan dari
+  `SumberKategori.SEMUA` dan `SumberKategori.label()` — dan tak ada apa pun yang membandingkannya,
+  sebab penjaga yang ada hanya menelusuri berkas Kotlin dan gate Python. Akibatnya sunyi dua arah:
+  kategori yang ditambahkan di kode membuat dokumen berbohong tentang apa yang dapat dilihat
+  pengguna, dan label yang diubah di kode tanpa ikut disunting membuat dokumen menuliskan tulisan
+  layar yang tak pernah muncul. Kini `SumberKategoriTest` menuntut kesamaan kunci **dan** label
+  antara tabel dokumen dengan `SumberKategori`, serta kesamaan daftar di `docs/CONTENT_UPDATE.md`.
+  Tujuh mutasi terverifikasi tertangkap, termasuk kategori yang ditambahkan serentak di kode dan
+  gate konten (sehingga hanya dokumen yang tertinggal).
 - **Tabel provenans konten tidak lagi dapat ketinggalan berkas**: `docs/CONTENT_SOURCES.md`
   menyatakan dirinya mencatat *"asal setiap file konten"*, tetapi tabelnya ditulis tangan dan
   terpisah dari berkas yang benar-benar dikirim di dalam APK — tak ada apa pun yang membandingkan
