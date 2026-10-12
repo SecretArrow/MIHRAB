@@ -311,18 +311,25 @@ def main() -> int:
             elif not is_official(source):
                 errors.append(f"{rel}: entri '{label}' sumber_url di luar whitelist — {source}")
 
-        # nilai apa pun yang tampak URL di kunci berisi 'sumber'
-        def scan_urls(n, where):
+        # Nilai apa pun yang tampak URL di kunci berisi 'sumber'.
+        #
+        # Termasuk URL yang berada **di dalam daftar**: `sumber_tambahan` di
+        # `sholat_ghaib.json`/`sholat_jenazah.json` berbentuk list, dan dahulu elemen
+        # list tidak pernah diperiksa karena penelusuran hanya menangani dict. Akibatnya
+        # domain non-resmi di sana lolos gate — padahal layar Tentang menyatakan kepada
+        # pengguna bahwa "berkas konten yang menyebut domain lain ditolak saat dibangun".
+        # Kunci induk dibawa turun ke elemen list supaya `sumber_tambahan[i]` tetap
+        # dikenali sebagai nilai bersumber.
+        def scan_urls(n, where, kunci_induk=""):
             if isinstance(n, dict):
                 for k, v in n.items():
-                    if isinstance(v, str) and v.startswith("http") and "sumber" in k.lower():
-                        if not is_official(v):
-                            errors.append(f"{rel}: {where}.{k} domain tidak resmi — {v}")
-                    else:
-                        scan_urls(v, f"{where}.{k}")
+                    scan_urls(v, f"{where}.{k}", k)
             elif isinstance(n, list):
                 for i, v in enumerate(n):
-                    scan_urls(v, f"{where}[{i}]")
+                    scan_urls(v, f"{where}[{i}]", kunci_induk)
+            elif isinstance(n, str) and n.strip().startswith("http") and "sumber" in kunci_induk.lower():
+                if not is_official(n.strip()):
+                    errors.append(f"{rel}: {where} domain tidak resmi — {n}")
 
         scan_urls(data, rel.name)
 

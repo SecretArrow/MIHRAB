@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **URL sumber di dalam daftar JSON tidak lagi luput dari pemeriksaan**: aturan `SOURCES.md`
+  mengharuskan setiap URL yang dinyatakan sebagai **sumber** berasal dari domain resmi, dan layar
+  Tentang menjanjikan kepada pengguna bahwa *"berkas konten yang menyebut domain lain ditolak saat
+  dibangun maupun saat diperbarui"*. Kenyataannya penelusurnya hanya menangani objek: elemen di
+  dalam **daftar** tidak pernah diperiksa, sehingga `sumber_tambahan` — yang berbentuk daftar URL
+  pada `sholat_ghaib.json` dan `sholat_jenazah.json` — dapat memuat domain mana pun tanpa satu pun
+  pemeriksaan gagal. Lubangnya dibuktikan dengan menyisipkan domain non-resmi ke elemen pertama
+  `sumber_tambahan`: gate tetap melaporkan `0 galat`. Kini kunci induk dibawa turun ke elemen daftar
+  di **ketiga** jalur yang memakainya — gate `tools/validate_content.py`, penelusur bersama
+  `ContentValidator.sumberUrl`, dan daftar sumber layar Tentang (lewat `ContentRepo.sumberDipakai`)
+  — supaya ketiganya tidak dapat berbeda. Karena URL di `sumber_tambahan` kebetulan semuanya resmi,
+  kehilangan kemampuan menelusuri daftar **tidak terlihat** dari hasil hijau; uji karenanya menuntut
+  penelusur benar-benar membaca isi daftar pada bundel nyata, bukan sekadar tidak menemukan
+  pelanggaran. Dijaga `ContentSourceTest` dan `TentangTest`.
 - **"Info Islami harian" di beranda kini benar-benar harian**: kartu itu memuat **satu kalimat
   tetap** — *"Perbanyak sholawat di hari Jumat (HR Abu Dawud). Sumber: sunnah.com"* — yang
   ditampilkan setiap hari. Judulnya "harian", isinya hari Jumat: pada hari Senin pengguna membaca

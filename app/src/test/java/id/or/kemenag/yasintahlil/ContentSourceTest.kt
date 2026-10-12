@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.util
 
+import org.json.JSONObject
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -34,6 +35,61 @@ class ContentSourceTest {
             }
         }
         assertTrue("Pelanggaran sumber resmi: $problems", problems.isEmpty())
+    }
+
+    /**
+     * Seluruh URL yang dinyatakan sebagai **sumber** wajib resmi — termasuk yang berada di dalam
+     * daftar, seperti `sumber_tambahan`.
+     *
+     * Gate `tools/validate_content.py` dahulu hanya menelusuri objek, sehingga elemen daftar tidak
+     * pernah diperiksa: domain non-resmi di `sumber_tambahan` (berbentuk list pada
+     * `sholat_ghaib.json` dan `sholat_jenazah.json`) lolos tanpa satu pun galat — padahal layar
+     * Tentang menyatakan kepada pengguna bahwa berkas konten yang menyebut domain lain *"ditolak
+     * saat dibangun maupun saat diperbarui"*. Uji ini menutup jalur yang sama dari sisi aplikasi,
+     * memakai penelusur yang **sama** dengan daftar sumber layar Tentang
+     * ([ContentValidator.sumberUrl]), supaya keduanya tidak dapat berbeda.
+     */
+    @Test
+    fun everySumberUrlInBundleIsOfficial() {
+        val problems = mutableListOf<String>()
+        var jumlah = 0
+        var berbentukDaftar = 0
+        contentDir().listFiles { f -> f.extension == "json" }.orEmpty().forEach { f ->
+            val d = JSONObject(f.readText())
+            val urls = ContentValidator.sumberUrl(d)
+            jumlah += urls.size
+            urls.filterNot { ContentValidator.isOfficialSource(it) }
+                .forEach { problems += "${f.name}: domain tidak resmi ($it)" }
+
+            // Penelusur harus benar-benar masuk ke elemen daftar. Tanpa pemeriksaan ini, kehilangan
+            // kemampuan itu **tidak terlihat**: URL di `sumber_tambahan` semuanya kebetulan resmi,
+            // sehingga menelusuri atau tidak menelusurinya sama-sama hijau — persis keadaan yang
+            // dahulu membuat lubang ini lolos. Berkasnya diminta punya `sumber_url` sendiri
+            // ditambah seluruh isi daftar; berkas tanpa `sumber_tambahan` dilewati.
+            val tambahan = d.optJSONArray("sumber_tambahan") ?: return@forEach
+            berbentukDaftar++
+            assertTrue(
+                "${f.name}: penelusur tidak membaca isi sumber_tambahan " +
+                    "(dapat ${urls.size} URL, seharusnya ≥ ${1 + tambahan.length()})",
+                urls.size >= 1 + tambahan.length(),
+            )
+        }
+        assertTrue("tidak ada URL sumber yang terbaca dari bundel", jumlah > 0)
+        assertTrue("bundel tidak lagi memuat sumber_tambahan berbentuk daftar, " +
+            "sehingga penjaga ini tak lagi menguji apa pun", berbentukDaftar > 0)
+        assertTrue("URL sumber di luar whitelist: $problems", problems.isEmpty())
+    }
+
+    /** Penelusur itu harus benar-benar masuk ke dalam daftar, bukan lolos karena tak menemukan apa pun. */
+    @Test
+    fun penelusurSumberMasukKeDalamDaftar() {
+        val d = JSONObject(
+            """{"sumber_url":"https://sunnah.com/",""" +
+                """"sumber_tambahan":["https://kemenag.go.id/","https://blog.example/doa"]}""")
+        val urls = ContentValidator.sumberUrl(d)
+        assertTrue("URL tingkat berkas tidak terbaca: $urls", urls.contains("https://sunnah.com/"))
+        assertTrue("URL di dalam daftar tidak terbaca: $urls", urls.contains("https://blog.example/doa"))
+        assertTrue("kunci bukan-sumber ikut terbaca: $urls", urls.none { it.contains("blog.example") } == false)
     }
 
     /** Tidak boleh ada teks instruksi yang menyamar sebagai lafaz Arab. */

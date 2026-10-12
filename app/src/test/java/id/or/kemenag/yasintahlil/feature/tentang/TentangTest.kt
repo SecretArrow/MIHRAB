@@ -95,13 +95,26 @@ class TentangTest {
         assertTrue("domain resmi tanpa keterangan: $tanpaNama", tanpaNama.isEmpty())
     }
 
+    /**
+     * Setiap host yang dipakai bundel harus punya keterangan pemiliknya di layar Tentang.
+     *
+     * Daftar host diambil lewat penelusur **bersama** ([ContentValidator.sumberUrl]) — bukan lagi
+     * `optString("sumber_url")` yang hanya membaca URL tingkat berkas. Bedanya nyata: URL sumber
+     * yang berada **di dalam daftar** (mis. `sumber_tambahan` pada `sholat_ghaib.json`) dahulu tak
+     * pernah sampai ke layar Tentang, sehingga host di sana dapat dipakai bundel tanpa satu pun
+     * keterangan pemilik — padahal layar itu menjanjikan sebaliknya kepada pengguna. Uji ini
+     * memakai jalur yang sama dengan [id.or.kemenag.yasintahlil.core.data.ContentRepo.sumberDipakai]
+     * supaya keduanya tak dapat berbeda.
+     */
     @Test
     fun setiapSumberYangDipakaiBundelDikenali() {
         val dir = File(modul(), "src/main/assets/content")
         val berkas = dir.listFiles { f -> f.extension == "json" }?.toList().orEmpty()
         assertTrue("berkas konten tidak ditemukan", berkas.isNotEmpty())
         val host = berkas
-            .mapNotNull { f -> runCatching { JSONObject(f.readText()).optString("sumber_url") }.getOrNull() }
+            .flatMap { f ->
+                runCatching { ContentValidator.sumberUrl(JSONObject(f.readText())) }.getOrDefault(emptyList())
+            }
             .mapNotNull { ContentValidator.hostOf(it) }
             .distinct()
         assertTrue("tidak ada sumber_url yang terbaca dari bundel", host.isNotEmpty())
