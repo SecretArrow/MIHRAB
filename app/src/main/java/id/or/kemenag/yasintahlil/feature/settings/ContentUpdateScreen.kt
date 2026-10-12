@@ -112,7 +112,9 @@ fun ContentUpdateScreen() {
                 "• berkas ber-Arab menyatakan `kategori` sumbernya " +
                 "(${SumberKategori.SEMUA.joinToString { SumberKategori.label(it) }});\n" +
                 "• teks Arab wajib berharakat dan bebas prosa penunjuk;\n" +
-                "• nama berkas tidak boleh menunjuk ke luar folder konten.\n" +
+                "• nama berkas tidak boleh menunjuk ke luar folder konten;\n" +
+                "• rujukan berkas (`rujukan_file`, larik `rujukan`) menunjuk berkas yang benar-benar " +
+                "ada — di dalam bundel ini atau di antara berkas bawaan aplikasi.\n" +
                 "Bila ada satu berkas yang gagal, seluruh bundel ditolak — konten yang sudah " +
                 "diverifikasi tidak pernah tercampur setengah pembaruan.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp))

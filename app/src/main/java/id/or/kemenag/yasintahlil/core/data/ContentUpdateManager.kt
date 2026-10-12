@@ -22,7 +22,8 @@ import java.util.Locale
  * Pembaruan **hanya** masuk lewat berkas yang dipilih pengguna sendiri (SAF, tanpa izin apa pun):
  * tidak ada unduhan otomatis, sehingga tidak ada konten baru yang datang tanpa tindakan sadar
  * pengguna. Sebelum ditulis, seluruh bundel diperiksa [BundelKonten] — sumber resmi, kategori,
- * harakat, dan bebas placeholder. Satu berkas yang gagal membatalkan seluruh bundel.
+ * harakat, bebas placeholder, dan rujukan berkas yang benar-benar ada. Satu berkas yang gagal
+ * membatalkan seluruh bundel.
  */
 class ContentUpdateManager(private val ctx: Context) {
 
@@ -81,8 +82,14 @@ class ContentUpdateManager(private val ctx: Context) {
      */
     fun pasang(teks: String): Hasil {
         val hasil = BundelKonten.baca(teks)
-        if (!hasil.sah) {
-            val alasan = hasil.ditolak.ifEmpty { listOf("Bundel tidak memuat berkas konten.") }
+        // Rujukan berkas (`berkas.json#id`) hanya dapat diperiksa setelah bentuk bundelnya sah —
+        // dan hanya di sini, karena daftar berkas bawaan ada pada `Context`, bukan pada aturan
+        // murni `BundelKonten`. Tanpa pemeriksaan ini bundel dengan rujukan mati tetap diterima
+        // sebagai "bersumber resmi", lalu menghentikan layar Dzikir/Tahlil/Panduan Sholat saat
+        // dibuka — kegagalan yang jauh dari tempat sebabnya.
+        val galatRujukan = if (hasil.sah) BundelKonten.periksaRujukan(hasil, berkasAset()) else emptyList()
+        if (!hasil.sah || galatRujukan.isNotEmpty()) {
+            val alasan = (hasil.ditolak + galatRujukan).ifEmpty { listOf("Bundel tidak memuat berkas konten.") }
             Log.w(TAG, "Bundel pembaruan ditolak: ${alasan.size} alasan")
             return Hasil.Ditolak(alasan)
         }
@@ -105,6 +112,13 @@ class ContentUpdateManager(private val ctx: Context) {
             Hasil.Ditolak(listOf("Pemasangan gagal: ${it.message.orEmpty().take(160)}"))
         }
     }
+
+    /** Nama berkas konten bawaan aplikasi — sasaran sah bagi rujukan berkas pada bundel. */
+    private fun berkasAset(): Set<String> =
+        runCatching { ctx.assets.list("content")?.toSet().orEmpty() }.getOrElse {
+            Log.w(TAG, "Daftar berkas konten bawaan tidak dapat dibaca", it)
+            emptySet()
+        }
 
     /** Hapus seluruh pembaruan; konten kembali sepenuhnya ke bawaan aplikasi. */
     fun kembalikan(): Boolean {

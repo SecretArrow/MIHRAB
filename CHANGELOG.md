@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rujukan berkas pada bundel pembaruan diperiksa saat dipasang, bukan saat layarnya dibuka**:
+  entri konten dapat **menunjuk** lafaz yang sudah terverifikasi di berkas lain
+  (`rujukan_file` = `berkas.json#id`, larik `rujukan`) alih-alih menyalinnya. Tetapi
+  `BundelKonten` hanya memeriksa sumber resmi, kategori, harakat, dan placeholder — tidak pernah
+  sasarannya. Bundel dengan rujukan mati karena itu **diterima sebagai sah**, lalu
+  `ContentRepo.doc` melempar `FileNotFoundException` di dalam `remember { repo.dzikir() }` pada
+  layar, sehingga satu rujukan mati menghentikan **seluruh** layar Dzikir/Tahlil/Panduan Sholat
+  tanpa satu pun petunjuk sebabnya — jauh dari tempat yang dapat diperbaiki pengguna. Kini
+  `BundelKonten.periksaRujukan` menolak bundel yang merujuk berkas tak ada (di dalam bundel
+  maupun di antara berkas bawaan), entri `#id` yang tidak ada di berkas target, bentuk yang salah
+  (`"rujukan"` berupa teks padahal pembacanya memakai `getJSONArray`), dan rujukan kosong.
+  Rujukan yang tetap lolos — mis. berkas bawaan yang sasarannya hilang karena satu berkas dihapus —
+  tidak lagi menjatuhkan layar: `resolveArabLatinTerjemah` mengembalikan teks kosong sehingga jalan
+  mundur ke teks milik entri sendiri (`o.optString("arab", a)`) yang sudah ada tetap bekerja.
+  Dijaga `BundelKontenTest`.
 - **Beranda dan layar Favorit tidak lagi membaca aturan tujuan dengan cara berbeda**: `RuteKonten`
   memutuskan layar tujuan sebuah bacaan tersimpan, tetapi beranda memanggil `ruteTerakhir` **tanpa**
   id kelompok dzikir lalu `namaTujuan` tanpa argumen apa pun, sementara layar Favorit menyertakan
