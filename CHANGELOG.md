@@ -380,6 +380,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama rentang waktu sholat sunnah kini satu tempat**: pengelompokan sholat sunnah menuliskan
+  keenam nama rentangnya **dua kali** — sekali sebagai literal pada cabang `KelompokSholat.waktu`,
+  sekali lagi pada daftar urutan tampilnya. Keduanya adalah daftar teks yang sama, jadi tak ada yang
+  menjaga keduanya tetap sejalan: mengubah nama di salah satu sisi sudah cukup membuat kelompok itu
+  **terlempar diam-diam ke urutan paling akhir**, karena `indexOf` yang gagal mengembalikan −1 dan
+  tak ada satu pun pesan galat — kelompok "Peristiwa tertentu" yang seharusnya tampil sebelum "Waktu
+  lain" mendadak muncul di bawahnya. Kini `waktu` mengembalikan konstanta (`PAGI`, `MALAM`,
+  `MENGIRINGI`, `KAPAN_SAJA`, `PERISTIWA`, `LAIN`), dan `URUTAN_WAKTU` menyusun dirinya dari
+  konstanta yang sama. Dijaga `KelompokSholatTest`, yang menambah empat uji: setiap nama rentang
+  ditulis **sekali** saja di kode, setiap rentang yang dihasilkan punya tempat di urutan, tak ada
+  nama mati di urutan, dan rentang tak terbaca selalu terakhir. Dua belas mutasi terverifikasi
+  tertangkap.
 - **Nama layar kini satu tempat**: nama sebuah layar ditulis ulang di tiap tempat yang menunjuknya,
   dan salinan-salinannya sudah menyimpang — layar yang sama disebut *"Yasin"* di kartu beranda tetapi
   *"Surat Yasin"* di label tujuan tombol "Buka"; *"Adzan"* di kartu beranda tetapi *"Adzan &
