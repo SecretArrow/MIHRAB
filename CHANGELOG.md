@@ -163,6 +163,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   status/navigasi mengikuti tema. Palet XML dijaga selaras dengan palet Compose lewat uji.
 
 ### Diubah
+- **Tombol "Buka" di Favorit & Riwayat kini membuka layar yang benar** (`plan.txt`: *"Pastikan setiap
+  tombol memiliki fungsi nyata"*): pemetaan jenis konten ke rute ada di dalam layar Favorit dan
+  ditutup `else -> HOME`, sehingga tombolnya **membuka layar yang salah tanpa memberi tahu siapa
+  pun** — favorit dzikir membuka Beranda (karena `kind`-nya adalah id kelompok, `pagi_petang` dan
+  sejenisnya, bukan `"dzikir"`), favorit doa adzan membuka Dzikir, favorit iqomah membuka layar
+  Adzan, dan baris riwayat pencarian juga membuka Beranda. Pengguna yang melihat isinya "hilang"
+  akan menandai ulang hal yang sama. Pemetaannya kini dikumpulkan di `RuteKonten` dan jenis yang
+  memang tidak punya layar sendiri menghasilkan **keterangan**, bukan tombol yang menyesatkan; tiap
+  tombol juga menyebut nama layar tujuannya. Id kelompok dzikir **dibaca dari bundel konten**, bukan
+  ditulis tetap — daftar tetap akan kembali salah begitu bundel menambah kelompok baru. `RuteKontenTest`
+  memeriksa setiap `kind` yang benar-benar ditulis aplikasi, membuktikan id kelompok berasal dari
+  parameter (bukan daftar tetap), dan menjaga agar layar Favorit tidak lagi menyimpan fallback sendiri.
 - **Keterangan cara menjawab adzan kembali utuh** (`plan.txt`: *"Jangan menghasilkan teks Arab
   secara acak"* dan §"Akurasi Konten Keagamaan"): `adzan.json` menulis kunci `catatan` **dua kali**
   pada entri "Menjawab adzan". JSON tidak melarangnya, tetapi setiap parser — termasuk `org.json`

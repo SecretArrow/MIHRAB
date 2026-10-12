@@ -10,16 +10,22 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
-import id.or.kemenag.yasintahlil.navigation.Routes
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 
 @Composable
 fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
+    val repo = rememberRepo()
+    // Id kelompok dzikir dibaca dari bundel konten, bukan ditulis tetap di sini: kelompok yang
+    // ditambahkan bundel otomatis dikenali sehingga favoritnya tidak lagi jatuh ke Beranda.
+    val grupDzikir = remember(repo) {
+        runCatching { repo.dzikir().map { it.id }.toSet() }.getOrDefault(emptySet())
+    }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Text("Favorit, Riwayat & Terakhir dibaca", style = MaterialTheme.typography.titleLarge)
         if (s.last.isNotBlank()) {
             Text("Terakhir dibaca: ${s.last}")
-            Button(onClick = { go(ruteOf(s.last.substringBefore(':'))) }) { Text("Lanjutkan") }
+            AksiBuka(s.last.substringBefore(':'), grupDzikir, "Lanjutkan", go)
         }
         Text("Favorit (${s.favorites.size}):", style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
@@ -28,8 +34,12 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         LazyColumn(Modifier.weight(1f)) {
             items(s.favorites, key = { "${it.kind}:${it.refId}" }) { f ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(f.title.ifBlank { "${f.kind}:${f.refId}" }, modifier = Modifier.weight(1f))
-                    TextButton(onClick = { go(ruteOf(f.kind)) }) { Text("Buka") }
+                    Column(Modifier.weight(1f)) {
+                        Text(f.title.ifBlank { "${f.kind}:${f.refId}" })
+                        Text(RuteKonten.namaTujuan(f.kind, grupDzikir) ?: "Layar tujuan tidak dikenal",
+                            style = MaterialTheme.typography.labelSmall)
+                    }
+                    AksiBuka(f.kind, grupDzikir, "Buka", go)
                     TextButton(onClick = { vm.remove(f) }) { Text("Hapus") }
                 }
             }
@@ -43,17 +53,25 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))
-                TextButton(onClick = { go(ruteOf(h.kind)) }) { Text("Buka") }
+                AksiBuka(h.kind, grupDzikir, "Buka", go)
             }
         }
     }
 }
 
-private fun ruteOf(kind: String) = when (kind) {
-    "yasin" -> Routes.YASIN
-    "tahlil" -> Routes.TAHLIL
-    "dzikir", "doa", "jawab" -> Routes.DZIKIR
-    "bacaan", "niat", "langkah", "ghaib", "jenazah" -> Routes.SHOLAT
-    "adzan", "iqomah" -> Routes.ADZAN
-    else -> Routes.HOME
+/**
+ * Tombol menuju layar asal sebuah jenis konten.
+ *
+ * Bila jenis itu tidak punya layar sendiri (lihat [RuteKonten]), yang tampil adalah keterangan —
+ * bukan tombol yang membuka layar lain. Tombol yang membawa pengguna ke tempat yang salah membuat
+ * isinya tampak hilang, dan itu lebih buruk daripada tidak ada tombol sama sekali.
+ */
+@Composable
+private fun AksiBuka(kind: String, grupDzikir: Set<String>, label: String, go: (String) -> Unit) {
+    val rute = RuteKonten.rute(kind, grupDzikir)
+    if (rute != null) {
+        TextButton(onClick = { go(rute) }) { Text(label) }
+    } else {
+        Text("Layar tujuan tidak dikenal", style = MaterialTheme.typography.labelSmall)
+    }
 }

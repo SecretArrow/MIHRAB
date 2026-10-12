@@ -1,0 +1,117 @@
+package id.or.kemenag.yasintahlil.navigation
+
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+/**
+ * Tombol "Buka" pada Favorit & Riwayat harus membuka layar yang **memuat** isinya.
+ *
+ * Sebelumnya pemetaannya ada di dalam `FavoritScreen` dan ditutup `else -> HOME`, sehingga
+ * favorit dzikir (yang `kind`-nya adalah id kelompok, bukan `"dzikir"`) membuka Beranda, doa adzan
+ * (`kind = "doa"`) membuka Dzikir, iqomah membuka layar Adzan, dan baris riwayat pencarian
+ * (`kind = "search"`) juga membuka Beranda. Pengguna menyimpulkan isinya hilang.
+ *
+ * Jenis yang diperiksa di sini diambil dari **id yang benar-benar ditulis** `BacaanCard` pada
+ * bundel konten, bukan dari daftar karangan.
+ */
+class RuteKontenTest {
+
+    private fun root(): File = listOf(File("."), File("app")).first { File(it, "src/main").isDirectory }
+
+    private fun berkasDzikir(): File =
+        File(root(), "src/main/assets/content/dzikir.json")
+
+    /** Id kelompok dzikir pada bundel konten — sumber kebenaran pemetaan, bukan daftar tetap. */
+    private fun kelompokDzikir(): List<String> {
+        val arr = JSONObject(berkasDzikir().readText()).getJSONArray("kelompok")
+        return (0 until arr.length()).map { arr.getJSONObject(it).getString("id") }
+    }
+
+    /**
+     * Setiap `kind` yang benar-benar ditulis aplikasi harus mengarah ke layar yang memuatnya.
+     * Daftar ini mengikuti `BacaanCard(...)` dan `pushHistory("search", …)`.
+     */
+    @Test
+    fun setiapJenisKontenTersimpanMengarahKeLayarYangMemuatnya() {
+        val harapan = mapOf(
+            "yasin" to Routes.YASIN,
+            "tahlil" to Routes.TAHLIL,
+            "bacaan" to Routes.SHOLAT,
+            "niat" to Routes.SHOLAT,
+            "langkah" to Routes.SHOLAT,
+            "ghaib" to Routes.GHAIB,
+            "jenazah" to Routes.JENAZAH,
+            "adzan" to Routes.ADZAN,
+            "iqomah" to Routes.IQOMAH,
+            // Lafaz pada layar Doa Adzan memakai kind "doa" — bukan layar Dzikir.
+            "doa" to Routes.DOA_ADZAN,
+            "search" to Routes.SEARCH,
+        )
+        val salah = harapan.filterKeys { RuteKonten.rute(it) != harapan[it] }
+        assertTrue("jenis konten tersimpan menuju layar yang salah: $salah", salah.isEmpty())
+    }
+
+    /**
+     * Kelompok dzikir memakai id-nya sendiri sebagai `kind` (mis. `pagi_petang`). Setiap id pada
+     * bundel konten harus dikenali — dan daftarnya harus berasal dari bundel, bukan ditulis tetap.
+     */
+    @Test
+    fun kelompokDzikirPadaBundelKontenDikenali() {
+        val ids = kelompokDzikir()
+        assertTrue("bundel dzikir tidak punya kelompok", ids.size >= 4)
+        ids.forEach { id ->
+            assertEquals("kelompok dzikir '$id' tidak menuju layar Dzikir",
+                Routes.DZIKIR, RuteKonten.rute(id, ids.toSet()))
+            assertEquals("nama tujuan '$id' tidak menyebut layar Dzikir",
+                "Dzikir & Doa", RuteKonten.namaTujuan(id, ids.toSet()))
+        }
+    }
+
+    /**
+     * Pemetaan tidak boleh menulis tetap id kelompok dzikir: kelompok yang ditambahkan bundel
+     * setelah rilis harus langsung dikenali tanpa mengubah kode.
+     */
+    @Test
+    fun idKelompokDzikirTidakDitulisTetap() {
+        assertEquals("id kelompok baru tidak dikenali",
+            Routes.DZIKIR, RuteKonten.rute("kelompok_uji_9f3", setOf("kelompok_uji_9f3")))
+        assertNull("id kelompok dzikir tampaknya ditulis tetap di pemetaan",
+            RuteKonten.rute(kelompokDzikir().first(), emptySet()))
+    }
+
+    /** Jenis tak dikenal tidak boleh diam-diam menuju layar lain. */
+    @Test
+    fun jenisTakDikenalTidakMenyesatkanKeLayarLain() {
+        listOf("", ":", "jawab", "tawasul", "entah", "yasin_full").forEach { kind ->
+            assertNull("kind '$kind' seharusnya tidak punya tujuan", RuteKonten.rute(kind))
+            assertNull("nama tujuan '$kind' seharusnya kosong", RuteKonten.namaTujuan(kind))
+        }
+    }
+
+    /** Setiap rute yang dikembalikan harus punya nama layar — tombol tanpa keterangan tujuan itu menyesatkan. */
+    @Test
+    fun setiapRutePunyaNamaTujuan() {
+        val kinds = listOf(
+            "yasin", "tahlil", "bacaan", "niat", "langkah", "ghaib", "jenazah",
+            "adzan", "iqomah", "doa", "search",
+        ) + kelompokDzikir()
+        val tanpaNama = kinds.filter { RuteKonten.namaTujuan(it, kinds.toSet()) == null }
+        assertTrue("rute tanpa nama tujuan: $tanpaNama", tanpaNama.isEmpty())
+    }
+
+    /** Layar Favorit memakai pemetaan bersama, bukan daftar sendiri dengan fallback Beranda. */
+    @Test
+    fun layarFavoritMemakaiPemetaanBersama() {
+        val layar = File(root(),
+            "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText()
+        assertTrue("FavoritScreen tidak memakai RuteKonten", layar.contains("RuteKonten.rute("))
+        assertTrue("FavoritScreen tidak membaca kelompok dzikir dari bundel konten",
+            layar.contains("repo.dzikir()"))
+        assertTrue("FavoritScreen masih menyimpan fallback rute sendiri (Routes.HOME)",
+            !layar.contains("Routes.HOME"))
+    }
+}
