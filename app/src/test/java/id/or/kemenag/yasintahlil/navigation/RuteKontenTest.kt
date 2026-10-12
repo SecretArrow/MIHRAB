@@ -126,13 +126,24 @@ class RuteKontenTest {
     /**
      * Beranda memakai pemetaan bersama yang sama dengan Favorit — bukan cabang `startsWith` sendiri
      * yang mengirim bacaan Tahlil ke layar Favorit.
+     *
+     * Yang dijaga di sini bukan sekadar "memakai `RuteKonten`": beranda dahulu memanggil
+     * `ruteTerakhir` **tanpa** id kelompok dzikir lalu `namaTujuan` tanpa argumen apa pun, sehingga
+     * jenis yang sama dapat terbaca berbeda di beranda dan di layar Favorit — nama tujuan yang
+     * kosong membuat baris tersimpan tampak seperti tautan rusak. Karena itu tujuannya harus diambil
+     * lewat `tujuanTerakhir(…, s.grupDzikir)`.
      */
     @Test
     fun layarBerandaMemakaiPemetaanBersama() {
         val layar = KodeSumber.kodeTanpaKomentar(File(root(),
             "src/main/java/id/or/kemenag/yasintahlil/feature/home/HomeScreen.kt").readText())
         assertTrue("HomeScreen tidak memakai RuteKonten untuk 'Terakhir dibaca'",
-            layar.contains("RuteKonten.ruteTerakhir("))
+            layar.contains("RuteKonten.tujuanTerakhir("))
+        assertTrue("HomeScreen tidak menyertakan id kelompok dzikir dari keadaan layar",
+            layar.contains("RuteKonten.tujuanTerakhir(s.last, s.grupDzikir)"))
+        assertFalse("HomeScreen masih memanggil rute dan nama tujuan terpisah, " +
+                "sehingga keduanya dapat memakai kelompok dzikir yang berbeda",
+            layar.contains("RuteKonten.ruteTerakhir(") || layar.contains("RuteKonten.namaTujuan("))
         assertFalse("HomeScreen masih menebak tujuan dari awalan id bacaan",
             layar.contains("startsWith(\"yasin\")"))
     }
@@ -142,7 +153,7 @@ class RuteKontenTest {
     fun layarFavoritMemakaiPemetaanBersama() {
         val layar = KodeSumber.kodeTanpaKomentar(File(root(),
             "src/main/java/id/or/kemenag/yasintahlil/feature/favorit/FavoritScreen.kt").readText())
-        assertTrue("FavoritScreen tidak memakai RuteKonten", layar.contains("RuteKonten.rute("))
+        assertTrue("FavoritScreen tidak memakai RuteKonten", layar.contains("RuteKonten.tujuan("))
         assertTrue("FavoritScreen masih menyimpan fallback rute sendiri (Routes.HOME)",
             !layar.contains("Routes.HOME"))
         // Id kelompok dzikir tetap harus berasal dari bundel konten — hanya tempat membacanya yang
@@ -178,5 +189,60 @@ class RuteKontenTest {
             layar.contains("s.dzikirGagal"))
         assertFalse("layar masih membaca sendiri bundel konten dan menelan kegagalannya",
             layar.contains("repo.dzikir()"))
+    }
+
+    /**
+     * `ruteTerakhir` harus menerima id kelompok dzikir seperti `rute`, bukan diam-diam menilainya
+     * tanpa daftar itu. Beranda dahulu begitu, sehingga bacaan dzikir terakhir terbaca "tidak
+     * dikenal" di sana walau layar Favorit mengenalinya.
+     */
+    @Test
+    fun ruteTerakhirMengenaliKelompokDzikirBilaDaftarnyaDiberikan() {
+        val id = kelompokDzikir().first()
+        assertEquals("id kelompok dzikir tidak dikenali lewat ruteTerakhir",
+            Routes.DZIKIR, RuteKonten.ruteTerakhir("$id:1", setOf(id)))
+        val tujuan = RuteKonten.tujuanTerakhir("$id:1", setOf(id))
+        assertEquals("tujuan terakhir tidak menuju layar Dzikir", Routes.DZIKIR, tujuan?.rute)
+        assertEquals("tujuan terakhir tidak menyebut nama layarnya", "Dzikir & Doa", tujuan?.nama)
+    }
+
+    /**
+     * `tujuan` mengembalikan rute dan namanya bersama-sama: tombol "Buka" tanpa keterangan tujuan
+     * sama menyesatkannya dengan tombol yang membuka layar salah.
+     */
+    @Test
+    fun tujuanSelaluMembawaNamaLayarnya() {
+        val kinds = listOf(
+            "yasin", "tahlil", "bacaan", "niat", "langkah", "ghaib", "jenazah",
+            "adzan", "iqomah", "doa", "search", "dzikir",
+        ) + kelompokDzikir()
+        kinds.forEach { kind ->
+            val tujuan = RuteKonten.tujuan(kind, kinds.toSet())
+            assertTrue("tujuan '$kind' tidak dikenali", tujuan != null)
+            assertTrue("tujuan '$kind' tidak membawa nama layar", !tujuan!!.nama.isBlank())
+        }
+        listOf("", ":", "jawab", "tawasul", "entah").forEach { kind ->
+            assertNull("jenis '$kind' seharusnya tidak punya tujuan", RuteKonten.tujuan(kind))
+        }
+    }
+
+    /**
+     * Keterangan "tujuan tidak dikenal" tinggal di satu tempat.
+     *
+     * Dahulu kalimat itu disalin ke `FavoritScreen` dua kali (nama tujuan **dan** keterangan
+     * `AksiBuka`) sehingga satu baris tanpa tujuan menampilkannya dua kali berturut-turut, dan
+     * `HomeScreen` menyimpannya sekali lagi. Dua salinan akan berbeda begitu salah satunya
+     * diperbaiki, dan pengguna melihat dua kalimat berbeda untuk keadaan yang sama.
+     */
+    @Test
+    fun keteranganTujuanTidakDikenalTinggalSatuTempat() {
+        val kutipan = "\"${RuteKonten.TIDAK_DIKENAL}\""
+        val berkas = File(root(), "src/main/java").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .filter { KodeSumber.kodeTanpaKomentar(it.readText()).contains(kutipan) }
+            .map { it.name }
+            .toList()
+        assertEquals("kalimat keterangan tujuan disalin ke layar lain: $berkas",
+            listOf("RuteKonten.kt"), berkas)
     }
 }

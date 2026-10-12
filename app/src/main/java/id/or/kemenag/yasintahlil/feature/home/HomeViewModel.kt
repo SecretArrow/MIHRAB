@@ -47,6 +47,12 @@ data class HomeUiState(
     val info: InfoHarian.Butir? = null,
     /** Sebab butir harian tidak dapat dibaca dari bundel konten, atau `null` bila normal. */
     val infoGagal: String? = null,
+    /**
+     * Id kelompok dzikir dari bundel konten — dipakai `RuteKonten` untuk mengenali bacaan dzikir
+     * pada "Terakhir dibaca". Beranda dahulu tidak memilikinya sama sekali, sehingga jenis itu
+     * selalu terbaca sebagai tidak punya tujuan.
+     */
+    val grupDzikir: Set<String> = emptySet(),
     val hijriCorr: Int = BawaanPreferensi.KOREKSI_HIJRIAH,
     val notif: Boolean = BawaanPreferensi.PENGINGAT_WAKTU,
     val favCount: Int = 0,
@@ -104,13 +110,20 @@ class HomeViewModel @Inject constructor(
         // tiap detik: tanggal hanya berubah sekali sehari, dan nilai yang sama tidak memicu
         // recomposisi karena `StateFlow` menyaring nilai yang setara.
         viewModelScope.launch {
-            val hasil = runCatching { InfoHarian.dariDzikir(repo.dzikir()) }
-            val kandidat = hasil.getOrDefault(emptyList())
+            val hasil = runCatching { repo.dzikir() }
+            val grup = hasil.getOrDefault(emptyList())
+            val kandidat = hasil.map { InfoHarian.dariDzikir(it) }.getOrDefault(emptyList())
             _state.update {
-                it.copy(infoGagal = hasil.exceptionOrNull()?.let { e ->
-                    "Bacaan untuk info harian tidak dapat dibaca dari bundel konten " +
-                        "(${e.message ?: e::class.java.simpleName})."
-                })
+                it.copy(
+                    // Id kelompok dzikir diambil dari pembacaan yang sama dengan butir harian —
+                    // satu pembacaan bundel, satu sebab kegagalan, bukan dua yang bisa berbeda.
+                    grupDzikir = grup.map { g -> g.id }.toSet(),
+                    infoGagal = hasil.exceptionOrNull()?.let { e ->
+                        "Bacaan tidak dapat dibaca dari bundel konten " +
+                            "(${e.message ?: e::class.java.simpleName}); info harian dan pengenalan " +
+                            "tujuan bacaan tersimpan ikut terganggu."
+                    },
+                )
             }
             while (true) {
                 val tanggal = InfoHarian.tanggal(System.currentTimeMillis(), InfoHarian.zona(_state.value.tzId))

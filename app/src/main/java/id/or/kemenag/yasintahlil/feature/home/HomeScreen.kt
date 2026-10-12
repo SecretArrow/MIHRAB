@@ -100,14 +100,14 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
                 Text("Terakhir dibaca: ${s.last}")
                 // Tujuan ditentukan `RuteKonten` — aturan yang sama dengan layar Favorit — bukan
                 // cabang `startsWith("yasin")` yang dahulu mengirim setiap bacaan Tahlil ke Favorit.
-                val jenis = s.last.substringBefore(':')
-                val tujuan = RuteKonten.ruteTerakhir(s.last)
+                // Id kelompok dzikir dari keadaan layar ikut disertakan: dahulu tidak, sehingga
+                // jenis yang sama terbaca berbeda di beranda dan di layar Favorit.
+                val tujuan = RuteKonten.tujuanTerakhir(s.last, s.grupDzikir)
                 if (tujuan != null) {
-                    Text(RuteKonten.namaTujuan(jenis).orEmpty(),
-                        style = MaterialTheme.typography.labelSmall)
-                    Button(onClick = { go(tujuan) }) { Text("Lanjutkan") }
+                    Text(tujuan.nama, style = MaterialTheme.typography.labelSmall)
+                    Button(onClick = { go(tujuan.rute) }) { Text("Lanjutkan") }
                 } else {
-                    Text("Layar tujuan tidak dikenal", style = MaterialTheme.typography.labelSmall)
+                    Text(RuteKonten.TIDAK_DIKENAL, style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
