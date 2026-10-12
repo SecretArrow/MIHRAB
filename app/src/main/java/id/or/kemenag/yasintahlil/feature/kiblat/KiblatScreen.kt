@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
+import id.or.kemenag.yasintahlil.core.designsystem.NamaAntarmuka
 import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
@@ -215,7 +216,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
                     vm.setUseGps(!s.useGps)
                 }
             }, { Text("Pakai GPS") })
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh") })
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
             TampilanKompas.SATUAN.forEach { u ->
                 FilterChip(s.unit == u, { vm.setUnit(u) }, { Text(TampilanKompas.labelSatuan(u)) })
             }

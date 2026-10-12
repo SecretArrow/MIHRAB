@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama kendali antarmuka kini satu tempat**: tiga nama yang muncul di lebih dari satu tempat
+  masih dieja ulang di tiap pemakaian. *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet`
+  **dan** label tombol yang membukanya di sepuluh layar — sebelas tulisan untuk satu nama, sehingga
+  mengganti nama sheet-nya meninggalkan sepuluh tombol yang menyebut nama lama: tombol tidak lagi
+  menyebut apa yang dibukanya. *"Layar penuh"* adalah label chip di enam layar bacaan, dengan satu
+  varian yang memang berbeda (`LAYAR_PENUH_IMAM` — pada Sholat Ghaib layar penuh sekaligus menampilkan
+  panduan mode imam). *"Coba lagi"* bahkan ditulis dua kali **di dalam berkas yang sama**: sebagai
+  bawaan `labelTombol` pada `EmptyState` dan sebagai literal tombol pada `ErrorState`. Ketiganya kini
+  tinggal di `NamaAntarmuka`, sehingga nama kendali dan komponen yang memakainya tidak dapat berbeda
+  pendapat. Dijaga `NamaAntarmukaSatuTempatTest` (10 uji baru), yang juga menuntut varian imam tetap
+  terbaca sebagai varian dari nama dasarnya dan tiap layar memakai varian yang benar — bukan sekadar
+  "ada konstanta". Sepuluh mutasi terverifikasi, termasuk pemindai komentar yang diuji agar tidak
+  menuduh KDoc yang justru menjelaskan perbaikannya.
 - **Nama saklar pengingat kini satu tempat**: satu saklar dapat dinyalakan/dimatikan dari beberapa
   layar, dan tiap layar menuliskan namanya sendiri. Kalimat penjelasnya sudah lama disatukan di
   `PengingatAdzan`, tetapi **namanya** belum — dan salah satunya sudah berkembang menjadi dua:

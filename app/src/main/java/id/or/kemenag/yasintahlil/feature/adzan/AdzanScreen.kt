@@ -300,7 +300,7 @@ fun AdzanScreen() {
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         if (lafaz.isEmpty()) {
             EmptyState("Lafaz adzan tidak tersedia",

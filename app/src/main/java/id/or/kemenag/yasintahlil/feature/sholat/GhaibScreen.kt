@@ -56,8 +56,8 @@ fun GhaibScreen() {
             Text("Syarat: " + info.syarat.joinToString("; "), style = MaterialTheme.typography.labelMedium)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text("Layar penuh (imam)") })
-            OutlinedButton(onClick = { settings = true }) { Text("Pengaturan bacaan") }
+            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH_IMAM) })
+            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         if (info.niat.isNotEmpty()) {
             Text("Varian niat:", style = MaterialTheme.typography.titleMedium)
