@@ -28,6 +28,10 @@ import java.io.File
  * (`SumberKonten.nama` di `core/legal/DokumenLegal.kt`, kelengkapannya dipaku `TentangTest`).
  * [daftarHostResmiHanyaDinyatakanDiBerkasYangDijaga] memaku **kedua nama itu saja**, sehingga
  * berkas ketiga yang mulai mengeja host resmi tidak dapat menyelinap tanpa ketahuan.
+ *
+ * Dua dokumen manusia mengulang daftar yang sama — `SOURCES.md` dan `docs/CONTENT_SOURCES.md`.
+ * Keduanya tak terjangkau penjagaan berkas Kotlin di atas, jadi kesepadatannya dengan
+ * [ContentValidator.allowedHosts] dijaga tersendiri oleh [dokumenMengulangDaftarHostYangSama].
  */
 class SumberResmiSatuTempatTest {
 
@@ -98,5 +102,39 @@ class SumberResmiSatuTempatTest {
         // gagal mencocokkan host yang sudah di-lowercase `isOfficialSource`.
         assertTrue("daftar host resmi kosong", hosts.isNotEmpty())
         assertEquals("host resmi harus huruf kecil", hosts, hosts.map { it.lowercase() })
+    }
+
+    /**
+     * Dua **dokumen manusia** mengulang daftar host yang sama: `SOURCES.md` §6 (aturan konten) dan
+     * `docs/CONTENT_SOURCES.md` (sumber yang diizinkan gate). Keduanya salinan kedua dari
+     * [ContentValidator.allowedHosts] — dan `daftarHostResmiHanyaDinyatakanDiBerkasYangDijaga` tak
+     * dapat melihatnya: ia hanya menelusuri berkas `.kt`.
+     *
+     * Akibatnya sunyi, dan justru mengenai **penulis konten**: host yang ditambahkan di kode
+     * membuat kedua dokumen berbohong, sehingga orang yang mengikuti dokumen menambahkan entri
+     * dengan domain yang justru **ditolak** aplikasi ([ContentValidator.isOfficialSource]) — berkas
+     * itu tampak terpasang, lalu pembaca diam-diam kembali ke konten bawaan. Sebaliknya, host yang
+     * dihapus di kode meninggalkan dokumen yang menjanjikan domain yang sudah tak diterima.
+     *
+     * Baris aturannya dikenali dari pasangan `kemenag.dev` + `nu.or.id`: `nu.or.id` hanya muncul di
+     * baris itu pada kedua dokumen, sedangkan `kemenag.dev` juga muncul di tautan SIHAT — jadi
+     * keduanya bersama-sama menandai baris daftar, bukan tautan.
+     */
+    @Test
+    fun dokumenMengulangDaftarHostYangSama() {
+        listOf("SOURCES.md", "docs/CONTENT_SOURCES.md").forEach { nama ->
+            val isi = File(repoRoot(), nama).readText()
+            val baris = isi.lines().filter { it.contains("kemenag.dev") && it.contains("nu.or.id") }
+            assertEquals("$nama tidak lagi memuat tepat satu baris daftar host resmi", 1, baris.size)
+
+            val hosts = Regex("""[a-z0-9-]+(?:\.[a-z0-9-]+)+""").findAll(baris.single())
+                .map { it.value }.toSet()
+            assertEquals(
+                "daftar host di $nama berbeda dari yang dipakai aplikasi — dokumen akan " +
+                    "menjanjikan domain yang ditolak, atau menyembunyikan domain yang diterima",
+                ContentValidator.allowedHosts.toSet(),
+                hosts,
+            )
+        }
     }
 }

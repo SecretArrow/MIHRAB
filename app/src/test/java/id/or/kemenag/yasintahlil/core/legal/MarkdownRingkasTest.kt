@@ -112,9 +112,9 @@ class MarkdownRingkasTest {
     }
 
     /**
-     * Setiap izin yang didokumentasikan harus benar-benar dideklarasikan. Dokumentasi izin yang
-     * menyebut izin yang tidak ada — atau sebaliknya — membuat penjelasan di layar Tentang
-     * menyesatkan pembaca dan peninjau toko aplikasi.
+     * Setiap izin yang **didokumentasikan** harus benar-benar dideklarasikan — arah sebaliknya
+     * dijaga [setiapIzinDiManifestDijelaskanDiDokumen]. Dokumentasi izin yang menyebut izin yang
+     * tidak ada membuat penjelasan di layar Tentang menyesatkan pembaca dan peninjau toko aplikasi.
      */
     @Test
     fun setiapIzinDiDokumenDideklarasikanDiManifest() {
@@ -125,5 +125,37 @@ class MarkdownRingkasTest {
         assertTrue("nama izin tidak terbaca dari tabel", nama.size >= 7)
         val tidakAda = nama.filterNot { manifest.contains(it) }
         assertTrue("izin didokumentasikan tetapi tidak ada di manifest: $tidakAda", tidakAda.isEmpty())
+    }
+
+    /**
+     * Arah sebaliknya dari [setiapIzinDiDokumenDideklarasikanDiManifest]: setiap izin yang
+     * **dideklarasikan** harus **dijelaskan**.
+     *
+     * Tabel izin adalah dokumen yang ikut dibundel ke aset (`assets/legal/PERMISSIONS.md`, dijaga
+     * identik oleh `TentangTest.dokumenLegalIdentikDenganBerkasRepositori`) dan ditampilkan apa
+     * adanya di bagian *"Izin aplikasi dan alasannya"* pada layar Tentang. Izin yang ditambahkan ke
+     * manifes tanpa barisnya membuat aplikasi meminta akses yang **tak pernah diterangkan** kepada
+     * pengguna maupun peninjau toko — kekurangan yang sama sunyinya dengan arah sebaliknya, dan
+     * dulu hanya satu arah yang diperiksa.
+     */
+    @Test
+    fun setiapIzinDiManifestDijelaskanDiDokumen() {
+        val manifest = File(modul(), "src/main/AndroidManifest.xml").readText()
+        val dideklarasikan = Regex("<uses-permission\\s+android:name=\"android\\.permission\\.([A-Z_]+)\"")
+            .findAll(manifest).map { it.groupValues[1] }.toSet()
+        assertTrue("nama izin tidak terbaca dari manifes", dideklarasikan.size >= 7)
+
+        val b = MarkdownRingkas.blok(berkas("docs/PERMISSIONS.md"))
+        val t = b.filterIsInstance<Blok.Tabel>().single()
+        val dijelaskan = t.baris
+            .flatMap { Regex("""[A-Z][A-Z_]{3,}""").findAll(it[0]).map { m -> m.value } }
+            .toSet()
+
+        val takDijelaskan = dideklarasikan - dijelaskan
+        assertTrue(
+            "izin dideklarasikan di manifes tetapi tidak dijelaskan di docs/PERMISSIONS.md — " +
+                "layar Tentang akan meminta izin yang alasannya tak pernah ditulis: $takDijelaskan",
+            takDijelaskan.isEmpty(),
+        )
     }
 }
