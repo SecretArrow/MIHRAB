@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.data.local
 
+import id.or.kemenag.yasintahlil.core.data.FormatCadangan
 import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
 import id.or.kemenag.yasintahlil.core.domain.model.HistItem
@@ -82,51 +83,68 @@ class RoomUserDataRepository @Inject constructor(
 
     override suspend fun exportJson(): String {
         val root = JSONObject()
-        root.put("favorites", JSONArray().apply {
-            fav.getAll().forEach { f -> put(JSONObject().put("kind", f.kind).put("refId", f.refId)
-                .put("title", f.title).put("createdAt", f.createdAt)) }
+        root.put(FormatCadangan.FAVORIT, JSONArray().apply {
+            fav.getAll().forEach { f ->
+                put(JSONObject().put(FormatCadangan.KIND, f.kind).put(FormatCadangan.REF_ID, f.refId)
+                    .put(FormatCadangan.JUDUL, f.title).put(FormatCadangan.DIBUAT, f.createdAt))
+            }
         })
-        root.put("bookmarks", JSONArray().apply {
-            mark.getAll().forEach { b -> put(JSONObject().put("kind", b.kind).put("refId", b.refId)
-                .put("label", b.label).put("createdAt", b.createdAt)) }
+        root.put(FormatCadangan.BOOKMARK, JSONArray().apply {
+            mark.getAll().forEach { b ->
+                put(JSONObject().put(FormatCadangan.KIND, b.kind).put(FormatCadangan.REF_ID, b.refId)
+                    .put(FormatCadangan.LABEL, b.label).put(FormatCadangan.DIBUAT, b.createdAt))
+            }
         })
-        root.put("progress", JSONArray().apply {
-            prog.getAll().forEach { p -> put(JSONObject().put("kind", p.kind).put("refId", p.refId)
-                .put("value", p.value).put("updatedAt", p.updatedAt)) }
+        root.put(FormatCadangan.PROGRES, JSONArray().apply {
+            prog.getAll().forEach { p ->
+                put(JSONObject().put(FormatCadangan.KIND, p.kind).put(FormatCadangan.REF_ID, p.refId)
+                    .put(FormatCadangan.NILAI, p.value).put(FormatCadangan.DIPERBARUI, p.updatedAt))
+            }
         })
-        root.put("history", JSONArray().apply {
-            hist.getAll(HISTORY_BACKUP_LIMIT).forEach { h -> put(JSONObject().put("id", h.id)
-                .put("kind", h.kind).put("refId", h.refId).put("title", h.title).put("openedAt", h.openedAt)) }
+        root.put(FormatCadangan.RIWAYAT, JSONArray().apply {
+            hist.getAll(HISTORY_BACKUP_LIMIT).forEach { h ->
+                put(JSONObject().put(FormatCadangan.ID, h.id)
+                    .put(FormatCadangan.KIND, h.kind).put(FormatCadangan.REF_ID, h.refId)
+                    .put(FormatCadangan.JUDUL, h.title).put(FormatCadangan.DIBUKA, h.openedAt))
+            }
         })
         return root.toString()
     }
 
     override suspend fun restoreJson(json: String) {
         val root = runCatching { JSONObject(json) }.getOrNull() ?: return
-        // Parse SEMUA dulu (entri rusak dilewati) sebelum menghapus data lama, agar berkas
+        // Baca SEMUA larik dulu (entri rusak dilewati) sebelum menyentuh data lama, agar berkas
         // backup yang cacat tidak membuat pengguna kehilangan data yang sedang tersimpan.
-        val favs = root.optJSONArray("favorites").toEntities { j ->
-            FavoriteEntity(j.getString("kind"), j.getString("refId"),
-                j.optString("title"), j.optLong("createdAt", System.currentTimeMillis()))
+        val favArr = root.optJSONArray(FormatCadangan.FAVORIT)
+        val markArr = root.optJSONArray(FormatCadangan.BOOKMARK)
+        val progArr = root.optJSONArray(FormatCadangan.PROGRES)
+        val histArr = root.optJSONArray(FormatCadangan.RIWAYAT)
+        val favs = favArr.toEntities { j ->
+            FavoriteEntity(j.getString(FormatCadangan.KIND), j.getString(FormatCadangan.REF_ID),
+                j.optString(FormatCadangan.JUDUL), j.optLong(FormatCadangan.DIBUAT, System.currentTimeMillis()))
         }
-        val marks = root.optJSONArray("bookmarks").toEntities { j ->
-            BookmarkEntity(j.getString("kind"), j.getString("refId"),
-                j.optString("label"), j.optLong("createdAt", System.currentTimeMillis()))
+        val marks = markArr.toEntities { j ->
+            BookmarkEntity(j.getString(FormatCadangan.KIND), j.getString(FormatCadangan.REF_ID),
+                j.optString(FormatCadangan.LABEL), j.optLong(FormatCadangan.DIBUAT, System.currentTimeMillis()))
         }
-        val progs = root.optJSONArray("progress").toEntities { j ->
-            ProgressEntity(j.getString("kind"), j.getString("refId"),
-                j.optInt("value"), j.optLong("updatedAt", System.currentTimeMillis()))
+        val progs = progArr.toEntities { j ->
+            ProgressEntity(j.getString(FormatCadangan.KIND), j.getString(FormatCadangan.REF_ID),
+                j.optInt(FormatCadangan.NILAI), j.optLong(FormatCadangan.DIPERBARUI, System.currentTimeMillis()))
         }
-        val hists = root.optJSONArray("history").toEntities { j ->
-            HistoryEntity(j.optLong("id", 0), j.getString("kind"), j.getString("refId"),
-                j.optString("title"), j.optLong("openedAt", System.currentTimeMillis()))
+        val hists = histArr.toEntities { j ->
+            HistoryEntity(j.optLong(FormatCadangan.ID, 0), j.getString(FormatCadangan.KIND),
+                j.getString(FormatCadangan.REF_ID), j.optString(FormatCadangan.JUDUL),
+                j.optLong(FormatCadangan.DIBUKA, System.currentTimeMillis()))
         }
 
-        fav.clear(); mark.clear(); prog.clear(); hist.clear()
-        if (favs.isNotEmpty()) fav.insertAll(favs)
-        if (marks.isNotEmpty()) mark.insertAll(marks)
-        if (progs.isNotEmpty()) prog.insertAll(progs)
-        if (hists.isNotEmpty()) hist.insertAll(hists)
+        // Tiap bagian diganti **hanya bila berkasnya memang memuat larik itu**. Berkas yang tak
+        // menyebut sebuah bagian — versi lain, berkas separuh, atau kunci yang meleset — tak boleh
+        // mengosongkan bagian tersebut: dahulu keempat tabel dibersihkan lebih dahulu, sehingga satu
+        // nama kunci yang berganti nama menghapus seluruh data pengguna tanpa satu pun pesan galat.
+        if (favArr != null) { fav.clear(); if (favs.isNotEmpty()) fav.insertAll(favs) }
+        if (markArr != null) { mark.clear(); if (marks.isNotEmpty()) mark.insertAll(marks) }
+        if (progArr != null) { prog.clear(); if (progs.isNotEmpty()) prog.insertAll(progs) }
+        if (histArr != null) { hist.clear(); if (hists.isNotEmpty()) hist.insertAll(hists) }
     }
 
     /** Petakan array JSON ke entitas; lewati entri yang gagal di-parse (mis. backup cacat). */

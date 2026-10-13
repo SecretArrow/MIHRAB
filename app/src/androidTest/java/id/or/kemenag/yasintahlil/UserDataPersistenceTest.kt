@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import id.or.kemenag.yasintahlil.core.data.FormatCadangan
 import id.or.kemenag.yasintahlil.core.data.local.AppDatabase
 import id.or.kemenag.yasintahlil.core.data.local.RoomUserDataRepository
 import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.util.BatasRiwayat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -136,6 +139,60 @@ class UserDataPersistenceTest {
 
             repo.restoreJson("{ bukan json")
             assertTrue("data lama terhapus oleh backup rusak", repo.isBookmarked("yasin", "58").first())
+        }
+    }
+
+    /**
+     * Berkas yang sah tetapi hanya memuat sebagian bagian tak boleh menghapus bagian lain.
+     *
+     * Dahulu keempat tabel dikosongkan lebih dahulu, baru diisi ulang dari berkas. Berkas yang tak
+     * memuat sebuah larik — versi lain, berkas separuh, atau nama kunci yang meleset — karena itu
+     * berakhir dengan bagian itu terhapus, tanpa satu pun pesan galat.
+     */
+    @Test
+    fun berkasSebagianTidakMenghapusBagianLain() {
+        runBlocking {
+            val repo = restart()
+            repo.toggleBookmark("yasin", "58", "Ayat 58")
+            repo.setProgress("yasin", "mark", 20)
+            repo.pushHistory("yasin", "1", "Yasin 1", 1_700_000_000_000)
+
+            // Berkas sah, tetapi hanya memuat larik favorit yang kosong.
+            val sebagian = JSONObject()
+                .put(FormatCadangan.FAVORIT, JSONArray())
+                .toString()
+            repo.restoreJson(sebagian)
+
+            val after = restart()
+            assertEquals("favorit tidak dikosongkan sesuai berkas", 0, after.ringkasan().favorit)
+            assertTrue("bookmark ikut terhapus oleh berkas yang tak memuatnya",
+                after.isBookmarked("yasin", "58").first())
+            assertEquals("progres ikut terhapus oleh berkas yang tak memuatnya",
+                20, after.progress("yasin", "mark").first()?.value)
+            assertEquals("riwayat ikut terhapus oleh berkas yang tak memuatnya",
+                1, after.ringkasan().riwayat)
+        }
+    }
+
+    /**
+     * Berkas yang hanya memuat preferensi tak boleh mengosongkan data terstruktur.
+     *
+     * Bentuk inilah yang sampai ke pemulih ketika berkasnya memuat `prefs` tanpa `userData`;
+     * sebelum diperbaiki, pemulihannya mengirim objek kosong dan menghapus segalanya.
+     */
+    @Test
+    fun berkasTanpaBagianDataPenggunaTidakMengubahData() {
+        runBlocking {
+            val repo = restart()
+            repo.toggleFavorite("dzikir", "harian", "Doa harian")
+            repo.setProgress("yasin", "mark", 7)
+
+            repo.restoreJson("{}")
+
+            val after = restart()
+            assertEquals("favorit terhapus oleh berkas yang tak memuat data pengguna",
+                1, after.ringkasan().favorit)
+            assertEquals(7, after.progress("yasin", "mark").first()?.value)
         }
     }
 

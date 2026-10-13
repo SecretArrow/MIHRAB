@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.BuildConfig
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.FormatCadangan
 import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
@@ -260,10 +261,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             Button(onClick = {
                 scope.launch {
                     // Gabungkan preferensi (DataStore) + data terstruktur (Room) dalam satu berkas.
+                    // Bentuk berkasnya tinggal di `FormatCadangan` supaya penulis dan pembacanya
+                    // tak dapat berbeda ejaan — lihat KDoc-nya.
                     backup = JSONObject()
-                        .put("version", 1)
-                        .put("prefs", JSONObject(store.exportJson()))
-                        .put("userData", JSONObject(userData.exportJson()))
+                        .put(FormatCadangan.KUNCI_VERSI, FormatCadangan.VERSI)
+                        .put(FormatCadangan.KUNCI_PREFERENSI, JSONObject(store.exportJson()))
+                        .put(FormatCadangan.KUNCI_DATA_PENGGUNA, JSONObject(userData.exportJson()))
                         .toString()
                     ctx.copyText("backup", backup)
                 }
@@ -271,9 +274,14 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             Button(onClick = {
                 scope.launch {
                     val root = runCatching { JSONObject(backup) }.getOrNull()
-                    if (root != null && root.has("prefs")) {
-                        store.importJson(root.getJSONObject("prefs").toString())
-                        userData.restoreJson(root.optJSONObject("userData")?.toString() ?: "{}")
+                    if (root != null && root.has(FormatCadangan.KUNCI_PREFERENSI)) {
+                        store.importJson(
+                            root.getJSONObject(FormatCadangan.KUNCI_PREFERENSI).toString())
+                        // Bagian data pengguna hanya dipulihkan bila berkasnya memang memuatnya:
+                        // berkas yang memuat preferensi tanpa data terstruktur tak boleh
+                        // mengosongkan favorit/bookmark/riwayat/progres yang sedang tersimpan.
+                        root.optJSONObject(FormatCadangan.KUNCI_DATA_PENGGUNA)
+                            ?.let { userData.restoreJson(it.toString()) }
                     } else {
                         // Kompatibel dengan backup lama (hanya preferensi). Berkas cadangan v1.0.0
                         // masih memuat kunci warisan — favorit, riwayat, dan posisi Tahlil — jadi
