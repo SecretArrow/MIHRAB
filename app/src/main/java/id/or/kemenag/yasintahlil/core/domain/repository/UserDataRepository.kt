@@ -19,7 +19,24 @@ interface UserDataRepository {
     fun isBookmarked(kind: String, refId: String): Flow<Boolean>
     suspend fun toggleBookmark(kind: String, refId: String, label: String)
 
-    fun recentHistory(limit: Int = 50): Flow<List<HistItem>>
+    /**
+     * Riwayat terbaru, dipotong [limit] entri. Batasnya **wajib** disebut pemanggil dan tidak punya
+     * bawaan: dahulu di sini tertulis `= 50`, padahal tak satu pun pemanggil memakainya (semuanya
+     * menulis batasnya sendiri, dan salah satunya `60`) — sehingga bawaan itu hanya tampak seperti
+     * kebijakan padahal bukan, dan layar yang berbeda-beda diam-diam membaca jatah yang berbeda.
+     * Angka-angkanya kini tinggal di
+     * [id.or.kemenag.yasintahlil.core.util.BatasRiwayat].
+     */
+    fun recentHistory(limit: Int): Flow<List<HistItem>>
+
+    /**
+     * **Jumlah** riwayat yang dimiliki pengguna — `COUNT(*)`, bukan ukuran daftar yang sudah
+     * dipotong. Dipakai beranda untuk menjawab "Riwayat: N"; menghitungnya dari [recentHistory]
+     * membuat pengguna dengan lebih dari N entri diberi tahu angka yang salah tanpa satu pun pesan
+     * galat, dan berbeda dari angka yang sama di layar "Manajemen data offline" yang memakai
+     * `ringkasan()`.
+     */
+    fun jumlahRiwayat(): Flow<Int>
 
     /**
      * Catat satu bacaan yang dibuka. [openedAt] dapat diisi waktu kejadian yang sebenarnya: riwayat

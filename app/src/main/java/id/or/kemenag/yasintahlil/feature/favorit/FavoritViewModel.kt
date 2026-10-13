@@ -11,6 +11,7 @@ import id.or.kemenag.yasintahlil.core.domain.model.BookmarkItem
 import id.or.kemenag.yasintahlil.core.domain.model.FavItem
 import id.or.kemenag.yasintahlil.core.domain.model.HistItem
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
+import id.or.kemenag.yasintahlil.core.util.BatasRiwayat
 import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,11 +71,15 @@ class FavoritViewModel @Inject constructor(
         viewModelScope.launch { userData.allBookmarks().collect { b -> _state.update { it.copy(bookmarks = b) } } }
         // Riwayat "terakhir dibaca" kini juga ditulis modul Yasin dan Tahlil, jadi satu ayat atau
         // satu bagian dapat tercatat berkali-kali. Tanpa penyaringan, daftar 12 baris akan berisi
-        // bacaan yang sama berulang kali dan mendorong bacaan lain keluar. Diambil 60 dulu, baru
-        // disaring, agar pengulangan tidak menghabiskan jatah 20 baris sebelum penyaringan.
+        // bacaan yang sama berulang kali dan mendorong bacaan lain keluar. Batas baca, penyaringan,
+        // dan jatah tampilnya kini satu rumah di `BatasRiwayat` — dahulu ketiganya angka lepas
+        // (`60`, `20`, `12`) yang hubungannya tak terlihat dari sini.
         viewModelScope.launch {
-            userData.recentHistory(60).collect { h ->
-                _state.update { it.copy(history = h.distinctBy { i -> i.kind to i.refId }.take(20)) }
+            userData.recentHistory(BatasRiwayat.DIBACA_DAFTAR).collect { h ->
+                _state.update {
+                    it.copy(history = h.distinctBy { i -> i.kind to i.refId }
+                        .take(BatasRiwayat.DITAMPILKAN))
+                }
             }
         }
         viewModelScope.launch { _state.update { it.copy(last = store.get(Store.LAST, BawaanPreferensi.TERAKHIR_DIBACA)) } }
