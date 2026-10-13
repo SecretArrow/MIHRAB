@@ -60,7 +60,7 @@ fun GhaibScreen() {
     // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(true) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)

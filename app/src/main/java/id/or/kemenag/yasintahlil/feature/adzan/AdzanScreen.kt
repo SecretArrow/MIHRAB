@@ -47,21 +47,24 @@ fun AdzanScreen() {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     val lafaz = remember { repo.adzan() }
-    var on by remember { mutableStateOf(List(PengingatAdzan.JUMLAH_WAKTU) { true }) }
-    var uri by remember { mutableStateOf("") }
-    var sounds by remember { mutableStateOf<List<SuaraAdzan>>(emptyList()) }
+    // Nilai awalnya adalah bawaan bersama, bukan literal: yang tampil sebelum pemuatan selesai
+    // harus sama dengan yang tampil sesudahnya bagi pengguna yang belum menyentuh pengaturannya.
+    var on by remember { mutableStateOf(PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT)) }
+    var uri by remember { mutableStateOf(BawaanPreferensi.BERKAS_ADZAN) }
+    var sounds by remember { mutableStateOf(DaftarSuaraAdzan.parse(BawaanPreferensi.DAFTAR_SUARA_ADZAN)) }
     var ubahNama by remember { mutableStateOf<SuaraAdzan?>(null) }
     var vol by remember { mutableStateOf(PengingatAdzan.VOL_DEFAULT) }
-    var preMin by remember { mutableStateOf(PengingatAdzan.PRE_MIN_DEFAULT) }
-    var doaReminder by remember { mutableStateOf(false) }
+    var preMin by remember { mutableStateOf(PengingatAdzan.preMenit(PengingatAdzan.PRE_MIN_DEFAULT)) }
+    var doaReminder by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(true) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var settings by remember { mutableStateOf(false) }
     // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
     // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
-    // memilih metode lain di menu Jadwal.
-    var metode by remember { mutableStateOf(PrayerCalc.Method.KEMENAG) }
+    // memilih metode lain di menu Jadwal. Nilai awalnya pun dahulu masih `Method.KEMENAG`: sisa
+    // hardcode yang sama, yang sempat tampil sebelum pemuatan selesai.
+    var metode by remember { mutableStateOf(PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT)) }
     // Sisa parameter hisab, dibaca dari kunci yang sama dengan menu Jadwal & penjadwal pengingat.
     // `plan.txt` §"Fitur Adzan" membuka daftar fitur wajibnya dengan *"Jadwal adzan untuk Subuh,
     // Zuhur, Asar, Magrib, dan Isya"*: saklar per waktu di bawah hanya menyebut nama waktunya,
