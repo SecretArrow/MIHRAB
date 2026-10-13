@@ -77,8 +77,8 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         LinearProgressIndicator(progress = { ((s.idx + 1).toFloat() / s.items.size).coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { vm.prev() }, enabled = s.idx > 0) { Text("← Sebelumnya") }
-            Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text("Berikutnya →") }
+            Button(onClick = { vm.prev() }, enabled = s.idx > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
+            Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
             FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }

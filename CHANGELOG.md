@@ -380,6 +380,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kendali langkah dan tindakan tinggal di satu tempat**: enam kata yang dipakai bersama beberapa
+  layar — *"← Sebelumnya"* dan *"Berikutnya →"* (panduan sholat dan susunan Tahlil), *"Batalkan
+  tanda"* (rincian sholat dan Wudhu), *"Kosongkan"* (penyaring Panduan Sholat dan Dzikir),
+  *"Lanjutkan"* (beranda dan daftar favorit), serta awalan *"Terakhir dibaca: …"* (beranda,
+  favorit, dan Yasin) — masing-masing dieja sendiri di tiap layar yang memakainya. Tiap pasangan
+  menamai **satu** tindakan, jadi kata yang berbeda di salah satunya membuat pengguna mengira ada
+  dua tombol berbeda untuk hal yang sama; mengganti kata di satu layar meninggalkan layar lain
+  menyebut tindakan itu dengan kata lama. Ketigabelas pemakaian kini lahir dari `NamaAntarmuka`,
+  sehingga judul tombol dan tindakan yang dijanjikannya tak dapat berbeda pendapat. Dijaga
+  `NamaAntarmukaSatuTempatTest`, yang memastikan tiap layar tetap memuat kendalinya **dan**
+  memakai nama bersama — bukan menyelesaikan salinan dengan menghapus salah satu tombol.
 - **Nama layar yang dibuka dari Pengaturan tinggal di satu tempat**: berkas `NamaLayar` menyebut
   Pembaruan konten dan Tentang sebagai pengecualian, dengan alasan bahwa tombolnya menyebut
   **tindakannya** ("Buka pembaruan konten"), bukan nama layarnya. Alasan itu tidak bertahan begitu

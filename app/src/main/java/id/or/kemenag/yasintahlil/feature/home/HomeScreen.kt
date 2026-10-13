@@ -112,7 +112,7 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         }
         if (s.last.isNotBlank()) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
-                Text("Terakhir dibaca: ${s.last}")
+                Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${s.last}")
                 // Tujuan ditentukan `RuteKonten` — aturan yang sama dengan layar Favorit — bukan
                 // cabang `startsWith("yasin")` yang dahulu mengirim setiap bacaan Tahlil ke Favorit.
                 // Id kelompok dzikir dari keadaan layar ikut disertakan: dahulu tidak, sehingga
@@ -120,7 +120,7 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
                 val tujuan = RuteKonten.tujuanTerakhir(s.last, s.grupDzikir)
                 if (tujuan != null) {
                     Text(tujuan.nama, style = MaterialTheme.typography.labelSmall)
-                    Button(onClick = { go(tujuan.rute) }) { Text("Lanjutkan") }
+                    Button(onClick = { go(tujuan.rute) }) { Text(NamaAntarmuka.LANJUTKAN) }
                 } else {
                     Text(RuteKonten.TIDAK_DIKENAL, style = MaterialTheme.typography.labelSmall)
                 }

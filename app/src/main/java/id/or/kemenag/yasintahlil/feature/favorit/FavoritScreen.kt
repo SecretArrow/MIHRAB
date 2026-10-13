@@ -38,8 +38,8 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         }
         if (s.last.isNotBlank()) {
             item {
-                Text("Terakhir dibaca: ${s.last}")
-                AksiBuka(RuteKonten.tujuanTerakhir(s.last, grupDzikir), "Lanjutkan", go)
+                Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${s.last}")
+                AksiBuka(RuteKonten.tujuanTerakhir(s.last, grupDzikir), NamaAntarmuka.LANJUTKAN, go)
             }
         }
 
