@@ -72,7 +72,7 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
         }
 
         val uri = store.get(Store.ADZAN_URI, BawaanPreferensi.BERKAS_ADZAN)
-        val vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
+        val vol = PengingatAdzan.volume(store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT))
         val metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT)).label
 
         // Audio hanya diputar bila pekerjaan ini benar-benar menjadi layanan latar. Sejak Android 12
