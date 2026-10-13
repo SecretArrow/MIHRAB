@@ -74,6 +74,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Assemble debug
         run: ./gradlew :app:assembleDebug --parallel --build-cache
+      # Sumber `app/src/androidTest` tak disentuh `lintDebug`, `testDebugUnitTest`, maupun kedua
+      # perintah assemble di atas: tanpa langkah ini, kesalahan kompilasi di sana baru terbaca
+      # **setelah** digabung ke `main`, saat `e2e.yml` menjalankan `assembleDebugAndroidTest` —
+      # satu siklus PR penuh untuk sesuatu yang seharusnya gugur sebelum merge. Tugasnya sama
+      # dengan yang dipakai `e2e.yml`, jadi hasilnya terpakai lewat `--build-cache`.
+      - name: Kompilasi APK uji instrumented (androidTest)
+        run: ./gradlew :app:assembleDebugAndroidTest --parallel --build-cache
       - name: Build release (validasi R8/ProGuard; unsigned bila tanpa keystore)
         run: ./gradlew :app:assembleRelease --parallel --build-cache
       - uses: actions/upload-artifact@v7
