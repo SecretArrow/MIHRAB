@@ -113,15 +113,17 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
 
         // Rentang dan bawaannya dipakai bersama bottom sheet pengaturan bacaan (satu sumber
-        // kebenaran: `UkuranBacaan`).
-        Text("Ukuran Arab: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = UkuranBacaan.ARAB)
-        Text("Ukuran Latin: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = UkuranBacaan.LATIN)
+        // kebenaran: `UkuranBacaan`), dan **namanya** pun dari kosakata bersama `NamaAntarmuka` —
+        // keduanya mengatur kunci `Store` yang sama, jadi dua ejaan berarti dua pengaturan di mata
+        // pengguna.
+        Text("${NamaAntarmuka.UKURAN_ARAB}: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = UkuranBacaan.ARAB)
+        Text("${NamaAntarmuka.UKURAN_LATIN}: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = UkuranBacaan.LATIN)
         // "Jarak antarbaris" dan "tema halaman" juga preferensi bacaan global (`plan.txt`
         // §"Fitur Surat Yasin": *"Pengaturan jarak antarbaris dan tema halaman"*). Keduanya sudah
         // ada di sheet pengaturan bacaan, tetapi sebelumnya tidak ada di layar Pengaturan — padahal
         // "Ukuran Arab" dan "Ukuran Latin" ada di sini. Menaruhnya di sini membuat keempat
         // preferensi bacaan dapat ditemukan di satu tempat, menulis kunci yang sama.
-        Text("Jarak antarbaris: ${"%.1f".format(lineHeight)}")
+        Text("${NamaAntarmuka.JARAK_ANTARBARIS}: ${"%.1f".format(lineHeight)}")
         Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = UkuranBacaan.JARAK)
         Text("Tema halaman bacaan:", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -135,9 +137,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 "atau sumbernya. Berlaku juga di sheet pengaturan bacaan.",
             style = MaterialTheme.typography.labelSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text("Arab") })
-            FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text("Latin") })
-            FilterChip(showT, { showT = !showT; scope.launch { store.set(Store.SHOW_TRANS, showT) } }, { Text("Terjemahan") })
+            FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text(NamaAntarmuka.TAMPIL_ARAB) })
+            FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
+            FilterChip(showT, { showT = !showT; scope.launch { store.set(Store.SHOW_TRANS, showT) } }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
         }
         Text("Berlaku di semua layar bacaan (Yasin, Tahlil, Dzikir, Adzan, panduan sholat). " +
                 "Menyembunyikan Arab berguna saat ingin membaca Latin/terjemahan saja.",

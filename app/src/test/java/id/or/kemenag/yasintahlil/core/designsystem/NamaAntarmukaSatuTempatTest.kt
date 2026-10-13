@@ -11,7 +11,7 @@ import java.io.File
  * Nama **kendali antarmuka** yang muncul di lebih dari satu tempat hanya boleh hidup di
  * `NamaAntarmuka`.
  *
- * Tiga nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
+ * Sembilan nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
  *
  *  - *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet` **dan** label tombol yang
  *    membukanya di sepuluh layar. Sebelas tulisan untuk satu nama: mengganti nama sheet-nya
@@ -23,9 +23,14 @@ import java.io.File
  *    berbeda tanpa alasan.
  *  - *"Coba lagi"* ditulis dua kali **di dalam berkas yang sama**: sebagai bawaan `labelTombol`
  *    pada `EmptyState` dan sebagai literal tombol pada `ErrorState`.
+ *  - Enam **preferensi tampilan bacaan** (tiga sakelar dan tiga pengukur) ada di **dua berkas**:
+ *    sheet `BacaanSettingsSheet` dan layar Pengaturan. Keduanya menulis kunci `Store` yang sama,
+ *    jadi keduanya mengatur satu preferensi yang sama — tetapi masing-masing mengeja namanya
+ *    sendiri. Mengganti nama satu sakelar di sheet meninggalkan Pengaturan menyebut preferensi
+ *    yang sama dengan kata lama, dan pengguna mengira ada dua pengaturan.
  *
- * Uji ini menjaga agar ketiganya tetap satu tempat, dan agar varian yang disengaja tetap terlihat
- * sebagai varian — bukan menyamar sebagai salinan.
+ * Uji ini menjaga agar kesembilannya tetap satu tempat, dan agar varian yang disengaja tetap
+ * terlihat sebagai varian — bukan menyamar sebagai salinan.
  */
 class NamaAntarmukaSatuTempatTest {
 
@@ -44,10 +49,24 @@ class NamaAntarmukaSatuTempatTest {
     private fun uiKit(): File =
         File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/designsystem/UiKit.kt")
 
+    /** Kesembilan nama yang harus tinggal di `NamaAntarmuka`, beserta nilai yang diharapkan. */
+    private fun daftarNama(): Map<String, String> = mapOf(
+        "PENGATURAN_BACAAN" to NamaAntarmuka.PENGATURAN_BACAAN,
+        "LAYAR_PENUH" to NamaAntarmuka.LAYAR_PENUH,
+        "LAYAR_PENUH_IMAM" to NamaAntarmuka.LAYAR_PENUH_IMAM,
+        "COBA_LAGI" to NamaAntarmuka.COBA_LAGI,
+        "TAMPIL_ARAB" to NamaAntarmuka.TAMPIL_ARAB,
+        "TAMPIL_LATIN" to NamaAntarmuka.TAMPIL_LATIN,
+        "TAMPIL_TERJEMAHAN" to NamaAntarmuka.TAMPIL_TERJEMAHAN,
+        "UKURAN_ARAB" to NamaAntarmuka.UKURAN_ARAB,
+        "UKURAN_LATIN" to NamaAntarmuka.UKURAN_LATIN,
+        "JARAK_ANTARBARIS" to NamaAntarmuka.JARAK_ANTARBARIS,
+    )
+
     // ---- Ejaan label ---------------------------------------------------------------------------
 
     /**
-     * Keempat nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk, bukan
+     * Kesembilan nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk, bukan
      * bagian dari merapikan kode: uji ini memaksanya disengaja, sehingga penggantian nama yang
      * tidak diniatkan langsung ketahuan.
      */
@@ -57,43 +76,109 @@ class NamaAntarmukaSatuTempatTest {
         assertEquals("Layar penuh", NamaAntarmuka.LAYAR_PENUH)
         assertEquals("Layar penuh (imam)", NamaAntarmuka.LAYAR_PENUH_IMAM)
         assertEquals("Coba lagi", NamaAntarmuka.COBA_LAGI)
+        assertEquals("Arab", NamaAntarmuka.TAMPIL_ARAB)
+        assertEquals("Latin", NamaAntarmuka.TAMPIL_LATIN)
+        assertEquals("Terjemahan", NamaAntarmuka.TAMPIL_TERJEMAHAN)
+        assertEquals("Ukuran Arab", NamaAntarmuka.UKURAN_ARAB)
+        assertEquals("Ukuran Latin", NamaAntarmuka.UKURAN_LATIN)
+        assertEquals("Jarak antarbaris", NamaAntarmuka.JARAK_ANTARBARIS)
     }
 
     /** Nama kosong membuat tombol tanpa label — kegagalan yang tidak terlihat di layar. */
     @Test
     fun tidakAdaLayarTanpaNama() {
-        val nama = mapOf(
-            "PENGATURAN_BACAAN" to NamaAntarmuka.PENGATURAN_BACAAN,
-            "LAYAR_PENUH" to NamaAntarmuka.LAYAR_PENUH,
-            "LAYAR_PENUH_IMAM" to NamaAntarmuka.LAYAR_PENUH_IMAM,
-            "COBA_LAGI" to NamaAntarmuka.COBA_LAGI,
-        )
+        val nama = daftarNama()
         nama.forEach { (kunci, nilai) ->
             assertTrue("nama $kunci kosong", nilai.isNotBlank())
             assertEquals("nama $kunci tidak sama dengan dirinya sendiri setelah dirapikan",
                 nilai, nilai.trim())
         }
-        assertEquals("empat nama berbeda tidak boleh ada yang sama", 4, nama.values.toSet().size)
+        assertEquals("kesembilan nama berbeda tidak boleh ada yang sama",
+            nama.size, nama.values.toSet().size)
     }
+
+    /**
+     * Apakah [teks] memakai [label] sebagai **label kendali** — bukan sekadar menyebut katanya di
+     * dalam kalimat.
+     *
+     * Label kendali adalah **seluruh** teks kendalinya, atau teksnya beserta nilainya
+     * (`"Ukuran Arab: 24"` pada pengukur di layar Pengaturan). Kalimat penjelas yang kebetulan
+     * memuat kata "Arab" — *"Teks Arab wajib berharakat"*, *"Menyembunyikan Arab berguna saat…"* —
+     * bukan salinan kendali, dan menuduhnya sama dengan memaksa prosa menyingkirkan kata biasa.
+     */
+    private fun memakaiLabel(teks: String, label: String): Boolean =
+        teks == label || teks.startsWith("$label:")
 
     /**
      * Inti perbaikan: tidak ada berkas lain yang mengeja ulang nama itu sebagai literal. Yang
      * menyalinnya ke layar dapat menyebut hal yang sama dengan kata yang berbeda — persis yang
      * terjadi sebelum `NamaAntarmuka` ada.
+     *
+     * Pemindainya membaca **isi** tiap literal ([KodeSumber.literalString]), bukan potongan
+     * berkutip utuh: label yang disisipkan ke dalam kalimat panjang — `"Ukuran Arab: ${…}"` di layar
+     * Pengaturan sebelum diperbaiki — tak terbaca oleh pencarian `"Ukuran Arab"` yang menuntut
+     * kutipnya utuh, sehingga salinannya lolos. [memakaiLabel] yang memisahkan label kendali dari
+     * kata biasa di dalam prosa.
+     *
+     * Dua berkas dikecualikan, dan keduanya beralasan:
+     *
+     *  - `NamaAntarmuka.kt` sendiri — tempat nama itu memang tinggal;
+     *  - `AtribusiTeks.kt` — memakai kata *"Terjemahan"* untuk hal yang **berbeda**: label baris
+     *    asal-usul teks ("Terjemahan: LPMQ Kemenag"), bukan sakelar tampilan. Pengecualian ini
+     *    dipaku [terjemahanAtribusiTetapAturanBerbeda], supaya tidak menjadi tempat menyembunyikan
+     *    salinan.
      */
     @Test
     fun labelTidakDisalinKeLuarNamaAntarmuka() {
-        val nama = listOf(
-            NamaAntarmuka.PENGATURAN_BACAAN,
-            NamaAntarmuka.LAYAR_PENUH,
-            NamaAntarmuka.LAYAR_PENUH_IMAM,
-            NamaAntarmuka.COBA_LAGI,
+        val nama = daftarNama().values.toList()
+        val pelanggar = mutableListOf<String>()
+        berkasMain()
+            .filter { it.name !in setOf("NamaAntarmuka.kt", "AtribusiTeks.kt") }
+            .forEach { f ->
+                KodeSumber.literalString(f.readText()).forEach { teks ->
+                    nama.filter { memakaiLabel(teks, it) }
+                        .forEach { pelanggar += "${f.name}: \"$it\" di dalam \"${teks.take(50)}\"" }
+                }
+            }
+        assertTrue("nama kendali disalin ke luar `NamaAntarmuka`: $pelanggar", pelanggar.isEmpty())
+    }
+
+    /**
+     * `AtribusiTeks` memang boleh mengeja *"Terjemahan"*: itu label baris **asal-usul** teks, bukan
+     * sakelar tampilan. Uji ini memakunya supaya pengecualian di
+     * [labelTidakDisalinKeLuarNamaAntarmuka] tidak berubah menjadi celah: bila label itu dihapus
+     * dari `AtribusiTeks`, berkasnya tak lagi berhak dikecualikan.
+     */
+    @Test
+    fun terjemahanAtribusiTetapAturanBerbeda() {
+        val berkas = KodeSumber.sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/core/data/AtribusiTeks.kt",
         )
-        val penyalin = berkasMain()
-            .filter { it.name != "NamaAntarmuka.kt" }
-            .filter { f -> nama.any { kode(f).contains("\"$it\"") } }
-            .map { it.name }
-        assertTrue("nama kendali disalin ke luar `NamaAntarmuka`: $penyalin", penyalin.isEmpty())
+        assertTrue("label asal-usul \"Terjemahan\" di AtribusiTeks hilang — pengecualian penjaganya " +
+                "kini tanpa alasan",
+            KodeSumber.literalString(berkas).any { it == NamaAntarmuka.TAMPIL_TERJEMAHAN })
+        assertTrue("AtribusiTeks tidak lagi menyusun baris \"Terjemahan: …\" dari labelnya sendiri",
+            berkas.contains("TERJEMAHAN to s.sumber"))
+    }
+
+    /**
+     * Perbaikan preferensi bacaan harus terlihat **di kedua tempat**: sheet dan layar Pengaturan
+     * sama-sama memakai nama bersama. Tanpa ini, penjaga di atas dapat dipuaskan dengan menghapus
+     * salah satu tempat, padahal yang salah adalah salinannya, bukan kendalinya.
+     */
+    @Test
+    fun keduaTempatPreferensiBacaanMemakaiNamaBersama() {
+        val sheet = kode(uiKit())
+        val pengaturan = layar("feature/settings/SettingsScreen.kt")
+        listOf(
+            "TAMPIL_ARAB", "TAMPIL_LATIN", "TAMPIL_TERJEMAHAN",
+            "UKURAN_ARAB", "UKURAN_LATIN", "JARAK_ANTARBARIS",
+        ).forEach { kunci ->
+            assertTrue("sheet pengaturan bacaan tidak memakai NamaAntarmuka.$kunci",
+                sheet.contains("NamaAntarmuka.$kunci"))
+            assertTrue("layar Pengaturan tidak memakai NamaAntarmuka.$kunci",
+                pengaturan.contains("NamaAntarmuka.$kunci"))
+        }
     }
 
     /**
