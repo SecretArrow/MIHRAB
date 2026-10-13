@@ -13,6 +13,18 @@ Mode:
                 sumber_url dilaporkan sebagai peringatan (tidak menggagalkan).
   --strict   -> entri tanpa sumber_url juga menggagalkan (dipakai setelah
                 seluruh konten dilengkapi).
+  --harus-gagal -> fixture: keluar 0 hanya bila ada galat (lihat "Pakai").
+
+Pakai:
+  python3 tools/validate_content.py [--strict] [berkas.json | direktori ...]
+  python3 tools/validate_content.py --strict --harus-gagal tools/fixtures/konten/cacat.json
+
+Tanpa argumen, seluruh `app/src/main/assets/content/*.json` diperiksa. Argumen dipakai oleh
+fixture `tools/fixtures/konten/` — **bukti bahwa gate ini benar-benar menolak**. Tanpa fixture,
+satu-satunya cara membuktikannya adalah menyunting aset yang sesungguhnya, dan tak ada apa pun di
+repo yang menjaganya tetap menggigit: sebuah regresi yang membuat penelusuran entri berhenti
+mengumpulkan apa pun akan melaporkan "0 galat" untuk berkas yang tak pernah dibuka. Karena itu
+`main()` juga **gagal keras** bila tidak satu pun entri ditemukan.
 
 Sumber resmi: daftar tunggalnya ada di `ContentValidator.allowedHosts` (Kotlin) dan dibaca dari
 sana — lihat `load_allowed_hosts()`.
@@ -479,18 +491,47 @@ def check_duplicate_keys(name: str, text: str) -> list[str]:
     return []
 
 
+def berkas_yang_diperiksa(args: list[str]) -> list[Path]:
+    """Berkas JSON yang diperiksa: yang diberikan di baris perintah, atau seluruh konten bawaan.
+
+    Argumennya boleh berkas maupun direktori; inilah yang membuat fixture di
+    `tools/fixtures/konten/` dapat dijalankan lewat gate yang sama persis dengan aset sungguhan —
+    bukan lewat salinan aturan yang bisa menyimpang.
+    """
+    if not args:
+        return sorted(CONTENT_DIR.glob("*.json"))
+    hasil: list[Path] = []
+    for a in args:
+        p = Path(a)
+        if p.is_dir():
+            hasil += sorted(p.glob("*.json"))
+        elif p.is_file():
+            hasil.append(p)
+        else:
+            raise SystemExit(f"[validate_content] tidak ditemukan: {p}")
+    return hasil
+
+
 def main() -> int:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
     strict = "--strict" in sys.argv
-    if not CONTENT_DIR.exists():
-        print(f"[validate_content] direktori tidak ditemukan: {CONTENT_DIR}")
+    harus_gagal = "--harus-gagal" in sys.argv
+
+    berkas = berkas_yang_diperiksa(args)
+    # Gerbang yang memeriksa nol berkas lebih buruk daripada gerbang yang tidak ada: ia melaporkan
+    # "0 galat" untuk berkas yang tak pernah dibuka. `load_allowed_hosts()` sudah gagal keras dengan
+    # alasan yang sama. Direktori konten yang hilang pun dahulu hanya dicek bila tanpa argumen.
+    if not berkas:
+        print(f"[validate_content] tidak ada berkas JSON untuk diperiksa: "
+              f"{args or str(CONTENT_DIR)}")
         return 1
 
     errors: list[str] = []
     warnings: list[str] = []
     checked = 0
 
-    for path in sorted(CONTENT_DIR.glob("*.json")):
-        rel = path.relative_to(ROOT)
+    for path in berkas:
+        rel = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
         teks = path.read_text(encoding="utf-8")
         errors.extend(check_duplicate_keys(rel.name, teks))
         try:
@@ -541,10 +582,24 @@ def main() -> int:
         # --- Kategori sumber bacaan wajib dinyatakan ---
         errors.extend(check_kategori(rel.name, data))
 
+    # Nol entri berarti tak ada yang diperiksa — bukan berarti sehat. Gate yang memeriksa nol entri
+    # meloloskan segalanya, jadi ini galat, bukan keberhasilan.
+    if checked == 0:
+        errors.append("tidak satu pun entri konten ditemukan — gate yang memeriksa nol entri "
+                      "meloloskan segalanya")
+
     for w in warnings:
         print(f"[peringatan] {w}")
     for e in errors:
         print(f"[GAGAL] {e}")
+
+    if harus_gagal:
+        if errors:
+            print(f"[validate_content] {len(errors)} galat seperti diharapkan "
+                  f"(fixture wajib ditolak)")
+            return 0
+        print("[validate_content] fixture seharusnya ditolak, tetapi lolos")
+        return 1
 
     print(f"[validate_content] {checked} entri diperiksa, "
           f"{len(errors)} galat, {len(warnings)} peringatan"

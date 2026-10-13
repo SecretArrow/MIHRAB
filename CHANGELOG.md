@@ -380,6 +380,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Gerbang konten akhirnya punya bukti bahwa ia menolak**: gerbang bundel sudah lama memiliki
+  fixture — `tools/fixtures/bundel/sah.json` yang wajib lolos dan dua `*cacat.json` yang wajib
+  ditolak, ketiganya dijalankan `ci.yml`. Gerbang konten (`tools/validate_content.py`) tidak punya
+  satu pun, sehingga satu-satunya cara membuktikan ia menolak adalah menyunting aset yang
+  sesungguhnya — dan tak ada apa pun di repo yang menjaganya tetap menggigit. Yang lebih buruk,
+  skripnya dahulu **melaporkan sukses tanpa memeriksa satu entri pun**: bila penelusuran entri
+  berhenti mengumpulkan apa pun, keluarannya "0 galat" dan CI tetap hijau untuk berkas yang tak
+  pernah dibuka — persis kegagalan yang oleh aturan proyek ini disebut lebih buruk daripada gate
+  yang tidak ada, sebab ia menjanjikan pemeriksaan yang tidak pernah berjalan. Kini gate menerima
+  berkas/direktori sebagai argumen (tanpa argumen tetap seluruh `assets/content`), mengenal mode
+  `--harus-gagal`, dan **gagal keras** bila tidak satu pun entri ditemukan — alasan yang sama
+  dengan `load_allowed_hosts()` yang sudah lebih dulu menolak daftar host kosong. Fixture baru
+  `tools/fixtures/konten/sah.json` dan `cacat.json` dijalankan `ci.yml`; keduanya berbeda **hanya**
+  pada `sumber_url` yang hilang, sehingga kegagalannya menunjuk tepat satu aturan.
+  `FixtureGateKontenTest` menjaga tiga hal yang tidak dapat dilihat CI: fixture-nya ada, ia masih
+  hanya berbeda pada satu aturan, dan CI benar-benar menjalankannya dengan `--harus-gagal`. Sepuluh
+  mutasi terverifikasi tertangkap, termasuk menghilangkan fixture dan mencabut penjaga nol-entri.
 - **Rujukan pada konten bawaan akhirnya diperiksa**: sebuah entri konten dapat menunjuk berkas lain
   (`rujukan_file`, `rujukanFile`, larik `rujukan`) alih-alih menyalin lafaznya, supaya satu teks
   terverifikasi dipakai beberapa modul tanpa salinan yang bisa menyimpang. Aturan bahwa rujukan itu

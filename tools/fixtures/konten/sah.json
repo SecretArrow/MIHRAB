@@ -1,0 +1,16 @@
+{
+  "modul": "dzikir",
+  "kelompok": [
+    {
+      "id": "contoh",
+      "items": [
+        {
+          "id": "contoh_1",
+          "judul": "Entri contoh",
+          "sumber": "HR. Bukhari",
+          "sumber_url": "https://kemenag.go.id/contoh"
+        }
+      ]
+    }
+  ]
+}

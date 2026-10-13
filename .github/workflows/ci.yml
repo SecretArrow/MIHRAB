@@ -26,6 +26,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Validasi konten JSON (strict — wajib sumber resmi, SOURCES.md)
         run: python3 tools/validate_content.py --strict
+      - name: "Validasi gate konten (fixture sah lolos, cacat ditolak)"
+        run: |
+          python3 tools/validate_content.py --strict tools/fixtures/konten/sah.json
+          python3 tools/validate_content.py --strict --harus-gagal tools/fixtures/konten/cacat.json
       - name: "Periksa berkas workflow dapat dibaca (gate juga ada di workflow-lint.yml)"
         run: python3 tools/check_workflows.py
       - name: "Higiene komentar Kotlin (mencegah galat kompilasi karena komentar tertutup awal)"
