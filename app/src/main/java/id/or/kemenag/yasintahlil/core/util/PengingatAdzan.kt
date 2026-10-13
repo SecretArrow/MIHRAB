@@ -157,4 +157,34 @@ object PengingatAdzan {
      * layar Iqomah, yang keduanya menuliskannya lengkap sendiri-sendiri.
      */
     const val NAMA_PENGINGAT_DOA = "Pengingat membaca doa setelah adzan"
+
+    // ---- Kunci data masukan pekerja pengingat -------------------------------------------------
+    //
+    // `PrayerScheduler` menulis data masukan pekerja lewat `workDataOf`, dan `ReminderWorker`
+    // membacanya lewat `inputData` — dua kelas yang tak pernah saling melihat, sehingga tak ada satu
+    // pun tempat yang membandingkan ejaan keduanya. Kuncinya dahulu diketik di kedua sisi
+    // (`workDataOf("nama" to …, "jenis" to …)` dan `inputData.getString("nama")`), dan salinan yang
+    // menyimpang gagal dengan sunyi: pekerja membaca `nama` sebagai null lalu **langsung**
+    // mengembalikan `Result.success()` — pengingat yang tak pernah berbunyi, tanpa satu pun galat
+    // yang menyebut sebabnya. Sama seperti [ContentValidator.KUNCI_SUMBER] bagi bundel konten,
+    // kuncinya kini tinggal di sini dan dipakai kedua sisi.
+
+    /**
+     * Nama waktu sholat (mis. "Subuh") yang dibawa pekerja.
+     *
+     * Nilainya dipaku: data masukan pekerja yang sudah terantre bertahan melintasi pemutakhiran
+     * aplikasi, jadi mengubah ejaannya membuat pengingat yang terjadwal sebelum pembaruan tak lagi
+     * terbaca sesudahnya.
+     */
+    const val KUNCI_NAMA = "nama"
+
+    /** Jenis pekerjaan (`PrayerScheduler.JENIS_ADZAN` dan kerabatnya) yang dibawa pekerja. */
+    const val KUNCI_JENIS = "jenis"
+
+    /**
+     * Kunci lama dari versi yang hanya punya satu jenis pekerjaan: `true` berarti adzan, `false`
+     * pra-adzan. Dibaca **sebagai cadangan** bila [KUNCI_JENIS] tidak ada, supaya pekerjaan yang
+     * sudah terantre sebelum pemutakhiran aplikasi tetap berbunyi sebagai pengingat yang benar.
+     */
+    const val KUNCI_ADZAN_LAMA = "adzan"
 }

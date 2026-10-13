@@ -148,7 +148,12 @@ object PrayerScheduler {
     private fun enqueue(ctx: Context, unique: String, nama: String, delayMin: Long, jenis: String) {
         val req = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMin, TimeUnit.MINUTES)
-            .setInputData(workDataOf("nama" to nama, "jenis" to jenis))
+            // Kunci data masukan datang dari kosakata bersama ([PengingatAdzan]); mengejanya di sini
+            // membuat sisi penulis dan sisi pembacanya dapat berbeda tanpa satu pun galat.
+            .setInputData(workDataOf(
+                PengingatAdzan.KUNCI_NAMA to nama,
+                PengingatAdzan.KUNCI_JENIS to jenis,
+            ))
             .addTag(TAG)
             .build()
         WorkManager.getInstance(ctx).enqueueUniqueWork(unique, ExistingWorkPolicy.REPLACE, req)
