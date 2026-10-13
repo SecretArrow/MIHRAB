@@ -6,6 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -30,7 +31,7 @@ object AdzanPlayer {
             withTimeoutOrNull(maxMillis) {
                 val player = ExoPlayer.Builder(ctx.applicationContext).build()
                 try {
-                    player.volume = volume.coerceIn(0f, 1f)
+                    player.volume = PengingatAdzan.volume(volume)
                     player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
                     player.prepare()
                     suspendCancellableCoroutine<Unit> { cont ->

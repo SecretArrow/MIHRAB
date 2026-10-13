@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rentang volume suara adzan punya satu rumah**: rentangnya dahulu tidak dinyatakan di mana pun —
+  ia hidup sebagai `coerceIn(0f, 1f)` yang ditulis **tiga kali**, sekali di `AdzanPlayer.playOnce`
+  dan dua kali di `AdzanPreview` (`play` dan `setVolume`), sementara slider di layar Adzan bahkan
+  tidak punya `valueRange` sehingga batas yang dapat dipilih pengguna hanya **kebetulan** cocok
+  dengan bawaan Compose. Yang membuatnya berbahaya bukan panjangnya, melainkan **jalur baca yang
+  tidak menjepit sama sekali**: `Store.ADZAN_VOL` dibaca mentah oleh layar Adzan dan oleh pekerja
+  latar. Selama nilainya selalu datang dari slider, ketiga salinan itu tampak sepakat; begitu nilai
+  datang dari luar slider — backup yang disunting, atau pemulihan dari versi lain — layar
+  menampilkan `"Volume: 500%"` sementara pemutarnya membunyikan 100%, dua angka untuk satu
+  pengaturan tanpa satu pun galat yang menyebut sebabnya. Pola ini sama persis dengan rentang jeda
+  pra-adzan yang sudah lebih dahulu dipusatkan ke `PengingatAdzan.preMenit`. Kini `VOL_MIN`/
+  `VOL_MAKS`/`volume(nilai)` tinggal di `PengingatAdzan`, dan **seluruh** jalur memakainya:
+  `AdzanPlayer`, kedua metode `AdzanPreview`, `valueRange` slider, nilai awal layar, serta kedua
+  pembacaan nilai tersimpan (layar Adzan dan `ReminderWorker`). Dijaga `VolumeAdzanSatuRentangTest`
+  — yang juga memaku bahwa `coerceIn(0f, 1f)` milik **progress bar dan alpha** tidak ikut tertarik
+  ke aturan ini, sebab aturannya lain.
 - **Nilai awal state preferensi di layar sama dengan bawaannya**: setiap layar memegang pengaturan
   dalam `remember` dan mengisinya dari `store.get(Store.K, BAKU)` di dalam `LaunchedEffect`. Ada
   **dua** nilai yang menjawab pertanyaan yang sama ("apa isi pengaturan ini bagi pengguna yang belum

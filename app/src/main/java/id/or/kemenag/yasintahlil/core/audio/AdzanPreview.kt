@@ -6,6 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 
 /**
  * Pemutar pratinjau berkas adzan pilihan pengguna (plan.txt §"Fitur Adzan": *"Tombol pratinjau
@@ -40,7 +41,7 @@ class AdzanPreview(ctx: Context, private val onError: (String) -> Unit) {
         if (uri.isBlank()) return false
         runCatching {
             player.setMediaItem(MediaItem.fromUri(Uri.parse(uri)))
-            player.volume = volume.coerceIn(0f, 1f)
+            player.volume = PengingatAdzan.volume(volume)
             player.prepare()
             player.play()
         }.onFailure { onError("Berkas audio tidak dapat diputar: ${it.message ?: it::class.simpleName}.") }
@@ -50,7 +51,7 @@ class AdzanPreview(ctx: Context, private val onError: (String) -> Unit) {
     fun stop() { runCatching { player.stop() } }
 
     fun setVolume(v: Float) {
-        runCatching { player.volume = v.coerceIn(0f, 1f) }
+        runCatching { player.volume = PengingatAdzan.volume(v) }
     }
 
     fun release() { runCatching { player.release() } }

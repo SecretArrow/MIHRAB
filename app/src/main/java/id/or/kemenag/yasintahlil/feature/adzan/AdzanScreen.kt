@@ -53,7 +53,7 @@ fun AdzanScreen() {
     var uri by remember { mutableStateOf(BawaanPreferensi.BERKAS_ADZAN) }
     var sounds by remember { mutableStateOf(DaftarSuaraAdzan.parse(BawaanPreferensi.DAFTAR_SUARA_ADZAN)) }
     var ubahNama by remember { mutableStateOf<SuaraAdzan?>(null) }
-    var vol by remember { mutableStateOf(PengingatAdzan.VOL_DEFAULT) }
+    var vol by remember { mutableStateOf(PengingatAdzan.volume(PengingatAdzan.VOL_DEFAULT)) }
     var preMin by remember { mutableStateOf(PengingatAdzan.preMenit(PengingatAdzan.PRE_MIN_DEFAULT)) }
     var doaReminder by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     var dnd by remember { mutableStateOf(false) }
@@ -113,7 +113,7 @@ fun AdzanScreen() {
         on = PengingatAdzan.parseOn(store.get(Store.ADZAN_ON, PengingatAdzan.ON_DEFAULT))
         uri = store.get(Store.ADZAN_URI, BawaanPreferensi.BERKAS_ADZAN)
         sounds = DaftarSuaraAdzan.parse(store.get(Store.ADZAN_SOUNDS, BawaanPreferensi.DAFTAR_SUARA_ADZAN))
-        vol = store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT)
+        vol = PengingatAdzan.volume(store.get(Store.ADZAN_VOL, PengingatAdzan.VOL_DEFAULT))
         preMin = PengingatAdzan.preMenit(
             store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT))
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
@@ -239,7 +239,13 @@ fun AdzanScreen() {
             })
         }
         Text("Volume: ${(vol * 100).toInt()}%")
-        Slider(vol, { vol = it; player.setVolume(it); scope.launch { store.set(Store.ADZAN_VOL, vol) } })
+        // Rentangnya dari aturan bersama, sama dengan yang dijepit pemutar dan pekerja latar —
+        // sehingga angka yang dapat dipilih di sini pasti angka yang benar-benar berbunyi.
+        Slider(
+            value = vol,
+            onValueChange = { vol = it; player.setVolume(it); scope.launch { store.set(Store.ADZAN_VOL, vol) } },
+            valueRange = PengingatAdzan.VOL_MIN..PengingatAdzan.VOL_MAKS,
+        )
 
         Text("Pengingat sebelum adzan: ${if (preMin == 0) "nonaktif" else "$preMin menit"}")
         // Rentang dan bawaannya dari aturan bersama, sama dengan yang dijepit penjadwal & pekerja

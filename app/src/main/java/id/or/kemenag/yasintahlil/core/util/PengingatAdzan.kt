@@ -102,6 +102,22 @@ object PengingatAdzan {
      */
     const val VOL_DEFAULT = 0.8f
 
+    /** Batas volume suara adzan: senyap sampai penuh. Satu-satunya tempat rentang ini dieja. */
+    const val VOL_MIN = 0f
+    const val VOL_MAKS = 1f
+
+    /**
+     * Jepit volume tersimpan ke rentang yang sah, sama seperti [iqomahMenit] dan [preMenit].
+     *
+     * Rentangnya dahulu tidak dinyatakan di mana pun: ia hidup sebagai `coerceIn(0f, 1f)` yang
+     * ditulis **tiga kali** — di `AdzanPlayer.playOnce` dan dua kali di `AdzanPreview` — sementara
+     * slider layar Adzan bahkan tidak punya `valueRange`, sehingga batasnya hanya kebetulan cocok
+     * dengan bawaan Compose. Nilai tersimpan di luar rentang (mis. dari backup yang disunting)
+     * dihormati jalur baca apa adanya: layar menampilkan "500%" sementara pemutarnya membunyikan
+     * 100% — dua angka untuk satu pengaturan, tanpa satu pun galat yang menyebut sebabnya.
+     */
+    fun volume(nilai: Float): Float = nilai.coerceIn(VOL_MIN, VOL_MAKS)
+
     // ---- Pengingat "baca doa setelah adzan" -------------------------------------------------
     //
     // Saklar pengingat ini dapat diubah dari **dua** layar (Adzan dan Iqomah) yang menulis kunci
