@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
+import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
@@ -79,15 +80,15 @@ fun IqomahScreen() {
     val total = (mins * 60).coerceAtLeast(1)
     val running = remaining > 0
     val shown = if (remaining < 0) total else remaining
-    val mm = shown / 60
-    val ss = shown % 60
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.IQOMAH, style = MaterialTheme.typography.titleLarge)
         Text("Timer opsional setelah masuk waktu (± $mins mnt). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
             style = MaterialTheme.typography.labelMedium)
 
-        Text("%02d:%02d".format(mm, ss), style = MaterialTheme.typography.displayMedium)
+        // Durasi, bukan jam: ejaannya dari aturan bersama, tetapi namanya sengaja beda —
+        // lihat `FormatWaktu.menitDetik`.
+        Text(FormatWaktu.menitDetik(shown), style = MaterialTheme.typography.displayMedium)
         LinearProgressIndicator(
             progress = { if (total == 0) 0f else (1f - shown.toFloat() / total).coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),

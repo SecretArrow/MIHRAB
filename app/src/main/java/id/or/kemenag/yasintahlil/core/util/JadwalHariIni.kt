@@ -99,10 +99,13 @@ object JadwalHariIni {
      * Jam "HH:mm" yang sama, dimajukan/dimundurkan [menit] dengan **memutar melewati tengah
      * malam**: pengingat sebelum Subuh kerap jatuh pada hari sebelumnya, dan jam "-10 menit dari
      * 00:05" harus terbaca 23:55 — bukan angka negatif atau waktu yang tidak ada.
+     *
+     * Ejaan jamnya dari [FormatWaktu.jamMenit] — sama dengan yang dipakai `PrayerCalc` saat
+     * menghitungnya, supaya jam yang dihitung dan jam yang digeser tak dapat berbeda tulisan.
      */
     fun geser(hhmm: String, menit: Int): String {
         val total = ((PrayerCalc.toMinutes(hhmm) + menit) % 1440 + 1440) % 1440
-        return "%02d:%02d".format(total / 60, total % 60)
+        return FormatWaktu.jamMenit(total)
     }
 
     /**
