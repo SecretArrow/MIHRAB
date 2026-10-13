@@ -124,6 +124,20 @@ data class PanduanBersuci(
     val catatanMazhab: String = "",
     val catatanLafaz: String = "",
     /**
+     * Judul bagian dari bundel (`wudhu.json` → `wudhu.judul`) — heading yang berdiri di atas
+     * langkah-langkahnya.
+     *
+     * Layar Wudhu dahulu mengetik kedua judulnya sendiri (*"Tata cara wudhu"* dan *"Tata cara
+     * tayamum"*), padahal berkasnya mencantumkan keduanya. Salinan di layar bukan sekadar ringkas:
+     * judul tayamum di berkas berbunyi *"Tata cara tayamum (pengganti wudhu saat tidak ada air /
+     * sakit)"*, sehingga pengguna tidak pernah tahu bahwa bagian itu memang pengganti wudhu ketika
+     * air tidak ada — keterangan yang sumbernya sendiri tulis. Judul bagian karena itu dibaca dari
+     * berkasnya, seperti [edisi].
+     */
+    val judulWudhu: String = "",
+    /** Judul bagian tayamum (`wudhu.json` → `tayamum.judul`). Lihat [judulWudhu]. */
+    val judulTayamum: String = "",
+    /**
      * Provenans tingkat modul (`wudhu.json` → `edisi`) — kerangka mana yang diikuti.
      *
      * Layar Wudhu dahulu mencetak parafrasenya sendiri (*"Kerangka tata cara mengikuti program
