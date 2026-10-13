@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Uji instrumented berhenti menyalin nama layar — dan `e2e` kembali berarti**: ketika nama layar
+  disatukan ke `NamaLayar`, menu Ibadah berhenti menulis *"Yasin"* dan mulai memakai
+  `NamaLayar.YASIN` (*"Surat Yasin"*). `NavSmokeTest` tidak ikut berubah: ia masih menekan
+  `onNodeWithText("Yasin")`, pencocokan **tepat**, sehingga tak ada simpul yang cocok. Uji itu gagal
+  bukan karena aplikasinya salah, dan sejak commit itu **setiap penggabungan ke `main` meninggalkan
+  job `e2e` merah** — sinyalnya berhenti berarti, kegagalan sungguhan tak lagi dapat dibedakan dari
+  yang sudah biasa. Kini `NavSmokeTest` menavigasi lewat `NamaLayar.*` (tab, judul menu, dan tombol
+  Yasin), dan penjaga `NamaLayarDiUjiInstrumentedTest` memaku dua hal: argumen pencocok simpul
+  (`onNodeWithText`, `hasText`, …) di seluruh `src/androidTest` tidak boleh memuat nama layar
+  **maupun menjadi penggalan salah satunya** (`"Yasin"` adalah penggalan *"Surat Yasin"* — bentuk
+  kegagalan yang sesungguhnya), dan `NavSmokeTest` benar-benar memakai nama bersama. Yang diperiksa
+  hanya argumen pencocok, bukan setiap literal: pesan kegagalan seperti *"Surat Yasin tidak menyebut
+  sumber teks Arab"* memang menyebut nama layar — dan itu wajar, sebab ia menjelaskan.
 - **Label preferensi bacaan tinggal di satu tempat**: enam kendali — tiga sakelar (Arab, Latin,
   Terjemahan) dan tiga pengukur (Ukuran Arab, Ukuran Latin, Jarak antarbaris) — ada di **dua**
   berkas, sheet *Pengaturan bacaan* dan layar Pengaturan, dan masing-masing mengeja namanya sendiri.
