@@ -17,7 +17,8 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
 - `tools/` gate konten & gate cepat: `validate_content.py` (konten wajib bersumber resmi),
   `validate_bundle.py` (bundel pembaruan), `check_workflows.py` (workflow dapat dibaca),
-  `check_kotlin_lex.py` (higiene komentar Kotlin), `format_teks.py` (higiene teks: akhir baris LF,
+  `check_kotlin_lex.py` (higiene komentar Kotlin; `--uji-diri` memeriksa pemindai literalnya
+  sendiri), `format_teks.py` (higiene teks: akhir baris LF,
   spasi ekor, tepat satu baris baru di akhir; `--fix` merapikan di tempat). Semuanya Python murni
   dan dapat dijalankan lokal tanpa membangun proyek.
 

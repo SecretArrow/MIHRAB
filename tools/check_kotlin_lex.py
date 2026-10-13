@@ -14,10 +14,18 @@ Aturan yang diperiksa (sengaja sempit agar tidak ada positif palsu):
    komentar bersarang (Kotlin mengizinkannya), sehingga jumlah penutupnya jadi tak seimbang.
 3. Kedalaman komentar harus kembali nol di akhir berkas — komentar yang tidak tertutup.
 
+Agar tanda kutip di dalam literal tidak ikut dihitung, pemindaian melewati literal string dan
+karakter — termasuk string mentah, yang isinya boleh berakhir dengan kutip sehingga penutupnya
+adalah tiga kutipan **terakhir** dari rentetan kutipan di ujungnya, bukan tiga yang pertama.
+Salah membaca bentuk itu membuat apostrof di dalam kode sesudahnya membuka literal karakter
+palsu yang menelan `/*` berikutnya, dan gate melaporkan `*/` tanpa pembuka pada berkas yang
+sebenarnya bersih.
+
 Ini **bukan** pengganti kompilasi; ia hanya memeriksa hal yang bisa dipastikan secara leksikal
 tanpa membangun proyek, supaya galat sejenis tidak perlu menunggu satu siklus CI.
 
 Penggunaan: `python3 tools/check_kotlin_lex.py [folder_sumber]`
+            `python3 tools/check_kotlin_lex.py --uji-diri` (memeriksa pemindainya sendiri)
 """
 
 from __future__ import annotations
@@ -26,10 +34,9 @@ import sys
 from pathlib import Path
 
 
-def periksa(path: Path) -> list[str]:
-    """Kembalikan daftar galat higiene komentar untuk satu berkas Kotlin."""
+def periksa_teks(teks: str) -> list[str]:
+    """Kembalikan daftar galat higiene komentar untuk isi satu berkas Kotlin."""
     galat: list[str] = []
-    teks = path.read_text(encoding="utf-8")
 
     for no, baris in enumerate(teks.splitlines(), start=1):
         if baris.count("*/") > 1:
@@ -72,6 +79,14 @@ def periksa(path: Path) -> list[str]:
             continue
         if c == '"' and teks.startswith('"""', i):
             akhir = teks.find('"""', i + 3)
+            # Kutipan yang menempel di belakang penutup masih isi string mentah: pada
+            # `Regex("""…""""")` isinya berakhir dengan satu kutip, dan penutupnya adalah tiga
+            # kutipan **terakhir** dari rentetan itu. Tanpa aturan ini, sisa kutipan terbaca
+            # sebagai awal literal biasa, lalu apostrof di dalamnya (mis. `ta'awudz`) membuka
+            # literal karakter palsu yang menelan `/*` sesudahnya — dan `*/` di ujung komentar itu
+            # dilaporkan sebagai penutup tanpa pembuka, seolah berkasnya cacat.
+            while akhir >= 0 and akhir + 3 < n and teks[akhir + 3] == '"':
+                akhir += 1
             i = n if akhir < 0 else akhir + 3
             continue
         if c == '"':
@@ -98,7 +113,67 @@ def periksa(path: Path) -> list[str]:
     return galat
 
 
+def periksa(path: Path) -> list[str]:
+    """Kembalikan daftar galat higiene komentar untuk satu berkas Kotlin."""
+    return periksa_teks(path.read_text(encoding="utf-8"))
+
+
+# Potongan Kotlin yang harus dibaca benar (atau salah) oleh pemindai di atas. Berkas nyata tak
+# dapat memuat keduanya sekaligus — yang satu harus bersih dan yang lain harus gagal — jadi
+# kasusnya ditulis di sini dan diperiksa `--uji-diri`.
+UJI_DIRI: list[tuple[str, str, bool]] = [
+    (
+        "string mentah berakhir dengan kutip, diikuti apostrof di dalam kode",
+        'val r = Regex("""[^"]+"""").findAll(it).map { m -> m.value.trim(\'"\') }\n'
+        "/**\n"
+        " * Ghaib membaca ta'awudz sebelum Al-Fatihah.\n"
+        " */\n"
+        "fun f() {}\n",
+        False,
+    ),
+    (
+        "string mentah biasa",
+        'val r = Regex("""a"b""")\nfun f() {}\n',
+        False,
+    ),
+    (
+        "apostrof di dalam komentar bukan awal literal karakter",
+        "/**\n * Mazhab Syafi'i dan nama Ka'bah.\n */\nfun f() {}\n",
+        False,
+    ),
+    (
+        "penutup komentar di dalam teks komentar",
+        "/**\n * Pola MIME `` `*/*` `` ditulis apa adanya.\n */\nfun f() {}\n",
+        True,
+    ),
+    (
+        "komentar blok tidak ditutup",
+        "/* belum ditutup\nfun f() {}\n",
+        True,
+    ),
+]
+
+
+def uji_diri() -> int:
+    """Periksa pemindai terhadap kasus di [UJI_DIRI]; kembalikan 0 bila semuanya sesuai dugaan."""
+    gagal = 0
+    for nama, teks, harus_gagal in UJI_DIRI:
+        galat = periksa_teks(teks)
+        if bool(galat) != harus_gagal:
+            gagal += 1
+            harap = "galat" if harus_gagal else "bersih"
+            print(f"[GAGAL] uji-diri: {nama} — seharusnya {harap}, hasilnya {galat!r}")
+    if gagal:
+        print(f"[check_kotlin_lex] uji-diri: {len(UJI_DIRI)} kasus, {gagal} tidak sesuai")
+        return 1
+    print(f"[check_kotlin_lex] uji-diri: {len(UJI_DIRI)} kasus, semuanya sesuai")
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--uji-diri":
+        return uji_diri()
+
     akar = Path(sys.argv[1] if len(sys.argv) > 1 else "app/src")
     if not akar.is_dir():
         print(f"[check_kotlin_lex] folder tidak ditemukan: {akar}")

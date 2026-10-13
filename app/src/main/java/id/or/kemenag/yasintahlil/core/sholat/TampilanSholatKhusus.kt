@@ -41,8 +41,41 @@ package id.or.kemenag.yasintahlil.core.sholat
  */
 object TampilanSholatKhusus {
 
-    /** Judul layar: nama entri diikuti jumlah takbirnya. */
-    fun judul(nama: String, takbir: Int): String = "$nama — $takbir takbir, tanpa ruku/sujud"
+    /**
+     * Judul layar: nama entri diikuti jumlah takbirnya, dan — hanya bila bundelnya menyatakannya —
+     * keterangan bahwa sholat itu tanpa ruku/sujud.
+     *
+     * Keterangan itu dahulu **diketik** di sini sebagai bagian tetap judul, padahal
+     * `sholat_ghaib.json` dan `sholat_jenazah.json` sama-sama memuat `tanpa_ruku_sujud: true` yang
+     * tak pernah dibaca kode. Dua salinan satu fakta: mengubah benderanya di bundel tidak
+     * mengubah apa pun di layar, dan menambah modul sholat khusus yang **dengan** ruku/sujud akan
+     * tetap dijuduli "tanpa ruku/sujud" tanpa satu pun pesan galat. Kini frasanya mengikuti
+     * [tanpaRukuSujud] dari berkas kontennya.
+     */
+    fun judul(nama: String, takbir: Int, tanpaRukuSujud: Boolean): String =
+        "$nama — $takbir takbir" + if (tanpaRukuSujud) ", tanpa ruku/sujud" else ""
+
+    /**
+     * Label hukum dari kode pada berkas konten (`hukum`), mis. `fardhu_kifayah` → *"Fardhu
+     * kifayah"*.
+     *
+     * Bundel mencatat hukum sholat ghaib dan jenazah sebagai kode (`fardhu_kifayah`), dan kode itu
+     * **tidak pernah sampai ke layar**: layar Ghaib mengetik sendiri *"— fardhu kifayah"* di judul
+     * langkah pertamanya. Satu fakta di dua tempat lagi — mengganti hukum di bundel tak mengubah
+     * layarnya, dan modul baru dengan hukum lain akan tetap disebut "fardhu kifayah".
+     *
+     * Kode yang tak ada di peta ditampilkan **apa adanya**, bukan disembunyikan: lebih baik pengguna
+     * melihat `fardhu_ain` daripada tidak melihat apa pun. Peta ini sengaja hanya memuat kode yang
+     * benar-benar dipakai bundel; penjaganya menuntut setiap kode `hukum` baru punya labelnya di
+     * sini, jadi menambah `fardhu_ain` ke berkas konten akan menggagalkan CI, bukan diam-diam
+     * menampilkan kode mentahnya.
+     */
+    val LABEL_HUKUM: Map<String, String> = mapOf(
+        "fardhu_kifayah" to "Fardhu kifayah",
+    )
+
+    /** Baris hukum. */
+    fun hukum(kode: String): String = "Hukum: " + (LABEL_HUKUM[kode] ?: kode)
 
     /**
      * Judul langkah takbir yang **sama persis** di kedua layar mayit.

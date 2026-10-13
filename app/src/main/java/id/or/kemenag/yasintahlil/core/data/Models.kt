@@ -171,10 +171,28 @@ data class SholatKhusus(
     val judul: String = "",
     val hukum: String = "",
     val takbir: Int = 4,
+    /**
+     * `tanpa_ruku_sujud` — sholat ini dikerjakan berdiri dengan takbir saja, tanpa ruku dan sujud.
+     *
+     * Dibaca dari berkasnya supaya judul layar tidak lagi **mengetik** keterangan itu sendiri:
+     * dahulu `TampilanSholatKhusus.judul` selalu menambahkan ", tanpa ruku/sujud" apa pun isi
+     * bundelnya, sehingga modul sholat khusus yang dengan ruku/sujud akan tetap dijuduli begitu.
+     */
+    val tanpaRukuSujud: Boolean = false,
     val dalil: String = "",
     val catatanMazhab: String = "",
     val syarat: List<String> = emptyList(),
     val niat: List<Bacaan> = emptyList(),
+    /**
+     * Urutan langkah menurut berkas konten (`langkah`), mis. `["niat", "takbir1_fatihah", …]`.
+     *
+     * Bukan teks untuk ditampilkan: urutan langkah yang benar-benar dibaca pengguna datang dari
+     * [id.or.kemenag.yasintahlil.core.sholat.BacaanSholat.TAKBIR_MAYIT], yang memakai kosakata id
+     * bacaan — sedangkan daftar ini memakai nama langkah tingkat konten. Kegunaannya adalah
+     * menyatakan urutan itu **di bundel** sehingga penjaganya dapat membandingkan keduanya: satu
+     * takbir yang hilang dari salah satunya akan terbaca sebagai perbedaan panjang, bukan sebagai
+     * langkah yang diam-diam tak pernah tampil.
+     */
     val langkah: List<String> = emptyList(),
 )
 

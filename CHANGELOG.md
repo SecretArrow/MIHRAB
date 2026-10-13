@@ -380,6 +380,31 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Label dan rujukan layar sholat mayit kini dibaca dari bundel, bukan diketik di layar**: tiga
+  fakta yang berkasnya sudah mencatat dipaksakan ulang sebagai literal di kode, masing-masing
+  dengan salinan yang menyimpang. **Pertama**, `sholat_ghaib.json` dan `sholat_jenazah.json`
+  memuat `tanpa_ruku_sujud: true` yang tak pernah dibaca — judul layar selalu menambahkan
+  ", tanpa ruku/sujud" apa pun isi berkasnya, sehingga modul sholat khusus yang **dengan**
+  ruku/sujud akan tetap dijuduli begitu. **Kedua**, `hukum` (`fardhu_kifayah`) juga tak pernah
+  dibaca: layar Ghaib mengetik sendiri *"— fardhu kifayah"* di judul langkah pertamanya, padahal
+  kartu bacaan takbir 1 sudah menampilkan `sumber` bundelnya yang lengkap. Ketiganya kini satu
+  tempat: `TampilanSholatKhusus.judul(nama, takbir, tanpaRukuSujud)` mengikuti bendera berkasnya,
+  `TampilanSholatKhusus.hukum(kode)` memetakan kode bundel ke labelnya, dan judul takbir 1 tak lagi
+  mengutip hadisnya sendiri — kartu di bawahnya sudah menampilkan kutipan yang bersumber lengkap
+  (*"HR Bukhari 756, Muslim 394 (la sholata liman lam yaqra bi fatihatil kitab) — sunnah.com"*),
+  sehingga layar tak lagi memuat **dua** kutipan berbeda untuk bacaan yang sama. Dijaga
+  `TampilanSholatKhususSatuTempatTest`, yang juga memaku bahwa `langkah` di bundel sepanjang
+  urutan takbir bersama.
+- **Gate higiene komentar Kotlin berhenti menuduh berkas yang sebenarnya bersih**:
+  `check_kotlin_lex.py` melewati literal string mentah dengan berhenti pada tiga kutipan
+  **pertama** yang ditemukannya. Bentuk yang dipakai delapan berkas uji —
+  `Regex("""[^"]+"""").…trim('"')` — berakhir dengan kutip, jadi penutupnya adalah tiga kutipan
+  **terakhir** dari rentetan di ujungnya; sisa kutipan itu terbaca sebagai awal literal biasa,
+  apostrof di dalam kode sesudahnya (mis. `ta'awudz` di dalam sebuah KDoc) membuka literal
+  karakter palsu yang menelan `/*` berikutnya, dan gate melaporkan `*/` tanpa pembuka pada berkas
+  yang tidak cacat. Pemindainya kini mengikuti aturan Kotlin, dan `--uji-diri` — dijalankan CI
+  bersama pemindaian biasa — memeriksanya terhadap lima kasus: tiga yang harus lolos (termasuk
+  bentuk di atas) dan dua berkas cacat yang harus tetap tertangkap.
 - **Provenans modul yang tertulis di bundel kini benar-benar tampil — dan layar tak lagi menyatakan
   lebih daripada sumbernya**: `SOURCES.md` §6 mencatat `edisi` dan `catatan_mazhab` sebagai
   satu-satunya metadata provenans yang **tidak** diperiksa gerbang konten, sehingga kelengkapannya
