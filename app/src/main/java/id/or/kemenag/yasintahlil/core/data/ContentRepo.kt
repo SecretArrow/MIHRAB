@@ -473,6 +473,9 @@ class ContentRepo(private val ctx: Context) {
             // dahulu `TampilanSholatKhusus.judul` selalu menambahkannya, apa pun isi bundelnya.
             tanpaRukuSujud = d.optBoolean("tanpa_ruku_sujud", false),
             dalil = d.optString("dalil"),
+            // Dibaca supaya layar Ghaib tidak lagi mengetik kalimat rujukannya sendiri: salinan di
+            // kode menyebut NU Online padahal `sumber_tambahan` berkasnya tak mencantumkannya.
+            catatanRujukan = d.optString("catatan_rujukan"),
             catatanMazhab = d.optString("catatan_mazhab"),
             syarat = stringList("syarat"),
             niat = niat,

@@ -46,8 +46,9 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
   - Karena itu keduanya **wajib dibaca dan ditampilkan** oleh layar yang bersangkutan, bukan
     diringkas ulang di kode: `sholat_daftar.json#catatan_mazhab` oleh layar rincian langkah sholat,
     `wudhu.json#edisi` oleh layar Wudhu, `tahlil.json#edisi` oleh layar Tahlil (sebagai sumber
-    cadangan tiap susunan), `adzan.json#iqomah#catatan_mazhab` oleh layar Iqomah. Penjaganya
-    `AtribusiModulTest`, `AtribusiSusunanTahlilTest`, dan `AtribusiLafazAdzanTest`; dahulu
+    cadangan tiap susunan), `adzan.json#iqomah#catatan_mazhab` oleh layar Iqomah, dan
+    `sholat_ghaib.json#catatan_rujukan` oleh layar Ghaib. Penjaganya `AtribusiModulTest`,
+    `AtribusiSusunanTahlilTest`, `AtribusiLafazAdzanTest`, dan `AtribusiRujukanGhaibTest`; dahulu
     `catatan_mazhab` dan `edisi` tak pernah terbaca sehingga layar menampilkan parafrase yang
     menyimpang — termasuk menyatakan *qunut Subuh sunnah* padahal berkasnya mencatatnya sebagai
     ketentuan yang diperselisihkan.
@@ -57,5 +58,10 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
     dalam satu berkas**: catatan yang hanya berlaku untuk satu bagian tinggal di bagian itu
     (`adzan.json#adzan#catatan_subuh`, `adzan.json#iqomah#catatan_mazhab`), bukan dinaikkan ke
     tingkat modul.
+  - Domain yang disebut sebuah kalimat di layar harus tercatat di bundel: daftar sumber pada layar
+    Tentang dibangun dari **seluruh nilai bersumber** pada berkas konten dan menjanjikan memuat
+    setiap domain yang dirujuk, jadi rujukan yang hanya hidup sebagai teks di kode akan hilang dari
+    daftar itu. Karena `sholat_ghaib.json#catatan_rujukan` menyebut NU Online, `sumber_tambahan`
+    berkasnya mencantumkan `nu.or.id`; penjaganya `AtribusiRujukanGhaibTest`.
 - CI gagal jika `sumber_url` kosong atau domain di luar: `*.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id` (penjelas saja).
 - Dilarang generate teks Arab dengan AI. Dilarang karang hadis/sanad.

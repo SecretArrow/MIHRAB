@@ -194,6 +194,18 @@ data class SholatKhusus(
      */
     val tanpaRukuSujud: Boolean = false,
     val dalil: String = "",
+    /**
+     * `catatan_rujukan` — keterangan rujukan tambahan yang **khas modul ini**, ditampilkan
+     * menyambung baris dalil. Kosong berarti tidak ada yang diklaim.
+     *
+     * Dahulu kalimat ini **diketik** di layar Ghaib (`CATATAN_DALIL`), padahal ia menyebut rujukan
+     * yang seharusnya tercatat di bundel: layarnya menyatakan *"syarat & kritik sanad: NU Online"*
+     * sementara `sholat_ghaib.json#sumber_tambahan` tak memuat `nu.or.id` — sehingga daftar sumber
+     * di layar Tentang, yang menjanjikan memuat *setiap* domain yang dirujuk, tidak menyebut NU
+     * Online sama sekali. Satu fakta di dua tempat dengan isi yang berbeda. Kini kalimatnya tinggal
+     * di bundel dan `sumber_tambahan` mencantumkan ketiga domainnya.
+     */
+    val catatanRujukan: String = "",
     val catatanMazhab: String = "",
     val syarat: List<String> = emptyList(),
     val niat: List<Bacaan> = emptyList(),
