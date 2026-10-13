@@ -63,7 +63,7 @@ class FormatWaktuSatuTempatTest {
     /** Jam:menit adalah kebalikan `toMinutes` untuk **seluruh** hari, termasuk dua digit nol di depan. */
     @Test
     fun jamMenitKebalikanToMinutes() {
-        (0 until 1440).forEach { m ->
+        (0 until PrayerCalc.MENIT_SEHARI).forEach { m ->
             val jam = FormatWaktu.jamMenit(m)
             assertEquals("jamMenit($m) tidak dapat dibaca kembali", m, PrayerCalc.toMinutes(jam))
             assertEquals("jamMenit($m) tidak dua digit di kedua sisi", 5, jam.length)
@@ -76,8 +76,10 @@ class FormatWaktuSatuTempatTest {
     /** `geser` dan `jamMenit` harus sepakat — keduanya menyebut jam yang sama dengan ejaan yang sama. */
     @Test
     fun geserSepakatDenganJamMenit() {
-        listOf("00:05" to -10, "23:55" to 10, "04:35" to 0, "12:00" to -1440, "00:00" to 1440).forEach { (jam, d) ->
-            val total = ((PrayerCalc.toMinutes(jam) + d) % 1440 + 1440) % 1440
+        listOf("00:05" to -10, "23:55" to 10, "04:35" to 0,
+            "12:00" to -PrayerCalc.MENIT_SEHARI, "00:00" to PrayerCalc.MENIT_SEHARI).forEach { (jam, d) ->
+            // Lipatannya dari `PrayerCalc.putaranMenit`, bukan disalin ke sini.
+            val total = PrayerCalc.putaranMenit(PrayerCalc.toMinutes(jam) + d)
             assertEquals("geser(\"$jam\", $d) tidak sejalan dengan FormatWaktu.jamMenit",
                 FormatWaktu.jamMenit(total), JadwalHariIni.geser(jam, d))
         }
@@ -112,7 +114,7 @@ class FormatWaktuSatuTempatTest {
      */
     @Test
     fun jamMenitHanyaMengejaTidakMelipat() {
-        assertEquals("24:00", FormatWaktu.jamMenit(1440))
-        assertEquals("25:07", FormatWaktu.jamMenit(1507))
+        assertEquals("24:00", FormatWaktu.jamMenit(PrayerCalc.MENIT_SEHARI))
+        assertEquals("25:07", FormatWaktu.jamMenit(PrayerCalc.MENIT_SEHARI + 67))
     }
 }

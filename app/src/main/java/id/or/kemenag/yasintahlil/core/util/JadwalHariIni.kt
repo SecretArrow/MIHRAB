@@ -101,11 +101,28 @@ object JadwalHariIni {
      * 00:05" harus terbaca 23:55 — bukan angka negatif atau waktu yang tidak ada.
      *
      * Ejaan jamnya dari [FormatWaktu.jamMenit] — sama dengan yang dipakai `PrayerCalc` saat
-     * menghitungnya, supaya jam yang dihitung dan jam yang digeser tak dapat berbeda tulisan.
+     * menghitungnya — dan putarannya dari [PrayerCalc.putaranMenit], supaya jam yang dihitung dan
+     * jam yang digeser tak dapat berbeda tulisan maupun berbeda lipatan.
      */
-    fun geser(hhmm: String, menit: Int): String {
-        val total = ((PrayerCalc.toMinutes(hhmm) + menit) % 1440 + 1440) % 1440
-        return FormatWaktu.jamMenit(total)
+    fun geser(hhmm: String, menit: Int): String =
+        FormatWaktu.jamMenit(PrayerCalc.putaranMenit(PrayerCalc.toMinutes(hhmm) + menit))
+
+    /**
+     * Menit yang tersisa menuju jam [hhmm] dari menit ke-[nowMin], **selalu `1..MENIT_SEHARI`**.
+     *
+     * Jam yang sudah lewat — dan jam yang **tepat** sekarang — dijawab dengan kemunculannya besok,
+     * bukan dengan nol. Ini bukan kerapian: `PrayerScheduler` menjadwalkan ulang pengingat dari
+     * dalam pekerja itu sendiri sesudah berbunyi, sehingga jeda nol berarti pekerja yang baru saja
+     * berbunyi langsung mengantre dirinya sendiri pada menit yang sama — pengingat yang berbunyi
+     * berulang tanpa henti. Karena itu "tepat sekarang" harus dibulatkan **ke depan**.
+     *
+     * Aturan yang sama dipakai [berikutnya] (waktu berikutnya pada hari itu) dan `PrayerScheduler`
+     * (jeda pekerja pengingat); sebelumnya keduanya menuliskan `if (d <= 0) d += 1440` sendiri-sendiri
+     * dengan `1440` telanjang.
+     */
+    fun sisaMenit(hhmm: String, nowMin: Int): Int {
+        val d = PrayerCalc.toMinutes(hhmm) - nowMin
+        return if (d > 0) d else d + PrayerCalc.MENIT_SEHARI
     }
 
     /**
@@ -122,16 +139,18 @@ object JadwalHariIni {
      * menit. Terbit ikut karena yang dihitung adalah waktu berikutnya, bukan hanya waktu beradzan.
      *
      * Setelah Isya tak ada lagi waktu pada hari itu, jadi jawabannya Subuh **besok** — dengan putaran
-     * melewati tengah malam yang sama seperti [geser].
+     * melewati tengah malam yang sama seperti [geser], lewat [sisaMenit].
      */
     fun berikutnya(nowMin: Int, t: PrayerTimes): Berikutnya {
         val berurut = ENAM_WAKTU.zip(semua(t))
         for ((nama, hhmm) in berurut) {
+            // Hanya yang **belum lewat** yang dijawab di sini; tepat-sekarang pun sudah lewat,
+            // sehingga pembulatannya ke depan diserahkan kepada [sisaMenit].
             val sisa = PrayerCalc.toMinutes(hhmm) - nowMin
             if (sisa > 0) return Berikutnya(nama, hhmm, sisa)
         }
         val (nama, hhmm) = berurut.first()
-        return Berikutnya(nama, hhmm, PrayerCalc.toMinutes(hhmm) + 1440 - nowMin)
+        return Berikutnya(nama, hhmm, sisaMenit(hhmm, nowMin))
     }
 
     /** Satu waktu berikutnya: [nama], [jam] tampilannya, dan [sisaMenit] menuju waktunya. */

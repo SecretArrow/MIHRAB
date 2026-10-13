@@ -100,19 +100,27 @@ object PrayerScheduler {
 
     private fun enqueueNext(ctx: Context, cfg: Cfg, nama: String) {
         val now = Calendar.getInstance(cfg.params.tz)
-        val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+        val nowMin = PrayerCalc.menitHari(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
         val times = PrayerCalc.compute(now, cfg.params)
         // Pasangan nama→jam diturunkan dari daftar nama yang sama dengan yang mengindeks
         // `cfg.on`: menulisnya manual di sini berarti salinan kedua yang dapat berbeda urutan.
         val map = NAMES.zip(JadwalHariIni.adzan(times)).toMap()
-        val target = PrayerCalc.toMinutes(map.getValue(nama))
-        var delta = target - nowMin
-        if (delta <= 0) delta += 1440
+        val jam = map.getValue(nama)
+        // Jeda ke kemunculan berikutnya — aturannya dari [JadwalHariIni.sisaMenit], bukan
+        // `if (d <= 0) d += 1440` yang dulu ditulis di sini dengan `1440` telanjang: aturan yang
+        // sama menentukan jam yang ditampilkan layar, dan salinan yang menyimpang membuat pengingat
+        // berbunyi pada menit yang tidak sama dengan yang terlihat pengguna.
+        val delta = JadwalHariIni.sisaMenit(jam, nowMin)
         enqueue(ctx, "sholat_$nama", nama, delta.toLong(), JENIS_ADZAN)
         if (cfg.preMin > 0) {
-            var d = delta - cfg.preMin
-            if (d <= 0) d += 1440
-            enqueue(ctx, "pre_$nama", nama, d.toLong(), JENIS_PRA)
+            // Jam pra-adzan diambil dari aturan geser yang sama dengan yang **ditampilkan** layar
+            // Jadwal dan menu Adzan, lalu jedanya dihitung dari jam itu. Dahulu jedanya dihitung
+            // sendiri (`delta - preMin`, lalu `+= 1440` bila tak positif) — dua perhitungan untuk
+            // satu hal yang sama, dan salinan yang menyimpang membuat pengingat berbunyi pada menit
+            // yang berbeda daripada jam yang ditampilkan.
+            val pra = JadwalHariIni.geser(jam, -cfg.preMin)
+            enqueue(ctx, "pre_$nama", nama,
+                JadwalHariIni.sisaMenit(pra, nowMin).toLong(), JENIS_PRA)
         }
         // Pekerjaan yang berbunyi SESUDAH waktu masuk memakai kunci bertanggal.
         //
