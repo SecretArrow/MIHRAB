@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
+import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
@@ -170,8 +171,12 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
                 // Nama dan jamnya datang bersama dari aturan bersama — sama dengan hitung mundur di
                 // beranda, sehingga kedua layar tak dapat menunjuk waktu yang berlainan.
                 val berikut = JadwalHariIni.berikutnya(s.nowMin, t)
-                Text("Berikutnya: ${berikut.nama} dalam ${berikut.sisaMenit / 60} jam " +
-                    "${berikut.sisaMenit % 60} mnt",
+                // Jedanya dieja aturan bersama `FormatWaktu` — sama dengan hitung mundur beranda.
+                // Sebelumnya kedua layar menuliskan pembagiannya sendiri dan hasilnya berbeda
+                // (`2j 15m lagi` vs `dalam 2 jam 15 mnt`), keduanya selalu menyebut jamnya
+                // sehingga jeda sepuluh menit terbaca `0 jam 10 mnt`.
+                Text("Berikutnya: ${berikut.nama} dalam " +
+                    FormatWaktu.durasiJamMenit(berikut.sisaMenit),
                     color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
             }
 

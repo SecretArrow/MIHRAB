@@ -17,9 +17,11 @@ import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.PesanLokasi
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -75,7 +77,7 @@ class JadwalViewModel @Inject constructor(
     /** Pekerjaan yang mengikuti pembaruan lokasi live; dibatalkan saat lokasi manual dipilih. */
     private var locationJob: Job? = null
 
-    init { muatUlang() }
+    init { muatUlang(); detak() }
 
     /**
      * Baca preferensi lalu hitung ulang jadwal. Kegagalan membaca penyimpanan tidak dibiarkan
@@ -116,16 +118,53 @@ class JadwalViewModel @Inject constructor(
     private fun currentTz(): TimeZone = JadwalHariIni.zona(_state.value.tzId)
 
     fun recompute() {
-        val s = _state.value
         val now = Calendar.getInstance(currentTz())
-        val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+        // Menit dinding dari aturan bersama `PrayerCalc.menitHari`, bukan `h * 60 + m` yang
+        // diketik di sini — angka yang sama dengan yang dipakai penjadwal pengingat.
+        val nowMin = PrayerCalc.menitHari(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
         // Aturan hisab disusun lewat `JadwalHariIni` — sama persis dengan penjadwal pengingat,
         // sehingga jam yang terlihat di layar ini adalah jam yang benar-benar dijadwalkan.
-        val times = PrayerCalc.compute(now, JadwalHariIni.params(
-            lat = s.lat, lon = s.lon, method = s.method,
-            asarHanafi = s.asarHanafi, corr = s.corr, tz = currentTz(),
-        ))
-        _state.value = s.copy(times = times, nowMin = nowMin)
+        // Ditulis lewat `update`, bukan baca-lalu-tulis: detak jam di bawah memanggil fungsi ini
+        // dari koroutine lain, dan nilai yang sempat terbaca sebelum pengguna memilih kota lain
+        // dapat menimpa pilihan itu.
+        _state.update { s ->
+            s.copy(
+                times = PrayerCalc.compute(now, JadwalHariIni.params(
+                    lat = s.lat, lon = s.lon, method = s.method,
+                    asarHanafi = s.asarHanafi, corr = s.corr, tz = currentTz(),
+                )),
+                nowMin = nowMin,
+            )
+        }
+    }
+
+    /**
+     * Detak jam layar ini: [JadwalUiState.nowMin] disegarkan tiap detik supaya baris
+     * *"Berikutnya: … dalam …"* tetap hidup, sama seperti hitung mundur di beranda.
+     *
+     * Sebelumnya `nowMin` hanya diisi saat layar dimuat, sehingga pengguna yang membiarkan layar
+     * ini terbuka membaca jeda yang membeku pada menit ia membukanya — sementara beranda, dengan
+     * aturan yang sama, terus menghitung. Jadwal hisabnya sendiri (`times`) tidak dihitung ulang
+     * tiap detik: hari yang sama menghasilkan jam yang sama, dan menghitungnya ulang tiap detik
+     * hanya membuang baterai. Saat tanggal berganti, keduanya dihitung ulang.
+     */
+    private fun detak() {
+        viewModelScope.launch {
+            var hari = -1
+            while (true) {
+                val now = Calendar.getInstance(currentTz())
+                val hariIni = now.get(Calendar.DAY_OF_YEAR)
+                if (hariIni != hari) {
+                    hari = hariIni
+                    recompute()
+                } else {
+                    val nowMin = PrayerCalc.menitHari(
+                        now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
+                    _state.update { it.copy(nowMin = nowMin) }
+                }
+                delay(1_000)
+            }
+        }
     }
 
     /** Apakah izin lokasi sudah diberikan (untuk menampilkan tombol GPS). */

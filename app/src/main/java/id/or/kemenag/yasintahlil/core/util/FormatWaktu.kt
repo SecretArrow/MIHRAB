@@ -37,4 +37,25 @@ object FormatWaktu {
      * pukul satu lewat tiga puluh menit. Angka yang sama, arti yang lain.
      */
     fun menitDetik(totalDetik: Int): String = pasanganAngka(totalDetik / 60, totalDetik % 60)
+
+    /**
+     * Durasi jam–menit dalam **kata**: `2 jam 15 mnt`, `45 mnt`, `2 jam`.
+     *
+     * Dipakai hitung mundur "Berikutnya: …" — durasi yang dibaca dalam kalimat, bukan angka
+     * bersanding. Sebelumnya dua layar mengejanya sendiri-sendiri dan hasilnya berbeda: beranda
+     * menulis `2j 15m lagi`, layar Jadwal `dalam 2 jam 15 mnt` — dua tulisan untuk satu jeda yang
+     * sama. Keduanya juga selalu menyebut jamnya, sehingga jeda sepuluh menit terbaca
+     * `0 jam 10 mnt`. Satuannya kini dipilih menurut nilainya: jamnya hilang bila nol, dan
+     * menitnya hilang bila pas — seperti orang mengucapkannya.
+     */
+    fun durasiJamMenit(totalMenit: Int): String {
+        if (totalMenit < 1) return "kurang dari 1 mnt"
+        val jam = totalMenit / 60
+        val sisa = totalMenit % 60
+        return when {
+            jam == 0 -> "$sisa mnt"
+            sisa == 0 -> "$jam jam"
+            else -> "$jam jam $sisa mnt"
+        }
+    }
 }

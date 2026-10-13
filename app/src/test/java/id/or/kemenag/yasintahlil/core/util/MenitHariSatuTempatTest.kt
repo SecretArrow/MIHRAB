@@ -71,6 +71,28 @@ class MenitHariSatuTempatTest {
             sumber("core/util/JadwalHariIni.kt").contains("sisaMenit(hhmm, nowMin)"))
     }
 
+    /**
+     * Layar pun membaca menit dinding lewat aturan yang sama. Dua layar yang menampilkan hitung
+     * mundur "Berikutnya: …" dahulu mengeja `h * 60 + m` sendiri — aritmetika yang sama dengan
+     * [PrayerCalc.menitHari], tetapi salinan yang dapat berbeda tanpa satu pun pesan galat, sebab
+     * jam yang dipakai menghitung mundur tak lagi dijamin sama dengan jam yang dijadwalkan.
+     */
+    @Test
+    fun layarMemakaiMenitHariBersama() {
+        listOf(
+            "feature/home/HomeScreen.kt",
+            "feature/jadwal/JadwalViewModel.kt",
+        ).forEach { rel ->
+            assertTrue("$rel tidak memakai PrayerCalc.menitHari untuk menit dinding",
+                sumber(rel).contains("PrayerCalc.menitHari("))
+        }
+        val pengeja = berkasMain()
+            .filter { Regex("""HOUR_OF_DAY\)\s*\*\s*60""").containsMatchIn(kode(it)) }
+            .map { it.name }.sorted()
+        assertEquals("menit dinding dieja sendiri (h * 60 + m) di luar PrayerCalc.menitHari",
+            emptyList<String>(), pengeja)
+    }
+
     // ---- Lipatannya satu ------------------------------------------------------------------------
 
     /** Lipatan selalu mendarat di `0..1439`, termasuk untuk nilai negatif dan lebih dari sehari. */
