@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -47,7 +48,10 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
             asarHanafi = s.asarHanafi, corr = s.corr, tz = tz,
         ))
     }
-    val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+    // Menit dinding lewat aturan bersama `PrayerCalc.menitHari` — bukan `h * 60 + m` yang
+    // diketik di sini. Aritmetika yang sama sudah dipakai penjadwal pengingat; mengejanya kembali
+    // membuat jam yang dihitung layar dan jam yang dijadwalkan dapat berbeda tanpa pesan galat.
+    val nowMin = PrayerCalc.menitHari(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE))
     // Nama berikutnya dan jamnya datang sebagai satu nilai dari aturan bersama (`JadwalHariIni`),
     // sehingga hitung mundur ini tidak dapat menunjuk waktu yang berlainan daripada baris jam di
     // bawahnya. Dahulu `PrayerCalc.next` menuliskan pasangan nama→jamnya sendiri dan jamnya dicari
@@ -70,7 +74,7 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
         Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             Column(Modifier.padding(12.dp)) {
                 Text("${s.city} — Berikutnya: ${berikut.nama} ${berikut.jam} " +
-                    "(${berikut.sisaMenit / 60}j ${berikut.sisaMenit % 60}m lagi)",
+                    "(${FormatWaktu.durasiJamMenit(berikut.sisaMenit)} lagi)",
                     style = MaterialTheme.typography.titleMedium)
                 // Baris jam memakai daftar nama & jam yang sama dengan hitung mundur di atas dan
                 // dengan penjadwal pengingat (`LIMA_WAKTU`/`adzan`), bukan pasangan nama→field yang

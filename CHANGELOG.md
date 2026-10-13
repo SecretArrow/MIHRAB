@@ -380,6 +380,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Hitung mundur *"Berikutnya: …"* tinggal di satu tempat**: jeda ke waktu sholat berikutnya
+  dahulu **dieja tiap layar sendiri-sendiri** meski waktu berikutnya sudah lama datang dari satu
+  tempat (`JadwalHariIni.berikutnya`). Beranda menulis `$sisaMenit / 60` lalu `j` dan
+  `$sisaMenit % 60` lalu `m lagi` (`2j 15m lagi`); layar Jadwal menulis pembagian yang sama dengan
+  satuan `jam` dan `mnt` (`dalam 2 jam 15 mnt`) — dua pembagian yang sama, dua tulisan yang berbeda
+  untuk satu jeda. Keduanya juga **selalu menyebut jamnya**, sehingga jeda sepuluh menit terbaca
+  *"0 jam 10 mnt"*: jam yang tidak ada, disebut. Ejaannya kini satu, `FormatWaktu.durasiJamMenit`,
+  yang memilih satuannya menurut nilainya — jamnya hilang bila nol, menitnya hilang bila pas,
+  `kurang dari 1 mnt` bila jedanya nol — seperti orang mengucapkannya. Aritmetika menit dindingnya
+  juga kembali ke aturan bersama: `HomeScreen` dan `JadwalViewModel.recompute` menulis
+  `h * 60 + m` sendiri, padahal penjadwal pengingat sudah memakai `PrayerCalc.menitHari`; salinan
+  itu dapat menyimpang tanpa satu pun pesan galat, dan yang dipertaruhkan bukan kerapian — jam yang
+  dihitung layar harus sama dengan jam yang dijadwalkan. Yang paling sunyi: `JadwalViewModel` mengisi
+  `nowMin` **hanya saat layar dimuat** (`recompute`), sehingga baris *"Berikutnya: …"* membeku pada
+  menit pengguna membuka layar sementara hitung mundur beranda berdetak tiap detik — dua perilaku
+  untuk satu baris yang sama. Kini `JadwalViewModel` punya detak jam sendiri (`detak()`) yang
+  menyegarkan `nowMin` tiap detik lewat `delay(1_000)` dan menghitung ulang jadwalnya saat tanggal
+  berganti, dan `recompute` menulis lewat `update` agar detak itu tidak menimpa pilihan kota yang
+  dibaca sebelum pengguna memilihnya. Dijaga `HitungMundurBerikutnyaSatuTempatTest` (ejaan, pemakaian
+  oleh kedua layar, dan detak jamnya) dan `MenitHariSatuTempatTest.layarMemakaiMenitHariBersama`
+  (tak ada `h * 60 + m` yang dieja sendiri di luar `PrayerCalc.menitHari`).
 - **"Tampil Latin" dan "Tampil terjemahan" berlaku di setiap layar bacaan**: ketiga kunci
   `SHOW_ARAB`/`SHOW_LATIN`/`SHOW_TRANS` menjawab satu pertanyaan yang sama — bagian mana dari
   bacaan yang ditampilkan — tetapi hanya `showArab` yang dihormati semua layar. Tujuh layar
