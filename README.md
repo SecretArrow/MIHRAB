@@ -60,10 +60,10 @@ Semuanya adalah pilihan sadar, bukan pekerjaan yang tertinggal — supaya tidak 
   menit saat perangkat tidur (Doze); hal ini dinyatakan di layar Adzan, bukan disembunyikan.
 - **Sepenuhnya offline** — tidak ada sumber *online*, dengan alasan yang dijelaskan di bagian Build
   di atas.
-- **Toolchain dipatok** (AGP 8.5.x, Kotlin 2.0.20, `compileSdk`/`targetSdk` 34). Kenaikan toolchain
-  harus dilakukan sebagai satu perubahan teruji — rincian dan alasan tiap plafon ada di
-  `.github/dependabot.yml`. Selama `targetSdk` belum dinaikkan, aplikasi belum memenuhi syarat
-  `targetSdk` minimum yang ditetapkan Google Play untuk pengajuan aplikasi baru.
+- **Toolchain dipatok** (AGP 8.13.x, Gradle 8.14.6, Kotlin 2.3.21, `compileSdk`/`targetSdk` 36).
+  Kenaikan toolchain harus dilakukan sebagai satu perubahan teruji — rincian dan alasan tiap plafon
+  ada di `.github/dependabot.yml`. `targetSdk` 36 sudah memenuhi syarat minimum Google Play untuk
+  pengajuan aplikasi baru (wajib API 36 sejak 31 Agustus 2026).
 
 ## Jalankan lokal (opsional)
 Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.

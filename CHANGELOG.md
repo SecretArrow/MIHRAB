@@ -5,6 +5,36 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Toolchain dinaikkan sebagai satu kesatuan: AGP 8.13.2, Kotlin 2.3.21, KSP 2.3.12, Hilt 2.58,
+  Compose BOM 2026.06.01, Gradle 8.14.6, `compileSdk`/`targetSdk` 36.** Google Play mewajibkan aplikasi
+  baru dan pembaruan menargetkan Android 16 (API 36) sejak 31 Agustus 2026; selama ini `targetSdk`
+  dipatok 34, sehingga aplikasi belum memenuhi syarat pengajuan. Kenaikannya tidak bisa parsial —
+  Kotlin/KSP/Compose BOM satu toolchain, sedangkan plafon Hilt dan pustaka androidx ditentukan oleh
+  versi AGP dan `compileSdk` — jadi seluruhnya dinaikkan sekaligus dan diuji lewat CI.
+  Batasnya diambil dari metadata resmi, bukan tebakan: AGP 8.13 adalah rilis 8.x terakhir yang
+  mendukung API 36 (AGP 9 mengubah DSL dan menyalakan Kotlin bawaan secara default — perubahan besar
+  yang tak diperlukan hanya untuk syarat Play); patch **8.13.2** dipakai karena R8 8.13.19-lah yang
+  mengenal metadata Kotlin 2.3; Kotlin berhenti di **2.3.21** karena KSP 2.3.x hanya mendukung KGP
+  sampai 2.3.x dan belum ada KSP 2.4.x; Hilt berhenti di **2.58** karena 2.59 mewajibkan AGP >= 9;
+  Gradle justru **turun** ke **8.14.6**, sebab AGP 8.x memakai `InternalProblems` — API internal Gradle
+  yang dihapus di **Gradle 9.6.0**, sehingga AGP 8.13 gagal diterapkan di 9.8.1 (batas ini tak terlihat
+  sebelumnya karena AGP 8.5.2 tidak menyentuh provider itu). Pustaka androidx dipilih
+  dari `minCompileSdk`/`minAndroidGradlePluginVersion` di dalam AAR-nya, dan ternyata nomor terbaru
+  bukan yang paling jauh bisa dipakai: `core-ktx` 1.19.0, `androidx.hilt` 1.4.0,
+  `navigation-compose` 2.10.0, `lifecycle` 2.11.0, dan compose-ui 1.12.0 semuanya sudah menuntut
+  `compileSdk` 37 + AGP 9.1. Karena itu `core-ktx`/`androidx.hilt` tetap di 1.18.0/1.3.0,
+  `navigation-compose` turun ke **2.9.8**, `lifecycle` ke **2.10.0**, dan Compose BOM ke
+  **2026.06.01** (BOM 2026.08.00 sudah memetakan ui 1.12.0).
+  `kotlinOptions` yang sudah dihapus dari DSL Kotlin 2.3 diganti blok
+  `kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }` (tetap JDK 17), dan
+  `vectorDrawables { useSupportLibrary = true }` dibuang karena tak lagi berarti pada `minSdk` 26.
+  Emulator E2E juga dinaikkan dari API 29 ke **API 36**, sebab perilaku yang bergantung `targetSdk`
+  (tepi-ke-tepi wajib, tipe layanan foreground, izin notifikasi runtime) hanya berlaku di perangkat
+  yang API-nya juga >= 35. Plafon Dependabot (`.github/dependabot.yml`), baris patokan toolchain di
+  `README.md`, dan penjaga yang membandingkan keduanya (`ReadmeToolchainTest`, `DependabotConfigTest`)
+  ikut disesuaikan, sehingga dokumen tak bisa diam-diam menua lagi.
+
 ## [1.1.0] - 2026-10-13
 
 Kumpulan perubahan sejak v1.0.0 **menambah kemampuan** — panduan sholat lengkap, pustaka dzikir &

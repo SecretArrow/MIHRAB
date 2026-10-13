@@ -1,25 +1,45 @@
 [versions]
-agp = "8.5.2"
-kotlin = "2.0.20"
-ksp = "2.0.20-1.0.24"
-hilt = "2.52"
-hiltExt = "1.2.0"
-composeBom = "2024.09.00"
-coreKtx = "1.13.1"
-activityCompose = "1.9.2"
-lifecycle = "2.8.5"
-navigation = "2.7.7"
-room = "2.6.1"
-datastore = "1.1.1"
-workmanager = "2.9.0"
-media3 = "1.4.1"
-coroutines = "1.8.1"
+# Toolchain ini bukan "versi terbaru" melainkan versi terbaru yang SALING COCOK. Batasnya:
+#  - `agp` 8.13.x: rilis 8.x terakhir yang mendukung compileSdk 36 (AGP 9 mengubah DSL dan
+#    mengaktifkan Kotlin bawaan secara default — perubahan besar yang tak diperlukan hanya untuk
+#    memenuhi syarat targetSdk Google Play). Patch 8.13.2 dipakai karena R8-nya (8.13.19) mengenal
+#    Kotlin 2.3; 8.13.0 masih menolak metadata itu saat minify rilis.
+#  - `kotlin` 2.3.x: batas atas yang masih didukung `ksp` 2.3.x (KSP mendukung KGP 2.2.10–2.3.x).
+#    Karena KSP 2.3 tidak lagi terikat versi compiler, KSP ikut naik sendiri.
+#  - `hilt` 2.58: rilis Dagger terakhir yang masih menerima AGP 8.x; 2.59 mewajibkan AGP >= 9.0.0.
+#  - Gradle (gradle-wrapper.properties) 8.14.6: AGP 8.x memakai `InternalProblems`, API internal
+#    Gradle yang DIHAPUS di Gradle 9.6.0 — di 9.6+ plugin `com.android.internal.application` gagal
+#    diterapkan ("relies on ... a Gradle internal API that was removed in Gradle 9.6.0"), terbukti
+#    di PR #119. AGP 8.5.2 tidak menyentuh provider itu, jadi Gradle 9.8.1 sempat hijau dan
+#    kenaikan AGP inilah yang memunculkan batasnya. 8.14.6 adalah rilis 8.x terakhir, dan tetap
+#    di dalam rentang yang diuji Kotlin 2.3.21 (Gradle 7.6.3–9.3.0).
+#  - Pustaka androidx dipilih dari `minCompileSdk`/`minAndroidGradlePluginVersion` di metadata
+#    AAR-nya, bukan dari nomor terbaru. Versi terbaru yang masih menerima compileSdk 36:
+#    `coreKtx` 1.18.0 (1.19.0 menuntut compileSdk 37 + AGP 9.1), `hiltExt` 1.3.0 (1.4.0 sama),
+#    `navigation` 2.9.8 (2.10.0 sama), `lifecycle` 2.10.0 (2.11.0 sama), dan `composeBom`
+#    2026.06.01 — BOM 2026.08.00 memetakan compose-ui 1.12.0 yang menuntut 37/AGP 9.1, sedangkan
+#    2026.06.01 memetakan ui 1.11.4 (cs 35).
+agp = "8.13.2"
+kotlin = "2.3.21"
+ksp = "2.3.12"
+hilt = "2.58"
+hiltExt = "1.3.0"
+composeBom = "2026.06.01"
+coreKtx = "1.18.0"
+activityCompose = "1.13.0"
+lifecycle = "2.10.0"
+navigation = "2.9.8"
+room = "2.8.5"
+datastore = "1.2.1"
+workmanager = "2.12.0"
+media3 = "1.11.1"
+coroutines = "1.11.0"
 junit = "4.13.2"
-androidx-test-junit = "1.1.5"
-androidx-test-core = "1.6.1"
-coroutinesTest = "1.8.1"
-turbine = "1.1.0"
-orgJson = "20240303"
+androidx-test-junit = "1.3.0"
+androidx-test-core = "1.7.0"
+coroutinesTest = "1.11.0"
+turbine = "1.2.1"
+orgJson = "20260814"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

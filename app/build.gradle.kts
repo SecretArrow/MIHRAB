@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.agp.application)
@@ -19,16 +20,18 @@ fun secret(envName: String, propName: String): String? =
 
 android {
     namespace = "id.or.kemenag.yasintahlil"
-    compileSdk = 34
+    // compileSdk 36 bukan sekadar mengikuti versi terbaru: `targetSdk` tidak boleh melebihi
+    // `compileSdk`, sedangkan Google Play mewajibkan API 36 untuk aplikasi baru sejak 31 Agustus
+    // 2026. AGP 8.13 adalah rilis 8.x terakhir yang mengenal API 36 (batas atasnya API 36.1).
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "id.or.kemenag.yasintahlil"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 4
         versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables { useSupportLibrary = true }
     }
 
     signingConfigs {
@@ -59,10 +62,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+// `kotlinOptions` sudah dihapus dari DSL Kotlin 2.3, jadi tingkat bytecode Java dinyatakan di sini.
+// Nilainya harus sama dengan `compileOptions` di atas; `ReadmeToolchainTest` membandingkannya
+// dengan "JDK 17" yang tertulis di README.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

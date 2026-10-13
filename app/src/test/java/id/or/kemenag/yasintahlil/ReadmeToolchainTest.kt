@@ -6,8 +6,8 @@ import org.junit.Test
 import java.io.File
 
 /**
- * `README.md` memuat satu baris yang menyatakan patokan toolchain — *"Toolchain dipatok (AGP 8.5.x,
- * Kotlin 2.0.20, `compileSdk`/`targetSdk` 34)"* — dan baris itu yang pertama dibaca kontributor
+ * `README.md` memuat satu baris yang menyatakan patokan toolchain — *"Toolchain dipatok (AGP 8.13.x,
+ * Kotlin 2.3.21, `compileSdk`/`targetSdk` 36)"* — dan baris itu yang pertama dibaca kontributor
  * sebelum membangun. Nilainya hidup di berkas lain: versi AGP dan Kotlin di
  * `gradle/libs.versions.toml`, sedangkan `compileSdk`/`targetSdk` dan tingkat Java di
  * `app/build.gradle.kts`. Tak ada apa pun yang membandingkannya.
@@ -48,7 +48,7 @@ class ReadmeToolchainTest {
             ?: error("'$nama' tidak ditemukan di app/build.gradle.kts")
 
     /**
-     * AGP disebut sebagai major.minor (`8.5.x`) — itulah yang menentukan kompatibilitas plugin,
+     * AGP disebut sebagai major.minor (`8.13.x`) — itulah yang menentukan kompatibilitas plugin,
      * sedangkan patch-nya bebas naik. Yang harus sama adalah major.minornya, bukan seluruh versinya.
      */
     @Test
@@ -102,9 +102,55 @@ class ReadmeToolchainTest {
     fun tingkatJavaDiReadmeSelarasDenganKonfigurasiGradle() {
         val diReadme = Regex("""JDK (\d+)""").find(baca("README.md"))?.groupValues?.get(1)
         assertTrue("README.md tidak lagi menyebut JDK yang dibutuhkan", diReadme != null)
-        val diGradle = Regex("jvmTarget\\s*=\\s*\"(\\d+)").find(baca("app/build.gradle.kts"))
-            ?.groupValues?.get(1)
+        // Dua bentuk DSL yang sah: `kotlinOptions { jvmTarget = "17" }` (lama) dan
+        // `kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }` (Kotlin 2.3+). Keduanya
+        // diterima agar uji ini membandingkan nilainya, bukan menuntut satu sintaks.
+        val diGradle = Regex("""jvmTarget\.set\(\s*JvmTarget\.JVM_(\d+)|jvmTarget\s*=\s*"(\d+)""")
+            .find(baca("app/build.gradle.kts"))
+            ?.groupValues?.drop(1)?.firstOrNull { it.isNotEmpty() }
+        assertTrue("jvmTarget tidak ditemukan di app/build.gradle.kts", diGradle != null)
         assertEquals("tingkat Java di README.md berbeda dari app/build.gradle.kts",
             diGradle, diReadme)
+    }
+
+    /**
+     * Selama AGP masih 8.x, wrapper Gradle tidak boleh menyentuh **9.6**.
+     *
+     * Gradle 9.6.0 menghapus `org.gradle.api.problems.internal.InternalProblems`, API internal yang
+     * masih dipakai AGP 8.x: `com.android.internal.application` gagal diterapkan dengan *"relies on
+     * 'org.gradle.api.problems.internal.InternalProblems', a Gradle internal API that was removed in
+     * Gradle 9.6.0"*. Batas ini tak terlihat sebelumnya karena AGP 8.5.2 tidak menyentuh provider
+     * itu, sehingga Gradle 9.8.1 sempat hijau — kenaikan AGP-lah yang memunculkannya (PR #119:
+     * `lint` dan `unit` gagal dalam 40 detik saat konfigurasi, bukan saat kompilasi). Uji ini
+     * mengikat wrapper ke lini AGP yang sedang dipakai, sehingga kenaikan Gradle tak bisa lolos
+     * hanya karena AGP-nya belum ikut naik.
+     */
+    @Test
+    fun wrapperGradleSejalanDenganLiniAgp() {
+        val wrapper = Regex("""gradle-(\d+\.\d+(?:\.\d+)?)-bin\.zip""")
+            .find(baca("gradle/wrapper/gradle-wrapper.properties"))
+            ?.groupValues?.get(1)
+            ?: error("versi Gradle tidak terbaca dari gradle/wrapper/gradle-wrapper.properties")
+
+        val agp = versiDiToml("agp")
+        val agp8 = (agp.split(".").firstOrNull()?.toIntOrNull() ?: 0) == 8
+        if (agp8) {
+            assertTrue(
+                "AGP $agp (8.x) di Gradle $wrapper — Gradle 9.6.0 menghapus `InternalProblems` " +
+                    "yang masih dipakai AGP 8.x, jadi plugin-nya gagal diterapkan. Pakai Gradle < 9.6.",
+                bandingkan(wrapper, "9.6") < 0,
+            )
+        }
+    }
+
+    /** Perbandingan versi bergaya `a.b.c` — cukup untuk membandingkan lini Gradle. */
+    private fun bandingkan(a: String, b: String): Int {
+        val pa = a.split(".").map { it.toIntOrNull() ?: 0 }
+        val pb = b.split(".").map { it.toIntOrNull() ?: 0 }
+        repeat(maxOf(pa.size, pb.size)) { i ->
+            val d = pa.getOrElse(i) { 0 } - pb.getOrElse(i) { 0 }
+            if (d != 0) return d
+        }
+        return 0
     }
 }

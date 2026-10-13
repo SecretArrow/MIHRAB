@@ -54,12 +54,16 @@ jobs:
       - name: Instrumented test di emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          # API 36, bukan 29: `targetSdk` kini 36, dan perilaku yang bergantung padanya
+          # (tepi-ke-tepi wajib sejak API 35, tipe layanan foreground, izin notifikasi runtime)
+          # hanya berlaku di perangkat yang API-nya juga >= 35. Menguji di API 29 berarti
+          # menguji aplikasi yang perilaku targetSdk-nya tidak pernah dijalankan.
+          api-level: 36
           target: default
           arch: x86_64
           disable-animations: true
           emulator-boot-timeout: 900
-          # -memory 4096: RAM bawaan AVD (1,5 GB) sempit untuk API 29 plus aplikasi yang diuji,
+          # -memory 4096: RAM bawaan AVD (1,5 GB) sempit untuk API 36 plus aplikasi yang diuji,
           # sehingga tamu (guest) bisa tertekan. Ini bukan sebab kegagalan "Unknown API Level" —
           # sebabnya akselerasi yang tidak terbuka (lihat langkah KVM di atas) — melainkan
           # mengurangi satu lagi sumber kelambatan.
