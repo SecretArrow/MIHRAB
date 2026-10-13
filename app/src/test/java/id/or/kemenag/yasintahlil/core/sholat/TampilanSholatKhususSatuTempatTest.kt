@@ -3,6 +3,8 @@ package id.or.kemenag.yasintahlil.core.sholat
 import id.or.kemenag.yasintahlil.KodeSumber
 import id.or.kemenag.yasintahlil.core.data.Bacaan
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -16,9 +18,11 @@ import org.junit.Test
  * menyebut *"tanpa ruku/sujud"* di Ghaib saja; dan niat ditampilkan tanpa terjemahan di Ghaib
  * tetapi dengan terjemahan di Jenazah. Tak satu pun perbedaan itu tercatat sebagai pilihan.
  *
- * Uji ini menjaga dua hal yang berlawanan arah: (1) aturan yang **sama** tidak boleh dieja ulang di
- * layar mana pun, dan (2) perbedaan yang **disengaja** — judul langkah takbir dan label chip layar
- * penuh — harus tetap berbeda, supaya tidak "dirapikan" menjadi salinan.
+ * Uji ini menjaga tiga hal yang berlawanan arah: (1) aturan yang **sama** tidak boleh dieja ulang di
+ * layar mana pun, (2) perbedaan yang **disengaja** — judul takbir 1 dan salam, serta label chip
+ * layar penuh — harus tetap berbeda supaya tidak "dirapikan" menjadi salinan, dan (3) judul takbir
+ * 2–4 yang memang sama di kedua layar harus tinggal di **satu** tempat, bukan di dua salinan yang
+ * bisa menyimpang tanpa ketahuan.
  */
 class TampilanSholatKhususSatuTempatTest {
 
@@ -29,6 +33,12 @@ class TampilanSholatKhususSatuTempatTest {
 
     private val ghaib get() = layar("feature/sholat/GhaibScreen.kt")
     private val jenazah get() = layar("feature/sholat/JenazahScreen.kt")
+    private val inti get() = layar("core/sholat/TampilanSholatKhusus.kt")
+
+    /** Pasangan `BacaanSholat.<ID> to "<judul>"` yang diketik sebuah berkas, sebagai peta id→judul. */
+    private fun petaJudul(teks: String): Map<String, String> =
+        Regex("""BacaanSholat\.(\w+) to "([^"]*)"""")
+            .findAll(teks).associate { it.groupValues[1] to it.groupValues[2] }
 
     // ---- Aturan bersama -------------------------------------------------------------------------
 
@@ -98,16 +108,93 @@ class TampilanSholatKhususSatuTempatTest {
      */
     @Test
     fun judulLangkahTetapKhasTiapLayar() {
-        val pola = Regex("""BacaanSholat\.(\w+) to "([^"]*)"""")
-        fun peta(teks: String): Map<String, String> =
-            pola.findAll(teks).associate { it.groupValues[1] to it.groupValues[2] }
-        val g = peta(ghaib)
-        val j = peta(jenazah)
+        val g = petaJudul(ghaib)
+        val j = petaJudul(jenazah)
         assertEquals("kedua layar tidak lagi menjuduli urutan id yang sama",
             g.keys, j.keys)
         val berbeda = g.filter { (k, v) -> j[k] != v }.keys
         assertEquals("perbedaan judul langkah di luar yang disengaja (ta'awudz & arah salam)",
             setOf("FATIHAH", "SALAM"), berbeda)
+    }
+
+    /**
+     * Judul takbir 2–4 sama di kedua layar, jadi ejaannya tinggal **satu tempat**: di
+     * [TampilanSholatKhusus.judulTakbirBersama].
+     *
+     * Sebelumnya ketiganya diketik utuh di GhaibScreen **dan** JenazahScreen. Penjaga lama hanya
+     * membandingkan kedua peta, sehingga satu perbaikan ejaan yang dikenakan pada kedua salinan
+     * lolos tanpa ketahuan — dan bila hanya satu yang dikenai, dua layar menyebut langkah yang
+     * sama dengan dua nama. Yang dijaga di sini adalah salinannya sendiri tidak ada lagi.
+     */
+    @Test
+    fun judulTakbirBersamaTinggalDiSatuTempat() {
+        // Ejaannya dipaku di sini: kedua layar menyebut judul yang sama, jadi satu perubahan pada
+        // peta bersama mengubah dua layar sekaligus — bukan alasan untuk lolos diam-diam.
+        assertEquals("judul takbir bersama berubah ejaannya",
+            mapOf(
+                BacaanSholat.SHOLAWAT_IBRAHIMIYAH to "Takbir 2 → Sholawat Ibrahimiyah",
+                BacaanSholat.DOA_MAYIT to "Takbir 3 → Doa untuk mayit",
+                BacaanSholat.DOA_MAYIT_TAMBAHAN to "Takbir 4 → Doa tambahan",
+            ),
+            TampilanSholatKhusus.judulTakbirBersama)
+        // Dan salinannya tidak boleh hidup lagi di layarnya.
+        val bersama = TampilanSholatKhusus.judulTakbirBersama.values.toList()
+        assertEquals("entri bersama bukan lagi tiga judul takbir tengah", 3, bersama.size)
+        bersama.forEach { t ->
+            mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
+                assertFalse("$nama mengeja ulang judul bersama \"$t\" alih-alih mengambilnya dari " +
+                        "TampilanSholatKhusus.judulTakbirBersama", teks.contains("\"$t\""))
+            }
+        }
+    }
+
+    /**
+     * Gabungan entri bersama dan judul khas tiap layar harus **menutupi seluruh** urutan takbir:
+     * layar memanggil `judulLangkah.getValue(id)` untuk setiap id pada [BacaanSholat.TAKBIR_MAYIT],
+     * jadi satu id yang tak punya judul menjatuhkan layarnya — bukan sekadar menghilangkan kartu.
+     *
+     * Cakupan itu dulu terjaga karena tiap layar mengetik kelima judulnya; sekarang ia bergantung
+     * pada dua berkas, jadi harus dipaku melintasi keduanya.
+     */
+    @Test
+    fun cakupanJudulLangkahMenutupiSeluruhUrutanTakbir() {
+        val bersama = petaJudul(inti).keys
+        assertEquals("entri bersama bukan lagi tiga takbir tengah",
+            setOf("SHOLAWAT_IBRAHIMIYAH", "DOA_MAYIT", "DOA_MAYIT_TAMBAHAN"), bersama)
+        val urutan = setOf("FATIHAH", "SHOLAWAT_IBRAHIMIYAH", "DOA_MAYIT", "DOA_MAYIT_TAMBAHAN", "SALAM")
+        mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
+            val khas = petaJudul(teks).keys
+            // Layar harus benar-benar **menggabungkan** lewat aturan bersama, bukan menyusun
+            // petanya sendiri yang kebetulan menutupi urutan yang sama.
+            assertTrue("$nama tidak menggabungkan judul bersama lewat " +
+                    "TampilanSholatKhusus.judulLangkah()", teks.contains("TampilanSholatKhusus.judulLangkah("))
+            assertEquals("$nama menjuduli id di luar urutan takbir bersama",
+                emptySet<String>(), khas - urutan)
+            assertEquals("$nama menimpa entri bersama dengan judul khasnya sendiri",
+                emptySet<String>(), khas intersect bersama)
+            assertEquals("gabungan judul $nama tidak menutupi seluruh urutan takbir — " +
+                    "getValue(id) bisa gagal dan menjatuhkan layarnya", urutan, bersama + khas)
+        }
+    }
+
+    /** Penggabungannya satu aturan, dan judul khas yang menimpa entri bersama ditolak. */
+    @Test
+    fun judulLangkahMenggabungkanEntriBersamaDanKhas() {
+        val peta = TampilanSholatKhusus.judulLangkah(
+            mapOf(
+                BacaanSholat.FATIHAH to "Takbir 1 → Al-Fatihah",
+                BacaanSholat.SALAM to "Salam",
+            ),
+        )
+        assertEquals("gabungan tidak menutupi seluruh urutan takbir",
+            BacaanSholat.TAKBIR_MAYIT.toSet(), peta.keys)
+        assertEquals("Takbir 3 → Doa untuk mayit", peta[BacaanSholat.DOA_MAYIT])
+        assertEquals("Salam", peta[BacaanSholat.SALAM])
+        // Perbedaan yang disengaja harus disengaja: salinan yang tertinggal tidak boleh menang
+        // diam-diam atas entri bersama.
+        assertThrows(IllegalArgumentException::class.java) {
+            TampilanSholatKhusus.judulLangkah(mapOf(BacaanSholat.DOA_MAYIT to "salinan lama"))
+        }
     }
 
     /** Label chip layar penuh juga sengaja berbeda: pada Ghaib, layar penuh sekaligus mode imam. */
