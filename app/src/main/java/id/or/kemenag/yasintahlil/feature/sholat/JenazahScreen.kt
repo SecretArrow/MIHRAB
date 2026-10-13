@@ -14,6 +14,7 @@ import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
+import id.or.kemenag.yasintahlil.core.sholat.TampilanSholatKhusus
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
@@ -37,6 +38,10 @@ private val judulLangkah: Map<String, String> = mapOf(
 /**
  * Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. Konten (niat & doa)
  * dibaca dari assets ([BerkasKonten.SHOLAT_JENAZAH] + bacaan bersama) — tanpa teks Arab di Kotlin.
+ *
+ * Perangkaian teksnya — judul, syarat, dalil, catatan mazhab, langkah, dan cadangan teks bacaan —
+ * datang dari [TampilanSholatKhusus], sama dengan layar Ghaib. Yang khas layar ini hanya
+ * [judulLangkah] dan label chip layar penuhnya.
  */
 @Composable
 fun JenazahScreen() {
@@ -62,11 +67,11 @@ fun JenazahScreen() {
         // untuk menghilangkan satu takbir — kartunya tak muncul, judulnya tetap ada.
         BacaanSholat.TAKBIR_MAYIT.map { judulLangkah.getValue(it) to cari(it) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(info.judul.ifBlank { NamaLayar.JENAZAH } + " — ${info.takbir} takbir",
+        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.JENAZAH }, info.takbir),
             style = MaterialTheme.typography.titleLarge)
+        Text(TampilanSholatKhusus.dalil(info.dalil), style = MaterialTheme.typography.labelMedium)
         if (info.syarat.isNotEmpty()) {
-            Text("Syarat: " + info.syarat.joinToString(", ") + ".",
-                style = MaterialTheme.typography.labelMedium)
+            Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
@@ -81,19 +86,18 @@ fun JenazahScreen() {
             if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
         }
         steps.forEachIndexed { i, (judul, b) ->
-            Text("${i + 1}. $judul", style = MaterialTheme.typography.titleMedium,
+            Text(TampilanSholatKhusus.langkah(i + 1, judul), style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(top = 8.dp))
             if (b != null) {
-                val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
-                    Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
-                }
+                val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
+                val (a, l, t) = TampilanSholatKhusus.teksBacaan(b, ra, rl, rt)
                 BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, b.id), b.judul, a, l, t, true, true,
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
         }
         if (info.catatanMazhab.isNotBlank()) {
-            Text("Catatan mazhab: ${info.catatanMazhab}",
+            Text(TampilanSholatKhusus.catatanMazhab(info.catatanMazhab),
                 style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
         }
     }
