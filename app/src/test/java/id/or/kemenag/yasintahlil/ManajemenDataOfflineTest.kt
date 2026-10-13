@@ -9,7 +9,8 @@ import java.io.File
  *
  * Uji ini menjaga tiga hal yang mudah rusak diam-diam: (1) setiap bagian data punya tombol hapusnya
  * sendiri, sehingga pengguna dapat membuang riwayat saja tanpa kehilangan favorit; (2) penghapusan
- * selalu lewat dialog konfirmasi yang menyebut jumlah entri, bukan menghapus dalam keadaan buta;
+ * selalu lewat dialog konfirmasi yang menyebut jumlah entri, bukan menghapus dalam keadaan buta,
+ * dan tombol batalnya memakai kata bersama `NamaAntarmuka.BATAL` — bukan mengeja ulang kata itu;
  * (3) implementasi Room benar-benar mengisi setiap anggota antarmuka [UserDataRepository], sehingga
  * layar pengaturan tak pernah memanggil fungsi yang belum ada.
  */
@@ -50,7 +51,10 @@ class ManajemenDataOfflineTest {
     fun penghapusanSelaluLewatDialogKonfirmasi() {
         val layar = pengaturan()
         assertTrue("penghapusan tanpa dialog konfirmasi", layar.contains("AlertDialog("))
-        assertTrue("dialog tidak menyediakan pilihan batal", layar.contains("\"Batal\""))
+        // Kata tombolnya dipakai bersama: ejaannya dipaku `NamaAntarmukaSatuTempatTest`, dan yang
+        // dijaga di sini adalah bahwa dialog ini memang memakai nama bersama itu — bukan mengeja
+        // ulang "Batal" sendiri, yang bisa menyimpang tanpa ketahuan.
+        assertTrue("dialog tidak menyediakan pilihan batal", layar.contains("NamaAntarmuka.BATAL"))
         assertTrue("dialog tidak menyebut jumlah entri yang akan hilang", layar.contains("entri "))
     }
 

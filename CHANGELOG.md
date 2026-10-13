@@ -390,7 +390,14 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   lahir dari `NamaAntarmuka` (`BATAL`, `HAPUS`, `RESET`, `BUKA`) — *"Batal"* sengaja tetap terpisah
   dari `BATALKAN_TANDA` karena yang dijanjikan tombolnya berbeda (menutup dialog vs membatalkan
   tanda progres). Dijaga `NamaAntarmukaSatuTempatTest`, yang memastikan tiap layar tetap memuat
-  kendalinya **dan** memakai nama bersama.
+  kendalinya **dan** memakai nama bersama. Dua penjaga lama yang mencari **kata** itu sendiri —
+  `ManajemenDataOfflineTest` (`layar.contains("\"Batal\"")`) dan `JenisSuaraAdzanTest`
+  (`s.contains("Hapus")`) — kini menunjuk `NamaAntarmuka.BATAL`/`NamaAntarmuka.HAPUS`: yang pertama
+  gagal begitu katanya pindah ke satu tempat (justru karena ia mencari ejaan, bukan pemakaiannya),
+  dan yang kedua tetap hijau walau layarnya mengeja ulang kata itu sehingga tak lagi membuktikan
+  apa pun. `kataTindakanTidakDiejaUlangDiUji` (**baru**) menutup celah itu: tak satu pun uji boleh
+  mengeja ulang keempat kata sebagai literal, karena penjaga seperti itu kehilangan tepat hal yang
+  seharusnya dijaganya.
 - **Penyiapan emulator E2E tinggal di satu tempat**: skrip uji instrumented menyusun urutan
   penyiapan perangkat — menunggu perangkat, menunggu boot selesai, memastikan properti API terbaca
   — di **dua** jalur, dan salinan keduanya menyimpang. Jalur pertama memanggil ketiganya; jalur

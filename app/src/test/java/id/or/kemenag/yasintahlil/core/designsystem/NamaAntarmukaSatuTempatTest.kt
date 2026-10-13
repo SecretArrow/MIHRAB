@@ -50,6 +50,10 @@ class NamaAntarmukaSatuTempatTest {
         File(root(), "src/main/java/id/or/kemenag/yasintahlil")
             .walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
 
+    private fun berkasUji(): List<File> =
+        File(root(), "src/test/java/id/or/kemenag/yasintahlil")
+            .walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
+
     /** Kode tanpa komentar: KDoc yang menjelaskan pola lama memuat tulisan yang sama persis. */
     private fun kode(f: File): String = KodeSumber.kodeTanpaKomentar(f.readText())
 
@@ -192,11 +196,39 @@ class NamaAntarmukaSatuTempatTest {
     }
 
     /**
+     * Kata tindakan baku juga tidak boleh dieja ulang di dalam **uji**.
+     *
+     * Penjaga yang mencari `"Batal"` atau `"Hapus"` sebagai literal di layar akan tetap hijau
+     * walaupun layarnya mengeja ulang kata itu sendiri — ia kehilangan tepat hal yang seharusnya
+     * dijaganya. Itulah yang terjadi pada penjaga hapus di `JenisSuaraAdzanTest`
+     * (`s.contains("Hapus")`) dan pada penjaga dialog di `ManajemenDataOfflineTest`
+     * (`layar.contains("\"Batal\"")`): keduanya hanya menemukan kata itu, bukan pemakaian nama
+     * bersama. Uji yang benar menunjuk `NamaAntarmuka.*`, sehingga ejaannya tetap satu tempat.
+     *
+     * `NamaAntarmukaSatuTempatTest.kt` sendiri dikecualikan — di sanalah ejaan keempat kata itu
+     * memang dipaku, dan memakunya menuntut kata itu hadir sebagai literal.
+     */
+    @Test
+    fun kataTindakanTidakDiejaUlangDiUji() {
+        val kata = listOf("BATAL", "HAPUS", "RESET", "BUKA").map { it to daftarNama().getValue(it) }
+        val pelanggar = mutableListOf<String>()
+        berkasUji()
+            .filter { it.name != "NamaAntarmukaSatuTempatTest.kt" }
+            .forEach { f ->
+                KodeSumber.literalString(f.readText()).forEach { teks ->
+                    kata.filter { memakaiLabel(teks, it.second) }
+                        .forEach { pelanggar += "${f.name}: \"${it.second}\"" }
+                }
+            }
+        assertTrue("kata tindakan dieja ulang di uji — uji itu tak lagi membuktikan satu tempat: " +
+                "$pelanggar", pelanggar.isEmpty())
+    }
+
+    /**
      * Perbaikan preferensi bacaan harus terlihat **di kedua tempat**: sheet dan layar Pengaturan
      * sama-sama memakai nama bersama. Tanpa ini, penjaga di atas dapat dipuaskan dengan menghapus
      * salah satu tempat, padahal yang salah adalah salinannya, bukan kendalinya.
-     */
-    @Test
+     */    @Test
     fun keduaTempatPreferensiBacaanMemakaiNamaBersama() {
         val sheet = kode(uiKit())
         val pengaturan = layar("feature/settings/SettingsScreen.kt")
