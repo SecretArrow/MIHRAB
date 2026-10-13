@@ -5,6 +5,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-13
+
+Rilis ini memuat kode yang **sama** dengan v1.0.1 (terbit beberapa menit sebelumnya); yang berubah
+hanya nomor versinya. Kumpulan perubahan sejak v1.0.0 menambah kemampuan — panduan sholat lengkap,
+pustaka dzikir & doa, kontrol baca Yasin/Tahlil, kiblat dengan peta offline, adzan dengan
+penjadwalan latar, serta penutupan sistematis kelas bug "satu aturan di banyak tempat" — sehingga
+menurut Semantic Versioning penandanya adalah **MINOR**, bukan patch. Rincian perubahannya ada pada
+bagian [1.0.1] di bawah, yang tidak ditulis ulang agar tetap jujur menggambarkan apa yang benar-benar
+terbit saat itu. v1.0.1 digantikan oleh rilis ini.
+
 ## [1.0.1] - 2026-10-13
 
 ### Ditambahkan
