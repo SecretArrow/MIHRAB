@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Judul langkah takbir yang sama tinggal di satu tempat**: layar Sholat Ghaib dan Sholat Jenazah
+  menyebut takbir 2–4 dengan **judul yang sama persis** — *"Takbir 2 → Sholawat Ibrahimiyah"*,
+  *"Takbir 3 → Doa untuk mayit"*, *"Takbir 4 → Doa tambahan"* — tetapi ketiganya diketik di kedua
+  layar. Dua salinan berarti satu perbaikan ejaan harus dikenakan dua kali, dan bila hanya satu
+  yang dikenai, dua layar menyebut langkah yang sama dengan dua nama berbeda tanpa galat apa pun.
+  Ketiganya kini tinggal di `TampilanSholatKhusus.judulTakbirBersama`, dan tiap layar
+  menggabungkannya dengan judul yang **benar-benar khas** baginya lewat
+  `TampilanSholatKhusus.judulLangkah` — Ghaib menambahkan ta'awudz pada takbir 1 dan arah toleh
+  pada salam, Jenazah tidak. Entri khas yang menimpa entri bersama **ditolak**, bukan dibiarkan
+  menang diam-diam, supaya perbedaan yang disengaja tetap disengaja. Penjaga lamanya hanya
+  membandingkan kedua peta, sehingga satu perubahan yang dikenakan pada **kedua** salinan lolos;
+  penjaga barunya memaku cakupan seluruh urutan takbir (satu id tanpa judul menjatuhkan layarnya,
+  bukan sekadar menghilangkan kartunya), menolak salinan yang hidup lagi di layar, dan memaku
+  ejaan ketiga judul bersama itu.
 - **Gerbang kesiapan emulator diukur dengan perintah yang sama dengan pembacanya**: E2E `main`
   `38366620795` merah tanpa menjalankan satu uji pun, dan sebabnya bukan uji yang gagal. Gerbang
   kesiapan menunggu sampai **satu** properti terbaca (`adb shell getprop ro.build.version.sdk`),

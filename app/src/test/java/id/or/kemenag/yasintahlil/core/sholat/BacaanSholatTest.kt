@@ -165,6 +165,11 @@ class BacaanSholatTest {
      * Urutan takbir kedua layar sholat mayit harus datang dari [BacaanSholat.TAKBIR_MAYIT], bukan
      * dari daftar yang diketik di masing-masing layar: itulah yang membuat satu salah eja hanya
      * menghilangkan takbir di satu layar, tanpa galat.
+     *
+     * Layar kini hanya mengetik judul yang **khas** baginya — takbir 2–4 yang sama di keduanya
+     * tinggal di `TampilanSholatKhusus.judulTakbirBersama`; penjaga cakupan penuhnya ada di
+     * `TampilanSholatKhususSatuTempatTest`. Yang dipaku di sini: tiap id yang masih diketik layar
+     * harus id pada urutan bersama, dan tak satu pun diketik dua kali.
      */
     @Test
     fun layarSholatMayitMenyusunLangkahDariUrutanBersama() {
@@ -181,8 +186,10 @@ class BacaanSholatTest {
             val id = Regex("BacaanSholat\\.(\\w+)\\s+to\\s+\"")
                 .findAll(k).map { it.groupValues[1] }.toList()
                 .map { konstanta[it] ?: it }
+            assertTrue("$rel tidak lagi menjuduli satu langkah pun", id.isNotEmpty())
             assertEquals("$rel menjuduli langkah takbir di luar urutan bersama",
-                BacaanSholat.TAKBIR_MAYIT, id)
+                emptyList<String>(), id - BacaanSholat.TAKBIR_MAYIT)
+            assertEquals("$rel menjuduli satu id lebih dari sekali", id.distinct(), id)
         }
     }
 

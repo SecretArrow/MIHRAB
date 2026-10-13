@@ -23,16 +23,18 @@ import kotlinx.coroutines.launch
 
 /**
  * Judul langkah takbir yang khas layar ini — sholat ghaib membaca ta'awudz sebelum Al-Fatihah dan
- * salamnya menoleh ke dua sisi. Kuncinya adalah id bacaan dari [BacaanSholat.TAKBIR_MAYIT], jadi
- * setiap id pada urutan bersama itu pasti punya judul; `BacaanSholatTest` menjaga keduanya tetap
- * sepadan sehingga `getValue` tidak pernah gagal.
+ * salamnya menoleh ke dua sisi. Takbir 2–4 menyebut bacaan yang sama dengan layar Jenazah, jadi
+ * ejaannya tinggal di [TampilanSholatKhusus.judulTakbirBersama] dan digabung lewat
+ * [TampilanSholatKhusus.judulLangkah]; di sini hanya yang benar-benar khas.
+ *
+ * Kuncinya adalah id bacaan dari [BacaanSholat.TAKBIR_MAYIT], jadi setiap id pada urutan bersama
+ * itu pasti punya judul — penjaganya memaku cakupan itu sehingga `getValue` tidak pernah gagal.
  */
-private val judulLangkah: Map<String, String> = mapOf(
-    BacaanSholat.FATIHAH to "Takbir 1 → ta'awudz + Al-Fatihah (HR Bukhari 756, Muslim 394)",
-    BacaanSholat.SHOLAWAT_IBRAHIMIYAH to "Takbir 2 → Sholawat Ibrahimiyah",
-    BacaanSholat.DOA_MAYIT to "Takbir 3 → Doa untuk mayit",
-    BacaanSholat.DOA_MAYIT_TAMBAHAN to "Takbir 4 → Doa tambahan",
-    BacaanSholat.SALAM to "Salam kanan-kiri",
+private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangkah(
+    mapOf(
+        BacaanSholat.FATIHAH to "Takbir 1 → ta'awudz + Al-Fatihah (HR Bukhari 756, Muslim 394)",
+        BacaanSholat.SALAM to "Salam kanan-kiri",
+    ),
 )
 
 /**

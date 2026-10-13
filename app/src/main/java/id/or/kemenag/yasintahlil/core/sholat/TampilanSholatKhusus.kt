@@ -19,10 +19,15 @@ import id.or.kemenag.yasintahlil.core.data.Bacaan
  *  - **niat** ditampilkan tanpa terjemahan di Ghaib (`showTrans = false`) tetapi dengan terjemahan
  *    di Jenazah, padahal kedua berkas memuat terjemahannya.
  *
- * Yang **khas tiap layar** tetap tinggal di layarnya: peta judul langkah takbir (`judulLangkah` —
- * Ghaib membaca ta'awudz sebelum Al-Fatihah dan salamnya menoleh dua sisi, Jenazah tidak) dan
- * label chip layar penuh (`LAYAR_PENUH_IMAM` vs `LAYAR_PENUH`). Keduanya perbedaan yang disengaja,
- * dan penjaganya memakunya supaya tidak menyamar sebagai salinan.
+ * Yang **khas tiap layar** tetap tinggal di layarnya: judul takbir 1 dan salam (Ghaib membaca
+ * ta'awudz sebelum Al-Fatihah dan salamnya menoleh dua sisi, Jenazah tidak) dan label chip layar
+ * penuh (`LAYAR_PENUH_IMAM` vs `LAYAR_PENUH`). Keduanya perbedaan yang disengaja, dan penjaganya
+ * memakunya supaya tidak menyamar sebagai salinan.
+ *
+ * Judul takbir 2–4 tidak khas siapa pun — keduanya menyebut bacaan yang sama dengan nama yang
+ * sama — jadi ejaannya tinggal di [judulTakbirBersama]. Sebelumnya ketiganya diketik di kedua
+ * layar; dua salinan berarti satu perbaikan ejaan harus dikenakan dua kali, dan bila hanya satu
+ * yang dikenai, kedua layar menyebut langkah yang sama dengan dua nama berbeda.
  *
  * Batas yang belum ditutup, dan **tidak** diklaim sebagai perbedaan yang disengaja: cara menyajikan
  * niat masih berbeda — Ghaib memberi judul *"Varian niat:"* lalu kartunya tanpa label, Jenazah
@@ -34,6 +39,38 @@ object TampilanSholatKhusus {
 
     /** Judul layar: nama entri diikuti jumlah takbirnya. */
     fun judul(nama: String, takbir: Int): String = "$nama — $takbir takbir, tanpa ruku/sujud"
+
+    /**
+     * Judul langkah takbir yang **sama persis** di kedua layar mayit.
+     *
+     * Takbir 2–4 menyebut bacaan yang sama dengan nama yang sama di Ghaib maupun Jenazah. Yang
+     * benar-benar khas tiap layar hanya takbir 1 (ta'awudz di Ghaib) dan salam (arah toleh di
+     * Ghaib); keduanya tetap tinggal di layarnya. Kuncinya adalah id bacaan dari
+     * [BacaanSholat.TAKBIR_MAYIT], sehingga `judulLangkah.getValue(id)` tak pernah gagal selama
+     * gabungan peta bersama dan entri khas menutupi seluruh urutan itu — penjaganya memaku
+     * cakupan itu, bukan sekadar kehadiran tiap berkas.
+     */
+    val judulTakbirBersama: Map<String, String> = mapOf(
+        BacaanSholat.SHOLAWAT_IBRAHIMIYAH to "Takbir 2 → Sholawat Ibrahimiyah",
+        BacaanSholat.DOA_MAYIT to "Takbir 3 → Doa untuk mayit",
+        BacaanSholat.DOA_MAYIT_TAMBAHAN to "Takbir 4 → Doa tambahan",
+    )
+
+    /**
+     * Peta judul langkah takbir satu layar: entri bersama ([judulTakbirBersama]) digabung dengan
+     * [khas] — judul yang hanya berlaku di layar itu.
+     *
+     * Entri [khas] yang menimpa entri bersama **ditolak**, bukan diizinkan menang diam-diam:
+     * perbedaan yang disengaja harus disengaja, bukan akibat salinan yang tertinggal. Penjaga di
+     * uji memaku kedua peta tetap lepas, jadi `require` ini tidak pernah menyala di jalur normal.
+     */
+    fun judulLangkah(khas: Map<String, String>): Map<String, String> {
+        val tumpangTindih = khas.keys intersect judulTakbirBersama.keys
+        require(tumpangTindih.isEmpty()) {
+            "judul langkah khas menimpa entri bersama: ${tumpangTindih.sorted()}"
+        }
+        return judulTakbirBersama + khas
+    }
 
     /** Judul satu langkah takbir: nomor urutnya diikuti judul langkah. */
     fun langkah(nomor: Int, judul: String): String = "$nomor. $judul"
