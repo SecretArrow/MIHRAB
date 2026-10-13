@@ -58,6 +58,8 @@ fun IqomahScreen() {
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IQOMAH) }
     LaunchedEffect(Unit) {
@@ -65,6 +67,8 @@ fun IqomahScreen() {
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         ingatkan = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH)
     }
     FullscreenEffect(fullscreen)
@@ -153,7 +157,7 @@ fun IqomahScreen() {
             BacaanCard(JenisBacaan.id(JenisBacaan.IQOMAH, (i + 1).toString()),
                 "Lafaz iqomah ${i + 1} dari ${items.size}",
                 l.arab, l.latin, l.terjemahan,
-                true, true, UkuranBacaan.arabBacaJauh(arabSize, fullscreen), ulangi = l.ulangi,
+                showLatin, showTrans, UkuranBacaan.arabBacaJauh(arabSize, fullscreen), ulangi = l.ulangi,
                 sumber = l.sumber, showArab = showArab, kategori = l.kategori)
         }
     }
@@ -162,6 +166,8 @@ fun IqomahScreen() {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }
@@ -178,11 +184,15 @@ fun DoaAdzanScreen() {
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         ingatkan = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
@@ -216,9 +226,12 @@ fun DoaAdzanScreen() {
             "Bila diaktifkan: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, " +
                 "dan pengingat tetap berbunyi walau aplikasi ditutup."
         }, style = MaterialTheme.typography.labelSmall)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize, showArab)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize, showArab)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize, showArab)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize,
+            showArab, showLatin, showTrans)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize,
+            showArab, showLatin, showTrans)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize,
+            showArab, showLatin, showTrans)
         Text("Suara adzan dan pengingat sebelum adzan diatur di menu Adzan; saklar pengingat doa di " +
                 "atas dan di menu Adzan menulis preferensi yang sama. Iqomah memiliki timer " +
                 "tersendiri di menu Iqomah.",
@@ -229,6 +242,8 @@ fun DoaAdzanScreen() {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }
@@ -242,9 +257,12 @@ fun DoaAdzanScreen() {
  * begitu bundel menambahkannya — satu jalur render untuk semuanya menutup celah itu.
  */
 @Composable
-private fun KartuDoa(id: String, entri: AdzanDoa, arabSize: Float, showArab: Boolean) {
+private fun KartuDoa(
+    id: String, entri: AdzanDoa, arabSize: Float,
+    showArab: Boolean, showLatin: Boolean, showTrans: Boolean,
+) {
     BacaanCard(id, entri.judul, entri.arab, entri.latin, entri.terjemahan,
-        true, true, arabSize, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
+        showLatin, showTrans, arabSize, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
     if (entri.waktu.isNotBlank()) Text(
         "Kapan dibaca: ${entri.waktu}", style = MaterialTheme.typography.labelMedium)
     if (entri.catatan.isNotBlank()) Text(

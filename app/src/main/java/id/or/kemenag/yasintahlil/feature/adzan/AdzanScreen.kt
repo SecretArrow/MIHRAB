@@ -59,6 +59,8 @@ fun AdzanScreen() {
     var dnd by remember { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var settings by remember { mutableStateOf(false) }
     // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
     // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
@@ -120,6 +122,8 @@ fun AdzanScreen() {
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
         lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
         lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
@@ -324,7 +328,7 @@ fun AdzanScreen() {
             BacaanCard(JenisBacaan.id(JenisBacaan.ADZAN, (i + 1).toString()),
                 "Lafaz adzan ${i + 1} dari ${lafaz.size}",
                 l.arab, l.latin, l.terjemahan,
-                true, true, arabSize, ulangi = l.ulangi, sumber = l.sumber,
+                showLatin, showTrans, arabSize, ulangi = l.ulangi, sumber = l.sumber,
                 showArab = showArab, kategori = l.kategori)
         }
         Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
@@ -359,6 +363,8 @@ fun AdzanScreen() {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }

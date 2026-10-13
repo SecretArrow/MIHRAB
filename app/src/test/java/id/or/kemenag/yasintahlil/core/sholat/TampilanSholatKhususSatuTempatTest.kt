@@ -2,6 +2,7 @@ package id.or.kemenag.yasintahlil.core.sholat
 
 import id.or.kemenag.yasintahlil.KodeSumber
 import id.or.kemenag.yasintahlil.core.data.Bacaan
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -226,15 +227,24 @@ class TampilanSholatKhususSatuTempatTest {
      * Terjemahan niat ditampilkan di **kedua** layar. Sebelumnya Ghaib memanggil `BacaanCard`
      * dengan `showTrans = false` padahal berkasnya memuat terjemahan — konten yang ada tetapi tak
      * terbaca, dan tak ada alasan yang tercatat.
+     *
+     * Yang dijaga bukan lagi literal `true`, melainkan bahwa kartu niat menerima tampil-tidaknya
+     * terjemahan dari **preferensi pengguna** (`showTrans`), sebab literal `false` di sinilah yang
+     * dulu membuang terjemahannya. Bawaannya `true`, jadi bagi pengguna yang belum menyentuh
+     * pengaturannya hasilnya sama seperti sebelumnya — tetapi kini ia dapat mematikannya, dan
+     * mematikannya berlaku di kedua layar.
      */
     @Test
     fun terjemahanNiatTampilDiKeduaLayar() {
         // Jarak baris sengaja tidak dipaku: yang dijaga adalah pasangan `n.terjemahan` lalu
-        // `showLatin = true, showTrans = true` pada kartu niat yang sama, bukan lekuk indentasinya.
-        val kartuNiatDenganTerjemahan = Regex("""n\.terjemahan,\s*\n\s*true,\s*true,""")
+        // `showLatin, showTrans` pada kartu niat yang sama, bukan lekuk indentasinya.
+        val kartuNiatDariPreferensi = Regex("""n\.terjemahan,\s*\n\s*showLatin,\s*showTrans,""")
         listOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
-            assertTrue("$nama tidak menampilkan terjemahan niat (showTrans bukan true)",
-                kartuNiatDenganTerjemahan.containsMatchIn(teks))
+            assertTrue("$nama tidak menampilkan terjemahan niat lewat preferensi pengguna",
+                kartuNiatDariPreferensi.containsMatchIn(teks))
         }
+        assertTrue("\"tampil terjemahan\" tidak lagi menyala secara bawaan, sehingga niat kembali " +
+            "tanpa terjemahan bagi pengguna yang belum menyentuh pengaturannya",
+            BawaanPreferensi.TAMPIL_TERJEMAHAN)
     }
 }

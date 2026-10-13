@@ -380,6 +380,28 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **"Tampil Latin" dan "Tampil terjemahan" berlaku di setiap layar bacaan**: ketiga kunci
+  `SHOW_ARAB`/`SHOW_LATIN`/`SHOW_TRANS` menjawab satu pertanyaan yang sama — bagian mana dari
+  bacaan yang ditampilkan — tetapi hanya `showArab` yang dihormati semua layar. Tujuh layar
+  (Sholat, SholatDetail, Ghaib, Jenazah, Adzan, Iqomah, Doa adzan) menuliskan `true` langsung di
+  setiap pemanggilan `BacaanCard`, sementara Yasin, Tahlil, dan Dzikir membacanya dari preferensi.
+  Akibatnya pengguna yang mematikan "Tampil terjemahan" di Pengaturan **masih membaca terjemahan**
+  di ketujuh layar itu — dan di sana tombolnya pun tak pernah muncul di "Pengaturan bacaan", sebab
+  `BacaanSettingsSheet` menerima keduanya sebagai parameter **opsional** dengan alasan "layar yang
+  tak punya bacaan Latin/terjemahan tidak menampilkan chip yang tak berefek"; alasan itu keliru,
+  ketujuh layar itu memang menampilkan keduanya. Kini ketujuh layar memegang `showLatin`/`showTrans`
+  sebagai keadaan yang dimuat dari `Store.SHOW_LATIN`/`SHOW_TRANS` (bawaan
+  `BawaanPreferensi.TAMPIL_LATIN`/`TAMPIL_TERJEMAHAN`), mengopernya ke setiap `BacaanCard`, dan
+  menyediakan sakelarnya di sheet — bentuk opsionalnya dihapus sehingga layar tak punya cara lagi
+  menghilangkannya tanpa jejak. Dijaga `ReadingDisplayPrefsTest`, yang kini memaku aturan yang sama
+  untuk ketiga kunci sekaligus (termasuk bentuk **wajib** parameter sheet, dan jumlah pemanggilan
+  yang harus ditemukan agar penjaganya tidak hijau tanpa memeriksa apa pun). Satu jalur pelanggaran
+  lolos dari pencarian pemanggilan dan baru ketahuan di runner: layar Doa Setelah Adzan merender
+  kartunya lewat fungsi pembantu `KartuDoa`, dan fungsi itu menerima `showArab` saja — pemanggilan
+  `BacaanCard` di dalamnya tetap memuat `showLatin`/`showTrans`, jadi penjaganya hijau, tetapi
+  nama-nama itu di luar jangkauan dan layarnya gagal dikompilasi. Parameter fungsi pembantu karena
+  itu ikut dipaku: fungsi di layar fitur yang menerima `showArab: Boolean` harus menerima
+  `showLatin: Boolean` dan `showTrans: Boolean` juga.
 - **Rentang volume suara adzan punya satu rumah**: rentangnya dahulu tidak dinyatakan di mana pun —
   ia hidup sebagai `coerceIn(0f, 1f)` yang ditulis **tiga kali**, sekali di `AdzanPlayer.playOnce`
   dan dua kali di `AdzanPreview` (`play` dan `setVolume`), sementara slider di layar Adzan bahkan
