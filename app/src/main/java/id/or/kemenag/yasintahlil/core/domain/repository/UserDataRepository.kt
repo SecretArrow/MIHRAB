@@ -20,7 +20,18 @@ interface UserDataRepository {
     suspend fun toggleBookmark(kind: String, refId: String, label: String)
 
     fun recentHistory(limit: Int = 50): Flow<List<HistItem>>
-    suspend fun pushHistory(kind: String, refId: String, title: String)
+
+    /**
+     * Catat satu bacaan yang dibuka. [openedAt] dapat diisi waktu kejadian yang sebenarnya: riwayat
+     * warisan dipindahkan dari versi lama beserta waktunya, sehingga urutan "terakhir dibaca" tidak
+     * berubah hanya karena pemindahannya berjalan belakangan.
+     */
+    suspend fun pushHistory(
+        kind: String,
+        refId: String,
+        title: String,
+        openedAt: Long = System.currentTimeMillis(),
+    )
     suspend fun clearHistory()
 
     /**

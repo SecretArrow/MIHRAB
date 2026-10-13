@@ -47,8 +47,8 @@ class RoomUserDataRepository @Inject constructor(
     override fun recentHistory(limit: Int): Flow<List<HistItem>> =
         hist.observeRecent(limit).map { list -> list.map { HistItem(it.kind, it.refId, it.title, it.openedAt) } }
 
-    override suspend fun pushHistory(kind: String, refId: String, title: String) {
-        hist.insert(HistoryEntity(kind = kind, refId = refId, title = title))
+    override suspend fun pushHistory(kind: String, refId: String, title: String, openedAt: Long) {
+        hist.insert(HistoryEntity(kind = kind, refId = refId, title = title, openedAt = openedAt))
     }
 
     override suspend fun clearHistory() = hist.clear()

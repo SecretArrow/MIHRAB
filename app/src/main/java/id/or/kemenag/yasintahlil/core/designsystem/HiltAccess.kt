@@ -8,6 +8,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import id.or.kemenag.yasintahlil.core.data.local.MigrasiWarisan
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 
@@ -16,6 +17,14 @@ import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 @InstallIn(SingletonComponent::class)
 interface UserDataEntryPoint {
     fun userData(): UserDataRepository
+
+    /**
+     * Pemindah data warisan. Layar Pengaturan memakainya setelah memulihkan backup lama: berkas
+     * cadangan v1.0.0 hanya memuat preferensi, sehingga favorit, riwayat, dan posisi Tahlil
+     * pengguna ditulis kembali ke DataStore — dan tanpa pemanggilan ini, tak ada yang memindahkannya
+     * ke Room.
+     */
+    fun migrasiWarisan(): MigrasiWarisan
 }
 
 @Composable
@@ -23,6 +32,15 @@ fun rememberUserData(): UserDataRepository {
     val ctx = LocalContext.current
     return remember(ctx) {
         EntryPointAccessors.fromApplication(ctx.applicationContext, UserDataEntryPoint::class.java).userData()
+    }
+}
+
+@Composable
+fun rememberMigrasiWarisan(): MigrasiWarisan {
+    val ctx = LocalContext.current
+    return remember(ctx) {
+        EntryPointAccessors.fromApplication(ctx.applicationContext, UserDataEntryPoint::class.java)
+            .migrasiWarisan()
     }
 }
 

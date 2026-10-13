@@ -81,11 +81,16 @@ object BawaanPreferensi {
     // --- Kunci warisan (legacy) ---------------------------------------------------------
 
     /**
-     * Favorit dan riwayat dahulu disimpan di DataStore dan kini ada di Room; kuncinya tinggal untuk
-     * memindahkan data lama. Bawaannya tetap di sini agar `Store` tidak menuliskannya sendiri.
+     * Favorit, riwayat, dan posisi Tahlil dahulu disimpan di DataStore dan kini ada di Room; ketiga
+     * kuncinya tinggal untuk memindahkan data lama (`MigrasiWarisan`). Bawaannya tetap di
+     * sini agar pemindahnya tidak menuliskannya sendiri — dan agar "belum ada data lama" dapat
+     * dibedakan dari "ada, tapi kosong".
      */
     val FAVORIT: Set<String> = emptySet()
     const val RIWAYAT = ""
+
+    /** Posisi Tahlil warisan (`posisi:hitungan`); kosong berarti versi lama tak pernah menyimpannya. */
+    const val PROGRES_TAHLIL = ""
 
     /**
      * Koreksi Hijriah yang sah: nilai tersimpan di luar [RENTANG_KOREKSI_HIJRIAH] ditarik ke batas

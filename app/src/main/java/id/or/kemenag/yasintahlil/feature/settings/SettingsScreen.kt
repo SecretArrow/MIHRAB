@@ -37,6 +37,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     val store = rememberStore()
     val repo = rememberRepo()
     val userData = rememberUserData()
+    val migrasi = rememberMigrasiWarisan()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     var theme by remember { mutableStateOf(TemaAplikasi.SISTEM) }
@@ -271,9 +272,14 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                         store.importJson(root.getJSONObject("prefs").toString())
                         userData.restoreJson(root.optJSONObject("userData")?.toString() ?: "{}")
                     } else {
-                        // Kompatibel dengan backup lama (hanya preferensi).
+                        // Kompatibel dengan backup lama (hanya preferensi). Berkas cadangan v1.0.0
+                        // masih memuat kunci warisan — favorit, riwayat, dan posisi Tahlil — jadi
+                        // pemindahnya dijalankan lagi; tanpa itu ketiganya kembali masuk ke
+                        // DataStore dan tak ada yang membacanya.
                         store.importJson(backup)
                     }
+                    migrasi.jalankan()
+                    ringkasanUlang++
                 }
             }) { Text("Pulihkan") }
         }

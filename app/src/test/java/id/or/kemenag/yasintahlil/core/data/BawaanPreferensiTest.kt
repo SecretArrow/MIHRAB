@@ -64,6 +64,7 @@ class BawaanPreferensiTest {
         assertEquals("", BawaanPreferensi.SUSUNAN_SAYA)
         assertEquals("", BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH)
         assertEquals("", BawaanPreferensi.RIWAYAT)
+        assertEquals("", BawaanPreferensi.PROGRES_TAHLIL)
         assertEquals(0, BawaanPreferensi.PENANDA_YASIN)
         assertTrue(BawaanPreferensi.FAVORIT.isEmpty())
         assertFalse("jadwal ikut lokasi tanpa diminta", BawaanPreferensi.JADWAL_IKUT_LOKASI)
@@ -95,13 +96,22 @@ class BawaanPreferensiTest {
         )
     }
 
-    /** `Store` sendiri pun memakai nilai bersama itu, bukan menuliskannya sendiri. */
+    /**
+     * Pemindah data warisan pun memakai nilai bersama itu, bukan menuliskannya sendiri.
+     *
+     * Sebelumnya yang diperiksa di sini adalah `Store.toggleFav`/`Store.pushHist` — penulis DataStore
+     * dari versi lama. Keduanya sudah tidak ada (Room yang menulisnya kini), dan yang benar-benar
+     * membaca ketiga kunci warisan itu adalah `MigrasiWarisan`; di situlah bawaannya harus datang
+     * dari [BawaanPreferensi].
+     */
     @Test
-    fun storeMemakaiBawaanBersama() {
-        val s = File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt").readText()
-        assertTrue("Store.toggleFav menulis bawaan favoritnya sendiri",
+    fun migrasiWarisanMemakaiBawaanBersama() {
+        val s = File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/data/local/MigrasiWarisan.kt").readText()
+        assertTrue("pemindah favorit menulis bawaan favoritnya sendiri",
             s.contains("BawaanPreferensi.FAVORIT"))
-        assertTrue("Store.pushHist menulis bawaan riwayatnya sendiri",
+        assertTrue("pemindah riwayat menulis bawaan riwayatnya sendiri",
             s.contains("BawaanPreferensi.RIWAYAT"))
+        assertTrue("pemindah posisi Tahlil menulis bawaan posisi Tahlilnya sendiri",
+            s.contains("BawaanPreferensi.PROGRES_TAHLIL"))
     }
 }

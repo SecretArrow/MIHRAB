@@ -175,4 +175,43 @@ class KunciProgresSatuTempatTest {
         assertTrue("rujukan hitungan Tahlil menyalin jenisnya",
             KunciProgres.TAHLIL_HITUNGAN != JenisBacaan.TAHLIL)
     }
+
+    // ---- Bentuk warisan `Store.TAHLIL_PROG` ---------------------------------------------------
+
+    /**
+     * Nilai warisan Tahlil (`posisi:hitungan`) dibaca di satu tempat saja. Pemisahnya bukan
+     * [JenisBacaan.PEMISAH] meski bunyinya sama: satu memisahkan jenis dari rujukan pada id bacaan,
+     * yang lain memisahkan dua angka pada satu nilai. Menumpangkannya pada `JenisBacaan` berarti
+     * mengubah pemisah id bacaan ikut mengubah bentuk nilai warisan di perangkat pengguna.
+     */
+    @Test
+    fun nilaiWarisanTahlilDibacaUtuh() {
+        assertEquals(3 to 12, KunciProgres.bacaWarisan("3:12"))
+        assertEquals(0 to 0, KunciProgres.bacaWarisan("0:0"))
+        assertEquals(58 to 0, KunciProgres.bacaWarisan("58:0"))
+    }
+
+    /** Pemisahnya ikut tersimpan di perangkat versi lama; mengubahnya membuat nilai itu tak terbaca. */
+    @Test
+    fun pemisahNilaiWarisanTidakBerubah() {
+        assertEquals("pemisah nilai warisan Tahlil dibekukan seperti kunci progresnya",
+            ':', KunciProgres.PEMISAH_WARISAN)
+    }
+
+    /** Nilai yang tak berbentuk `posisi:hitungan` **dilewati**, bukan ditebak separuh. */
+    @Test
+    fun nilaiWarisanRusakTidakDitebak() {
+        listOf("", "5", "a:1", ":3", "2:", "1:2:3", "-").forEach {
+            assertEquals("nilai warisan '$it' seharusnya dilewati", null, KunciProgres.bacaWarisan(it))
+        }
+    }
+
+    @Test
+    fun pemindahWarisanMemakaiPembacaBersama() {
+        val migrasi = kodeLayar("core/data/local/MigrasiWarisan.kt")
+        assertTrue("pemindah posisi Tahlil tidak memakai pembaca bentuk warisan bersama",
+            migrasi.contains("KunciProgres.bacaWarisan("))
+        assertTrue("pemindah posisi Tahlil mengurai pemisahnya sendiri",
+            !migrasi.contains("substringBefore(':')") && !migrasi.contains("indexOf(':')"))
+    }
 }
