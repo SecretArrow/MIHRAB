@@ -380,6 +380,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Angka konten di dua dokumen ikut dijaga**: jumlah ayat Yasin dinyatakan **dua** dokumen — tabel
+  provenans di `docs/CONTENT_SOURCES.md` dan §1 `SOURCES.md` (*"Edisi terjemah: Kemenag 2019. Yasin =
+  83 ayat"*) — tetapi hanya yang pertama dibandingkan dengan bundel yang benar-benar dikirim. Justru
+  `SOURCES.md`, dokumen yang dibaca penulis konten sebagai rujukan resmi, bebas menua sendiri:
+  bundelnya kehilangan beberapa ayat, tabelnya ikut diperbarui, sedangkan angka di sana tetap lama —
+  dan pembaca menyimpulkan ada isi yang tak pernah ikut terkirim, atau menganggap berkas yang lebih
+  lengkap sebagai yang benar. `HitungKontenDiDokumenTest` kini membaca klaim itu dari `SOURCES.md`
+  pula dan membandingkannya dengan `ayat_count` bundel; menghapus klaimnya dari dokumen pun membuat
+  penjaganya gagal keras, bukan lolos dalam diam.
 - **Uji instrumented berhenti menyalin nama layar — dan `e2e` kembali berarti**: ketika nama layar
   disatukan ke `NamaLayar`, menu Ibadah berhenti menulis *"Yasin"* dan mulai memakai
   `NamaLayar.YASIN` (*"Surat Yasin"*). `NavSmokeTest` tidak ikut berubah: ia masih menekan
