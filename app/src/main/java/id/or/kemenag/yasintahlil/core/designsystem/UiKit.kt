@@ -287,15 +287,15 @@ fun BacaanSettingsSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(top = 4.dp),
             ) {
-                FilterChip(showArab, { onShowArab(!showArab) }, { Text("Arab") })
+                FilterChip(showArab, { onShowArab(!showArab) }, { Text(NamaAntarmuka.TAMPIL_ARAB) })
                 if (showLatin != null && onShowLatin != null) {
-                    FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text("Latin") })
+                    FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
                 }
                 if (showTrans != null && onShowTrans != null) {
-                    FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text("Terjemahan") })
+                    FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
                 }
             }
-            UkuranSlider("Ukuran Arab", arabSize, UkuranBacaan.ARAB, onArabSize)
+            UkuranSlider(NamaAntarmuka.UKURAN_ARAB, arabSize, UkuranBacaan.ARAB, onArabSize)
             // "Ukuran Latin" dan "jarak antarbaris" adalah preferensi bacaan **global**: satu nilai
             // dipakai semua layar bacaan dan [BacaanCard] membacanya sendiri. Ditulis langsung ke
             // preferensi di sini — bukan dioper dari tiap layar — karena sebelumnya hanya layar Yasin
@@ -307,10 +307,10 @@ fun BacaanSettingsSheet(
                 .collectAsStateWithLifecycle(UkuranBacaan.LATIN_DEFAULT)
             val tinggi by store.flow(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
                 .collectAsStateWithLifecycle(UkuranBacaan.JARAK_DEFAULT)
-            UkuranSlider("Ukuran Latin", latin, UkuranBacaan.LATIN, onUbah = { v ->
+            UkuranSlider(NamaAntarmuka.UKURAN_LATIN, latin, UkuranBacaan.LATIN, onUbah = { v ->
                 scope.launch { store.set(Store.LATIN_SIZE, v) }
             })
-            UkuranSlider("Jarak antarbaris", tinggi, UkuranBacaan.JARAK, onUbah = { v ->
+            UkuranSlider(NamaAntarmuka.JARAK_ANTARBARIS, tinggi, UkuranBacaan.JARAK, onUbah = { v ->
                 scope.launch { store.set(Store.LINE_HEIGHT, v) }
             }, desimal = 1)
             TemaHalamanChips()

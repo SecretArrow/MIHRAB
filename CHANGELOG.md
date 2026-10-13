@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Label preferensi bacaan tinggal di satu tempat**: enam kendali — tiga sakelar (Arab, Latin,
+  Terjemahan) dan tiga pengukur (Ukuran Arab, Ukuran Latin, Jarak antarbaris) — ada di **dua**
+  berkas, sheet *Pengaturan bacaan* dan layar Pengaturan, dan masing-masing mengeja namanya sendiri.
+  Keduanya menulis kunci `Store` yang **sama** (`SHOW_ARAB`/`SHOW_LATIN`/`SHOW_TRANS`,
+  `ARAB_SIZE`/`LATIN_SIZE`/`LINE_HEIGHT`), jadi keduanya memang mengatur satu preferensi yang sama:
+  mengganti nama satu sakelar di sheet akan meninggalkan layar Pengaturan menyebut preferensi yang
+  sama dengan kata lama, dan pengguna mengira ada dua pengaturan — persis yang dicegah aturan mazhab
+  Asar di layar itu. Enam nama itu kini tinggal di `NamaAntarmuka`, dan layar Pengaturan menurunkan
+  teks pengukurnya (`"${NamaAntarmuka.UKURAN_ARAB}: 24"`). Penjaga
+  `NamaAntarmukaSatuTempatTest.labelTidakDisalinKeLuarNamaAntarmuka` kini membaca **isi literal
+  string**, bukan potongan berkutip utuh — sehingga label yang disisipkan ke dalam kalimat panjang
+  (`"Ukuran Arab: ${…}"`) ikut tertangkap — dengan pembeda `memakaiLabel` yang membedakan label
+  kendali dari kata biasa di dalam prosa (kalimat seperti *"Teks Arab wajib berharakat"* bukan
+  salinan kendali). Satu pengecualian beralasan: `AtribusiTeks.kt` memakai kata *"Terjemahan"* untuk
+  label **asal-usul** teks, bukan sakelar tampilan — pengecualian itu dipaku uji tersendiri supaya
+  tidak berubah menjadi celah.
 - **Daftar domain resmi benar-benar tinggal di satu tempat**: kalimat *"dari mana konten aplikasi
   berasal"* ditulis di **empat** layar sekaligus, dan tiap layar mengejanya sendiri. Pengaturan
   menulis satu kalimat panjang yang mendaftar sumbernya sendiri — tiga host, dari lima domain yang
