@@ -395,7 +395,13 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyediakan sakelarnya di sheet — bentuk opsionalnya dihapus sehingga layar tak punya cara lagi
   menghilangkannya tanpa jejak. Dijaga `ReadingDisplayPrefsTest`, yang kini memaku aturan yang sama
   untuk ketiga kunci sekaligus (termasuk bentuk **wajib** parameter sheet, dan jumlah pemanggilan
-  yang harus ditemukan agar penjaganya tidak hijau tanpa memeriksa apa pun).
+  yang harus ditemukan agar penjaganya tidak hijau tanpa memeriksa apa pun). Satu jalur pelanggaran
+  lolos dari pencarian pemanggilan dan baru ketahuan di runner: layar Doa Setelah Adzan merender
+  kartunya lewat fungsi pembantu `KartuDoa`, dan fungsi itu menerima `showArab` saja — pemanggilan
+  `BacaanCard` di dalamnya tetap memuat `showLatin`/`showTrans`, jadi penjaganya hijau, tetapi
+  nama-nama itu di luar jangkauan dan layarnya gagal dikompilasi. Parameter fungsi pembantu karena
+  itu ikut dipaku: fungsi di layar fitur yang menerima `showArab: Boolean` harus menerima
+  `showLatin: Boolean` dan `showTrans: Boolean` juga.
 - **Rentang volume suara adzan punya satu rumah**: rentangnya dahulu tidak dinyatakan di mana pun —
   ia hidup sebagai `coerceIn(0f, 1f)` yang ditulis **tiga kali**, sekali di `AdzanPlayer.playOnce`
   dan dua kali di `AdzanPreview` (`play` dan `setVolume`), sementara slider di layar Adzan bahkan

@@ -226,9 +226,12 @@ fun DoaAdzanScreen() {
             "Bila diaktifkan: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, " +
                 "dan pengingat tetap berbunyi walau aplikasi ditutup."
         }, style = MaterialTheme.typography.labelSmall)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize, showArab)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize, showArab)
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize, showArab)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize,
+            showArab, showLatin, showTrans)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize,
+            showArab, showLatin, showTrans)
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize,
+            showArab, showLatin, showTrans)
         Text("Suara adzan dan pengingat sebelum adzan diatur di menu Adzan; saklar pengingat doa di " +
                 "atas dan di menu Adzan menulis preferensi yang sama. Iqomah memiliki timer " +
                 "tersendiri di menu Iqomah.",
@@ -254,7 +257,10 @@ fun DoaAdzanScreen() {
  * begitu bundel menambahkannya — satu jalur render untuk semuanya menutup celah itu.
  */
 @Composable
-private fun KartuDoa(id: String, entri: AdzanDoa, arabSize: Float, showArab: Boolean) {
+private fun KartuDoa(
+    id: String, entri: AdzanDoa, arabSize: Float,
+    showArab: Boolean, showLatin: Boolean, showTrans: Boolean,
+) {
     BacaanCard(id, entri.judul, entri.arab, entri.latin, entri.terjemahan,
         showLatin, showTrans, arabSize, sumber = entri.sumber, showArab = showArab, kategori = entri.kategori)
     if (entri.waktu.isNotBlank()) Text(

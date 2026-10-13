@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.designsystem
 
+import id.or.kemenag.yasintahlil.KodeSumber
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -21,6 +22,13 @@ import java.io.File
  * Jadi uji ini memaku aturan yang sama untuk ketiga kunci: setiap `BacaanCard` menyebut ketiganya,
  * dan setiap `BacaanSettingsSheet` menyediakan ketiganya — bentuk opsionalnya sudah dihapus, jadi
  * ketiadaan salah satunya adalah galat kompilasi di layar, bukan chip yang menghilang diam-diam.
+ *
+ * Satu jalur pelanggaran tidak tertangkap oleh pencarian pemanggilan: **fungsi pembantu**. Layar
+ * Doa Setelah Adzan merender kartunya lewat `KartuDoa`, dan `KartuDoa` dahulu hanya menerima
+ * `showArab` — sehingga `showLatin`/`showTrans` di badannya menunjuk ke luar jangkauan. Pemanggilan
+ * `BacaanCard` di dalamnya tetap memuat kedua nama itu, jadi penjaga pemanggilan hijau; yang gagal
+ * adalah kompilator, di runner CI, bukan di sini. Karena itu parameter fungsi pembantu ikut dipaku
+ * ([fungsiPembantuYangMeneruskanShowArabIkutMenerimaKeduanya]).
  */
 class ReadingDisplayPrefsTest {
 
@@ -71,6 +79,33 @@ class ReadingDisplayPrefsTest {
         featureSources().flatMap { f -> callSites(f.readText(), nama).map { f.name to it } }
 
     private fun rapikan(teks: String) = teks.replace(Regex("\\s+"), " ").take(80)
+
+    /**
+     * Tiap deklarasi `fun nama(...)` beserta daftar parameternya, dengan tanda kurung seimbang.
+     * Komentar dibuang lebih dahulu supaya KDoc yang menyebut bentuk lama tidak ikut terbaca, dan
+     * hanya `fun` di awal baris yang diambil agar prosa di dalam kalimat tidak menghitung.
+     */
+    private fun deklarasiFungsi(src: String): List<String> {
+        val kode = KodeSumber.kodeTanpaKomentar(src)
+        val out = mutableListOf<String>()
+        Regex("""(?m)^\s*(?:private |internal |public |protected )?fun\s+(\w+)\s*\(""")
+            .findAll(kode).forEach { m ->
+                var depth = 0
+                var j = m.range.last
+                while (j < kode.length) {
+                    when (kode[j]) {
+                        '(' -> depth++
+                        ')' -> {
+                            depth--
+                            if (depth == 0) { j++; break }
+                        }
+                    }
+                    j++
+                }
+                out += kode.substring(m.range.first, minOf(j, kode.length))
+            }
+        return out
+    }
 
     @Test
     fun setiap_pemanggilan_BacaanCard_menghormati_showArab() {
@@ -164,6 +199,31 @@ class ReadingDisplayPrefsTest {
                 deklarasi.contains(tanda),
             )
         }
+    }
+
+    /**
+     * Fungsi pembantu yang meneruskan `showArab` ke kartunya harus menerima `showLatin` dan
+     * `showTrans` juga. Tanpa itu, badan fungsinya menyebut dua nama yang tidak ada di
+     * jangkauannya: pencarian pemanggilan di atas tetap hijau (namanya ada di sana), tetapi
+     * layarnya tidak dapat dikompilasi — kegagalannya baru muncul di runner, bukan di sini.
+     *
+     * Yang diperiksa hanya layar fitur; `BacaanCard` sendiri tinggal di `core/designsystem` dan
+     * memang menerima ketiganya.
+     */
+    @Test
+    fun fungsiPembantuYangMeneruskanShowArabIkutMenerimaKeduanya() {
+        val offenders = featureSources().flatMap { f ->
+            deklarasiFungsi(f.readText())
+                .filter { it.contains("showArab: Boolean") }
+                .filterNot { it.contains("showLatin: Boolean") && it.contains("showTrans: Boolean") }
+                .map { "${f.name}: ${rapikan(it)}" }
+        }
+        assertTrue(
+            "Ada fungsi pembantu yang menerima showArab tetapi tidak showLatin/showTrans, " +
+                "sehingga badan fungsinya menyebut nama di luar jangkauan dan layarnya gagal " +
+                "dikompilasi:\n" + offenders.joinToString("\n"),
+            offenders.isEmpty(),
+        )
     }
 
     @Test
