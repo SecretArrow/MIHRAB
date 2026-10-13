@@ -61,10 +61,14 @@ fun GhaibScreen() {
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
     }
     FullscreenEffect(fullscreen)
     val info = remember { repo.sholatKhusus(BerkasKonten.SHOLAT_GHAIB) }
@@ -95,7 +99,7 @@ fun GhaibScreen() {
                 // langkah di bawah (`ghaib:<id bacaan>`) — keduanya id tersimpan yang berbeda.
                 BacaanCard(JenisBacaan.id(JenisBacaan.GHAIB, JenisBacaan.id(JenisBacaan.NIAT, n.id)),
                     n.judul, n.arab, n.latin, n.terjemahan,
-                    true, true, arabSize, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
+                    showLatin, showTrans, arabSize, sumber = n.sumber, showArab = showArab, kategori = n.kategori)
             }
         }
         steps.forEachIndexed { i, (judul, b) ->
@@ -104,7 +108,7 @@ fun GhaibScreen() {
             if (b != null) {
                 val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
                 val (a, l, t) = TampilanSholatKhusus.teksBacaan(b, ra, rl, rt)
-                BacaanCard(JenisBacaan.id(JenisBacaan.GHAIB, b.id), b.judul, a, l, t, true, true,
+                BacaanCard(JenisBacaan.id(JenisBacaan.GHAIB, b.id), b.judul, a, l, t, showLatin, showTrans,
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
@@ -119,6 +123,8 @@ fun GhaibScreen() {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }

@@ -258,8 +258,16 @@ fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
  * kini kontrol tampilan yang sama tinggal dibuka dari satu tombol, sehingga badan layar tetap
  * bersih dan istilahnya seragam.
  *
- * Parameter opsional ([showLatin], [showTrans]) hanya ditampilkan bila layar memang menyediakannya —
- * layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang tak berefek.
+ * Ketiga sakelar ("Arab", "Latin", "Terjemahan") **wajib** dioper layar. Dua di antaranya dahulu
+ * opsional, dengan alasan "layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang
+ * tak berefek" — dan alasan itu keliru untuk tujuh layar: semuanya **memang** menampilkan Latin dan
+ * terjemahan, nilainya ditulis `true` langsung di tiap `BacaanCard`, sehingga chip yang "tak
+ * berefek" itu justru **tidak ada**. Akibatnya pengguna yang mematikan "Tampil terjemahan" di
+ * Pengaturan masih membaca terjemahan di layar Sholat, Ghaib, Jenazah, Adzan, dan Iqomah, sementara
+ * di Yasin, Tahlil, dan Dzikir terjemahannya hilang — satu pengaturan, dua perilaku. Bentuk
+ * opsionalnya kini dihapus: layar yang memakai sheet ini pasti menyediakan ketiganya, dan
+ * `BacaanCard` di layar yang sama menerima nilainya dari keadaan itu juga. Dijaga
+ * `ReadingDisplayPrefsTest`.
  *
  * "Ukuran Latin" dan "jarak antarbaris" tidak dioper dari layar: keduanya preferensi bacaan global
  * yang ditulis sheet ini sendiri, sama seperti "tema halaman". "Ukuran Arab" tetap dioper karena
@@ -271,8 +279,8 @@ fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
 fun BacaanSettingsSheet(
     onDismiss: () -> Unit,
     showArab: Boolean, onShowArab: (Boolean) -> Unit,
-    showLatin: Boolean? = null, onShowLatin: ((Boolean) -> Unit)? = null,
-    showTrans: Boolean? = null, onShowTrans: ((Boolean) -> Unit)? = null,
+    showLatin: Boolean, onShowLatin: (Boolean) -> Unit,
+    showTrans: Boolean, onShowTrans: (Boolean) -> Unit,
     arabSize: Float, onArabSize: (Float) -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
@@ -288,12 +296,8 @@ fun BacaanSettingsSheet(
                 modifier = Modifier.padding(top = 4.dp),
             ) {
                 FilterChip(showArab, { onShowArab(!showArab) }, { Text(NamaAntarmuka.TAMPIL_ARAB) })
-                if (showLatin != null && onShowLatin != null) {
-                    FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
-                }
-                if (showTrans != null && onShowTrans != null) {
-                    FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
-                }
+                FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
+                FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
             }
             UkuranSlider(NamaAntarmuka.UKURAN_ARAB, arabSize, UkuranBacaan.ARAB, onArabSize)
             // "Ukuran Latin" dan "jarak antarbaris" adalah preferensi bacaan **global**: satu nilai

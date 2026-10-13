@@ -47,6 +47,8 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     var ringkas by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var selesai by rememberSaveable { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var settings by remember { mutableStateOf(false) }
@@ -54,6 +56,8 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
     }
     // Progres belajar tersimpan di Room — tetap ada setelah keluar layar.
@@ -84,7 +88,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         // Sholat wajib tidak punya kolom tujuan, jadi baris ini hanya muncul untuk sholat sunnah.
         info?.tujuan?.takeIf { it.isNotBlank() }?.let { Text("Tujuan: $it") }
         info?.niat?.let { n ->
-            BacaanCard(JenisBacaan.id(JenisBacaan.NIAT, id), "Niat", n.arab, n.latin, n.terjemahan, true, true, arabSize,
+            BacaanCard(JenisBacaan.id(JenisBacaan.NIAT, id), "Niat", n.arab, n.latin, n.terjemahan, showLatin, showTrans, arabSize,
                 showArab = showArab, kategori = n.kategori)
         }
         if (info?.niat == null) {
@@ -208,7 +212,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             // Rujukannya `<id sholat>:<id bacaan>`: langkah yang sama (mis. rukuk) muncul di banyak
             // sholat, dan tanpa id sholat di depannya favorit satu langkah akan menandai langkah
             // yang sama di sholat lain.
-            BacaanCard(JenisBacaan.id(JenisBacaan.LANGKAH, "$id:${b.id}"), b.judul, a, l, t, true, true, arabSize, sumber = b.sumber,
+            BacaanCard(JenisBacaan.id(JenisBacaan.LANGKAH, "$id:${b.id}"), b.judul, a, l, t, showLatin, showTrans, arabSize, sumber = b.sumber,
                 showArab = showArab, kategori = b.kategori)
             if (b.catatan.isNotBlank()) {
                 Text(b.catatan, style = MaterialTheme.typography.labelSmall,
@@ -246,6 +250,8 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }

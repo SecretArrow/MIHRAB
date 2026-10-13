@@ -35,6 +35,8 @@ fun SholatScreen(go: (String) -> Unit) {
     var tab by rememberSaveable { mutableStateOf(0) }
     var cara by rememberSaveable { mutableStateOf(CaraKelompok.WAKTU) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var settings by remember { mutableStateOf(false) }
     // Penyaring di layar (`plan.txt`: "pencarian dan akses cepat pada halaman yang memiliki banyak
@@ -43,6 +45,8 @@ fun SholatScreen(go: (String) -> Unit) {
     var q by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
     }
     val bacaan = remember { repo.sholatBacaan() }
@@ -163,7 +167,7 @@ fun SholatScreen(go: (String) -> Unit) {
                     val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
                         Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
                     }
-                    BacaanCard(JenisBacaan.id(JenisBacaan.BACAAN, b.id), b.judul, a, l, t, true, true, arabSize,
+                    BacaanCard(JenisBacaan.id(JenisBacaan.BACAAN, b.id), b.judul, a, l, t, showLatin, showTrans, arabSize,
                         sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab, kategori = b.kategori)
                     if (b.catatan.isNotBlank()) {
                         Text(b.catatan, style = MaterialTheme.typography.labelSmall,
@@ -178,6 +182,8 @@ fun SholatScreen(go: (String) -> Unit) {
         BacaanSettingsSheet(
             onDismiss = { settings = false },
             showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
+            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
+            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
             arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
         )
     }
