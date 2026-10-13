@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Aturan menerangkan metode hisab tinggal di satu tempat**: kalimat *"bagaimana metode yang
+  sedang berlaku diterangkan ke pengguna"* ditulis ulang di tiap layar yang menyebutnya, dan
+  ketiganya berbeda. Kepala layar Jadwal menuliskan `Magrib+…mnt`, penjelasan di menu Adzan
+  menuliskan `Isya Magrib+… menit` — dua ejaan untuk satu aturan — sedangkan layar Pengaturan
+  menuliskan **Kemenag/SIHAT** secara tetap. Yang terakhir paling berbahaya: pemilih metode ada di
+  menu Jadwal (MWL, Umm al-Qura, Egyptian, Makkah), tetapi siapa pun yang memilihnya membaca di
+  Pengaturan bahwa jadwalnya dihitung dengan Kemenag/SIHAT — keterangan yang berbohong tanpa satu
+  pun pesan galat, dan layar Pengaturan bahkan tak pernah membaca `Store.METHOD`. Kini aturannya
+  tinggal di `JadwalHariIni.metodeRingkas`, dibaca dari `PrayerCalc.Method` yang sedang aktif;
+  ketiga layar memanggilnya, dan Pengaturan membaca metode aktif untuk menyebut namanya. Dijaga
+  `AturanMetodeSatuTempatTest` — ringkasannya diperiksa **terhadap definisi setiap metode** (jadi
+  mengubah sudut sebuah metode tidak membuat uji hijau secara palsu), setiap layar yang menerangkan
+  metode wajib memanggil aturan bersama, tak satu pun boleh mengetik sudut/selang/nama metode
+  sendiri, dan format `Magrib+…mnt` dibuktikan hanya hidup di satu berkas kode produksi.
+  `PenjelasanMetodeAdzanTest` disesuaikan: yang diperiksa kini bahwa layar Adzan **memakai** aturan
+  bersama, bukan menyalinnya lagi.
 - **Dokumen berhenti menjanjikan pemeriksaan yang tidak ada**: lima klaim di dokumentasi tidak
   sesuai kenyataan, dan tak satu pun diperiksa — kelas yang sama dengan bug-bug sebelumnya, hanya
   kini dokumennya yang berbohong kepada pembaca, bukan kode kepada dirinya sendiri. (1) `SOURCES.md`

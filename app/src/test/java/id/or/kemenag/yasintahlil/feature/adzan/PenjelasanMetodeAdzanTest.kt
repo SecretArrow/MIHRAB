@@ -41,13 +41,20 @@ class PenjelasanMetodeAdzanTest {
             s.contains("Metode jadwal: Kemenag/SIHAT"))
     }
 
-    /** Angka sudut yang ditampilkan harus datang dari definisi metode, bukan ditulis ulang. */
+    /**
+     * Angka sudut yang ditampilkan harus datang dari definisi metode, bukan ditulis ulang.
+     *
+     * Sejak aturannya dipindahkan ke `JadwalHariIni.metodeRingkas` (lihat
+     * [id.or.kemenag.yasintahlil.core.util.AturanMetodeSatuTempatTest]), yang diperiksa di sini
+     * adalah bahwa layar ini **memakai** aturan itu — bukan menyalinnya lagi. Isi aturannya sendiri
+     * diuji terhadap definisi setiap metode di kelas itu.
+     */
     @Test
     fun penjelasanMemakaiParameterMetodeYangSama() {
         val s = adzanScreen()
-        assertTrue("penjelasan tidak menyebut sudut Fajr metode", s.contains("metode.fajr"))
-        assertTrue("penjelasan tidak menangani metode berjeda Isya (Umm al-Qura/Makkah)",
-            s.contains("metode.ishaIntervalMin"))
+        assertTrue("penjelasan tidak memakai aturan ringkasan metode bersama",
+            s.contains("JadwalHariIni.metodeRingkas(metode)"))
+        assertFalse("penjelasan kembali mengetik sudut metode sendiri", s.contains("metode.fajr"))
     }
 
     /** Pengguna harus diarahkan ke layar yang benar-benar memuat pengaturan itu. */

@@ -26,6 +26,7 @@ import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
+import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
@@ -50,6 +51,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var city by remember { mutableStateOf(JadwalHariIni.KOTA_DEFAULT) }
+    // Metode hisab yang sedang berlaku. Layar ini **tidak** punya pemilihnya (pemilihnya di menu
+    // Jadwal), tetapi keterangan "Sumber jadwal sholat" di bawah menyebut metode yang dipakai —
+    // jadi namanya harus dibaca dari `Store.METHOD`, bukan diketik tetap "Kemenag/SIHAT".
+    var metode by remember { mutableStateOf(PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT)) }
     var notif by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_WAKTU) }
     var hijriCorr by remember { mutableStateOf(BawaanPreferensi.KOREKSI_HIJRIAH) }
     var compassUnit by remember { mutableStateOf(TampilanKompas.SATUAN_DEFAULT) }
@@ -74,6 +79,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         infoCard = store.get(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO)
         asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
         city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
+        metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
         mazhab = store.get(Store.MADHAB, Mazhab.DEFAULT)
         notif = store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)
         hijriCorr = store.get(Store.HIJRI_CORR, BawaanPreferensi.KOREKSI_HIJRIAH)
@@ -174,7 +180,11 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             FilterChip(selected = true, onClick = {}, enabled = false, label = { Text("Hitung lokal (offline)") })
             FilterChip(selected = false, onClick = {}, enabled = false, label = { Text("SIHAT online (belum tersedia)") })
         }
-        Text("Perhitungan dilakukan di perangkat (algoritma Meeus, metode Kemenag/SIHAT) sehingga tetap akurat tanpa internet. Sumber online resmi belum diaktifkan karena SIHAT Bimas Islam tidak menyediakan API publik untuk aplikasi pihak ketiga.",
+        Text("Perhitungan dilakukan di perangkat (algoritma Meeus, metode ${metode.label} — " +
+                "${JadwalHariIni.metodeRingkas(metode)}) sehingga tetap akurat tanpa internet. " +
+                "Metode dan zona waktunya diubah di menu Jadwal. Sumber online resmi belum " +
+                "diaktifkan karena SIHAT Bimas Islam tidak menyediakan API publik untuk aplikasi " +
+                "pihak ketiga.",
             style = MaterialTheme.typography.labelSmall)
 
         Text("Koreksi kalender Hijriah: ${if (hijriCorr > 0) "+" else ""}$hijriCorr hari",
