@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Ejaan angka waktu tinggal di satu tempat**: format `"%02d:%02d"` ditulis ulang di **tiga**
+  berkas — `PrayerCalc.compute` saat menyusun waktu sholat, `JadwalHariIni.geser` saat menggesernya,
+  dan layar Iqomah saat menghitung mundur — sehingga tak ada satu pun tempat yang tahu ejaan mana
+  yang benar. Dua yang pertama menghasilkan **jam** yang sama, jadi salinan yang menyimpang membuat
+  jam yang dihitung dan jam yang digeser disebut dengan tulisan berbeda (mis. `%d:%02d` menjadikan
+  "05:07" terbaca "5:07" hanya di satu layar). Yang ketiga menghasilkan **durasi**, sehingga
+  menyalin ejaannya begitu saja menyembunyikan bahwa angkanya berarti lain: "01:30" pada hitungan
+  mundur iqomah adalah satu menit tiga puluh detik, bukan pukul satu lewat tiga puluh menit. Ejaannya
+  kini satu di `FormatWaktu` — `pasanganAngka` satu-satunya format string, `jamMenit` untuk jam
+  (kebalikan `PrayerCalc.toMinutes`, sengaja **tidak** melipat melewati tengah malam karena lipatan
+  adalah urusan pemanggil), dan `menitDetik` untuk durasi yang **sengaja bernama beda** supaya kedua
+  makna tak pernah tertukar tanpa ketahuan. Dijaga `FormatWaktuSatuTempatTest`, yang juga menolak
+  format string waktu ditulis di berkas lain.
 - **Aturan teks dua layar sholat mayit tinggal di satu tempat**: layar Sholat Ghaib dan Sholat
   Jenazah menampilkan **medan yang sama** dari berkas kontennya (`sholat_ghaib.json` /
   `sholat_jenazah.json`) — judul, jumlah takbir, syarat, dalil, catatan mazhab, niat, dan langkah

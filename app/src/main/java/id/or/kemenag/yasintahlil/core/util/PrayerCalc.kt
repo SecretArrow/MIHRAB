@@ -91,7 +91,7 @@ object PrayerCalc {
         fun fmt(h: Double, corrMin: Int): String {
             var m = ((h * 60.0).roundToInt() + corrMin + p.method.ihtiyat) % 1440
             if (m < 0) m += 1440
-            return "%02d:%02d".format(m / 60, m % 60)
+            return FormatWaktu.jamMenit(m)
         }
         val magrib = fmt(noon + hourAngle(-0.833), c[4])
         val isya = if (p.method.ishaIntervalMin != null) {
@@ -109,6 +109,7 @@ object PrayerCalc {
         )
     }
 
+    /** Menit ke hari dari jam "HH:mm" — kebalikan [FormatWaktu.jamMenit]. */
     fun toMinutes(hhmm: String): Int {
         val (h, m) = hhmm.split(":").map { it.toInt() }
         return h * 60 + m
