@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Provenans modul yang tertulis di bundel kini benar-benar tampil — dan layar tak lagi menyatakan
+  lebih daripada sumbernya**: `SOURCES.md` §6 mencatat `edisi` dan `catatan_mazhab` sebagai
+  satu-satunya metadata provenans yang **tidak** diperiksa gerbang konten, sehingga kelengkapannya
+  hanya terjaga bila kode membacanya. Ternyata tidak: dua di antaranya ditulis di bundel, lalu tak
+  pernah sampai ke layar, dan layar mencetak parafrase yang menyimpang sebagai gantinya.
+  `sholat_daftar.json#catatan_mazhab` menyatakan qunut Subuh termasuk ketentuan yang *"memiliki
+  perbedaan pendapat"*, sedangkan layar rincian langkah sholat menulis *"Indonesia umumnya Syafi'i
+  (qunut Subuh sunnah)"* — menyatakan sebagai mapan hal yang sumbernya sendiri catat sebagai
+  diperselisihkan. `wudhu.json#edisi` menyebut kerangka *"wudhu & tayamum … Fasolatan/Ngaji
+  Fasolatan"*, sedangkan layar Wudhu menulis parafrase yang lebih pendek dan menghilangkan tayamum
+  serta "Ngaji Fasolatan". Keduanya kini dibaca lewat `ContentRepo.sholatCatatanMazhab()` dan
+  `PanduanBersuci.edisi` lalu ditampilkan apa adanya, dan `AtribusiModulTest` menolak layar yang
+  kembali mengarang versinya sendiri.
 - **Nomor urut lafaz iqomah kini satu aturan — lafaz yang sama tak lagi tersimpan dengan dua id**:
   lafaz iqomah diberi id kartu dari nomor urutnya (`iqomah:1`, `iqomah:2`, …) karena beberapa
   lafaznya memang berulang dan id yang diambil dari teks Arab membuat favorit satu lafaz menandai

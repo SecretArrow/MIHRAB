@@ -43,5 +43,10 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
 - **Tidak diperiksa mesin**: `edisi` dan `catatan_mazhab` — metadata provenans di tingkat berkas/bagian
   yang menjelaskan asal-usul. Keduanya tak pernah digagalkan CI, jadi kelengkapannya harus diperiksa
   manusia saat meninjau; jangan mengandalkan gate untuk menangkap kutipan yang hilang.
+  - Karena itu keduanya **wajib dibaca dan ditampilkan** oleh layar yang bersangkutan, bukan
+    diringkas ulang di kode: `sholat_daftar.json#catatan_mazhab` oleh layar rincian langkah sholat,
+    `wudhu.json#edisi` oleh layar Wudhu. Penjaganya `AtribusiModulTest`; dahulu keduanya tak pernah
+    terbaca sehingga layar menampilkan parafrase yang menyimpang — termasuk menyatakan *qunut Subuh
+    sunnah* padahal berkasnya mencatatnya sebagai ketentuan yang diperselisihkan.
 - CI gagal jika `sumber_url` kosong atau domain di luar: `*.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id` (penjelas saja).
 - Dilarang generate teks Arab dengan AI. Dilarang karang hadis/sanad.
