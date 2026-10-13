@@ -7,7 +7,7 @@ on:
     inputs:
       tag:
         description: >-
-          Tag yang sudah ada (mis. v1.0.1) untuk benar-benar menerbitkan rilis.
+          Tag yang sudah ada (mis. v1.1.0) untuk benar-benar menerbitkan rilis.
           Kosongkan untuk sekadar menguji build rilis — tidak ada rilis yang terbit.
         required: false
         type: string
@@ -84,7 +84,7 @@ jobs:
         # Versi hidup di DUA tempat: `versionName` di app/build.gradle.kts (yang dibaca BuildConfig
         # dan tampil di layar Tentang) dan nama tag (yang menjadi nama rilis). Bila keduanya
         # menyimpang, rilis resmi menerbitkan APK yang di dalamnya mengaku versi lain — pengguna
-        # melihat "1.0.0" pada rilis bernama v1.0.1 — dan tak ada satu pun langkah yang memeriksanya.
+        # melihat "1.0.0" pada rilis bernama v1.1.0 — dan tak ada satu pun langkah yang memeriksanya.
         # Dibandingkan, bukan diasumsikan, seperti sidik jari tanda tangan di langkah sebelumnya.
         # Berlaku hanya saat ref-nya memang tag (atau tag diminta eksplisit) supaya dispatch dari
         # cabang tetap boleh menjadi uji build.

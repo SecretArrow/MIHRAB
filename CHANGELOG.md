@@ -7,15 +7,13 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [1.1.0] - 2026-10-13
 
-Rilis ini memuat kode yang **sama** dengan v1.0.1 (terbit beberapa menit sebelumnya); yang berubah
-hanya nomor versinya. Kumpulan perubahan sejak v1.0.0 menambah kemampuan — panduan sholat lengkap,
-pustaka dzikir & doa, kontrol baca Yasin/Tahlil, kiblat dengan peta offline, adzan dengan
-penjadwalan latar, serta penutupan sistematis kelas bug "satu aturan di banyak tempat" — sehingga
-menurut Semantic Versioning penandanya adalah **MINOR**, bukan patch. Rincian perubahannya ada pada
-bagian [1.0.1] di bawah, yang tidak ditulis ulang agar tetap jujur menggambarkan apa yang benar-benar
-terbit saat itu. v1.0.1 digantikan oleh rilis ini.
+Kumpulan perubahan sejak v1.0.0 **menambah kemampuan** — panduan sholat lengkap, pustaka dzikir &
+doa, kontrol baca Yasin/Tahlil, kiblat dengan peta offline, adzan dengan penjadwalan latar, serta
+penutupan sistematis kelas bug "satu aturan di banyak tempat" — sehingga menurut Semantic Versioning
+penandanya adalah **MINOR**, bukan patch.
 
-## [1.0.1] - 2026-10-13
+Kode yang sama sempat terbit sebentar dengan nomor `1.0.1`, lalu rilis dan tagnya ditarik kembali,
+jadi tidak ada bagian `[1.0.1]` di changelog ini. Seluruh perubahannya sejak v1.0.0 ada di bawah.
 
 ### Ditambahkan
 - **Jenis suara adzan** (`plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang
