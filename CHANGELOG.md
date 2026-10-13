@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Id entri daftar sholat khusus tinggal di satu tempat**: layar Panduan Sholat mengenali entri yang
+  punya modul sendiri (Ghaib, Jenazah) dengan mengeja id-nya sendiri — `s.id == "ghaib"`,
+  `s.id == "jenazah"` — padahal id itu datang dari `sholat_daftar.json`. Tak ada apa pun yang
+  menyandingkan kedua ejaan itu, sehingga mengganti id di bundel (entri itu dinamai ulang, misalnya)
+  **diam-diam** menghapus tombol "Buka" bagi entri tersebut: ia jatuh ke tombol "Tata cara" yang
+  membuka halaman rincian tanpa isi, dan tak satu pun uji gagal. Menambah modul khusus baru pun tak
+  menolong — yang baru tidak pernah dikenali betapa pun lengkapnya barisnya di
+  `BerkasKonten.SHOLAT_KHUSUS`. Daftar bersama itu kini menyimpan pula **id entri daftarnya** dan
+  **nama layarnya** (`BerkasKonten.Modul`), layar membacanya lewat
+  `BerkasKonten.SHOLAT_KHUSUS.firstOrNull { it.idDaftar == s.id }`, dan nama tombolnya ikut lahir dari
+  sana (`"Buka ${modul.nama}"`) alih-alih ditulis ulang. Dijaga dari dua sisi: id itu harus benar-benar
+  ada di `sholat_daftar.json` (dan tak kembar), sedangkan namanya harus sama dengan yang diberikan
+  peta bersama `RuteKonten` untuk rute itu — modul yang menulis *"Ghaib"* untuk rute Jenazah ditolak.
 - **Angka konten di dua dokumen ikut dijaga**: jumlah ayat Yasin dinyatakan **dua** dokumen — tabel
   provenans di `docs/CONTENT_SOURCES.md` dan §1 `SOURCES.md` (*"Edisi terjemah: Kemenag 2019. Yasin =
   83 ayat"*) — tetapi hanya yang pertama dibandingkan dengan bundel yang benar-benar dikirim. Justru

@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
@@ -102,8 +103,14 @@ fun SholatScreen(go: (String) -> Unit) {
                         Text("${s.rakaat} • ${s.waktu}")
                         Text(s.deskripsi)
                         Row {
-                            if (s.id == "ghaib") Button(onClick = { go(Routes.GHAIB) }) { Text("Buka panduan Ghaib") }
-                            else if (s.id == "jenazah") Button(onClick = { go(Routes.JENAZAH) }) { Text("Buka panduan") }
+                            // Entri yang punya modul sendiri (Ghaib, Jenazah) dikenali dari daftar
+                            // bersama `BerkasKonten.SHOLAT_KHUSUS` — daftar itu memuat id entrinya di
+                            // `sholat_daftar.json`, rutenya, dan nama layarnya. Sebelumnya id-nya
+                            // dieja di sini (`s.id == "ghaib"`), dan tak ada apa pun yang
+                            // membandingkannya dengan bundel: mengganti id di sana menghapus tombol
+                            // ini diam-diam, dan entri itu jatuh ke halaman rincian tanpa isi.
+                            val modul = BerkasKonten.SHOLAT_KHUSUS.firstOrNull { it.idDaftar == s.id }
+                            if (modul != null) Button(onClick = { go(modul.rute) }) { Text("Buka ${modul.nama}") }
                             else Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                         }
                     }
