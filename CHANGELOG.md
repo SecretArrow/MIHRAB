@@ -380,6 +380,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Bentuk berkas cadangan tinggal di satu tempat, dan pemulihan tak menghapus bagian yang tak ada
+  di berkasnya**: berkas cadangan punya dua sisi yang tak pernah bertemu — penulis
+  (`SettingsScreen` + `RoomUserDataRepository.exportJson`) dan pembaca (`restoreJson` + layar
+  Pengaturan lagi) — dan keduanya mengeja **enam belas** nama kunci JSON secara terpisah
+  (`"userData"`, `"favorites"`, `"createdAt"`, …), tanpa satu pun pemeriksaan. Bedanya sunyi, dan
+  akibatnya lebih besar daripada kehilangan satu pengaturan: `restoreJson` mengosongkan keempat
+  tabel **lebih dahulu**, baru mengisi ulang dari berkas, sehingga satu nama kunci yang meleset
+  berakhir dengan seluruh favorit, bookmark, riwayat, dan progres terhapus, nol baris dimasukkan,
+  dan tak satu pun pesan galat — pengguna menekan "Pulihkan" dan kehilangan seluruh datanya,
+  termasuk data yang tidak diminta diganti. Bentuknya kini tinggal di `FormatCadangan`, dan
+  pemulihan hanya menyentuh bagian yang **benar-benar ada** di berkas: berkas yang memuat
+  preferensi tanpa `userData` — atau versi lain, atau berkas separuh — tak lagi mengosongkan apa
+  pun. Dijaga `FormatCadanganSatuTempatTest` (penulis dan pembaca harus memakai kunci yang sama
+  **beserta jumlah kemunculannya**, tiap pengosongan harus membaca lariknya lebih dahulu dan
+  bergantung pada keberadaannya, dan tak ada kunci yang dieja kembali di tempat pemakaian), dengan
+  uji instrumented `UserDataPersistenceTest` membuktikan berkas sebagian tak menghapus bagian lain.
+  Nama keempat larik yang kebetulan sama dengan nama tabel Room sengaja **tidak** disatukan: nama
+  tabel adalah urusan skema penyimpanan, nama kunci adalah urusan berkas yang keluar dari aplikasi.
 - **Jumlah riwayat di beranda bukan jumlah riwayat, dan batas daftar riwayat kini satu rumah**:
   kartu ringkasan beranda menulis *"Favorit: 12 • Riwayat: 50"*, tetapi kedua angka di baris yang
   sama itu dihitung dengan cara berbeda — favorit dari daftar **penuh** (`favorites()`), sedangkan
