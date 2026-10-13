@@ -91,7 +91,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
             if (atribusi.isNotBlank()) {
                 Text(atribusi, style = MaterialTheme.typography.labelSmall)
             }
-            Text("Terakhir dibaca: ${if (s.mark in 1..surah.ayatCount) "ayat ${s.mark}" else "belum ada"}",
+            Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${if (s.mark in 1..surah.ayatCount) "ayat ${s.mark}" else "belum ada"}",
                 style = MaterialTheme.typography.labelMedium)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(jump, { jump = it.filter(Char::isDigit).take(2) },

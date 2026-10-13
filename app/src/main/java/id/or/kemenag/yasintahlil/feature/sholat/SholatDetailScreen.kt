@@ -215,9 +215,9 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                     modifier = Modifier.padding(top = 4.dp))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text("← Sebelumnya") }
+                Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
                 Button(onClick = { step = 0 }) { Text("Ulangi") }
-                Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text("Berikutnya →") }
+                Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
             }
             if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
                 color = MaterialTheme.colorScheme.primary)
@@ -226,7 +226,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                     Text(if (selesai) "✓ Sudah ditandai selesai" else "Tandai selesai")
                 }
                 if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, id, 0) } }) {
-                    Text("Batalkan tanda")
+                    Text(NamaAntarmuka.BATALKAN_TANDA)
                 }
             }
         }

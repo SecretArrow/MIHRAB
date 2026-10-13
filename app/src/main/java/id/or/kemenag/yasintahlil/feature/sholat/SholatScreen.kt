@@ -91,7 +91,7 @@ fun SholatScreen(go: (String) -> Unit) {
                 "Tidak ada yang cocok",
                 "Tidak ada entri di tab ini yang memuat \"${q.trim()}\". Coba kata lain, atau " +
                     "kosongkan kotak pencarian.",
-                labelTombol = "Kosongkan",
+                labelTombol = NamaAntarmuka.KOSONGKAN,
                 onTombol = { q = "" },
             )
         }

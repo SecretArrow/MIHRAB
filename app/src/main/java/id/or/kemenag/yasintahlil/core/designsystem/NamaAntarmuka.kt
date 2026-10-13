@@ -4,7 +4,7 @@ package id.or.kemenag.yasintahlil.core.designsystem
  * Nama **kendali antarmuka** yang muncul di lebih dari satu tempat — bukan seluruh teks layar,
  * hanya kata yang dipakai bersama oleh beberapa layar atau oleh komponen bersama di `UiKit`.
  *
- * Sembilan di antaranya sudah terlanjur ditulis berulang:
+ * Lima belas di antaranya sudah terlanjur ditulis berulang:
  *
  * - *"Pengaturan bacaan"* adalah judul sheet [BacaanSettingsSheet] **dan** label tombol yang
  *   membukanya di sepuluh tempat. Nama yang sama untuk hal yang sama, ditulis sebelas kali:
@@ -23,8 +23,14 @@ package id.or.kemenag.yasintahlil.core.designsystem
  *   meninggalkan layar Pengaturan menyebut preferensi yang sama dengan kata lama, dan pengguna
  *   mengira ada dua pengaturan. Persis yang dicegah komentar `JadwalHariIni.ASAR_SEMUA` di layar
  *   itu: *"dua nama untuk satu nilai membuat pengguna mengira ada dua pengaturan"*.
+ * - Enam **kendali langkah dan tindakan** ada di dua layar atau lebih dengan arti yang sama:
+ *   *"← Sebelumnya"* / *"Berikutnya →"* pada panduan sholat dan susunan Tahlil, *"Batalkan tanda"*
+ *   pada rincian sholat dan Wudhu, *"Kosongkan"* pada penyaring Panduan Sholat dan Dzikir,
+ *   *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada ketiga
+ *   layar itu beserta Yasin. Tiap pasangan menamai satu tindakan yang sama; kata yang berbeda di
+ *   salah satunya membuat pengguna mengira ada dua tombol berbeda untuk hal yang sama.
  *
- * Kesembilannya kini satu tempat, sehingga nama kendali dan komponen yang memakainya tidak dapat
+ * Kelimabelasnya kini satu tempat, sehingga nama kendali dan komponen yang memakainya tidak dapat
  * berbeda pendapat.
  *
  * **Batasnya.** *"Terjemahan"* di sini adalah label **sakelar tampilan** — menyembunyikan atau
@@ -80,4 +86,34 @@ object NamaAntarmuka {
 
     /** Pengukur jarak antarbaris bacaan (`Store.LINE_HEIGHT`). */
     const val JARAK_ANTARBARIS = "Jarak antarbaris"
+
+    // ---- Kendali langkah dan tindakan ----------------------------------------------------------
+    //
+    // Enam nama di bawah ini muncul di **lebih dari satu layar** dengan arti yang sama: melangkah
+    // mundur/maju pada bacaan bertahap (panduan sholat dan susunan Tahlil), membatalkan tanda
+    // progres, mengosongkan kotak penyaring, melanjutkan bacaan terakhir, dan awalan kartu
+    // "terakhir dibaca". Mengganti kata di satu layar saja meninggalkan layar lain menyebut
+    // tindakan yang sama dengan kata lain — dan pengguna mengira keduanya tindakan yang berbeda.
+
+    /** Tombol melangkah mundur satu langkah/bagian. */
+    const val SEBELUMNYA = "← Sebelumnya"
+
+    /** Tombol melangkah maju satu langkah/bagian. */
+    const val BERIKUTNYA = "Berikutnya →"
+
+    /** Tombol membatalkan tanda progres yang sudah dibuat. */
+    const val BATALKAN_TANDA = "Batalkan tanda"
+
+    /** Tombol mengosongkan kotak penyaring di halaman yang menyaring isinya sendiri. */
+    const val KOSONGKAN = "Kosongkan"
+
+    /** Tombol melanjutkan bacaan terakhir yang tersimpan. */
+    const val LANJUTKAN = "Lanjutkan"
+
+    /**
+     * Awalan kartu "terakhir dibaca" (`"Terakhir dibaca: …"`) — dipakai beranda, daftar
+     * favorit/riwayat, dan layar Yasin. Isi sesudahnya berbeda-beda (nama bacaan, atau nomor ayat),
+     * tetapi awalannya satu.
+     */
+    const val TERAKHIR_DIBACA = "Terakhir dibaca"
 }

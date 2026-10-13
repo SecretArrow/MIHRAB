@@ -62,7 +62,7 @@ fun WudhuScreen() {
                 Text(if (selesai) "✓ Sudah ditandai dipelajari" else "Tandai sudah dipelajari")
             }
             if (selesai) OutlinedButton(onClick = { scope.launch { userData.setProgress(KIND, KunciProgres.WUDHU, 0) } }) {
-                Text("Batalkan tanda")
+                Text(NamaAntarmuka.BATALKAN_TANDA)
             }
         }
     }

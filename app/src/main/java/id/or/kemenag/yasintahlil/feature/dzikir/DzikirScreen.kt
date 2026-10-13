@@ -63,7 +63,7 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 "Tidak ada bacaan yang cocok",
                 "Tidak ada entri di kelompok ini yang memuat \"${q.trim()}\". Coba kata lain, " +
                     "atau kosongkan kotak pencarian untuk melihat seluruh kelompok.",
-                labelTombol = "Kosongkan",
+                labelTombol = NamaAntarmuka.KOSONGKAN,
                 onTombol = { q = "" },
             )
             return@Column

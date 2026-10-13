@@ -11,7 +11,7 @@ import java.io.File
  * Nama **kendali antarmuka** yang muncul di lebih dari satu tempat hanya boleh hidup di
  * `NamaAntarmuka`.
  *
- * Sembilan nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
+ * Lima belas nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
  *
  *  - *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet` **dan** label tombol yang
  *    membukanya di sepuluh layar. Sebelas tulisan untuk satu nama: mengganti nama sheet-nya
@@ -28,8 +28,14 @@ import java.io.File
  *    jadi keduanya mengatur satu preferensi yang sama — tetapi masing-masing mengeja namanya
  *    sendiri. Mengganti nama satu sakelar di sheet meninggalkan Pengaturan menyebut preferensi
  *    yang sama dengan kata lama, dan pengguna mengira ada dua pengaturan.
+ *  - Enam **kendali langkah dan tindakan** juga ada di dua layar atau lebih dengan arti yang sama:
+ *    *"← Sebelumnya"* / *"Berikutnya →"* pada panduan sholat dan susunan Tahlil, *"Batalkan tanda"*
+ *    pada rincian sholat dan Wudhu, *"Kosongkan"* pada penyaring Panduan Sholat dan Dzikir,
+ *    *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada ketiga
+ *    layar itu beserta Yasin. Tiap pasangan menamai satu tindakan yang sama; kata yang berbeda di
+ *    salah satunya membuat pengguna mengira ada dua tombol berbeda untuk hal yang sama.
  *
- * Uji ini menjaga agar kesembilannya tetap satu tempat, dan agar varian yang disengaja tetap
+ * Uji ini menjaga agar kelimabelasnya tetap satu tempat, dan agar varian yang disengaja tetap
  * terlihat sebagai varian — bukan menyamar sebagai salinan.
  */
 class NamaAntarmukaSatuTempatTest {
@@ -49,7 +55,7 @@ class NamaAntarmukaSatuTempatTest {
     private fun uiKit(): File =
         File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/designsystem/UiKit.kt")
 
-    /** Kesembilan nama yang harus tinggal di `NamaAntarmuka`, beserta nilai yang diharapkan. */
+    /** Kelimabelas nama yang harus tinggal di `NamaAntarmuka`, beserta nilai yang diharapkan. */
     private fun daftarNama(): Map<String, String> = mapOf(
         "PENGATURAN_BACAAN" to NamaAntarmuka.PENGATURAN_BACAAN,
         "LAYAR_PENUH" to NamaAntarmuka.LAYAR_PENUH,
@@ -61,13 +67,19 @@ class NamaAntarmukaSatuTempatTest {
         "UKURAN_ARAB" to NamaAntarmuka.UKURAN_ARAB,
         "UKURAN_LATIN" to NamaAntarmuka.UKURAN_LATIN,
         "JARAK_ANTARBARIS" to NamaAntarmuka.JARAK_ANTARBARIS,
+        "SEBELUMNYA" to NamaAntarmuka.SEBELUMNYA,
+        "BERIKUTNYA" to NamaAntarmuka.BERIKUTNYA,
+        "BATALKAN_TANDA" to NamaAntarmuka.BATALKAN_TANDA,
+        "KOSONGKAN" to NamaAntarmuka.KOSONGKAN,
+        "LANJUTKAN" to NamaAntarmuka.LANJUTKAN,
+        "TERAKHIR_DIBACA" to NamaAntarmuka.TERAKHIR_DIBACA,
     )
 
     // ---- Ejaan label ---------------------------------------------------------------------------
 
     /**
-     * Kesembilan nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk, bukan
-     * bagian dari merapikan kode: uji ini memaksanya disengaja, sehingga penggantian nama yang
+     * Kelimabelas nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk,
+     * bukan bagian dari merapikan kode: uji ini memaksanya disengaja, sehingga penggantian nama yang
      * tidak diniatkan langsung ketahuan.
      */
     @Test
@@ -82,6 +94,12 @@ class NamaAntarmukaSatuTempatTest {
         assertEquals("Ukuran Arab", NamaAntarmuka.UKURAN_ARAB)
         assertEquals("Ukuran Latin", NamaAntarmuka.UKURAN_LATIN)
         assertEquals("Jarak antarbaris", NamaAntarmuka.JARAK_ANTARBARIS)
+        assertEquals("← Sebelumnya", NamaAntarmuka.SEBELUMNYA)
+        assertEquals("Berikutnya →", NamaAntarmuka.BERIKUTNYA)
+        assertEquals("Batalkan tanda", NamaAntarmuka.BATALKAN_TANDA)
+        assertEquals("Kosongkan", NamaAntarmuka.KOSONGKAN)
+        assertEquals("Lanjutkan", NamaAntarmuka.LANJUTKAN)
+        assertEquals("Terakhir dibaca", NamaAntarmuka.TERAKHIR_DIBACA)
     }
 
     /** Nama kosong membuat tombol tanpa label — kegagalan yang tidak terlihat di layar. */
@@ -93,7 +111,7 @@ class NamaAntarmukaSatuTempatTest {
             assertEquals("nama $kunci tidak sama dengan dirinya sendiri setelah dirapikan",
                 nilai, nilai.trim())
         }
-        assertEquals("kesembilan nama berbeda tidak boleh ada yang sama",
+        assertEquals("kelimabelas nama berbeda tidak boleh ada yang sama",
             nama.size, nama.values.toSet().size)
     }
 
@@ -292,6 +310,45 @@ class NamaAntarmukaSatuTempatTest {
             k.contains("labelTombol: String = NamaAntarmuka.COBA_LAGI"))
         assertTrue("tombol `ErrorState` bukan dari kosakata bersama",
             k.contains("Button(onClick = onRetry) { Text(NamaAntarmuka.COBA_LAGI) }"))
+    }
+
+    /**
+     * Kendali langkah dan tindakan yang sama di dua layar (atau lebih) memakai satu nama — dan
+     * pemakaiannya harus tetap ada di **kedua** sisi.
+     *
+     * [labelTidakDisalinKeLuarNamaAntarmuka] menangkap salinannya; uji ini menjaga supaya
+     * perbaikannya tidak dipuaskan dengan menghapus salah satu tombol, yang akan menyisakan satu
+     * layar tanpa kendali sama sekali.
+     */
+    @Test
+    fun kendaliLangkahDanTindakanMemakaiNamaBersama() {
+        val pemakaian = mapOf(
+            "SEBELUMNYA" to listOf(
+                "feature/sholat/SholatDetailScreen.kt", "feature/tahlil/TahlilScreen.kt",
+            ),
+            "BERIKUTNYA" to listOf(
+                "feature/sholat/SholatDetailScreen.kt", "feature/tahlil/TahlilScreen.kt",
+            ),
+            "BATALKAN_TANDA" to listOf(
+                "feature/sholat/SholatDetailScreen.kt", "feature/sholat/WudhuScreen.kt",
+            ),
+            "KOSONGKAN" to listOf(
+                "feature/sholat/SholatScreen.kt", "feature/dzikir/DzikirScreen.kt",
+            ),
+            "LANJUTKAN" to listOf(
+                "feature/home/HomeScreen.kt", "feature/favorit/FavoritScreen.kt",
+            ),
+            "TERAKHIR_DIBACA" to listOf(
+                "feature/home/HomeScreen.kt", "feature/favorit/FavoritScreen.kt",
+                "feature/yasin/YasinScreen.kt",
+            ),
+        )
+        pemakaian.forEach { (kunci, berkas) ->
+            berkas.forEach { b ->
+                assertTrue("$b tidak memakai NamaAntarmuka.$kunci untuk kendali yang sama",
+                    layar(b).contains("NamaAntarmuka.$kunci"))
+            }
+        }
     }
 
     /** Aturan nama bersama tetap murni: tanpa Android, agar dapat diuji langsung di JVM. */
