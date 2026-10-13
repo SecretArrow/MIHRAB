@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.data.SumberKategori
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,7 +57,7 @@ fun ContentUpdateScreen() {
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("Pembaruan konten", style = MaterialTheme.typography.titleLarge)
+        Text(NamaLayar.PEMBARUAN_KONTEN, style = MaterialTheme.typography.titleLarge)
         Text("Aplikasi tidak pernah mengunduh konten sendiri dan tidak meminta izin jaringan. " +
                 "Pembaruan hanya masuk bila Anda memilih sendiri berkas bundel (.json) yang " +
                 "diterbitkan sumber resmi — jadi tidak ada teks keagamaan baru yang datang tanpa " +

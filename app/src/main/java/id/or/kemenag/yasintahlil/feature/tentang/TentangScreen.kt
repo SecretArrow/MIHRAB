@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.legal.Blok
 import id.or.kemenag.yasintahlil.core.legal.DokumenLegal
 import id.or.kemenag.yasintahlil.core.legal.MarkdownRingkas
 import id.or.kemenag.yasintahlil.core.legal.SumberKonten
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 
 /**
  * `plan.txt` §"Pengaturan Aplikasi": *"Tentang aplikasi, sumber konten, lisensi, serta kebijakan
@@ -59,7 +60,7 @@ fun TentangScreen() {
     var lisensiBuka by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(Modifier.fillMaxSize().padding(12.dp)) {
-        item { Text("Tentang aplikasi", style = MaterialTheme.typography.titleLarge) }
+        item { Text(NamaLayar.TENTANG, style = MaterialTheme.typography.titleLarge) }
 
         item {
             Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {

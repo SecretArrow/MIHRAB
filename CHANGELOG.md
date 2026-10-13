@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama layar yang dibuka dari Pengaturan tinggal di satu tempat**: berkas `NamaLayar` menyebut
+  Pembaruan konten dan Tentang sebagai pengecualian, dengan alasan bahwa tombolnya menyebut
+  **tindakannya** ("Buka pembaruan konten"), bukan nama layarnya. Alasan itu tidak bertahan begitu
+  diperiksa: tiap bagian di Pengaturan diawali **judul bagian** yang menyebut layar tujuannya, jadi
+  namanya memang muncul lebih dari sekali — dan sudah menyimpang. Layar Tentang ditulis **tiga**
+  cara sekaligus (judul layarnya *"Tentang aplikasi"*, judul bagian di Pengaturan *"Tentang &
+  sumber"*, tombolnya *"Buka Tentang & privasi"*), sementara Pembaruan konten memakai huruf
+  besar-kecil yang berbeda antara judul bagian dan tombolnya. Dua uji bahkan **memaku** kedua ejaan
+  Tentang itu — satu menuntut layarnya memuat *"Tentang aplikasi"*, satu lagi menuntut Pengaturan
+  memuat *"Tentang & sumber"* — masing-masing hijau, dan bersama-sama menjaga agar satu layar tetap
+  punya dua nama. Keduanya kini memakai nama bersama `NamaLayar.TENTANG` (*"Tentang aplikasi"*) dan
+  `NamaLayar.PEMBARUAN_KONTEN`, judul bagian dan label tombolnya ikut lahir dari sana
+  (`"Buka ${NamaLayar.TENTANG}"`), dan uji instrumented yang menggulir ke judul bagian itu pun
+  menunjuk lewat nama bersama. Dijaga `NamaLayarSatuTempatTest`, yang kini memeriksa pula kedua
+  layar Pengaturan itu beserta judul bagian dan tombolnya.
 - **Id entri daftar sholat khusus tinggal di satu tempat**: layar Panduan Sholat mengenali entri yang
   punya modul sendiri (Ghaib, Jenazah) dengan mengeja id-nya sendiri — `s.id == "ghaib"`,
   `s.id == "jenazah"` — padahal id itu datang dari `sholat_daftar.json`. Tak ada apa pun yang

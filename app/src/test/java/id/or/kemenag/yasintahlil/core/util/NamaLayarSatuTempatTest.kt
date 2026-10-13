@@ -16,6 +16,15 @@ import java.io.File
  * Pengingat"* di menu Alat; *"Kiblat"*, *"Kompas Kiblat"*, dan *"Arah Kiblat"* untuk satu layar
  * yang sama.
  *
+ * Dua layar yang dibuka dari Pengaturan dahulu berada di luar berkas ini dengan alasan bahwa
+ * tombolnya menyebut **tindakannya**, bukan nama layarnya. Alasan itu tidak bertahan: tiap bagian
+ * di Pengaturan diawali judul bagian yang menyebut layar tujuannya, sehingga nama itu memang muncul
+ * lebih dari sekali — dan sudah menyimpang. Layar Tentang ditulis **tiga** cara sekaligus
+ * (*"Tentang aplikasi"*, *"Tentang & sumber"*, *"Buka Tentang & privasi"*), sementara Pembaruan
+ * konten memakai huruf besar-kecil yang berbeda antara judul bagian dan tombolnya. Dua uji bahkan
+ * memaku kedua ejaan Tentang itu — masing-masing hijau, bersama-sama menjaga agar satu layar tetap
+ * punya dua nama.
+ *
  * Uji ini menjaga dua hal yang berbeda:
  *
  *  1. **Tidak ada salinan** — nama itu tidak boleh dieja ulang di luar `NamaLayar`.
@@ -55,6 +64,12 @@ class NamaLayarSatuTempatTest {
         "IBADAH" to ("feature/ibadah/IbadahScreen.kt" to "IBADAH"),
         "ALAT" to ("feature/alat/AlatScreen.kt" to "ALAT"),
         "HOME" to ("feature/home/HomeScreen.kt" to "BERANDA"),
+        // Dua layar yang dibuka dari tombol di Pengaturan. Keduanya dahulu di luar berkas ini
+        // dengan alasan bahwa tombolnya menyebut **tindakannya**, bukan nama layarnya — padahal
+        // tiap bagian di Pengaturan diawali judul bagian yang menyebut layar tujuannya, dan nama
+        // itu sudah menyimpang: Tentang ditulis tiga cara, Pembaruan konten dua ejaan.
+        "TENTANG" to ("feature/tentang/TentangScreen.kt" to "TENTANG"),
+        "KONTEN_UPDATE" to ("feature/settings/ContentUpdateScreen.kt" to "PEMBARUAN_KONTEN"),
     )
 
     /**
@@ -87,6 +102,8 @@ class NamaLayarSatuTempatTest {
         assertEquals("Arah Kiblat", NamaLayar.KIBLAT)
         assertEquals("Pencarian", NamaLayar.SEARCH)
         assertEquals("Favorit & Riwayat", NamaLayar.FAVORIT)
+        assertEquals("Tentang aplikasi", NamaLayar.TENTANG)
+        assertEquals("Pembaruan konten", NamaLayar.PEMBARUAN_KONTEN)
     }
 
     /**
@@ -100,7 +117,7 @@ class NamaLayarSatuTempatTest {
             NamaLayar.YASIN, NamaLayar.TAHLIL, NamaLayar.DZIKIR, NamaLayar.SHOLAT,
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
             NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
-            NamaLayar.SEARCH, NamaLayar.FAVORIT,
+            NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
         )
         nama.forEach { assertTrue("nama layar kosong", it.isNotBlank()) }
         assertEquals("ada nama layar yang kembar", nama.size, nama.toSet().size)
@@ -118,7 +135,7 @@ class NamaLayarSatuTempatTest {
             NamaLayar.YASIN, NamaLayar.TAHLIL, NamaLayar.DZIKIR, NamaLayar.SHOLAT,
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
             NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
-            NamaLayar.SEARCH, NamaLayar.FAVORIT,
+            NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
         )
         val penyalin = mutableListOf<String>()
         berkasMain().filter { it.name != "NamaLayar.kt" }.forEach { f ->
@@ -245,6 +262,30 @@ class NamaLayarSatuTempatTest {
             pasangan("navigation/AppNav.kt", """Triple\(Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
             setOf("HOME", "IBADAH", "ALAT", "SETTINGS"),
         )
+    }
+
+    /**
+     * Judul bagian dan tombol di Pengaturan menyebut layar tujuannya dengan nama bersama.
+     *
+     * Bagian inilah yang dahulu membuat berkas ini menyebut Pengaturan sebagai pengecualian:
+     * tombolnya dianggap menyebut **tindakannya** saja. Nyatanya tiap bagian diawali judul bagian
+     * yang menyebut layar tujuannya, sehingga namanya muncul dua kali di layar yang sama — dan
+     * keduanya sudah berbeda dari judul layar yang dibukanya.
+     */
+    @Test
+    fun pengaturanMenamaiLayarTujuannyaDenganNamaBersama() {
+        val k = kode("feature/settings/SettingsScreen.kt")
+        listOf("NamaLayar.TENTANG" to "Tentang", "NamaLayar.PEMBARUAN_KONTEN" to "Pembaruan konten")
+            .forEach { (rujukan, sebutan) ->
+                assertTrue("judul bagian $sebutan di Pengaturan tidak memakai $rujukan",
+                    k.contains("Text($rujukan"))
+                assertTrue("tombol $sebutan di Pengaturan tidak menyusun labelnya dari $rujukan",
+                    k.contains("Buka \${$rujukan}"))
+            }
+        // Kalimat keterangan di bawahnya pun menyebut layar itu kepada pengguna; ejaan yang
+        // berbeda di sana menyesatkan sama seperti judul yang berbeda.
+        assertTrue("keterangan sumber di Pengaturan menyebut layar Tentang dengan ejaan lain",
+            k.contains("ada di \${NamaLayar.TENTANG}"))
     }
 
     /**
