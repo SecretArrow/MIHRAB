@@ -11,7 +11,7 @@ import java.io.File
  * Nama **kendali antarmuka** yang muncul di lebih dari satu tempat hanya boleh hidup di
  * `NamaAntarmuka`.
  *
- * Lima belas nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
+ * Sembilan belas nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
  *
  *  - *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet` **dan** label tombol yang
  *    membukanya di sepuluh layar. Sebelas tulisan untuk satu nama: mengganti nama sheet-nya
@@ -34,8 +34,12 @@ import java.io.File
  *    *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada ketiga
  *    layar itu beserta Yasin. Tiap pasangan menamai satu tindakan yang sama; kata yang berbeda di
  *    salah satunya membuat pengguna mengira ada dua tombol berbeda untuk hal yang sama.
+ *  - Empat **kata tindakan baku** — *"Batal"*, *"Hapus"*, *"Reset"*, *"Buka"* — juga muncul di
+ *    beberapa layar. Karena singkat dan umum, tiap tempat cenderung mengejanya sendiri; padahal
+ *    *"Batal"* di dialog mana pun berarti menutup tanpa melakukan apa pun, dan *"Hapus"* di mana pun
+ *    berarti menghapus yang tersimpan.
  *
- * Uji ini menjaga agar kelimabelasnya tetap satu tempat, dan agar varian yang disengaja tetap
+ * Uji ini menjaga agar semuanya tetap satu tempat, dan agar varian yang disengaja tetap
  * terlihat sebagai varian — bukan menyamar sebagai salinan.
  */
 class NamaAntarmukaSatuTempatTest {
@@ -55,7 +59,7 @@ class NamaAntarmukaSatuTempatTest {
     private fun uiKit(): File =
         File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/designsystem/UiKit.kt")
 
-    /** Kelimabelas nama yang harus tinggal di `NamaAntarmuka`, beserta nilai yang diharapkan. */
+    /** Sembilan belas nama yang harus tinggal di `NamaAntarmuka`, beserta nilai yang diharapkan. */
     private fun daftarNama(): Map<String, String> = mapOf(
         "PENGATURAN_BACAAN" to NamaAntarmuka.PENGATURAN_BACAAN,
         "LAYAR_PENUH" to NamaAntarmuka.LAYAR_PENUH,
@@ -73,12 +77,16 @@ class NamaAntarmukaSatuTempatTest {
         "KOSONGKAN" to NamaAntarmuka.KOSONGKAN,
         "LANJUTKAN" to NamaAntarmuka.LANJUTKAN,
         "TERAKHIR_DIBACA" to NamaAntarmuka.TERAKHIR_DIBACA,
+        "BATAL" to NamaAntarmuka.BATAL,
+        "HAPUS" to NamaAntarmuka.HAPUS,
+        "RESET" to NamaAntarmuka.RESET,
+        "BUKA" to NamaAntarmuka.BUKA,
     )
 
     // ---- Ejaan label ---------------------------------------------------------------------------
 
     /**
-     * Kelimabelas nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk,
+     * Sembilan belas nama itu **teks yang dibaca pengguna**. Mengubahnya adalah keputusan produk,
      * bukan bagian dari merapikan kode: uji ini memaksanya disengaja, sehingga penggantian nama yang
      * tidak diniatkan langsung ketahuan.
      */
@@ -100,6 +108,10 @@ class NamaAntarmukaSatuTempatTest {
         assertEquals("Kosongkan", NamaAntarmuka.KOSONGKAN)
         assertEquals("Lanjutkan", NamaAntarmuka.LANJUTKAN)
         assertEquals("Terakhir dibaca", NamaAntarmuka.TERAKHIR_DIBACA)
+        assertEquals("Batal", NamaAntarmuka.BATAL)
+        assertEquals("Hapus", NamaAntarmuka.HAPUS)
+        assertEquals("Reset", NamaAntarmuka.RESET)
+        assertEquals("Buka", NamaAntarmuka.BUKA)
     }
 
     /** Nama kosong membuat tombol tanpa label — kegagalan yang tidak terlihat di layar. */
@@ -111,7 +123,7 @@ class NamaAntarmukaSatuTempatTest {
             assertEquals("nama $kunci tidak sama dengan dirinya sendiri setelah dirapikan",
                 nilai, nilai.trim())
         }
-        assertEquals("kelimabelas nama berbeda tidak boleh ada yang sama",
+        assertEquals("sembilan belas nama berbeda tidak boleh ada yang sama",
             nama.size, nama.values.toSet().size)
     }
 
@@ -348,6 +360,44 @@ class NamaAntarmukaSatuTempatTest {
                 assertTrue("$b tidak memakai NamaAntarmuka.$kunci untuk kendali yang sama",
                     layar(b).contains("NamaAntarmuka.$kunci"))
             }
+        }
+    }
+
+    /**
+     * Empat **kata tindakan baku** yang sama di beberapa layar memakai satu nama — dan pemakaiannya
+     * harus tetap ada di tiap sisi.
+     *
+     * Sama seperti [kendaliLangkahDanTindakanMemakaiNamaBersama]: [labelTidakDisalinKeLuarNamaAntarmuka]
+     * menangkap salinannya, uji ini menjaga supaya perbaikannya tidak dipuaskan dengan menghapus
+     * salah satu tombol.
+     */
+    @Test
+    fun kataTindakanBakuMemakaiNamaBersama() {
+        val pemakaian = mapOf(
+            "BATAL" to listOf(
+                "feature/adzan/AdzanScreen.kt", "feature/adzan/IqomahDoaScreen.kt",
+                "feature/settings/ContentUpdateScreen.kt", "feature/settings/SettingsScreen.kt",
+            ),
+            "HAPUS" to listOf(
+                "feature/adzan/AdzanScreen.kt", "feature/favorit/FavoritScreen.kt",
+                "feature/settings/SettingsScreen.kt",
+            ),
+            "RESET" to listOf("feature/adzan/IqomahDoaScreen.kt"),
+            "BUKA" to listOf(
+                "feature/favorit/FavoritScreen.kt", "feature/search/SearchScreen.kt",
+            ),
+        )
+        pemakaian.forEach { (kunci, berkas) ->
+            berkas.forEach { b ->
+                assertTrue("$b tidak memakai NamaAntarmuka.$kunci untuk tindakan yang sama",
+                    layar(b).contains("NamaAntarmuka.$kunci"))
+            }
+        }
+        // `UiKit` adalah komponen bersama: kedua tombolnya pun menyebut nama bersama, bukan hanya
+        // layar-layar yang memakainya.
+        listOf("RESET", "BUKA").forEach { kunci ->
+            assertTrue("UiKit tidak memakai NamaAntarmuka.$kunci untuk kendali bersamanya",
+                kode(uiKit()).contains("NamaAntarmuka.$kunci"))
         }
     }
 

@@ -226,7 +226,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
                     Text("${bagian.label}: $n", style = MaterialTheme.typography.labelMedium)
-                    OutlinedButton(onClick = { hapusTarget = bagian }, enabled = n > 0) { Text("Hapus") }
+                    OutlinedButton(onClick = { hapusTarget = bagian }, enabled = n > 0) { Text(NamaAntarmuka.HAPUS) }
                 }
             }
             Text("Menghapus satu bagian tidak menyentuh bagian lain, jadi riwayat saja dapat dibuang " +
@@ -249,9 +249,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                             bagian.hapus(userData)
                             ringkasanUlang++
                         }
-                    }) { Text("Hapus") }
+                    }) { Text(NamaAntarmuka.HAPUS) }
                 },
-                dismissButton = { TextButton(onClick = { hapusTarget = null }) { Text("Batal") } },
+                dismissButton = { TextButton(onClick = { hapusTarget = null }) { Text(NamaAntarmuka.BATAL) } },
             )
         }
 

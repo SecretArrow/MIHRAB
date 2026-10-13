@@ -147,7 +147,7 @@ fun BacaanCard(
                     TextButton(onClick = {
                         scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
                     }) { Text(if (fav) "★ Favorit" else "☆ Favorit") }
-                    if (onOpen != null) TextButton(onClick = onOpen) { Text("Buka") }
+                    if (onOpen != null) TextButton(onClick = onOpen) { Text(NamaAntarmuka.BUKA) }
                 }
             }
         }
@@ -161,7 +161,7 @@ fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit,
         Button(onClick = onMinus) { Text("−") }
         Text("$count / $target", style = MaterialTheme.typography.headlineSmall)
         Button(onClick = onPlus) { Text("+") }
-        OutlinedButton(onClick = onReset) { Text("Reset") }
+        OutlinedButton(onClick = onReset) { Text(NamaAntarmuka.RESET) }
     }
     // Progres dihaluskan agar setiap ketukan penghitung terlihat sebagai gerakan, bukan lompatan —
     // "animasi secukupnya" (`plan.txt`) sekaligus umpan balik visual atas ketukan itu.

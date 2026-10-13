@@ -380,6 +380,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kata tindakan baku tinggal di satu tempat**: empat kata yang dipakai beberapa layar — *"Batal"*
+  (tombol dialog di Adzan, Pembaruan konten, dan Pengaturan, serta pembatal timer Iqomah),
+  *"Hapus"* (jenis suara adzan, baris favorit/bookmark, dan satu bagian data di Pengaturan),
+  *"Reset"* (penghitung di `UiKit` dan timer Iqomah), dan *"Buka"* (kartu bacaan di `UiKit`, baris
+  tersimpan di Favorit, dan hasil Pencarian) — masing-masing dieja sendiri di tiap tempatnya.
+  Karena singkat dan umum, salinannya mudah menyimpang tanpa ketahuan: mengganti kata di satu layar
+  meninggalkan layar lain menyebut tindakan yang sama dengan kata lain. Keempatbelas pemakaian kini
+  lahir dari `NamaAntarmuka` (`BATAL`, `HAPUS`, `RESET`, `BUKA`) — *"Batal"* sengaja tetap terpisah
+  dari `BATALKAN_TANDA` karena yang dijanjikan tombolnya berbeda (menutup dialog vs membatalkan
+  tanda progres). Dijaga `NamaAntarmukaSatuTempatTest`, yang memastikan tiap layar tetap memuat
+  kendalinya **dan** memakai nama bersama.
 - **Penyiapan emulator E2E tinggal di satu tempat**: skrip uji instrumented menyusun urutan
   penyiapan perangkat — menunggu perangkat, menunggu boot selesai, memastikan properti API terbaca
   — di **dua** jalur, dan salinan keduanya menyimpang. Jalur pertama memanggil ketiganya; jalur
