@@ -380,6 +380,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Kunci data masukan pekerja pengingat tak lagi dieja di dua sisi**: `PrayerScheduler` menulis
+  `workDataOf("nama" to …, "jenis" to …)` dan `ReminderWorker` membacanya dengan ejaan sendiri —
+  dua kelas yang tak pernah saling melihat, sehingga tak ada yang membandingkan keduanya. Salinan
+  yang menyimpang gagal dengan sunyi: pekerja membaca `nama` sebagai null lalu **langsung**
+  mengembalikan `Result.success()`, jadi pengingat adzan tak pernah berbunyi dan tak ada satu pun
+  galat yang menyebut sebabnya. Kuncinya kini tinggal di `PengingatAdzan` (`KUNCI_NAMA`,
+  `KUNCI_JENIS`, `KUNCI_ADZAN_LAMA`) dan dipakai kedua sisi. `PengingatAdzanTest` memindai seluruh
+  kode utama agar tak ada `workDataOf`/`inputData` yang mengeja kunci langsung, memaku nilainya
+  (data masukan yang terantre bertahan melintasi pemutakhiran aplikasi), dan menuntut penulis serta
+  pembacanya benar-benar memakai kosakata bersama itu. Sebelas mutasi terverifikasi tertangkap.
 - **Kunci `_meta.json` tak lagi dieja dua kali**: berkas metadata pembaruan ditulis oleh `metaJson`
   dan dibaca oleh `status()` di `ContentUpdateManager` — tujuh kunci, dua kali, tanpa apa pun yang
   membandingkannya. Mengganti nama kunci di satu sisi saja membuat layar **"Pembaruan konten"**

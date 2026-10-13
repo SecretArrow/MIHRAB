@@ -33,10 +33,17 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(app, params) {
 
     override suspend fun doWork(): Result {
-        val nama = inputData.getString("nama") ?: return Result.success()
+        // Kunci data masukan dibaca dari kosakata bersama ([PengingatAdzan]) — kunci yang sama dengan
+        // yang ditulis [PrayerScheduler]. Mengejanya sendiri di sini berarti pengingat dapat berhenti
+        // berbunyi tanpa satu pun galat begitu salah satu sisi berganti nama.
+        val nama = inputData.getString(PengingatAdzan.KUNCI_NAMA) ?: return Result.success()
         // Pekerjaan lama (dari versi sebelumnya) hanya membawa "adzan"; dibaca sebagai cadangan.
-        val jenis = inputData.getString("jenis")
-            ?: if (inputData.getBoolean("adzan", true)) PrayerScheduler.JENIS_ADZAN else PrayerScheduler.JENIS_PRA
+        val jenis = inputData.getString(PengingatAdzan.KUNCI_JENIS)
+            ?: if (inputData.getBoolean(PengingatAdzan.KUNCI_ADZAN_LAMA, true)) {
+                PrayerScheduler.JENIS_ADZAN
+            } else {
+                PrayerScheduler.JENIS_PRA
+            }
         val store = Store(applicationContext)
         if (!store.get(Store.NOTIF, BawaanPreferensi.PENGINGAT_WAKTU)) return Result.success()
 

@@ -314,6 +314,72 @@ class PengingatAdzanTest {
             kode(berkas).contains("ketentuan syariat"))
     }
 
+    // ---- Kunci data masukan pekerja pengingat -------------------------------------------------
+
+    /**
+     * Kunci data masukan pekerja tidak boleh dieja di sisi mana pun.
+     *
+     * `PrayerScheduler` menulisnya lewat `workDataOf` dan `ReminderWorker` membacanya lewat
+     * `inputData` — dua kelas yang tak pernah saling melihat, sehingga tak ada yang membandingkan
+     * ejaan keduanya. Salinan yang menyimpang gagal dengan sunyi: pekerja membaca `nama` sebagai null
+     * lalu **langsung** mengembalikan `Result.success()`, jadi pengingat tak pernah berbunyi dan tak
+     * ada satu pun galat yang menyebut sebabnya. Pemindaiannya menyeluruh, bukan hanya kedua berkas
+     * itu: kunci apa pun yang ditulis langsung di `workDataOf`/`inputData` adalah salinan yang dapat
+     * menyimpang dari [PengingatAdzan].
+     */
+    @Test
+    fun kunciDataPekerjaTidakDiejaDiSisiManaPun() {
+        val pelanggar = mutableListOf<String>()
+        val pola = listOf(
+            Regex("workDataOf\\s*\\(\\s*\""),
+            Regex("inputData\\s*\\.\\s*\\w+\\s*\\(\\s*\""),
+        )
+        berkasMain().forEach { f ->
+            val k = kode(f)
+            pola.forEach { p -> p.findAll(k).forEach { pelanggar += "${f.name}: ${it.value}" } }
+        }
+        assertTrue("kunci data pekerja dieja di luar `PengingatAdzan`: $pelanggar", pelanggar.isEmpty())
+    }
+
+    /**
+     * Nilai kuncinya dipaku, bukan sekadar berbeda satu sama lain.
+     *
+     * Data masukan pekerja yang sudah terantre bertahan melintasi pemutakhiran aplikasi: mengubah
+     * ejaan kunci membuat pengingat yang terjadwal sebelum pembaruan tak lagi terbaca sesudahnya —
+     * persis kegagalan sunyi yang penjaganya hindari.
+     */
+    @Test
+    fun nilaiKunciDataPekerjaDipaku() {
+        assertEquals("ejaan kunci nama berubah", "nama", PengingatAdzan.KUNCI_NAMA)
+        assertEquals("ejaan kunci jenis berubah", "jenis", PengingatAdzan.KUNCI_JENIS)
+        assertEquals("ejaan kunci lama berubah", "adzan", PengingatAdzan.KUNCI_ADZAN_LAMA)
+        val kunci = listOf(
+            PengingatAdzan.KUNCI_NAMA, PengingatAdzan.KUNCI_JENIS, PengingatAdzan.KUNCI_ADZAN_LAMA,
+        )
+        assertEquals("kunci data pekerja ada yang kembar", kunci.size, kunci.toSet().size)
+    }
+
+    /**
+     * Penjadwal dan pekerja benar-benar memakai kosakata bersama itu — sisi penulis **dan** sisi
+     * pembacanya, termasuk kunci lama yang masih harus terbaca dari pekerjaan yang sudah terantre.
+     */
+    @Test
+    fun penjadwalDanPekerjaMemakaiKunciBersama() {
+        val penjadwal = layar("core/scheduling/PrayerScheduler.kt")
+        assertTrue("penjadwal tidak menulis PengingatAdzan.KUNCI_NAMA",
+            penjadwal.contains("PengingatAdzan.KUNCI_NAMA to nama"))
+        assertTrue("penjadwal tidak menulis PengingatAdzan.KUNCI_JENIS",
+            penjadwal.contains("PengingatAdzan.KUNCI_JENIS to jenis"))
+
+        val pekerja = layar("core/data/ReminderWorker.kt")
+        assertTrue("pekerja tidak membaca PengingatAdzan.KUNCI_NAMA",
+            pekerja.contains("inputData.getString(PengingatAdzan.KUNCI_NAMA)"))
+        assertTrue("pekerja tidak membaca PengingatAdzan.KUNCI_JENIS",
+            pekerja.contains("inputData.getString(PengingatAdzan.KUNCI_JENIS)"))
+        assertTrue("pekerja tidak lagi membaca kunci lama PengingatAdzan.KUNCI_ADZAN_LAMA",
+            pekerja.contains("inputData.getBoolean(PengingatAdzan.KUNCI_ADZAN_LAMA"))
+    }
+
     /** Aturan bersama harus tetap murni: tanpa Android, agar dapat diuji langsung. */
     @Test
     fun aturanPengingatTidakMenyentuhAndroid() {
