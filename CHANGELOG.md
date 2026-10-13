@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Daftar izin lokasi tinggal di satu tempat**: layar Kiblat dan Jadwal masing-masing mengetik
+  `arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)` **dua kali** — empat salinan untuk satu
+  keputusan. Yang membuat salinan itu berbahaya bukan panjangnya, melainkan pasangannya:
+  `LocationProvider.hasPermission` menilai "izin sudah ada" dari daftar yang sama, sementara
+  Android 12+ membiarkan pengguna menyetujui **perkiraan saja** (hanya izin kasar). Bila satu layar
+  berhenti meminta salah satu izin, layar itu tak pernah lagi dianggap berizin meski pengguna sudah
+  menyetujui dialognya — tombol GPS-nya diam, tanpa satu pun pesan galat. Daftarnya kini tinggal di
+  `LocationProvider.IZIN` (bentuk `List`, bukan `Array`, supaya tak ada pemanggil yang dapat
+  mengubahnya diam-diam) dan diserahkan ke peluncur izin lewat `toTypedArray()`; `hasPermission`
+  diturunkan darinya lewat `IZIN.any`. Penjaganya memaku tiga hal sekaligus: daftar itu hanya
+  dieja di `LocationProvider.kt`, kedua layar benar-benar memakainya di **kedua** tempat
+  permintaannya, dan `AndroidManifest.xml` menyatakan izin lokasi yang sama — `uses-permission`
+  yang hilang membuat permintaannya ditolak sistem tanpa suara. Penjaga "satu tempat" itu sengaja
+  dibatasi pada izin **lokasi** (`Manifest.permission.ACCESS_*`); izin lain seperti notifikasi
+  punya aturannya sendiri.
 - **Judul langkah takbir yang sama tinggal di satu tempat**: layar Sholat Ghaib dan Sholat Jenazah
   menyebut takbir 2–4 dengan **judul yang sama persis** — *"Takbir 2 → Sholawat Ibrahimiyah"*,
   *"Takbir 3 → Doa untuk mayit"*, *"Takbir 4 → Doa tambahan"* — tetapi ketiganya diketik di kedua

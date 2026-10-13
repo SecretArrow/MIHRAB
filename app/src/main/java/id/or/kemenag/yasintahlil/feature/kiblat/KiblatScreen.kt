@@ -1,6 +1,5 @@
 package id.or.kemenag.yasintahlil.feature.kiblat
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -106,10 +105,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
                         style = MaterialTheme.typography.labelSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                         Button(onClick = {
-                            permLauncher.launch(arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                            ))
+                            permLauncher.launch(LocationProvider.IZIN.toTypedArray())
                         }) { Text("Izinkan lokasi") }
                         OutlinedButton(onClick = {
                             runCatching {
@@ -210,10 +206,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
             FilterChip(s.useGps, {
                 if (!s.hasPermission) {
-                    permLauncher.launch(arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    ))
+                    permLauncher.launch(LocationProvider.IZIN.toTypedArray())
                 } else {
                     vm.setUseGps(!s.useGps)
                 }
