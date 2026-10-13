@@ -226,17 +226,19 @@ object BundelKonten {
      *
      * Rujukan itu menunjuk berkas lain (`berkas.json` atau `berkas.json#id`) alih-alih menyalin
      * teksnya, sehingga satu lafaz terverifikasi dapat dipakai beberapa modul tanpa salinan yang
-     * bisa menyimpang. Harganya: rujukan yang mati tidak menghasilkan teks kosong, melainkan
-     * `FileNotFoundException` dari `ContentRepo.doc` — dan karena pembacaannya ada di dalam
-     * `remember { repo.dzikir() }` pada layar, satu rujukan mati **menghentikan seluruh layar**
-     * (Dzikir, Tahlil, Panduan Sholat) tanpa satu pun petunjuk sebabnya. Pemeriksaan di sini
-     * memindahkan kegagalan itu ke tempat yang benar: bundelnya ditolak saat dipasang, dengan
-     * alasan yang dapat dibaca pengguna, bukan saat layarnya dibuka.
+     * bisa menyimpang. Harganya: rujukan yang mati tidak menghasilkan apa pun bagi pengguna —
+     * `ContentRepo.resolveArabLatinTerjemah` membacanya lewat `docAtauNull` dan mengembalikan teks
+     * kosong, lalu pemanggilnya jatuh ke teks milik entrinya sendiri yang juga kosong, sehingga
+     * entri tampil **tanpa lafaz dan tanpa satu pun pesan**. Pemeriksaan di sini memindahkan
+     * kegagalan itu ke tempat yang benar: bundelnya ditolak saat dipasang, dengan alasan yang dapat
+     * dibaca pengguna, bukan saat layarnya dibuka.
      *
      * [berkasAset] adalah nama berkas konten bawaan aplikasi (`assets/content`). Rujukan yang
      * menunjuk berkas di dalam bundel ini **atau** di antara berkas bawaan itu dianggap sah;
      * rujukan yang tidak ada di keduanya ditolak. Isi berkas bawaan tidak diperiksa di sini
-     * (aplikasi tidak membacanya saat memasang), melainkan oleh gerbang konten di CI.
+     * (aplikasi tidak membacanya saat memasang), melainkan oleh `RujukanKontenBawaanTest`, yang
+     * menjalankan fungsi ini atas seluruh berkas `assets/content`. Gerbang konten di CI
+     * (`tools/validate_content.py`) tidak memeriksa rujukan sama sekali.
      */
     fun periksaRujukan(hasil: Hasil, berkasAset: Set<String>): List<String> {
         val galat = mutableListOf<String>()

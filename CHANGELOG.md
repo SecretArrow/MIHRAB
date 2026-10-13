@@ -380,6 +380,30 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rujukan pada konten bawaan akhirnya diperiksa**: sebuah entri konten dapat menunjuk berkas lain
+  (`rujukan_file`, `rujukanFile`, larik `rujukan`) alih-alih menyalin lafaznya, supaya satu teks
+  terverifikasi dipakai beberapa modul tanpa salinan yang bisa menyimpang. Aturan bahwa rujukan itu
+  harus menunjuk berkas dan entri yang benar-benar ada sudah lama ditulis di
+  `BundelKonten.periksaRujukan` — dan dijalankan aplikasi **saat memasang** bundel yang dipilih
+  pengguna. Yang tidak pernah dijalankan atas berkas yang benar-benar dikirim adalah aturan yang
+  sama: `DzikirRujukanTest` memeriksa rujukan `dzikir.json` saja, dan hanya yang berbentuk
+  `berkas#id`, sehingga dari **dua puluh** nilai rujukan di `assets/content` hanya **lima** yang
+  diperiksa; `tools/validate_content.py` tidak mengenal kunci rujukan sama sekali. Rujukan yang
+  mati pun tidak memunculkan galat: `resolveArabLatinTerjemah` membaca sasarannya lewat
+  `docAtauNull`, mengembalikan teks kosong, lalu pemanggilnya jatuh ke teks milik entrinya sendiri
+  yang juga kosong — entri tampil **tanpa lafaz, tanpa satu pun pesan**. Pada `tahlil_full.json`
+  seluruh lafaz Qur'annya datang lewat rujukan seperti itu, dan kelompok "Doa memohon ampunan" pada
+  `dzikir.json` dibangun seluruhnya dari larik `rujukan` yang tak pernah diperiksa. Kini
+  `RujukanKontenBawaanTest` **memanggil pemeriksa yang sama** dengan seluruh berkas bawaan sebagai
+  dokumen sekaligus daftar sasaran yang sah — menambah rujukan baru berarti ikut diperiksa tanpa
+  menyunting uji. Uji itu juga memaku jumlah kunci rujukan per berkas, sebab menghapus satu rujukan
+  tidak menggagalkan pemeriksaan sasaran (yang hilang justru lafaznya), dan mencari kuncinya
+  sebagai **kunci JSON**, bukan sebagai kata — `catatan_tradisi` pada `tahlil_full.json` memuat
+  kata "rujukan" di dalam prosa, sehingga pencarian kata biasa hijau meski berkasnya tidak merujuk
+  apa pun. Sebelas mutasi terverifikasi tertangkap, termasuk merusak rujukan pada berkas aset yang
+  sesungguhnya dan nilai yang dahulu tak diperiksa siapa pun. Dua klaim pada KDoc `periksaRujukan`
+  yang sudah tidak benar ikut diperbaiki: rujukan mati tidak lagi menaikkan `FileNotFoundException`,
+  dan "gerbang konten di CI" yang disebut memeriksa berkas bawaan ternyata tidak memeriksanya.
 - **Nama berkas konten akhirnya satu ejaan**: `ContentRepo` mengeja sebelas nama berkas di dalam
   badannya sendiri (`"dzikir.json"`, `"adzan.json"`, `"kota.json"`, …), sementara `BerkasKonten`
   hanya menyimpan dua nama modul sholat khusus. Nama berkas bukan sekadar label: ia kunci ke tiga
