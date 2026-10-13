@@ -67,4 +67,50 @@ object KodeSumber {
         }
         return sb.toString()
     }
+
+    /**
+     * Isi setiap literal string di dalam [teks] — baik `"…"` maupun `"""…"""` — di luar komentar.
+     *
+     * Dipakai penjaga yang memeriksa **nilai yang benar-benar tampil**: teks yang disisipkan ke dalam
+     * kalimat panjang tak lagi terbaca oleh pencarian potongan berkutip utuh (`"sunnah.com"`), sebab
+     * bunyinya kini `"… — sunnah.com"`. Isi bentuk mentah pun ikut dibaca, sebab [kodeTanpaKomentar]
+     * membuangnya seluruhnya dan host di dalamnya karena itu luput.
+     *
+     * Urutan escape `\` dihormati supaya tanda kutip yang di-escape tidak memotong literalnya.
+     */
+    fun literalString(teks: String): List<String> {
+        val hasil = mutableListOf<String>()
+        var i = 0
+        var blok = 0
+        while (i < teks.length) {
+            when {
+                blok > 0 -> if (teks.startsWith("*/", i)) { blok--; i += 2 } else i++
+                teks.startsWith("//", i) -> {
+                    val akhir = teks.indexOf('\n', i)
+                    i = if (akhir < 0) teks.length else akhir
+                }
+                teks.startsWith("/*", i) -> { blok++; i += 2 }
+                teks.startsWith("\"\"\"", i) -> {
+                    val akhir = teks.indexOf("\"\"\"", i + 3)
+                    hasil += teks.substring(i + 3, if (akhir < 0) teks.length else akhir)
+                    i = if (akhir < 0) teks.length else akhir + 3
+                }
+                teks[i] == '"' -> {
+                    val isi = StringBuilder()
+                    i++
+                    while (i < teks.length && teks[i] != '"' && teks[i] != '\n') {
+                        if (teks[i] == '\\' && i + 1 < teks.length) {
+                            isi.append(teks[i + 1]); i += 2
+                        } else {
+                            isi.append(teks[i]); i++
+                        }
+                    }
+                    i++
+                    hasil += isi.toString()
+                }
+                else -> i++
+            }
+        }
+        return hasil
+    }
 }

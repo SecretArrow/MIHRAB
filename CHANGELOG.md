@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Daftar domain resmi benar-benar tinggal di satu tempat**: kalimat *"dari mana konten aplikasi
+  berasal"* ditulis di **empat** layar sekaligus, dan tiap layar mengejanya sendiri. Pengaturan
+  menulis satu kalimat panjang yang mendaftar sumbernya sendiri — tiga host, dari lima domain yang
+  benar-benar diterima gerbang konten — sehingga domain yang ditambahkan kelak tak akan pernah
+  muncul di sana; layar Jadwal dan Kiblat masing-masing mengeja `sihat.kemenag.dev` untuk menunjuk
+  tempat memverifikasi hasil hitungan; dan kartu info harian mengeja `sunnah.com` sebagai asal
+  hadisnya. Penjaganya sebenarnya sudah ada, tetapi menuntut hostnya menjadi potongan berkutip
+  **utuh** (`"sunnah.com"`) — dan host di dalam kalimat panjang bukan potongan berkutip utuh,
+  sehingga keempat layar itu lolos tanpa ketahuan. Kini pemindaiannya membaca **isi literal string**
+  (termasuk bentuk mentah `"""…"""`), dan keempatnya memakai sumber bersama: Pengaturan menurunkan
+  daftarnya dari `ContentValidator.allowedHosts` — pola yang sudah dipakai layar Pembaruan konten —
+  sedangkan situs SIHAT dan situs teks hadis yang **disebut nama** layar datang dari
+  `ContentValidator.SITUS_SIHAT`/`SITUS_HADIS`, nama pada daftar yang sama, bukan salinan yang
+  dapat basi. Dijaga `SumberResmiSatuTempatTest`: tak satu berkas Kotlin di luar
+  `ContentValidator.kt` dan `DokumenLegal.kt` boleh memuat host resmi di dalam string mana pun, dan
+  kedua situs yang disebut layar wajib benar-benar diterima `isOfficialSource`.
 - **Data warisan yang hilang tanpa galat kini dipindahkan di kedua pintunya**: v1.0.0 menyimpan
   **tiga** hal di DataStore — favorit, riwayat bacaan, dan posisi Tahlil — sedangkan ketiganya kini
   ada di Room. Pemindahnya dahulu hanya memindahkan favorit; `Store.HIST` dan `Store.TAHLIL_PROG`

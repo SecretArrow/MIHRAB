@@ -26,7 +26,13 @@ object InfoHarian {
 
     /** Anjuran yang memang khusus hari Jumat — dipakai **hanya** pada hari Jumat. */
     const val PESAN_JUMAT = "Perbanyak sholawat di hari Jumat."
-    const val SUMBER_JUMAT = "HR Abu Dawud — sunnah.com"
+
+    /**
+     * Sumber anjuran Jumat: kitabnya, dan host resmi teks hadis dari [ContentValidator] — bukan
+     * dieja di sini, supaya memindahkan domain resmi tidak meninggalkan satu rujukan yang menunjuk
+     * alamat di luar daftar.
+     */
+    val SUMBER_JUMAT = "HR Abu Dawud — ${ContentValidator.SITUS_HADIS}"
 
     /** Satu butir ringkas yang ditampilkan kartu beranda. */
     data class Butir(
