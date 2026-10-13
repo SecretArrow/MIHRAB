@@ -380,6 +380,30 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Data warisan yang hilang tanpa galat kini dipindahkan di kedua pintunya**: v1.0.0 menyimpan
+  **tiga** hal di DataStore — favorit, riwayat bacaan, dan posisi Tahlil — sedangkan ketiganya kini
+  ada di Room. Pemindahnya dahulu hanya memindahkan favorit; `Store.HIST` dan `Store.TAHLIL_PROG`
+  tetap tertulis di perangkat pengguna tetapi **tak satu pun** layar membacanya lagi, sehingga
+  pengguna yang memperbarui aplikasi melihat riwayatnya kosong dan Tahlil-nya kembali ke bagian
+  pertama — tanpa galat, tanpa cara mengetahui bahwa datanya sebenarnya belum hilang. Ketiga kunci
+  warisan kini dipindahkan dengan aturan yang sama (hanya bila sisi Room masih kosong, lalu kuncinya
+  dikosongkan agar tidak dipindahkan dua kali): riwayat dipindahkan **beserta waktu kejadiannya**
+  (`pushHistory` menerima `openedAt`) supaya urutan "terakhir dibaca" tidak berubah hanya karena
+  pemindahannya berjalan belakangan, dan posisi Tahlil dipindahkan satu lawan satu ke dua baris
+  progresnya. Bentuk nilai warisan Tahlil (`posisi:hitungan`) dibaca lewat
+  `KunciProgres.bacaWarisan` — satu tempat, sehingga pemisahnya tidak pernah berbeda dari yang dulu
+  menuliskannya, dan nilai yang rusak dilewati alih-alih ditebak separuh.
+- **Pemulihan backup lama ikut memindahkan data warisan**: data warisan masuk ke DataStore lewat
+  **dua** pintu, dan yang kedua juga terbuka. Berkas cadangan v1.0.0 hanya memuat preferensi
+  (`prefs`), sehingga `Store.importJson` menuliskan `fav`, `hist`, dan `tahlil_prog` kembali ke
+  DataStore — dan karena tak ada yang membacanya lagi, menekan "Pulihkan" **tampak berhasil**
+  sementara favorit, riwayat, dan posisi Tahlil pengguna tak pernah muncul. Pemindahnya dahulu
+  berupa fungsi privat di `YasinApp`, jadi pintu kedua tak dapat memakainya. Kini pemindahnya
+  tinggal di `MigrasiWarisan` (dipanggil saat `onCreate` **dan** sesudah pemulihan), aman dipanggil
+  berulang kali, dan dijaga `PemakaianKunciTest`: setiap kunci yang dideklarasikan wajib dipakai
+  kode aplikasi, setiap kunci bertanda warisan wajib dibaca **dan** dikosongkan pemindahnya, rantai
+  pemanggilannya diperiksa dari `onCreate` sampai ketiga fungsi pemindahnya, dan pemulihan backup
+  wajib menjalankan pemindah **setelah** preferensinya dipulihkan.
 - **Aturan menerangkan metode hisab tinggal di satu tempat**: kalimat *"bagaimana metode yang
   sedang berlaku diterangkan ke pengguna"* ditulis ulang di tiap layar yang menyebutnya, dan
   ketiganya berbeda. Kepala layar Jadwal menuliskan `Magrib+…mnt`, penjelasan di menu Adzan
@@ -1444,6 +1468,12 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   konten; tidak ada lagi teks Arab hardcoded di layar.
 
 ### Dihapus
+- Kunci preferensi `Store.SOURCE` beserta dua penulis DataStore lama `Store.toggleFav` dan
+  `Store.pushHist` yang tidak dipakai apa pun. `SOURCE` — sisa fitur "sumber online" yang tak pernah
+  diaktifkan — ikut dideklarasikan, ikut disebut `importJson`, dan ikut dipulihkan dari backup
+  padahal tak satu layar pun membacanya; kunci seperti itu lebih sunyi daripada izin yang tak
+  dipakai, karena izin masih terlihat di peninjau toko aplikasi sedangkan kunci preferensi tidak
+  terlihat siapa pun.
 - Dependensi uji instrumentasi yang **tidak dipakai** — `espresso-core`, `uiautomator`, dan
   `kotlinx-coroutines-test` — beserta plafon Dependabot untuk dua yang terakhir. Ketiganya
   dideklarasikan di `androidTestImplementation` padahal tidak satu pun kelasnya diimpor berkas di

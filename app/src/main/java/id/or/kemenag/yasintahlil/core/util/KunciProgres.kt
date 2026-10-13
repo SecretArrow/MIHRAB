@@ -42,4 +42,40 @@ object KunciProgres {
      * baris ini dahulu ditulis; nilainya dibekukan agar tanda dari versi sebelumnya tetap terbaca.
      */
     const val WUDHU = "wudhu"
+
+    // ---- Bentuk warisan: dua angka pada `Store.TAHLIL_PROG` ------------------------------------
+
+    /**
+     * Pemisah dua angka pada nilai warisan `Store.TAHLIL_PROG` (`posisi:hitungan`).
+     *
+     * Kebetulan bunyinya sama dengan [JenisBacaan.PEMISAH], tetapi keduanya aturan yang berbeda:
+     * yang satu memisahkan **jenis** dari rujukan pada sebuah id bacaan, yang lain memisahkan
+     * **dua angka** pada satu nilai warisan. Karena itu pemisah ini tidak menumpang pada
+     * `JenisBacaan` — nilai warisan Tahlil bukan id bacaan, dan menyamakannya berarti salah satunya
+     * ikut berubah saat yang lain bergeser.
+     *
+     * Nilainya dibekukan bersama [TAHLIL_POSISI] dan [TAHLIL_HITUNGAN]: versi 1.0.0 menulis nilai
+     * ini ke perangkat pengguna, dan pemindahnya harus membacanya persis seperti dulu ditulis.
+     */
+    const val PEMISAH_WARISAN = ':'
+
+    /**
+     * Baca nilai warisan `Store.TAHLIL_PROG` menjadi pasangan posisi dan hitungan; `null` bila
+     * nilainya bukan `posisi:hitungan` yang utuh.
+     *
+     * Nilai yang tak berbentuk itu dahulu ditulis oleh versi aplikasi yang lebih tua, dan menebaknya
+     * sebagai `posisi` saja akan menyimpan posisi yang salah — lebih baik dilewati, karena "belum
+     * dipindahkan" masih dapat diperbaiki sedangkan "dipindahkan dengan salah" tidak terlihat lagi.
+     *
+     * Tidak ada penulis pasangannya: versi 1.0.0 adalah penulis terakhir bentuk ini, dan aplikasi
+     * kini menyimpan kedua angka itu sebagai dua baris progres tersendiri. Yang tersisa hanyalah
+     * pembaca ini, sekali jalan.
+     */
+    fun bacaWarisan(nilai: String): Pair<Int, Int>? {
+        val i = nilai.indexOf(PEMISAH_WARISAN)
+        if (i <= 0) return null
+        val posisi = nilai.substring(0, i).toIntOrNull() ?: return null
+        val hitungan = nilai.substring(i + 1).toIntOrNull() ?: return null
+        return posisi to hitungan
+    }
 }

@@ -46,7 +46,6 @@ class Store(private val ctx: Context) {
         val JADWAL_IKUT = booleanPreferencesKey("jadwal_ikut_lokasi")
         val TZ = stringPreferencesKey("tz") // id zona waktu, kosong = default perangkat
         val CORR = stringPreferencesKey("corr") // koreksi menit csv 6 angka
-        val SOURCE = stringPreferencesKey("source") // lokal|online
         val ADZAN_ON = stringPreferencesKey("adzan_on") // csv 5 bool
         /** Berkas audio adzan yang **sedang aktif** — satu-satunya yang diputar penjadwal & pekerja. */
         val ADZAN_URI = stringPreferencesKey("adzan_uri")
@@ -79,10 +78,10 @@ class Store(private val ctx: Context) {
         val INFO_CARD = booleanPreferencesKey("info_card")
         val HIJRI_CORR = intPreferencesKey("hijri_corr") // koreksi hari kalender Hijriah (-2..2)
         val FAV = stringSetPreferencesKey("fav") // warisan (legacy) — migrasi ke Room
-        val HIST = stringPreferencesKey("hist") // warisan (legacy)
+        val HIST = stringPreferencesKey("hist") // warisan (legacy) — migrasi ke Room
         val LAST = stringPreferencesKey("last") // mis. yasin:58
         val YASIN_MARK = intPreferencesKey("yasin_mark") // warisan
-        val TAHLIL_PROG = stringPreferencesKey("tahlil_prog") // warisan idx:count
+        val TAHLIL_PROG = stringPreferencesKey("tahlil_prog") // warisan posisi:hitungan — migrasi ke Room
         val NOTIF = booleanPreferencesKey("notif")
     }
 
@@ -96,17 +95,6 @@ class Store(private val ctx: Context) {
     /** Aliran reaktif untuk ViewModel. */
     fun <T> flow(key: Preferences.Key<T>, def: T): Flow<T> =
         ctx.ds.data.map { it[key] ?: def }
-
-    suspend fun toggleFav(id: String) {
-        val cur = get(FAV, BawaanPreferensi.FAVORIT)
-        set(FAV, if (cur.contains(id)) cur - id else cur + id)
-    }
-
-    suspend fun pushHist(id: String) {
-        val cur = get(HIST, BawaanPreferensi.RIWAYAT)
-        val items = (listOf("$id|${System.currentTimeMillis()}") + cur.split(";").filter { it.isNotBlank() }).take(50)
-        set(HIST, items.joinToString(";"))
-    }
 
     /** Backup penuh seluruh preferensi sebagai JSON. */
     suspend fun exportJson(): String {
@@ -130,7 +118,7 @@ class Store(private val ctx: Context) {
             fun flt(k: Preferences.Key<Float>) { if (o.has(k.name)) p[k] = o.optDouble(k.name).toFloat() }
             fun dbl(k: Preferences.Key<Double>) { if (o.has(k.name)) p[k] = o.optDouble(k.name) }
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
-            str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR); str(SOURCE)
+            str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR)
             str(ADZAN_ON); str(ADZAN_URI); str(ADZAN_SOUNDS); str(MADHAB); str(TAHLIL_SUSUNAN)
             str(COMPASS_UNIT)
             str(TAHLIL_CUSTOM); str(PAGE_THEME); str(COMPASS_VIEW)

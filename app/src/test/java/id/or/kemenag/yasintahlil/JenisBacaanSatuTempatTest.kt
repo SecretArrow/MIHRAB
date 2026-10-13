@@ -157,7 +157,7 @@ class JenisBacaanSatuTempatTest {
         assertTrue("splitContentId tidak memakai aturan pemisah bersama",
             kodeLayar("core/designsystem/HiltAccess.kt").contains("JenisBacaan.pisah("))
         assertTrue("migrasi favorit warisan tidak memakai aturan pemisah bersama",
-            kodeLayar("YasinApp.kt").contains("JenisBacaan.pisah("))
+            kodeLayar("core/data/local/MigrasiWarisan.kt").contains("JenisBacaan.pisah("))
     }
 
     /** Pemisahnya tidak disalin: satu tempat memutuskan bentuk id, yang lain memakainya. */
