@@ -380,6 +380,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Catatan tradisi susunan Tahlil kini punya satu rumah, dan layar Pengaturan ikut membacanya**:
+  keterangan *"susunan tahlil dapat berbeda menurut tradisi"* hidup **dua kali** di bundel —
+  `tahlil.json` (*"…; bukan satu-satunya versi yang benar"*) dan `tahlil_full.json` (*"… Ini salah
+  satu susunan yang lazim di Indonesia, bukan satu-satunya yang benar"*) — sementara kode hanya
+  membaca `tahlil.json`, sehingga salinan di `tahlil_full.json` tak pernah tampil dan memperbaruinya
+  tak mengubah layar apa pun. Salinan mati itu bahkan sempat menyesatkan: dokumentasi perbaikan ini
+  mula-mula mengutip kalimatnya seolah kalimat itu yang ditampilkan. Ejaan yang **lebih lengkap**
+  kini pindah ke `tahlil.json` (berkas yang dibaca) dan salinannya dihapus — satu keterangan, satu
+  rumah. Pada saat yang sama layar **Pengaturan**, yang sebelumnya mengetik versinya sendiri
+  (*"Susunan dapat berbeda menurut tradisi dan rujukan — tidak ada susunan yang diklaim paling
+  benar"*), kini memakai `repo.tahlilCatatanTradisi()` yang sama dengan layar Tahlil: satu
+  keterangan itu tadinya punya tiga ejaan, dan memperbarui kalimat di berkasnya hanya mengubah dua
+  di antaranya. Dijaga `AtribusiModulTest` — `catatanTradisiTinggalDiSatuBerkasTahlil` (faktanya
+  tidak boleh punya salinan kedua), `catatanTradisiMenyebutSusunanIniLazimDiIndonesia` (ejaan yang
+  lebih lengkap benar-benar yang tersisa), dan `layarPengaturanMembacaCatatanTradisiDariBundel`
+  (layar Pengaturan membacanya, dan tidak lagi memuat salinan lamanya). Uji terakhir membaca
+  layarnya **tanpa komentar** — KDoc di layar itu mengutip kalimat lama, dan kutipan itu akan
+  memuaskan penjaganya seolah salinannya masih hidup.
 - **Judul bagian layar Wudhu kini dibaca dari bundel, bukan diketik di layar**: `wudhu.json`
   mencantumkan `wudhu.judul` dan `tayamum.judul`, tetapi `WudhuScreen` mengetik kedua headingnya
   sendiri — dan salinannya sudah menyimpang. Judul tayamum di berkas berbunyi *"Tata cara tayamum

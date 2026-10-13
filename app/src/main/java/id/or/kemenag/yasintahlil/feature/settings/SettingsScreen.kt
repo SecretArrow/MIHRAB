@@ -331,8 +331,13 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                      else
                         "Baru satu susunan tersedia di bundel konten; susunan lain menunggu rujukan " +
                             "tradisi yang jelas dan tidak disusun sendiri di sini.") +
-                    " Susunan dapat berbeda menurut tradisi dan rujukan — tidak ada susunan yang " +
-                    "diklaim paling benar.",
+                    // Catatan tradisi dibaca dari bundel, sama seperti di modul Tahlil — bukan
+                    // diketik ulang di sini. Salinan lama berbunyi "Susunan dapat berbeda menurut
+                    // tradisi dan rujukan — tidak ada susunan yang diklaim paling benar", padahal
+                    // berkas yang dibaca (`tahlil.json`) berbunyi "…; bukan satu-satunya versi yang
+                    // benar"; dua layar karena itu menyatakan hal yang sama dengan dua cara.
+                    " " + repo.tahlilCatatanTradisi()
+                        .ifBlank { "Susunan dapat berbeda menurut tradisi." },
                 style = MaterialTheme.typography.labelSmall)
             // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan *"berdasarkan sumber atau tradisi
             // yang jelas"*; sumbernya harus terlihat di sini juga, bukan hanya di modul Tahlil.

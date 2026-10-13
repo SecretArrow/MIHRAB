@@ -144,9 +144,11 @@ class RujukanKontenBawaanTest {
      * rujukan.
      *
      * Kuncinya dicari sebagai **kunci JSON** (`"rujukan_file"`, `"rujukan"`), bukan sebagai kata
-     * biasa. `catatan_tradisi` pada `tahlil_full.json` memuat kata "rujukan" di dalam prosa
-     * ("…berbeda menurut tradisi dan rujukan…"), sehingga pencarian kata akan hijau meski berkas
-     * itu tidak merujuk ke mana pun — persis kegagalan yang seharusnya dicegah uji ini.
+     * biasa. Sebabnya dulu konkret: `catatan_tradisi` pada `tahlil_full.json` memuat kata "rujukan"
+     * di dalam prosanya ("…berbeda menurut tradisi dan rujukan…"), sehingga pencarian kata akan
+     * hijau meski berkas itu tidak merujuk ke mana pun — persis kegagalan yang seharusnya dicegah
+     * uji ini. Salinan itu sudah dihapus (lihat `AtribusiModulTest.catatanTradisiTinggalDiSatuBerkasTahlil`),
+     * tetapi aturan pencariannya tetap: prosa penjelas tidak boleh dihitung sebagai rujukan.
      */
     @Test
     fun berkasYangMemakaiRujukanBenarBenarMemuatnya() {

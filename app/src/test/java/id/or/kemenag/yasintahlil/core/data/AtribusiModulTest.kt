@@ -1,6 +1,8 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import id.or.kemenag.yasintahlil.KodeSumber
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -13,6 +15,8 @@ import java.io.File
  *
  * - `tahlil.json.catatan_tradisi` — layar Tahlil menulis *"susunan dapat berbeda menurut tradisi"*,
  *   padahal berkasnya memuat kalimat yang lebih lengkap ("…; bukan satu-satunya versi yang benar").
+ *   Layar Pengaturan mengulanginya lagi dengan kalimat ketiga yang berbeda: satu keterangan, tiga
+ *   ejaan.
  * - `tahlil_full.json.sumber_umum` — sebagian besar bagian tahlil tidak menyebut sumbernya sendiri,
  *   jadi tanpa keterangan tingkat modul ini kartunya tampil tanpa asal-usul.
  * - `sholat_daftar.json.panduan` — layar menulis "(Fasolatan Kemenag)", berkasnya mencatat yang
@@ -64,6 +68,37 @@ class AtribusiModulTest {
             sumber("src/main/assets/content/sholat_daftar.json").contains("\"panduan\""))
     }
 
+    /**
+     * `catatan_tradisi` tinggal di **satu** berkas Tahlil, bukan disalin ke keduanya.
+     *
+     * Dahulu `tahlil.json` dan `tahlil_full.json` sama-sama mencantumkannya, dengan ejaan yang
+     * berbeda — *"…; bukan satu-satunya versi yang benar"* versus *"… Ini salah satu susunan yang
+     * lazim di Indonesia, bukan satu-satunya yang benar"*. Yang dibaca kode hanya `tahlil.json`,
+     * sehingga salinan di `tahlil_full.json` tak pernah tampil: memperbaruinya tak mengubah layar
+     * apa pun. Salinan mati itu bahkan sempat menyesatkan dokumentasi perbaikan ini, yang mengutip
+     * kalimatnya seolah kalimat itu yang ditampilkan. Karena itu ejaan yang lebih lengkap dipindah
+     * ke berkas yang dibaca, dan salinannya dihapus — satu keterangan, satu rumah.
+     */
+    @Test
+    fun catatanTradisiTinggalDiSatuBerkasTahlil() {
+        val pemilik = listOf("tahlil.json", "tahlil_full.json").filter { berkas ->
+            JSONObject(sumber("src/main/assets/content/$berkas")).has("catatan_tradisi")
+        }
+        assertEquals("catatan_tradisi punya salinan kedua yang tak pernah dibaca",
+            listOf("tahlil.json"), pemilik)
+    }
+
+    /** Yang dipindahkan adalah ejaan yang **lebih lengkap** — memindahkan yang lebih pendek berarti kehilangan keterangan. */
+    @Test
+    fun catatanTradisiMenyebutSusunanIniLazimDiIndonesia() {
+        val isi = JSONObject(sumber("src/main/assets/content/tahlil.json"))
+            .getString("catatan_tradisi").lowercase()
+        assertTrue("catatan tradisi tidak lagi menyebut susunan ini lazim di Indonesia: $isi",
+            isi.contains("lazim di indonesia"))
+        assertTrue("catatan tradisi tidak lagi menyatakan bukan satu-satunya yang benar: $isi",
+            isi.contains("bukan satu-satunya"))
+    }
+
     // ---- Layar ----
 
     @Test
@@ -83,6 +118,29 @@ class AtribusiModulTest {
         // Kalimat cadangan tetap ada supaya layar tidak kosong bila berkasnya kehilangan kuncinya.
         assertTrue("layar Tahlil kehilangan kalimat cadangan catatan tradisi",
             layar.contains("Susunan dapat berbeda menurut tradisi."))
+    }
+
+    /**
+     * Catatan tradisi yang **sama** juga tampil di Pengaturan, jadi ia harus dibaca dari bundel di
+     * sana — bukan diketik ulang dengan kalimat yang lebih pendek.
+     *
+     * Salinan lama di layar Pengaturan berbunyi *"Susunan dapat berbeda menurut tradisi dan rujukan —
+     * tidak ada susunan yang diklaim paling benar"*, sedangkan berkas yang dibaca (`tahlil.json`)
+     * berbunyi *"Susunan dapat berbeda menurut tradisi; bukan satu-satunya versi yang benar."* Dua
+     * layar karena itu menyatakan hal yang sama dengan dua cara, dan memperbarui kalimat di
+     * berkasnya hanya akan mengubah satu di antaranya.
+     */
+    @Test
+    fun layarPengaturanMembacaCatatanTradisiDariBundel() {
+        // Komentar dibuang lebih dahulu: KDoc di layar itu mengutip kalimat lama untuk menjelaskan
+        // asal-usulnya, dan kutipan itu akan memuaskan `assertFalse` di bawah seolah layarnya masih
+        // mengetik sendiri catatan tradisinya.
+        val layar = KodeSumber.kodeTanpaKomentar(
+            sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt"))
+        assertTrue("layar Pengaturan tidak membaca catatan tradisi dari bundel",
+            layar.contains("repo.tahlilCatatanTradisi()"))
+        assertFalse("layar Pengaturan masih mengetik sendiri catatan tradisinya",
+            layar.contains("Susunan dapat berbeda menurut tradisi dan rujukan"))
     }
 
     @Test
