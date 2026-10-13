@@ -1,6 +1,5 @@
 package id.or.kemenag.yasintahlil.feature.jadwal
 
-import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -13,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -71,10 +71,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             if (!vm.hasLocationPermission()) {
                 mintaIkuti = false
                 needPermission = true
-                permLauncher.launch(arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                ))
+                permLauncher.launch(LocationProvider.IZIN.toTypedArray())
             } else {
                 vm.useGps()
             }
@@ -88,10 +85,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
                 if (on && !vm.hasLocationPermission()) {
                     mintaIkuti = true
                     needPermission = true
-                    permLauncher.launch(arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    ))
+                    permLauncher.launch(LocationProvider.IZIN.toTypedArray())
                 } else {
                     vm.setFollowGps(on)
                 }

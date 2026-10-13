@@ -25,12 +25,29 @@ object LocationProvider {
     /** Label kota saat koordinat berasal dari GPS perangkat, bukan pilihan manual. */
     const val GPS_LABEL = "Lokasi GPS"
 
-    /** True bila izin lokasi (halus atau kasar) sudah diberikan pengguna. */
+    /**
+     * Izin lokasi yang **diminta** aplikasi, dalam satu tempat.
+     *
+     * Layar Kiblat dan Jadwal masing-masing menuliskan daftar ini sendiri — empat salinan untuk satu
+     * keputusan. Yang membuat salinan itu berbahaya bukan panjangnya, melainkan pasangannya:
+     * [hasPermission] menilai "izin sudah ada" dari daftar yang **sama**, sementara Android 12+
+     * membiarkan pengguna menyetujui **perkiraan saja** (hanya izin kasar). Bila salah satu layar
+     * berhenti meminta salah satu izin, layar itu tak pernah lagi dapat dianggap berizin meski
+     * pengguna sudah menyetujui dialognya — tombol GPS-nya diam tanpa satu pun pesan galat.
+     *
+     * Bentuknya `List`, bukan `Array`: nilai ini diserahkan ke peluncur izin lewat `toTypedArray()`,
+     * sehingga tak ada pemanggil yang dapat mengubah daftarnya diam-diam.
+     */
+    val IZIN: List<String> = listOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+    )
+
+    /** True bila izin lokasi sudah diberikan pengguna — salah satu dari [IZIN] cukup. */
     fun hasPermission(ctx: Context): Boolean =
-        ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED
+        IZIN.any {
+            ContextCompat.checkSelfPermission(ctx, it) == PackageManager.PERMISSION_GRANTED
+        }
 
     /** Perbaikan terakhir yang diketahui (tanpa menunggu satelit). Bisa null bila belum ada. */
     @SuppressLint("MissingPermission") // Dijaga oleh hasPermission() di baris pertama.
