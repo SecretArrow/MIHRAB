@@ -380,6 +380,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Catatan mazhab iqomah kini tinggal di bagiannya sendiri, dan yang tampil adalah ejaan lengkap**:
+  `adzan.json` memuat keterangan *"susunan iqomah dapat berbeda menurut mazhab/tradisi"* **dua kali**
+  — di tingkat modul (*"…; perbedaan dicatat apa adanya"*) dan di dalam bagian `iqomah` (*"… (mis.
+  jumlah lafaz). Perbedaan dicatat apa adanya"*). Yang dibaca `iqomahCatatan()` adalah salinan
+  tingkat modul, sehingga salinan di dalam `iqomah` tak pernah tampil; jadi yang terlihat di layar
+  Iqomah bukan sekadar salinan yang lebih pendek, melainkan salinan yang **kehilangan contoh** yang
+  menjelaskan apa yang berbeda antar mazhab. Keterangan itu kini dibaca dari bagiannya sendiri
+  (`adzan.json#iqomah#catatan_mazhab`), mengikuti konvensi berkasnya yang sudah menaruh
+  `catatan_subuh` di dalam bagian `adzan`; salinan tingkat modul dihapus. Dijaga
+  `AtribusiLafazAdzanTest` — `catatanPerBagianTinggalDiBagiannya` (kedua arah perpindahan),
+  `catatanMazhabIqomahMenyebutContohPerbedaan` (kelengkapan ejaan), dan
+  `repoMembacaCatatanMazhabIqomahDariBagiannya` (jalur pembacaannya). Uji tampilnya ikut diperketat:
+  ia dahulu hanya mencari `repo.iqomahCatatan()`, yang tetap ada di dalam cabang yang dimatikan
+  (`if (false)`), sehingga kini **syarat** tampilnya yang diperiksa.
 - **`edisi` tingkat modul Tahlil kini punya satu rumah, dan ejaan yang tampil adalah yang lengkap**:
   keterangan provenans *edisi* hidup **dua kali** di bundel — `tahlil.json` (*"Susunan lazim
   Indonesia; bacaan Qur'an Kemenag 2019, doa/dzikir sunnah.com"*) dan `tahlil_full.json` (*"… bacaan
