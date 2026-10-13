@@ -112,4 +112,45 @@ class ReadmeToolchainTest {
         assertEquals("tingkat Java di README.md berbeda dari app/build.gradle.kts",
             diGradle, diReadme)
     }
+
+    /**
+     * Selama AGP masih 8.x, wrapper Gradle tidak boleh menyentuh **9.6**.
+     *
+     * Gradle 9.6.0 menghapus `org.gradle.api.problems.internal.InternalProblems`, API internal yang
+     * masih dipakai AGP 8.x: `com.android.internal.application` gagal diterapkan dengan *"relies on
+     * 'org.gradle.api.problems.internal.InternalProblems', a Gradle internal API that was removed in
+     * Gradle 9.6.0"*. Batas ini tak terlihat sebelumnya karena AGP 8.5.2 tidak menyentuh provider
+     * itu, sehingga Gradle 9.8.1 sempat hijau — kenaikan AGP-lah yang memunculkannya (PR #119:
+     * `lint` dan `unit` gagal dalam 40 detik saat konfigurasi, bukan saat kompilasi). Uji ini
+     * mengikat wrapper ke lini AGP yang sedang dipakai, sehingga kenaikan Gradle tak bisa lolos
+     * hanya karena AGP-nya belum ikut naik.
+     */
+    @Test
+    fun wrapperGradleSejalanDenganLiniAgp() {
+        val wrapper = Regex("""gradle-(\d+\.\d+(?:\.\d+)?)-bin\.zip""")
+            .find(baca("gradle/wrapper/gradle-wrapper.properties"))
+            ?.groupValues?.get(1)
+            ?: error("versi Gradle tidak terbaca dari gradle/wrapper/gradle-wrapper.properties")
+
+        val agp = versiDiToml("agp")
+        val agp8 = (agp.split(".").firstOrNull()?.toIntOrNull() ?: 0) == 8
+        if (agp8) {
+            assertTrue(
+                "AGP $agp (8.x) di Gradle $wrapper — Gradle 9.6.0 menghapus `InternalProblems` " +
+                    "yang masih dipakai AGP 8.x, jadi plugin-nya gagal diterapkan. Pakai Gradle < 9.6.",
+                bandingkan(wrapper, "9.6") < 0,
+            )
+        }
+    }
+
+    /** Perbandingan versi bergaya `a.b.c` — cukup untuk membandingkan lini Gradle. */
+    private fun bandingkan(a: String, b: String): Int {
+        val pa = a.split(".").map { it.toIntOrNull() ?: 0 }
+        val pb = b.split(".").map { it.toIntOrNull() ?: 0 }
+        repeat(maxOf(pa.size, pb.size)) { i ->
+            val d = pa.getOrElse(i) { 0 } - pb.getOrElse(i) { 0 }
+            if (d != 0) return d
+        }
+        return 0
+    }
 }

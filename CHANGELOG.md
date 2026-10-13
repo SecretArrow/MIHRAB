@@ -7,7 +7,7 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diubah
 - **Toolchain dinaikkan sebagai satu kesatuan: AGP 8.13.2, Kotlin 2.3.21, KSP 2.3.12, Hilt 2.58,
-  Compose BOM 2026.06.01, `compileSdk`/`targetSdk` 36.** Google Play mewajibkan aplikasi
+  Compose BOM 2026.06.01, Gradle 8.14.6, `compileSdk`/`targetSdk` 36.** Google Play mewajibkan aplikasi
   baru dan pembaruan menargetkan Android 16 (API 36) sejak 31 Agustus 2026; selama ini `targetSdk`
   dipatok 34, sehingga aplikasi belum memenuhi syarat pengajuan. Kenaikannya tidak bisa parsial —
   Kotlin/KSP/Compose BOM satu toolchain, sedangkan plafon Hilt dan pustaka androidx ditentukan oleh
@@ -17,8 +17,9 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   yang tak diperlukan hanya untuk syarat Play); patch **8.13.2** dipakai karena R8 8.13.19-lah yang
   mengenal metadata Kotlin 2.3; Kotlin berhenti di **2.3.21** karena KSP 2.3.x hanya mendukung KGP
   sampai 2.3.x dan belum ada KSP 2.4.x; Hilt berhenti di **2.58** karena 2.59 mewajibkan AGP >= 9;
-  versi Gradle sengaja **tidak diubah** (wrapper tetap 9.8.1 — AGP 8.13 hanya menuntut Gradle >= 8.13,
-  dan 9.8.1 sudah lama hijau di repo ini). Pustaka androidx dipilih
+  Gradle justru **turun** ke **8.14.6**, sebab AGP 8.x memakai `InternalProblems` — API internal Gradle
+  yang dihapus di **Gradle 9.6.0**, sehingga AGP 8.13 gagal diterapkan di 9.8.1 (batas ini tak terlihat
+  sebelumnya karena AGP 8.5.2 tidak menyentuh provider itu). Pustaka androidx dipilih
   dari `minCompileSdk`/`minAndroidGradlePluginVersion` di dalam AAR-nya, dan ternyata nomor terbaru
   bukan yang paling jauh bisa dipakai: `core-ktx` 1.19.0, `androidx.hilt` 1.4.0,
   `navigation-compose` 2.10.0, `lifecycle` 2.11.0, dan compose-ui 1.12.0 semuanya sudah menuntut

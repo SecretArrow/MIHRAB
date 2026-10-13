@@ -7,10 +7,12 @@
 #  - `kotlin` 2.3.x: batas atas yang masih didukung `ksp` 2.3.x (KSP mendukung KGP 2.2.10–2.3.x).
 #    Karena KSP 2.3 tidak lagi terikat versi compiler, KSP ikut naik sendiri.
 #  - `hilt` 2.58: rilis Dagger terakhir yang masih menerima AGP 8.x; 2.59 mewajibkan AGP >= 9.0.0.
-#  - Gradle (gradle-wrapper.properties) TIDAK diubah: tetap 9.8.1. AGP 8.13 hanya memeriksa batas
-#    bawah Gradle (>= 8.13), dan 9.8.1 sudah lama hijau di repo ini — bahkan bersama AGP 8.5.2.
-#    Kotlin 2.3.21 menerima Gradle 7.6.3–9.3.0, jadi 9.8.1 hanya memicu peringatan "di atas versi
-#    yang diuji", persis seperti Kotlin 2.0.20 di Gradle 9.8.1 sebelumnya.
+#  - Gradle (gradle-wrapper.properties) 8.14.6: AGP 8.x memakai `InternalProblems`, API internal
+#    Gradle yang DIHAPUS di Gradle 9.6.0 — di 9.6+ plugin `com.android.internal.application` gagal
+#    diterapkan ("relies on ... a Gradle internal API that was removed in Gradle 9.6.0"), terbukti
+#    di PR #119. AGP 8.5.2 tidak menyentuh provider itu, jadi Gradle 9.8.1 sempat hijau dan
+#    kenaikan AGP inilah yang memunculkan batasnya. 8.14.6 adalah rilis 8.x terakhir, dan tetap
+#    di dalam rentang yang diuji Kotlin 2.3.21 (Gradle 7.6.3–9.3.0).
 #  - Pustaka androidx dipilih dari `minCompileSdk`/`minAndroidGradlePluginVersion` di metadata
 #    AAR-nya, bukan dari nomor terbaru. Versi terbaru yang masih menerima compileSdk 36:
 #    `coreKtx` 1.18.0 (1.19.0 menuntut compileSdk 37 + AGP 9.1), `hiltExt` 1.3.0 (1.4.0 sama),
