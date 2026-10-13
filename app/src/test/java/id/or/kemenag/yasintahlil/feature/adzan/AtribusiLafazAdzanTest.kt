@@ -91,8 +91,14 @@ class AtribusiLafazAdzanTest {
 
         val iqomah = layarIqomah()
         assertTrue("lafaz iqomah tidak diberi nomor urut", iqomah.contains("forEachIndexed"))
-        assertTrue("id kartu iqomah tidak memakai nomor urut dari kosakata bersama",
-            iqomah.contains("JenisBacaan.id(JenisBacaan.IQOMAH, (i + 1).toString())"))
+        // Aturan "lafaz ke-n bernomor n, mulai 1" kini tinggal di `JenisBacaan.idLafazIqomah`,
+        // bukan disusun di layar. Dulu layar ini menulis `id(JenisBacaan.IQOMAH, (i + 1)…)` dan
+        // indeks pencarian menulis `id(JenisBacaan.IQOMAH, i…)` — lafaz yang sama tersimpan dengan
+        // dua rujukan berbeda. Karena itu yang diuji di sini adalah pemakaian aturan bersamanya;
+        // bahwa tak ada tempat pemakaian yang menyusunnya sendiri dijaga
+        // `JenisBacaanSatuTempatTest.nomorUrutLafazIqomahTidakDihitungDiTempatPemakaian`.
+        assertTrue("id kartu iqomah tidak memakai aturan nomor urut bersama",
+            iqomah.contains("JenisBacaan.idLafazIqomah(i + 1)"))
         assertTrue("judul kartu iqomah tidak menyebut urutannya", iqomah.contains("dari \${items.size}"))
     }
 
