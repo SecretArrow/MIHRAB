@@ -293,10 +293,8 @@ fun AdzanScreen() {
         Text("Pengingat dijadwalkan lewat WorkManager (tanpa izin alarm tepat waktu): waktu dapat " +
                 "bergeser beberapa menit saat perangkat tidur (Doze) atau dibatasi optimasi baterai — " +
                 "buka \"Optimasi baterai\" di atas agar lebih tepat. Jadwal dihitung di perangkat " +
-                "dengan metode ${metode.label} (Fajr ${metode.fajr}°, " +
-                (if (metode.ishaIntervalMin != null) "Isya Magrib+${metode.ishaIntervalMin} menit"
-                 else "Isya ${metode.isha}°") +
-                "); ubah metode, koreksi menit, dan zona waktu di menu Jadwal.",
+                "dengan metode ${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; " +
+                "ubah metode, koreksi menit, dan zona waktu di menu Jadwal.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
         Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)

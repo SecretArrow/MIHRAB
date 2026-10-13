@@ -239,6 +239,21 @@ object JadwalHariIni {
         "${asarLabel(hanafi)} (${asarFactor(asarKey(hanafi)).toInt()})"
 
     /**
+     * Sudut satu metode hisab dalam bentuk ringkas, mis. `Fajr 20.0° / Isya 18.0°` — atau
+     * `Fajr 18.5° / Isya Magrib+90 mnt` untuk metode yang menetapkan Isya sebagai **selang menit**
+     * sesudah Magrib ([PrayerCalc.Method.ishaIntervalMin] terisi, seperti Umm al-Qura dan Makkah).
+     *
+     * Aturan ini dahulu diketik ulang di tiap layar yang menyebut metode: kepala layar Jadwal
+     * menuliskan `Magrib+…mnt`, penjelasan di menu Adzan menuliskan `Isya Magrib+… menit` — dua
+     * ejaan untuk satu aturan, dan layar Pengaturan menuliskan metode **Kemenag/SIHAT** secara tetap
+     * padahal pengguna dapat memilih metode lain. Karena itu aturannya kini tinggal di sini, dibaca
+     * dari [PrayerCalc.Method] yang sedang aktif, dan tidak ada layar yang mengarang angkanya.
+     */
+    fun metodeRingkas(m: PrayerCalc.Method): String =
+        "Fajr ${m.fajr}° / Isya " +
+            (m.ishaIntervalMin?.let { "Magrib+$it mnt" } ?: "${m.isha}°")
+
+    /**
      * Koreksi menit bawaan: tanpa koreksi. Panjangnya wajib sepanjang [ENAM_WAKTU].
      *
      * Rentang [KOREKSI_MIN_MENIT]..[KOREKSI_MAKS_MENIT] adalah satu-satunya rentang yang sah; ia

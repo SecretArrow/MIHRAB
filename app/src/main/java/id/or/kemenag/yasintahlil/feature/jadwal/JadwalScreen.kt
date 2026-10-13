@@ -43,7 +43,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.JADWAL, style = MaterialTheme.typography.titleLarge)
         Text(
-            "Metode: ${s.method.label} • Fajr ${s.method.fajr}° / Isya ${if (s.method.ishaIntervalMin != null) "Magrib+${s.method.ishaIntervalMin}mnt" else "${s.method.isha}°"} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
+            "Metode: ${s.method.label} • ${JadwalHariIni.metodeRingkas(s.method)} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
             style = MaterialTheme.typography.labelMedium,
         )
 
