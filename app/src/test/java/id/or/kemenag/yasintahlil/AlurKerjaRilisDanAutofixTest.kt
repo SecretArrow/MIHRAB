@@ -205,7 +205,7 @@ class AlurKerjaRilisDanAutofixTest {
      * Versi hidup di **dua** tempat: `versionName` di `app/build.gradle.kts` (yang dibaca
      * `BuildConfig` dan tampil di layar Tentang) dan nama tag (yang menjadi nama rilis). Bila
      * keduanya menyimpang, rilis resmi menerbitkan APK yang di dalamnya mengaku versi lain —
-     * pengguna melihat "1.0.0" pada rilis bernama v1.0.1 — dan tak ada langkah yang memeriksanya.
+     * pengguna melihat "1.0.0" pada rilis bernama v1.1.0 — dan tak ada langkah yang memeriksanya.
      * Langkah pembandingnya wajib ada, wajib benar-benar membandingkan, dan wajib dibatasi ref tag
      * supaya dispatch uji build dari cabang tidak ikut gagal.
      */
@@ -213,7 +213,7 @@ class AlurKerjaRilisDanAutofixTest {
     fun versiApkDibandingkanDenganTagRilis() {
         val blok = langkah(tanpaKomentar(release()), langkahVersi)
         // Yang dibuktikan adalah VERSI benar-benar **dibaca** dari build.gradle.kts, bukan sekadar
-        // menyebut berkas itu: menghardcode `VERSI="1.0.1"` tetap meninggalkan nama berkasnya di
+        // menyebut berkas itu: menghardcode `VERSI="1.1.0"` tetap meninggalkan nama berkasnya di
         // teks pesan galat, sehingga asersi "berkasnya disebut" akan terpuaskan oleh pesan galat.
         assertTrue(
             "VERSI tidak dihitung dengan membaca versionName dari app/build.gradle.kts — versi " +
