@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
 @Composable
@@ -132,9 +133,12 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                     Text("${v.nomor}", style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(end = 8.dp, top = 12.dp))
                     Column(Modifier.weight(1f)) {
+                        // Mode fokus menyembunyikan bilah bawah dan berarti bacaan dibaca dari
+                        // jauh, jadi ukuran Arabnya dinaikkan lewat aturan bersama yang sama
+                        // dengan layar Ghaib, Jenazah, Iqomah, dan Tahlil.
                         BacaanCard(JenisBacaan.id(JenisBacaan.YASIN, v.nomor.toString()),
                             "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
-                            s.showLatin, s.showTrans, s.arabSize,
+                            s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, focus),
                             showArab = s.showArab, kategori = surah.kategori)
                         Row {
                             TextButton(onClick = { vm.markRead(v.nomor) }) {

@@ -380,6 +380,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Mode baca dari jauh kini menaikkan ukuran Arab di semua layar yang punya mode itu**: aturan
+  `UkuranBacaan.arabBacaJauh` (mode layar penuh, mode fokus, atau mode jamaah menaikkan ukuran Arab
+  `+ 8` sp sampai batas `44f`) sudah tinggal di satu tempat dan dijaga agar tak ada layar
+  menuliskannya kembali — tetapi **pemakaiannya** tidak dijaga, dan tiga layar yang jelas punya mode
+  itu tidak pernah memanggilnya: mode fokus Yasin, layar penuh Dzikir, dan layar penuh Tahlil sendiri
+  (Tahlil hanya menaikkannya di mode jamaah). Ketiganya menyembunyikan bilah bawah dan meminta bacaan
+  dibaca dari jauh, tetapi teks Arabnya tetap seukuran bacaan biasa — sedangkan di layar Ghaib,
+  Jenazah, Iqomah, dan mode jamaah Tahlil teksnya membesar. Pengguna yang menekan "Layar penuh" di
+  Yasin atau Dzikir karena itu tidak mendapat apa yang ia dapat di layar lain, tanpa satu pun pesan
+  galat. Ketiga layar kini menyalurkan ukurannya lewat aturan bersama (`TahlilScreen` menyatukan
+  kedua modenya lebih dahulu lewat `val bacaJauh = jamaah || fullscreen`), dan
+  `UkuranBacaanModeBacaTest` menjaga agar setiap layar bermode baca jarak jauh tetap memanggilnya —
+  layarnya **ditemukan dari sumber** (`FullscreenEffect(...)` yang juga menampilkan `BacaanCard(`/
+  `ArabText(`), bukan didaftar di uji, sehingga layar baru ikut terjaga; kompas Kiblat yang juga
+  bermode layar penuh tetapi tak menampilkan teks Arab sengaja tidak dituntut.
 - **Bentuk berkas cadangan tinggal di satu tempat, dan pemulihan tak menghapus bagian yang tak ada
   di berkasnya**: berkas cadangan punya dua sisi yang tak pernah bertemu — penulis
   (`SettingsScreen` + `RoomUserDataRepository.exportJson`) dan pembaca (`restoreJson` + layar

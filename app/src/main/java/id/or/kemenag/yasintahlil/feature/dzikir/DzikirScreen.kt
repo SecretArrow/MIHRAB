@@ -15,6 +15,7 @@ import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.Saring
+import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 
 @Composable
@@ -78,8 +79,10 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
                 // bundel konten, jadi jenisnya tidak dapat ditulis tetap di sini.
                 val key = JenisBacaan.id(group.id, it.judul)
                 val c = s.counts[key] ?: 0
+                // Mode layar penuh berarti bacaan dibaca dari jauh — aturan yang sama dipakai
+                // layar Ghaib, Jenazah, Iqomah, dan Tahlil; lihat `UkuranBacaan.arabBacaJauh`.
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
-                    s.showLatin, s.showTrans, s.arabSize,
+                    s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, fullscreen),
                     ulangi = it.ulangi, sumber = it.sumber,
                     showArab = s.showArab, kategori = it.kategori)
                 // Hitungan ditampilkan untuk semua bacaan, bukan hanya yang ulangi > 1: progresnya

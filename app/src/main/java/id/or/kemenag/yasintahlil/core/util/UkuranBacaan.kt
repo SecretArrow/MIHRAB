@@ -26,11 +26,18 @@ object UkuranBacaan {
     const val MAKS_BACA_JAUH = 44f
 
     /**
-     * Ukuran Arab saat bacaan dimaksudkan dibaca dari jauh — layar penuh (Ghaib, Jenazah, Iqomah)
-     * atau mode jamaah (Tahlil): sedikit lebih besar agar terbaca, tetapi tetap dibatasi supaya
-     * tidak melewati lebar kartu. Angka `+ 8` dan `44f` dahulu ditulis ulang di empat layar, tiga di
-     * antaranya bahkan tanpa batas atas. Syaratnya diikutkan ke sini supaya tak ada layar yang
-     * menaikkan ukuran tanpa pernah mengecilkannya lagi.
+     * Ukuran Arab saat bacaan dimaksudkan **dibaca dari jauh** — mode layar penuh, mode fokus, atau
+     * mode jamaah: sedikit lebih besar agar terbaca, tetapi tetap dibatasi supaya tidak melewati
+     * lebar kartu. Angka `+ 8` dan `44f` dahulu ditulis ulang di empat layar, tiga di antaranya
+     * bahkan tanpa batas atas. Syaratnya diikutkan ke sini supaya tak ada layar yang menaikkan
+     * ukuran tanpa pernah mengecilkannya lagi.
+     *
+     * **Kapan dipanggil.** Setiap layar baca yang punya salah satu mode itu wajib melewatkan ukuran
+     * Arabnya ke fungsi ini. Dahulu hanya sebagian yang melakukannya: layar Ghaib, Jenazah, dan
+     * Iqomah menaikkannya di layar penuh, Tahlil di mode jamaah — sedangkan mode fokus Yasin, layar
+     * penuh Dzikir, dan layar penuh Tahlil sendiri **tidak**, sehingga mode yang sama menampilkan
+     * teks lebih kecil di satu layar daripada di layar lain, tanpa satu pun pesan galat.
+     * `UkuranBacaanModeBacaTest` menjaga agar setiap layar bermode begitu tetap memanggilnya.
      */
     fun arabBacaJauh(dasar: Float, aktif: Boolean): Float =
         if (!aktif) dasar else (dasar + TAMBAHAN_BACA_JAUH).coerceAtMost(MAKS_BACA_JAUH)
