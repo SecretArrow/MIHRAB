@@ -380,6 +380,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Satu lafaz, satu bacaan — lafaz yang sama tidak lagi diterjemahkan berbeda di dua berkas**:
+  bundel konten sengaja tidak menyatukan lafaz yang dipakai berulang, supaya tiap modul dapat
+  diperbarui sendiri. Harga dari kemandirian itu adalah salinan, dan salinan yang tak dibandingkan
+  pasti menyimpang. **Sudah terjadi**: doa untuk mayit ditulis dua kali — `sholat_mayit.json`
+  `bacaan[0]` dan `tahlil_full.json` `bagian[13]`, keduanya ber-`id` `doa_mayit` dan bersumber sama
+  (HR Muslim — sunnah.com), dengan lafaz Arab yang identik sampai harakatnya — tetapi terjemahan
+  Indonesianya berbeda satu klausa: *"…, rahmatilah dia, …"* di satu berkas dan *"…, berilah dia
+  rahmat, …"* di berkas lain. Pengguna membaca doa yang sama di dua layar dan mendapat dua kalimat
+  yang tidak persis sama, tanpa satu pun pesan galat. Lebih lebar lagi, `adzan.json` menulis **enam
+  lafaz adzan dua kali** — sekali di `adzan.daftar` dan sekali lagi di `iqomah.daftar`, hanya
+  berbeda jumlah ulangan — dan keduanya tampil di layar Adzan; sampai hari ini sejalan, tetapi tak
+  ada apa pun yang menjaganya. Kedua terjemahan doa mayit kini sejalan (ejaan yang dipakai adalah
+  milik modul sholat mayit, karena klausanya memetakan satu-satu ke lafaz Arabnya:
+  *ighfir* / *irham* / *'aafi* / *wa'fu*), aturannya tinggal di satu tempat
+  (`LafazSama.penyimpangan`, murni tanpa Android), dan `LafazSamaSatuTerjemahanTest` menuntut
+  **setiap** lafaz yang muncul di lebih dari satu tempat dibaca dan diterjemahkan dengan kata yang
+  sama — salinan baru yang menyimpang tertangkap tanpa perlu didaftar di uji. Aturannya sengaja
+  **tidak** disalin ke `tools/validate_content.py` yang memeriksa berkas yang sama: gate itu
+  membaca *konstanta* dari Kotlin, bukan logika, sehingga menaruh pemeriksaan ini di sana berarti
+  menulis ulang logikanya — persis kekeliruan yang sedang ditutup. Dibuktikan `mutate57.py`:
+  **10/10 mutasi tertangkap**, berkas tidak ada yang tertinggal dalam keadaan termutasi.
 - **Mode baca dari jauh kini menaikkan ukuran Arab di semua layar yang punya mode itu**: aturan
   `UkuranBacaan.arabBacaJauh` (mode layar penuh, mode fokus, atau mode jamaah menaikkan ukuran Arab
   `+ 8` sp sampai batas `44f`) sudah tinggal di satu tempat dan dijaga agar tak ada layar
