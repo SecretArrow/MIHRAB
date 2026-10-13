@@ -84,8 +84,8 @@ ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
                  / "yasintahlil" / "core" / "data" / "BundelKonten.kt")
 
-# Bentuk dokumen konten — nama wadah entri (`bagian`, `kelompok[].items[]`) dan kunci `id`
-# entrinya. Aplikasi membacanya dari `BentukKonten` lewat `ContentRepo` (daftar bacaan) dan
+# Bentuk dokumen konten — nama wadah entri (`bagian`, `bacaan`, `kelompok[].items[]`) dan kunci
+# `id` entrinya. Aplikasi membacanya dari `BentukKonten` lewat `ContentRepo` (daftar bacaan) dan
 # `entriRujukan` (rujukan `berkas.json#id`); gate ini memeriksa struktur berkas yang **sama**, dan
 # dahulu menuliskan nama-namanya sendiri. Salinan yang menyimpang tidak menggagalkan apa pun:
 # pencarian wadah tahlil sekadar tidak pernah cocok lagi, sehingga seluruh pemeriksaan berkas itu
@@ -190,6 +190,7 @@ def _bentuk(nama: str) -> str:
 # tanpa galat — lihat catatan di atas `BENTUK_KONTEN`.
 KUNCI_ID = _bentuk("ID")
 WADAH_BAGIAN = _bentuk("BAGIAN")
+WADAH_BACAAN = _bentuk("BACAAN")
 WADAH_KELOMPOK = _bentuk("KELOMPOK")
 WADAH_ITEMS = _bentuk("ITEMS")
 
@@ -268,14 +269,22 @@ def check_schema(name: str, data) -> list[str]:
         if nums and len(set(nums)) != len(nums):
             errs.append(f"{name}: nomor ayat duplikat")
 
-    if WADAH_BAGIAN in data:  # tahlil
-        bagian = data[WADAH_BAGIAN]
-        if not isinstance(bagian, list) or not bagian:
-            errs.append(f"{name}: '{WADAH_BAGIAN}' kosong")
-        for i, b in enumerate(bagian):
+    # Dua bentuk tingkat dokumen — `bagian` (Tahlil) dan `bacaan` (sholat & doa mayit) — dibaca
+    # `ContentRepo` dengan akses yang **melempar** (`getJSONArray`, `getString`), bukan `opt…`.
+    # Entri tanpa kunci di bawah ini tidak menampilkan teks kosong: ia menghentikan seluruh layar
+    # yang membacanya (Panduan Sholat, Jenazah, Ghaib) tanpa satu pun petunjuk sebabnya. Karena itu
+    # bentuknya diperiksa di sini, dan nama wadahnya dibaca dari `BentukKonten` — sama seperti yang
+    # dibaca aplikasi.
+    for wadah in (WADAH_BAGIAN, WADAH_BACAAN):
+        if wadah not in data:
+            continue
+        isi = data[wadah]
+        if not isinstance(isi, list) or not isi:
+            errs.append(f"{name}: '{wadah}' kosong")
+        for i, b in enumerate(isi if isinstance(isi, list) else []):
             for k in (KUNCI_ID, "judul"):
-                if not b.get(k):
-                    errs.append(f"{name}: {WADAH_BAGIAN}[{i}] tanpa '{k}'")
+                if not isinstance(b, dict) or not b.get(k):
+                    errs.append(f"{name}: {wadah}[{i}] tanpa '{k}'")
 
     if "susunan" in data:  # deskriptor susunan tahlil
         for i, s in enumerate(data["susunan"]):

@@ -36,6 +36,7 @@ jobs:
         run: |
           python3 tools/validate_bundle.py --strict tools/fixtures/bundel/sah.json
           python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/cacat.json
+          python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/bacaan-cacat.json
       - name: Lint debug (hemat, tanpa emulator)
         run: ./gradlew :app:lintDebug --parallel --build-cache
       - uses: actions/upload-artifact@v7

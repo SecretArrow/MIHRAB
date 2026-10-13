@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Bentuk wadah `bacaan` akhirnya diperiksa gate**: dari tiga bentuk dokumen konten yang dibaca
+  aplikasi, hanya dua yang pernah diperiksa gate CI — `bagian` (Tahlil) dan `kelompok[].items[]`
+  (Dzikir). Bentuk ketiga, `bacaan` (`sholat_bacaan.json`, `sholat_mayit.json`), tak diperiksa sama
+  sekali. Bedanya menentukan: `ContentRepo` membacanya dengan akses yang **melempar**
+  (`getJSONArray`, `getString`), bukan `opt…`, jadi entri yang kehilangan kunci `id` atau `judul`
+  tidak menampilkan teks kosong — ia **menghentikan seluruh layar** yang membacanya (Panduan
+  Sholat, Jenazah, Ghaib) tanpa satu pun petunjuk sebabnya, dan itu berlaku baik untuk berkas
+  bawaan maupun berkas dari bundel pembaruan yang dipasang pengguna. Kedua bentuk tingkat dokumen
+  kini diperiksa bersama lewat satu aturan yang sama, memakai nama wadah yang dibaca dari
+  `BentukKonten` — sama seperti yang dibaca aplikasi. Pemeriksaannya pun tidak lagi melempar bila
+  isi wadah ternyata bukan objek (dahulu gate berhenti dengan jejak galat, bukan laporan). Sebuah
+  fixture baru (`tools/fixtures/bundel/bacaan-cacat.json`) yang **satu-satunya** cacatnya adalah
+  entri `bacaan` tanpa `id` kini dijalankan CI dengan `--harus-gagal`, sehingga pemeriksaan itu
+  terbukti benar-benar berjalan; `BentukKontenTest` menuntut setiap fixture `*cacat.json` benar-benar
+  dijalankan CI. Sepuluh mutasi terverifikasi tertangkap, dan satu mutasi perilaku terverifikasi
+  membuat fixture itu lolos — bukti bahwa gate inilah yang menahannya.
 - **Gate CI membaca bentuk dokumen konten dari satu tempat**: `tools/validate_content.py` mengeja
   sendiri nama wadah entri konten (`bagian`, `kelompok`, `items`) dan kunci `id`-nya, padahal
   aplikasi membacanya dari `BentukKonten`. Salinan itu paling sunyi penyimpangannya dari semua
