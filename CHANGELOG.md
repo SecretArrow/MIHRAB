@@ -380,6 +380,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **`edisi` tingkat modul Tahlil kini punya satu rumah, dan ejaan yang tampil adalah yang lengkap**:
+  keterangan provenans *edisi* hidup **dua kali** di bundel — `tahlil.json` (*"Susunan lazim
+  Indonesia; bacaan Qur'an Kemenag 2019, doa/dzikir sunnah.com"*) dan `tahlil_full.json` (*"… bacaan
+  Qur'an memakai MSI LPMQ Kemenag + terjemah Kemenag edisi 2019 …"*). Yang dibaca kode hanya
+  `tahlil.json`, karena keterangan itulah yang menjadi sumber cadangan tiap susunan di
+  `tahlilSusunan()` dan tampil sebagai baris *"Sumber: …"* di layar Tahlil; salinan di
+  `tahlil_full.json` tak pernah terbaca sehingga memperbaruinya tak mengubah layar apa pun.
+  Akibatnya bukan sekadar salinan mati: ejaan yang **dibaca** justru yang lebih pendek, sehingga
+  layar menyebut asal bacaan Qur'annya sebagai *"Kemenag 2019"* saja sementara sumbernya sendiri
+  mencatat *Mushaf Standar Indonesia (MSI) LPMQ Kemenag* dan *terjemah Kemenag edisi 2019*. Ejaan
+  yang lebih lengkap kini pindah ke `tahlil.json` (berkas yang dibaca) dan salinannya di
+  `tahlil_full.json` dihapus — satu keterangan, satu rumah. Dijaga
+  `AtribusiSusunanTahlilTest` — `edisiModulTinggalDiSatuBerkasTahlil` (faktanya) dan
+  `edisiModulMenyebutMsiLpmqDanEdisiTerjemah` (kelengkapan ejaannya). Penjaga lama
+  `repoMembacaSumberSusunanDenganCadanganEdisiModul` ikut dipersempit: ia dahulu hanya mencari
+  `optString("edisi"`, pola yang juga muncul di `panduanBersuci()` (wudhu), sehingga tetap hijau
+  meski pembacaan `edisi` di `tahlilSusunan()` diganti nilai kosong — mutasi `E` pada
+  `mutate64.py` membuktikannya, dan pola utuh `val edisiModul = d.optString("edisi", "")` kini
+  menutupnya.
 - **Catatan tradisi susunan Tahlil kini punya satu rumah, dan layar Pengaturan ikut membacanya**:
   keterangan *"susunan tahlil dapat berbeda menurut tradisi"* hidup **dua kali** di bundel —
   `tahlil.json` (*"…; bukan satu-satunya versi yang benar"*) dan `tahlil_full.json` (*"… Ini salah

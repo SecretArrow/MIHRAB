@@ -109,6 +109,5 @@
   }
  ],
  "sumber_url": "https://quran.kemenag.go.id/",
- "edisi": "Susunan tahlil lazim Indonesia; bacaan Qur'an memakai MSI LPMQ Kemenag + terjemah Kemenag edisi 2019, doa/dzikir dari sunnah.com",
  "catatan_verifikasi": "Bacaan Qur'an memakai Mushaf Standar Indonesia (MSI) LPMQ Kemenag; disegarkan lewat tools/fetch_quran_kemenag.py. Susunan tahlil dapat berbeda menurut tradisi."
 }

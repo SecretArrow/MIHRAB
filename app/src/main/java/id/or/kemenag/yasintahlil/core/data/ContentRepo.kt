@@ -166,6 +166,14 @@ class ContentRepo(private val ctx: Context) {
      * Setiap susunan menyebut sumbernya sendiri bila berkasnya mencantumkan `sumber`; bila tidak,
      * dipakai keterangan `edisi` tingkat modul — supaya susunan yang tersedia tidak tampil sebagai
      * rangkaian tanpa asal-usul (`plan.txt` §"Fitur Tahlil Lengkap").
+     *
+     * `edisi` dibaca dari `tahlil.json` saja — **satu** rumah untuk seluruh modul Tahlil. Berkas
+     * `tahlil_full.json` dahulu menyalinnya juga dengan ejaan yang berbeda (*"… memakai MSI LPMQ
+     * Kemenag + terjemah Kemenag edisi 2019 …"* versus *"… bacaan Qur'an Kemenag 2019 …"*), padahal
+     * yang dibaca kode hanya salinan di `tahlil.json` — dan salinan itu justru yang **lebih
+     * pendek**, sehingga layar menyebut asal bacaan Qur'annya lebih longgar daripada yang dicatat
+     * sumbernya. Salinan mati di `tahlil_full.json` sudah dihapus; penjaganya
+     * `AtribusiSusunanTahlilTest.edisiModulTinggalDiSatuBerkasTahlil`.
      */
     fun tahlilSusunan(): List<TahlilSusunan> {
         val d = doc(BerkasKonten.TAHLIL_SUSUNAN)

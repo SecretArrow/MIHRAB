@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.data
 
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -16,6 +17,11 @@ import java.io.File
  * layar mana pun — jadi pengguna tidak dapat memeriksa dari mana rangkaian itu berasal. Uji ini
  * menjaga agar sumber susunan dibaca, diteruskan, dan ditampilkan; dan agar "Susunan saya" **tidak**
  * mengklaim rujukan apa pun.
+ *
+ * `edisi` itu sendiri dahulu ditulis **dua kali** — di `tahlil.json` (dibaca) dan `tahlil_full.json`
+ * (tak pernah dibaca) dengan ejaan berbeda, dan salinan yang dibaca justru yang lebih pendek
+ * sehingga asal bacaan Qur'an tampil lebih longgar daripada yang dicatat sumbernya. Uji terakhir di
+ * bawah menjaga agar keterangan itu tinggal di satu berkas.
  */
 class AtribusiSusunanTahlilTest {
 
@@ -59,12 +65,18 @@ class AtribusiSusunanTahlilTest {
      * Susunan dari berkas wajib mendapat sumber: dari `sumber` miliknya sendiri, atau dari
      * keterangan `edisi` tingkat modul. Tanpa cadangan itu, susunan yang belum punya `sumber`
      * tampil sebagai rangkaian telanjang.
+     *
+     * Polanya disebut **utuh** (`val edisiModul = d.optString("edisi", "")`), bukan sekadar
+     * `optString("edisi"` — sebab pola pendek itu juga muncul di `panduanBersuci()` (wudhu), jadi
+     * penjaga ini akan tetap hijau meski pembacaan `edisi` di [tahlilSusunan] diganti nilai kosong.
+     * Itu bukan dugaan: mutasi `E repoBerhentiMembacaEdisiModul` pada `mutate64.py` memang lolos
+     * sebelum pola ini dipersempit.
      */
     @Test
     fun repoMembacaSumberSusunanDenganCadanganEdisiModul() {
         val s = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ContentRepo.kt")
-        assertTrue("ContentRepo tidak membaca keterangan edisi tingkat modul",
-            s.contains("optString(\"edisi\""))
+        assertTrue("ContentRepo tidak membaca keterangan edisi tingkat modul di tahlilSusunan()",
+            s.contains("val edisiModul = d.optString(\"edisi\", \"\")"))
         assertTrue("ContentRepo tidak membaca sumber per-susunan",
             s.contains("optString(\"sumber\", edisiModul)"))
     }
@@ -76,6 +88,41 @@ class AtribusiSusunanTahlilTest {
         assertTrue("tahlil.json tidak mencantumkan keterangan edisi", json.contains("\"edisi\""))
         assertTrue("tahlil.json tidak mencantumkan sumber_url", json.contains("\"sumber_url\""))
         assertTrue("tahlil.json tidak memuat daftar susunan", json.contains("\"susunan\""))
+    }
+
+    /**
+     * `edisi` tingkat modul Tahlil tinggal di **satu** berkas, bukan disalin ke keduanya.
+     *
+     * Dahulu `tahlil.json` dan `tahlil_full.json` sama-sama mencantumkannya, dengan ejaan yang
+     * berbeda — *"… bacaan Qur'an Kemenag 2019 …"* versus *"… bacaan Qur'an memakai MSI LPMQ Kemenag
+     * + terjemah Kemenag edisi 2019 …"*. Yang dibaca kode hanya `tahlil.json` (lihat
+     * [repoMembacaSumberSusunanDenganCadanganEdisiModul]), sehingga salinan di `tahlil_full.json`
+     * tak pernah tampil: memperbaruinya tak mengubah layar apa pun. Salinan mati itu dihapus, dan
+     * ejaan yang lebih lengkap dipindah ke berkas yang dibaca — satu keterangan, satu rumah.
+     */
+    @Test
+    fun edisiModulTinggalDiSatuBerkasTahlil() {
+        val pemilik = listOf("tahlil.json", "tahlil_full.json").filter { berkas ->
+            JSONObject(sumber("src/main/assets/content/$berkas")).has("edisi")
+        }
+        assertEquals("edisi tingkat modul punya salinan kedua yang tak pernah dibaca",
+            listOf("tahlil.json"), pemilik)
+    }
+
+    /**
+     * Yang tinggal adalah ejaan yang **lebih lengkap** — salinan yang lebih pendek menyebut asal
+     * bacaan Qur'an hanya sebagai *"Kemenag 2019"*, sedangkan berkasnya sendiri mencatat Mushaf
+     * Standar Indonesia (MSI) LPMQ Kemenag dan terjemah edisi 2019. Memindahkan yang lebih pendek
+     * berarti layar terus menyebut sumbernya lebih longgar daripada yang dicatat sumbernya.
+     */
+    @Test
+    fun edisiModulMenyebutMsiLpmqDanEdisiTerjemah() {
+        val isi = JSONObject(sumber("src/main/assets/content/tahlil.json"))
+            .getString("edisi")
+        assertTrue("edisi modul tidak lagi menyebut MSI LPMQ Kemenag: $isi",
+            isi.contains("MSI LPMQ Kemenag"))
+        assertTrue("edisi modul tidak lagi menyebut terjemah Kemenag edisi 2019: $isi",
+            isi.contains("terjemah Kemenag edisi 2019"))
     }
 
     // ---- Layar ----
