@@ -11,10 +11,32 @@
 # ("Unknown API Level" → "0 perangkat cocok"). Kegagalan seperti itu masalah
 # infrastruktur, bukan uji merah, jadi diulang sekali; uji yang benar-benar gagal
 # (assertion) tetap langsung dinyatakan gagal.
+#
+# Kesiapan perangkat kini diukur dengan **perintah yang sama** dengan yang dipakai
+# pembacanya. ddmlib — lewat AGP — membaca SELURUH tabel properti (`adb shell getprop` tanpa
+# argumen) dan membatalkannya setelah **2 detik** (`PropertyFetcher.GETPROP_TIMEOUT_SEC`), lalu
+# melempar ShellCommandUnresponsiveException; AGP menerjemahkannya menjadi "Unknown API Level" dan
+# melewati perangkatnya. Sebelumnya kesiapan hanya diperiksa dengan pembacaan SATU properti
+# (`getprop ro.build.version.sdk`), yang jauh lebih ringan — sehingga gerbangnya dapat lulus
+# sementara pembacaan penuh masih kehabisan waktu, dan AGP tetap melewati perangkat. Run `main`
+# 38366620795 adalah buktinya: gerbang melaporkan `API='29'` dua kali, lalu AGP tetap berkata
+# "Unknown API Level" dua kali.
 
 set -u
 
 LOG=/tmp/e2e-connected.log
+
+# Batas waktu ddmlib saat membaca properti perangkat: `PropertyFetcher.GETPROP_TIMEOUT_SEC`, bawaan
+# 2 detik (dapat dinaikkan lewat properti sistem `ddmlib.getprop.timeout.sec`, tetapi aplikasi ini
+# memakai bawaannya). Gerbang dan pembacanya harus mengukur dengan angka yang **sama**: gerbang yang
+# lebih longgar lulus justru untuk perangkat yang, di mata AGP, masih kehabisan waktu.
+BATAS_PROPERTI=2
+
+# Lama maksimal menunggu perangkat siap, dan lama maksimal menunggunya tenang sesudah adb
+# dibangkitkan ulang — keduanya dalam detik. Batas waktu ini menggantikan jumlah percobaan tetap
+# supaya lama tunggu tidak bergantung pada berapa lama satu percobaan memakan waktunya.
+BATAS_SIAP=300
+BATAS_TENANG=120
 
 tunggu_boot() {
   until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do
@@ -22,20 +44,30 @@ tunggu_boot() {
   done
 }
 
+# Pembacaan properti yang **sama** dengan yang dilakukan ddmlib: seluruh tabel properti, dibatasi
+# BATAS_PROPERTI detik. Selesai tanpa kehabisan waktu berarti perangkat benar-benar siap bagi
+# pembacanya — bukan sekadar "satu properti kebetulan bisa dibaca".
+perintah_siap() {
+  timeout "$BATAS_PROPERTI" adb shell getprop > /dev/null 2>&1
+}
+
 # Tunggu adb benar-benar bisa membaca properti. Tanpa ini AGP melewati perangkat
 # dengan "Unknown API Level" dan seluruh uji dilewati tanpa dijalankan.
 tunggu_properti() {
   local api=""
-  local i
-  for i in $(seq 1 90); do
-    api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')"
-    # Keluarannya harus berupa angka. adb yang belum siap kadang mengembalikan
-    # keluaran sampah (atau hanya spasi); bila nilai itu diteruskan ke AGP, AGP
-    # membacanya sebagai "API level=1" dan menolak memasang APK
-    # ("Cannot install split APKs with API level < 21") — 0 uji berjalan.
-    case "$api" in
-      '' | *[!0-9]*) api="" ;;
-    esac
+  local batas=$((SECONDS + BATAS_SIAP))
+  while [ "$SECONDS" -lt "$batas" ]; do
+    api=""
+    if perintah_siap; then
+      api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')"
+      # Keluarannya harus berupa angka. adb yang belum siap kadang mengembalikan
+      # keluaran sampah (atau hanya spasi); bila nilai itu diteruskan ke AGP, AGP
+      # membacanya sebagai "API level=1" dan menolak memasang APK
+      # ("Cannot install split APKs with API level < 21") — 0 uji berjalan.
+      case "$api" in
+        '' | *[!0-9]*) api="" ;;
+      esac
+    fi
     [ -n "$api" ] && break
     sleep 2
   done
@@ -53,6 +85,29 @@ siapkan_perangkat() {
   adb wait-for-device
   tunggu_boot
   tunggu_properti
+}
+
+# Berapa pembacaan penuh berturut-turut yang membuktikan emulator benar-benar tenang.
+SIAP_BERTURUT=3
+
+# Sesudah adb dibangkitkan ulang, emulator butuh waktu sampai benar-benar responsif. Dahulu di
+# sini berdiri `sleep 15` — angka tunggu yang tak berhubungan dengan apa pun yang diperiksa, dan
+# justru itu yang membuat ulangan tetap gagal meski perangkat "sudah siap" menurut urutan
+# penyiapan. Yang ditunggu kini adalah buktinya sendiri: SIAP_BERTURUT pembacaan penuh
+# berturut-turut yang semuanya selesai dalam batas waktu ddmlib, sampai BATAS_TENANG detik.
+tunggu_tenang() {
+  local berturut=0
+  local batas=$((SECONDS + BATAS_TENANG))
+  while [ "$SECONDS" -lt "$batas" ]; do
+    if perintah_siap; then
+      berturut=$((berturut + 1))
+      [ "$berturut" -ge "$SIAP_BERTURUT" ] && return 0
+    else
+      berturut=0
+    fi
+    sleep 2
+  done
+  return 1
 }
 
 jalankan_uji() {
@@ -97,7 +152,7 @@ if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible d
   adb kill-server || true
   adb start-server
   siapkan_perangkat || exit 1
-  sleep 15
+  tunggu_tenang || { echo "::error::Emulator tidak kunjung tenang untuk pembacaan properti penuh"; exit 1; }
   if jalankan_uji; then
     tail -n 15 "$LOG"
     periksa_crash || exit 1

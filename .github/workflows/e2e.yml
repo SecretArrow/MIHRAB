@@ -25,11 +25,31 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       # Bangun APK uji SEBELUM emulator menyala. Kompilasi (Kotlin/KSP/Hilt) di runner
-      # 2-vCPU berebut CPU dengan emulator dan membuat emulator mendadak tak responsif
-      # (ShellCommandUnresponsiveException → "Unknown API Level" → 0 perangkat cocok).
-      # Dengan membangun lebih dulu, tugas emulator hanya memasang & menjalankan uji.
+      # 2-vCPU merebut CPU dari emulator, dan emulator yang kelaparan CPU menjawab perintah
+      # adb lebih lambat daripada batas waktu ddmlib. Dengan membangun lebih dulu — hasilnya
+      # tetap terpakai lewat `--build-cache` di langkah uji — emulator hanya perlu memasang
+      # dan menjalankan uji.
       - name: Bangun APK uji (tanpa emulator)
         run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --build-cache
+
+      # Akselerasi perangkat keras: `/dev/kvm` ADA di runner, tetapi pengguna `runner` tidak
+      # berhak membukanya — emulator sendiri melaporkannya (`ProbeKVM: This user doesn't have
+      # permissions to use KVM (/dev/kvm)`). Aksi emulator memutuskan lewat
+      # `accessSync('/dev/kvm', R_OK | W_OK)`, jadi pemeriksaan itu gagal dan emulator dipaksa
+      # berjalan dengan `-accel off` — emulasi perangkat lunak yang begitu lambat sampai
+      # pembacaan properti ddmlib melewati batas waktunya dan AGP melewati perangkat
+      # ("Unknown API Level"). Membuka izinnya SEBELUM aksi emulator dipanggil membuat
+      # pemeriksaan itu lulus dan `-accel off` tidak lagi dipaksakan.
+      # Semua perintah dijaga `|| true`: bila /dev/kvm memang tidak ada, langkah ini tidak
+      # boleh menjatuhkan job — emulator hanya kembali ke jalur lambat.
+      - name: Buka akses KVM (percepat emulator)
+        run: |
+          echo "nproc=$(nproc)"
+          id
+          ls -l /dev/kvm || true
+          sudo chmod 666 /dev/kvm || true
+          sudo gpasswd -a "$USER" kvm || true
+          ls -l /dev/kvm || true
 
       - name: Instrumented test di emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -39,8 +59,10 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-boot-timeout: 900
-          # -memory 4096: RAM bawaan AVD (1,5 GB) membuat emulator tertekan saat Gradle
-          # berjalan berdampingan, dan itulah yang memicu kegagalan "Unknown API Level".
+          # -memory 4096: RAM bawaan AVD (1,5 GB) sempit untuk API 29 plus aplikasi yang diuji,
+          # sehingga tamu (guest) bisa tertekan. Ini bukan sebab kegagalan "Unknown API Level" —
+          # sebabnya akselerasi yang tidak terbuka (lihat langkah KVM di atas) — melainkan
+          # mengurangi satu lagi sumber kelambatan.
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics -memory 4096 -camera-back none -camera-front none
           # Aksi ini menjalankan SETIAP BARIS script sebagai `sh -c` terpisah, jadi
           # loop/fungsi multi-baris tidak akan utuh. Seluruh logika ada di berkas

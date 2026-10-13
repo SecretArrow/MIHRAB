@@ -380,6 +380,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Gerbang kesiapan emulator diukur dengan perintah yang sama dengan pembacanya**: E2E `main`
+  `38366620795` merah tanpa menjalankan satu uji pun, dan sebabnya bukan uji yang gagal. Gerbang
+  kesiapan menunggu sampai **satu** properti terbaca (`adb shell getprop ro.build.version.sdk`),
+  sementara ddmlib — lewat AGP — membaca **seluruh** tabel properti (`adb shell getprop` tanpa
+  argumen) dengan batas waktu 2 detik (`PropertyFetcher.GETPROP_TIMEOUT_SEC`). Perintah yang kedua
+  jauh lebih berat, jadi gerbangnya bisa lulus sementara pembacaan penuh masih kehabisan waktu:
+  lognya melaporkan `API='29'` **dua kali**, lalu AGP tetap berkata *"Unknown API Level"* **dua
+  kali** dan melewati perangkat. Kini keduanya memakai satu perintah (`perintah_siap`), dibatasi
+  `BATAS_PROPERTI` yang dipaku pada bawaan ddmlib.
+  Jalur ulangan pun berhenti menunggu dengan angka tetap (`sleep 15` — lama tunggu yang tak
+  berhubungan dengan apa pun yang diperiksa) dan menunggu **bukti**: tiga pembacaan penuh
+  berturut-turut yang semuanya selesai dalam batas itu. Sebab sebenarnya kegagalan itu juga
+  ditemukan dan ditutup: runner menyediakan `/dev/kvm` tetapi tidak membukanya untuk pengguna
+  `runner` (`ProbeKVM: This user doesn't have permissions to use KVM (/dev/kvm)`), dan aksi
+  emulator memutuskan lewat `accessSync('/dev/kvm', R_OK | W_OK)` — sehingga ia memaksa
+  `-accel off` dan emulator berjalan dengan emulasi perangkat lunak yang begitu lambat sampai
+  pembacaan properti kehabisan waktu. Izinnya kini dibuka **sebelum** aksi emulator dipanggil
+  (dijaga `|| true`, supaya `/dev/kvm` yang memang tak ada tidak menjatuhkan job). Dijaga
+  `SkripE2eSiapPerangkatTest`, yang juga menolak gerbang kembali membaca satu properti, menolak
+  batas waktunya dilonggarkan, menolak `sleep 15` di jalur ulangan, dan menuntut izin `/dev/kvm`
+  dibuka sebelum aksi emulator.
 - **Aritmetika "menit ke hari" tinggal di satu tempat**: angka `1440` diketik telanjang di **tiga**
   berkas — `PrayerCalc.compute` melipat hasil hisab dengannya, `JadwalHariIni.geser`/`berikutnya`
   memutar jam melewati tengah malam dengannya, dan `PrayerScheduler.enqueueNext` menghitung jeda
