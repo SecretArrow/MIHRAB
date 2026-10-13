@@ -97,14 +97,20 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
                 Text(if (selesai) "✓ Tandai selesai →" else "Selesaikan dulu")
             }
         }
+        // Dua mode berarti bacaan dibaca dari jauh — "Jamaah" (dibaca bersama) dan "Layar penuh" —
+        // dan keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
+        // Jenazah, Iqomah, Yasin, dan Dzikir. Sebelumnya hanya mode jamaah yang menaikkannya,
+        // sehingga layar penuh di sini justru menampilkan teks lebih kecil daripada di layar lain.
+        val bacaJauh = jamaah || fullscreen
         LazyColumn(Modifier.fillMaxSize()) {
             item {
                 if (jamaah) {
-                    if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, jamaah))
+                    if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
                     if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
                 } else {
                     BacaanCard(JenisBacaan.id(JenisBacaan.TAHLIL, cur.id), cur.judul, arab, latin, trans,
-                        s.showLatin, s.showTrans, s.arabSize, ulangi = cur.ulangi, sumber = cur.sumber,
+                        s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
+                        ulangi = cur.ulangi, sumber = cur.sumber,
                         showArab = s.showArab, kategori = cur.kategori)
                 }
                 if (selesai) Text("✓ Selesai — lanjut ke bagian berikutnya.",
