@@ -92,7 +92,11 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
                     if (recent.isNotEmpty()) {
                         Text("Pencarian terbaru:", style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(top = 8.dp))
-                        recent.take(10).forEach { r -> TextButton(onClick = { q = r }) { Text(r) } }
+                        // Jatah tampil "pencarian terbaru" memakai batas bersama yang sama dengan
+                        // daftar riwayat lain; sebelumnya layar ini memotongnya sendiri di angka 10
+                        // sehingga jumlah yang benar-benar tampil berbeda dari yang dijanjikan
+                        // `BatasRiwayat.DITAMPILKAN`.
+                        recent.take(BatasRiwayat.DITAMPILKAN).forEach { r -> TextButton(onClick = { q = r }) { Text(r) } }
                     } else {
                         EmptyState(
                             judul = "Cari di seluruh konten",
@@ -228,6 +232,9 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
         add(SearchDoc(JenisBacaan.id(JenisBacaan.ADZAN, doa.judul), doa.judul, listOf(doa.judul, doa.terjemahan, doa.latin, doa.arab), Routes.DOA_ADZAN))
     }
     repo.iqomah().forEachIndexed { i, lafaz ->
-        add(SearchDoc(JenisBacaan.id(JenisBacaan.IQOMAH, i.toString()), "Iqomah — lafaz ${i + 1}", listOf(lafaz.terjemahan, lafaz.latin, lafaz.arab), Routes.IQOMAH))
+        // Id lafaz memakai aturan bernomor urut 1 yang sama dengan kartunya di layar Iqomah —
+        // sebelumnya indeks mentah (`i`) membuat dokumen ini menyimpan `iqomah:0` untuk lafaz yang
+        // kartunya `iqomah:1`, sehingga favorit lafaz itu tidak menempel pada hasil pencariannya.
+        add(SearchDoc(JenisBacaan.idLafazIqomah(i + 1), "Iqomah — lafaz ${i + 1}", listOf(lafaz.terjemahan, lafaz.latin, lafaz.arab), Routes.IQOMAH))
     }
 }

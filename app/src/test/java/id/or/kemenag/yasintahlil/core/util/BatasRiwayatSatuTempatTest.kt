@@ -119,4 +119,30 @@ class BatasRiwayatSatuTempatTest {
             emptyList<String>(), offenders,
         )
     }
+
+    /**
+     * **Jatah tampil** pun tidak boleh dieja di tempat pemakaian.
+     *
+     * Pemeriksaan sebelumnya hanya menangkap `recentHistory(<angka>)` — batas **baca** — sehingga
+     * jatah tampil yang ditulis sendiri lolos. Sudah terjadi: Pencarian memotong daftar "pencarian
+     * terbaru" dengan `take(10)` sementara [BatasRiwayat.DITAMPILKAN] menyatakan `12`, jadi layar
+     * itu menampilkan jumlah baris yang berbeda dari daftar riwayat lain tanpa satu pun pesan galat.
+     * Layar-layar ini adalah seluruh tempat daftar riwayat dipotong untuk ditampilkan.
+     */
+    @Test
+    fun jatahTampilRiwayatTidakDiejaDiTempatPemakaian() {
+        val pola = Regex("""take\(\s*\d""")
+        val offenders = listOf(homeVm, favoritVm, favoritLayar, search)
+            .filter { pola.containsMatchIn(layar(it)) }
+        assertEquals(
+            "jatah tampil riwayat dieja sebagai angka di tempat pemakaian alih-alih memakai " +
+                "BatasRiwayat.DITAMPILKAN",
+            emptyList<String>(), offenders,
+        )
+        assertTrue("FavoritViewModel tidak memotong daftar ke BatasRiwayat.DITAMPILKAN",
+            layar(favoritVm).contains("take(BatasRiwayat.DITAMPILKAN)"))
+        assertTrue("Pencarian tidak memotong daftar \"pencarian terbaru\" ke " +
+            "BatasRiwayat.DITAMPILKAN",
+            layar(search).contains("take(BatasRiwayat.DITAMPILKAN)"))
+    }
 }

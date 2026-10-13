@@ -380,6 +380,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nomor urut lafaz iqomah kini satu aturan — lafaz yang sama tak lagi tersimpan dengan dua id**:
+  lafaz iqomah diberi id kartu dari nomor urutnya (`iqomah:1`, `iqomah:2`, …) karena beberapa
+  lafaznya memang berulang dan id yang diambil dari teks Arab membuat favorit satu lafaz menandai
+  lafaz lain. Tetapi nomor urut itu dihitung di **dua** tempat dengan dua hasil: layar Iqomah
+  memakai `i + 1` sedangkan indeks pencarian memakai indeks mentah `i`. Lafaz yang sama karena itu
+  tersimpan sebagai `iqomah:1` di kartunya dan `iqomah:0` di dokumen pencariannya — pengguna yang
+  menandai lafaz pertama sebagai favorit lalu menemukannya lewat pencarian melihat dua bacaan
+  berbeda untuk lafaz yang sama, tanpa satu pun pesan galat. Aturannya kini tinggal di
+  `JenisBacaan.idLafazIqomah` (bernomor urut mulai 1), dipakai kedua tempat, dan
+  `JenisBacaanSatuTempatTest` menolak tempat pemakaian mana pun yang menyusun id iqomah sendiri.
+- **Jatah tampil daftar riwayat memakai batas bersama, bukan angka di layar**: penjaga
+  `BatasRiwayatSatuTempatTest` dahulu hanya menangkap batas **baca** yang dieja
+  (`recentHistory(<angka>)`), sehingga jatah **tampil** yang ditulis sendiri lolos. Sudah terjadi:
+  Pencarian memotong daftar "pencarian terbaru" dengan `take(10)` sementara
+  `BatasRiwayat.DITAMPILKAN` menyatakan `12`, jadi layar itu menampilkan jumlah baris yang berbeda
+  dari daftar riwayat lain — daftar yang lebih pendek dari yang seharusnya, tanpa satu pun pesan
+  galat. Penjaganya kini juga menolak `take(<angka>)` di layar-layar daftar riwayat.
 - **Satu lafaz, satu bacaan — lafaz yang sama tidak lagi diterjemahkan berbeda di dua berkas**:
   bundel konten sengaja tidak menyatukan lafaz yang dipakai berulang, supaya tiap modul dapat
   diperbarui sendiri. Harga dari kemandirian itu adalah salinan, dan salinan yang tak dibandingkan

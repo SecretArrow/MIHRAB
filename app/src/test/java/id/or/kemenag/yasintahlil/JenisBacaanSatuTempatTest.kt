@@ -182,4 +182,46 @@ class JenisBacaanSatuTempatTest {
             assertTrue("$berkas tidak memakai $konstanta", kodeLayar(berkas).contains(konstanta))
         }
     }
+
+    // ---- Nomor urut lafaz iqomah ---------------------------------------------------------------
+
+    /**
+     * Nomor urut lafaz iqomah adalah **aturan**, bukan pilihan pemanggil: lafaz pertama bernomor 1.
+     *
+     * Aturan itu dahulu hidup di dua tempat dengan dua hasil. Layar Iqomah menyusun idnya dari
+     * `i + 1` sedangkan indeks pencarian menyusunnya dari indeks mentah `i`, sehingga lafaz yang
+     * sama tersimpan dengan dua rujukan berbeda — kartunya `iqomah:1`, dokumen pencariannya
+     * `iqomah:0`. Pengguna yang menandai lafaz pertama sebagai favorit lalu menemukannya lewat
+     * pencarian melihat dua bacaan berbeda untuk lafaz yang sama, tanpa satu pun pesan galat.
+     */
+    @Test
+    fun idLafazIqomahBernomorUrutMulaiSatu() {
+        assertEquals("iqomah:1", JenisBacaan.idLafazIqomah(1))
+        assertEquals("iqomah:8", JenisBacaan.idLafazIqomah(8))
+        assertEquals("lafaz pertama harus terbaca sebagai jenis iqomah",
+            JenisBacaan.IQOMAH to "1", JenisBacaan.pisah(JenisBacaan.idLafazIqomah(1)))
+    }
+
+    /**
+     * Tidak ada tempat pemakaian yang menghitung sendiri nomor urut lafaz iqomah. Kedua pemakainya
+     * — layar Iqomah dan indeks pencarian — memakai [JenisBacaan.idLafazIqomah], sehingga indeksnya
+     * tidak dapat berbeda lagi.
+     */
+    @Test
+    fun nomorUrutLafazIqomahTidakDihitungDiTempatPemakaian() {
+        val pelanggar = berkasDengan("id(JenisBacaan.IQOMAH,", "id(IQOMAH,")
+            .filter { it != "JenisBacaan.kt" }
+        assertTrue(
+            "nomor urut lafaz iqomah disusun di luar `JenisBacaan.idLafazIqomah`: $pelanggar",
+            pelanggar.isEmpty(),
+        )
+
+        val pemakai = listOf("feature/adzan/IqomahDoaScreen.kt", "feature/search/SearchScreen.kt")
+        pemakai.forEach { berkas ->
+            assertTrue(
+                "$berkas tidak memakai aturan nomor urut bersama `JenisBacaan.idLafazIqomah`",
+                kodeLayar(berkas).contains("JenisBacaan.idLafazIqomah("),
+            )
+        }
+    }
 }

@@ -90,6 +90,22 @@ object JenisBacaan {
     fun id(jenis: String, rujukan: String): String = "$jenis$PEMISAH$rujukan"
 
     /**
+     * Id kartu lafaz iqomah ke-[nomor], **bernomor urut mulai 1** — `idLafazIqomah(1)` = `"iqomah:1"`.
+     *
+     * Nomor urutnya adalah aturan, bukan pilihan pemanggil, dan itulah sebabnya ia tinggal di sini.
+     * Layar Iqomah dahulu menyusunnya dari `i + 1` sementara indeks pencarian menyusunnya dari `i`
+     * mentah, sehingga lafaz yang **sama** tersimpan dengan dua rujukan berbeda: kartunya
+     * `iqomah:1` (lafaz pertama) sedangkan dokumen pencariannya `iqomah:0`. Pengguna yang menandai
+     * lafaz pertama sebagai favorit lalu menemukannya lewat pencarian melihat dua bacaan yang
+     * berbeda — favoritnya tidak menempel pada hasil yang sama — tanpa satu pun pesan galat.
+     *
+     * Id kartu diambil dari nomor urut, bukan dari teks Arabnya, karena beberapa lafaz iqomah
+     * memang berulang; id yang diambil dari teks membuat favorit satu lafaz menandai lafaz lain
+     * juga.
+     */
+    fun idLafazIqomah(nomor: Int): String = id(IQOMAH, nomor.toString())
+
+    /**
      * Pisahkan id tersimpan menjadi jenis dan rujukannya; id yang tidak berbentuk `jenis:rujukan`
      * dibaca sebagai [LAIN] beserta seluruh isinya.
      */
