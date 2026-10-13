@@ -380,6 +380,35 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rilis kini benar-benar bertanda tangan, dan langkah verifikasinya benar-benar berjalan**:
+  langkah *"Verifikasi tanda tangan (bukan debug)"* di `release.yml` **tidak pernah sekali pun
+  berjalan** — ia terlewat selama `KEYSTORE_BASE64` kosong, jadi cacatnya tersembunyi sampai
+  keystore tersedia. Begitu terpasang, ia gagal dengan `Unsupported command:
+  .../build-tools/35.0.0/apksigner`: `"$ANDROID_HOME"/build-tools/*/apksigner` cocok ke **lebih
+  dari satu** versi build-tools di runner, dan glob yang meleset ke banyak berkas dipecah shell
+  menjadi perintah + argumen, sehingga berkas kedua diperlakukan sebagai nama subperintah. Kini
+  satu apksigner dipilih secara pasti (`sort -V | tail -1`). Sekaligus langkah itu dibuat menepati
+  namanya: dahulu ia hanya **mencetak** sertifikat tanpa menolak apa pun, sehingga APK bertanda
+  tangan debug akan lolos dengan tenang. Sekarang ia menghitung sidik jari SHA-256 sertifikat
+  penanda tangan APK dan membandingkannya dengan keystore yang barusan didekode dari secret —
+  membuktikan rantai **secret → keystore → APK** utuh, bukan mengasumsikannya. Dijaga
+  `AlurKerjaRilisDanAutofixTest` (`apksignerDipilihTunggalBukanLewatGlob`,
+  `verifikasiTandaTanganMembandingkanSidikJariKeystore`).
+- **Brankas keystore rilis punya aturan tertulis, bukan sekadar kebiasaan**: repositori ini
+  **publik** dan keystore rilis adalah identitas aplikasi — siapa pun yang memegangnya dapat
+  menerbitkan pembaruan yang dipasang Android sebagai lanjutan resmi aplikasi ini. `.gitignore`
+  hanya menutup bentuk **telanjang** (`*.jks`, `*.keystore`, `keystore.properties`) dan tidak
+  pernah menyebut arsip kemasannya, padahal justru arsip itulah yang berpindah antar-mesin; satu
+  `git add -A` di folder yang memuat salinannya sudah cukup untuk membocorkannya secara permanen,
+  sebab riwayat git publik tidak bisa ditarik kembali. Keputusan pemilik proyek kini dinyatakan
+  terbuka: arsip **terenkripsi** (`key-sign-apk.zip` + lapisan `key-sign-apk.zip.enc`) ikut
+  dilacak agar proyek dapat dipulihkan utuh, sedangkan sandinya hanya hidup di GitHub Secrets dan
+  di penyimpanan pemilik. Dijaga `BrankasKeystoreAmanTest`, yang tidak berhenti pada nama berkas:
+  ia membaca *general purpose bit flag* entri zip untuk membuktikan arsipnya **benar-benar**
+  terenkripsi (nama yang berbunyi "zip terenkripsi" tidak membuktikan apa pun — `zip -P` bisa lupa
+  dipakai), menolak lapisan `.enc` yang ternyata masih arsip biasa, dan menyapu seluruh repo untuk
+  memastikan tidak ada keystore telanjang yang terselip — termasuk di `assets/`, yang ikut
+  dibundel ke APK sehingga bocor ke setiap pemasangan.
 - **Rujukan sholat ghaib kini tinggal di bundelnya, dan daftar sumber di layar Tentang tidak lagi
   kehilangan NU Online**: layar Ghaib mengetik sendiri kalimat *"Rujukan tata cara: imbauan Kemenag;
   syarat & kritik sanad: NU Online"* (`GhaibScreen.CATATAN_DALIL`), sementara

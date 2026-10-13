@@ -45,13 +45,40 @@ jobs:
       - name: Build release (signed bila secrets tersedia)
         run: ./gradlew :app:assembleRelease :app:bundleRelease --parallel --build-cache
 
-      - name: Verifikasi tanda tangan (bukan debug)
+      - name: Verifikasi tanda tangan (keystore rilis, bukan debug)
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         if: env.KEYSTORE_BASE64 != ''
         run: |
           APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
-          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK"
+          # Pilih SATU apksigner, jangan biarkan glob memilih. `$ANDROID_HOME/build-tools/*/apksigner`
+          # cocok ke lebih dari satu versi build-tools di runner GitHub; glob yang meleset ke banyak
+          # berkas dipecah shell menjadi perintah + argumen, sehingga apksigner mengeluh
+          # "Unsupported command: .../apksigner". Karena langkah ini terlewat selama
+          # KEYSTORE_BASE64 masih kosong, cacat itu baru muncul setelah keystore tersedia.
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1)
+          if [ -z "$APKSIGNER" ]; then
+            echo "::error::apksigner tidak ditemukan di \$ANDROID_HOME/build-tools"
+            exit 1
+          fi
+          "$APKSIGNER" verify --print-certs "$APK" | tee "$RUNNER_TEMP/certs.txt"
+
+          # Nama langkah ini menjanjikan tanda tangan keystore rilis. Jangan sekadar mencetak
+          # sertifikat: bandingkan sidik jari penanda tangan APK dengan keystore yang barusan
+          # didekode dari secret. Ini membuktikan rantai secret -> keystore -> APK utuh, dan
+          # sekaligus menolak APK yang masih bertanda tangan debug.
+          sidik_jks=$("$JAVA_HOME/bin/keytool" -list -v -keystore "$RUNNER_TEMP/release.jks" \
+            -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" 2>/dev/null \
+            | grep -m1 -i "SHA256:" | sed 's/.*SHA256:[[:space:]]*//' | tr -d ':' | tr 'A-F' 'a-f')
+          sidik_apk=$(grep -m1 -i "certificate SHA-256 digest" "$RUNNER_TEMP/certs.txt" \
+            | sed 's/.*digest:[[:space:]]*//' | tr -d ':' | tr 'A-F' 'a-f')
+          if [ -z "$sidik_jks" ] || [ "$sidik_jks" != "$sidik_apk" ]; then
+            echo "::error::APK tidak bertanda tangan keystore rilis (jks='$sidik_jks' apk='$sidik_apk')"
+            exit 1
+          fi
+          echo "OK: APK bertanda tangan keystore rilis ($sidik_apk)"
 
       - name: GitHub Release
         # Rilis hanya terbit bila ref-nya memang tag, atau bila tag diminta eksplisit saat

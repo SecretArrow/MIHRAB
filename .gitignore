@@ -6,6 +6,11 @@ local.properties
 *.jks
 *.keystore
 keystore.properties
+# Brankas keystore rilis: bentuk TELANJANG di atas tidak boleh masuk, tetapi arsip
+# terenkripsinya (`key-sign-apk.zip` dan lapisan `key-sign-apk.zip.enc`) SENGAJA ikut dilacak
+# supaya proyek dapat dipulihkan utuh dari repo. Sandi arsipnya TIDAK ada di repo — ia hanya
+# hidup di Secrets dan di penyimpanan pemilik. Repositori ini PUBLIK, jadi setiap bentuk
+# telanjang yang lolos ke sini sama dengan menyerahkan identitas rilis aplikasi.
 google-services.json
 .DS_Store
 .idea/
