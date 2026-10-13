@@ -3,9 +3,11 @@ package id.or.kemenag.yasintahlil.core.data
 import id.or.kemenag.yasintahlil.KodeSumber
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 
 /**
  * Bentuk dokumen konten yang dapat dirujuk — nama wadahnya (`bagian`, `bacaan`,
@@ -18,14 +20,39 @@ import org.junit.Test
  * tanpa galat**, atau pemeriksa menolak bundel yang sah dengan alasan "menunjuk entri yang tidak
  * ada". Uji ini menutup dua hal sekaligus: perilakunya (penelusuran benar-benar menemukan entri di
  * ketiga bentuk) dan sumbernya (nama wadah hanya boleh tinggal di [BentukKonten]).
+ *
+ * Peran ketiga yang tak pernah melihat keduanya adalah **gate CI** (`tools/validate_content.py`),
+ * yang memeriksa struktur berkas konten yang sama sebelum dibangun. Ia dahulu menuliskan nama
+ * wadahnya sendiri, dan salinan yang tertinggal di sana paling sunyi dari semuanya: `if "bagian"
+ * in data` sekadar tidak pernah benar lagi, sehingga seluruh pemeriksaan tahlil **dilewati** dan
+ * berkas cacat lolos CI tanpa satu pun galat — sementara aplikasi tetap membaca wadah itu lewat
+ * [BentukKonten]. Karena itu gate pun membaca namanya dari sini, dan uji di bawah menjaganya.
  */
 class BentukKontenTest {
 
     private val repo = "src/main/java/id/or/kemenag/yasintahlil/core/data/ContentRepo.kt"
     private val rujukan = "src/main/java/id/or/kemenag/yasintahlil/core/data/Rujukan.kt"
+    private val bentuk = "src/main/java/id/or/kemenag/yasintahlil/core/data/BentukKonten.kt"
 
     private fun kode(relatif: String): String =
         KodeSumber.kodeTanpaKomentar(KodeSumber.sumber(relatif))
+
+    /**
+     * Akar repositori, tempat `app/` dan `tools/` bersebelahan.
+     *
+     * Uji berjalan dengan direktori kerja modul (`app/`), jadi [KodeSumber.root] menunjuk ke `app` —
+     * naik satu tingkat dulu sebelum mencari gate.
+     */
+    private fun repoRoot(): File =
+        generateSequence(KodeSumber.root().absoluteFile) { it.parentFile }
+            .firstOrNull { File(it, "tools/validate_content.py").isFile }
+            ?: error("tools/validate_content.py tidak ditemukan dari ${KodeSumber.root()}")
+
+    private val gerbangKonten: String
+        get() = File(repoRoot(), "tools/validate_content.py").readText()
+
+    private val gerbangBundel: String
+        get() = File(repoRoot(), "tools/validate_bundle.py").readText()
 
     // --- Perilaku: penelusuran menemukan entri di setiap bentuk ---------------------------------
 
@@ -143,4 +170,85 @@ class BentukKontenTest {
             assertTrue("Rujukan tidak memakai BentukKonten.$n", r.contains("BentukKonten.$n"))
         }
     }
+
+    // --- Sumber: gate CI membaca bentuk yang sama -----------------------------------------------
+
+    /**
+     * Gate konten harus membaca nama wadah dari [BentukKonten], bukan menyimpannya.
+     *
+     * Salinan di gate menyempitkan pemeriksaan **tanpa galat**: `if "bagian" in data` yang tidak
+     * pernah lagi benar membuat seluruh pemeriksaan tahlil dilewati, dan berkas yang kehilangan
+     * `id`/`judul` di tiap bagiannya lolos CI tanpa satu pun pesan.
+     */
+    @Test
+    fun gerbangKontenMembacaBentukDariBentukKonten() {
+        assertTrue("gate konten tidak menunjuk BentukKonten.kt",
+            gerbangKonten.contains("/ \"BentukKonten.kt\")"))
+        listOf("ID", "BAGIAN", "KELOMPOK", "ITEMS").forEach { n ->
+            assertTrue("gate konten tidak membaca BentukKonten.$n",
+                gerbangKonten.contains("""_bentuk("$n")"""))
+        }
+        assertTrue("gate konten memakai pola pengambil yang berbeda dari penjaganya",
+            gerbangKonten.contains("baca_teks(SUMBER_BENTUK, nama, BENTUK_KONTEN)"))
+        assertTrue("gate konten membaca bentuk dari berkas lain",
+            gerbangKonten.contains("SUMBER_BENTUK = _sumber(BENTUK_KONTEN)"))
+        // Nama wadah dan kunci `id` tidak boleh kembali disalin ke gate.
+        listOf("bagian", "kelompok", "items").forEach { n ->
+            assertFalse("gate konten menyimpan salinan nama wadah '$n'",
+                gerbangKonten.contains("\"$n\""))
+        }
+        assertFalse("gate konten mengeja kunci id entri sendiri",
+            gerbangKonten.contains("get(\"id\")"))
+        assertFalse("gate konten mengeja pasangan kunci tahlil sendiri",
+            gerbangKonten.contains("(\"id\", \"judul\")"))
+    }
+
+    /** Gate bundel memanggil pemeriksa yang sama, jadi ia pun tak boleh mengeja kunci `id`. */
+    @Test
+    fun gerbangBundelMemakaiKunciIdBersama() {
+        assertTrue("gate bundel tidak membaca kunci id dari gate konten",
+            gerbangBundel.contains("vc.KUNCI_ID"))
+        assertFalse("gate bundel mengeja kunci id entri sendiri",
+            gerbangBundel.contains("get(\"id\")"))
+    }
+
+    /**
+     * Pola pengambil yang dipakai gate benar-benar menghasilkan nilai aplikasi — bukan sekadar
+     * cocok. Pola yang salah (mis. membaca `DAFTAR_ENTRI` alih-alih `BAGIAN`) tetap hijau tanpa uji
+     * ini, sebab gate hanya akan memeriksa wadah yang keliru.
+     */
+    @Test
+    fun polaPengambilBentukMenghasilkanNilaiAplikasi() {
+        val sumber = KodeSumber.sumber(bentuk)
+        assertEquals("kunci id yang dibaca gate berbeda dari yang dipakai aplikasi",
+            BentukKonten.ID, teks(sumber, "ID"))
+        assertEquals("wadah bagian yang dibaca gate berbeda dari yang dipakai aplikasi",
+            BentukKonten.BAGIAN, teks(sumber, "BAGIAN"))
+        assertEquals("wadah kelompok yang dibaca gate berbeda dari yang dipakai aplikasi",
+            BentukKonten.KELOMPOK, teks(sumber, "KELOMPOK"))
+        assertEquals("wadah items yang dibaca gate berbeda dari yang dipakai aplikasi",
+            BentukKonten.ITEMS, teks(sumber, "ITEMS"))
+    }
+
+    /** Isi literal string Kotlin → teks sebenarnya (`\\` → `\`, `\"` → `"`). */
+    private fun unescape(t: String): String {
+        val keluar = StringBuilder()
+        var i = 0
+        while (i < t.length) {
+            if (t[i] == '\\' && i + 1 < t.length) {
+                keluar.append(t[i + 1])
+                i += 2
+            } else {
+                keluar.append(t[i])
+                i++
+            }
+        }
+        return keluar.toString()
+    }
+
+    /** Nilai `<nama> = "…"` dengan pola pengambil yang **sama persis** seperti gate Python. */
+    private fun teks(sumber: String, nama: String): String =
+        Regex("\\b$nama\\s*=\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").find(sumber)
+            ?.groupValues?.get(1)?.let { unescape(it) }
+            ?: error("'$nama = \"...\"' tidak ditemukan di $bentuk")
 }

@@ -84,6 +84,17 @@ ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
                  / "yasintahlil" / "core" / "data" / "BundelKonten.kt")
 
+# Bentuk dokumen konten — nama wadah entri (`bagian`, `kelompok[].items[]`) dan kunci `id`
+# entrinya. Aplikasi membacanya dari `BentukKonten` lewat `ContentRepo` (daftar bacaan) dan
+# `entriRujukan` (rujukan `berkas.json#id`); gate ini memeriksa struktur berkas yang **sama**, dan
+# dahulu menuliskan nama-namanya sendiri. Salinan yang menyimpang tidak menggagalkan apa pun:
+# pencarian wadah tahlil sekadar tidak pernah cocok lagi, sehingga seluruh pemeriksaan berkas itu
+# **dilewati** dan berkas cacat lolos CI tanpa satu pun galat — sementara aplikasi tetap membaca
+# wadahnya lewat `BentukKonten`. Karena itu namanya dibaca dari `BentukKonten.kt`, sama seperti
+# aturan bundel dibaca dari `BundelKonten.kt`.
+BENTUK_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+                 / "yasintahlil" / "core" / "data" / "BentukKonten.kt")
+
 # Aturan teks Arab (rentang blok, rentang huruf, tanda harakat, panjang kata minimum) dipakai tiga
 # kali dengan nilai yang sama: `BundelKonten` saat memasang bundel, `ArabicTextTest` saat memeriksa
 # assets, dan gate ini. Rentang Unicode tidak dapat dibaca sekilas, sehingga salinan yang tertinggal
@@ -168,6 +179,20 @@ def _sumber(berkas: Path) -> str:
 
 SUMBER_BUNDEL = _sumber(BUNDEL_KONTEN)
 
+SUMBER_BENTUK = _sumber(BENTUK_KONTEN)
+
+def _bentuk(nama: str) -> str:
+    """Nilai `const val <nama> = "…"` pada `BentukKonten.kt` — pola yang sama seperti penjaganya."""
+    return baca_teks(SUMBER_BENTUK, nama, BENTUK_KONTEN)
+
+# Nama wadah dan kunci `id` entri konten. Dipakai `check_schema` untuk memutuskan **apakah** sebuah
+# berkas perlu diperiksa sama sekali, sehingga salinan yang tertinggal menyempitkan pemeriksaan
+# tanpa galat — lihat catatan di atas `BENTUK_KONTEN`.
+KUNCI_ID = _bentuk("ID")
+WADAH_BAGIAN = _bentuk("BAGIAN")
+WADAH_KELOMPOK = _bentuk("KELOMPOK")
+WADAH_ITEMS = _bentuk("ITEMS")
+
 # Aturan nama berkas konten — dipakai `tools/validate_bundle.py` lewat modul ini.
 PANJANG_NAMA_MIN = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MIN")
 PANJANG_NAMA_MAKS = baca_angka(SUMBER_BUNDEL, "PANJANG_NAMA_MAKS")
@@ -243,33 +268,34 @@ def check_schema(name: str, data) -> list[str]:
         if nums and len(set(nums)) != len(nums):
             errs.append(f"{name}: nomor ayat duplikat")
 
-    if "bagian" in data:  # tahlil
-        bagian = data["bagian"]
+    if WADAH_BAGIAN in data:  # tahlil
+        bagian = data[WADAH_BAGIAN]
         if not isinstance(bagian, list) or not bagian:
-            errs.append(f"{name}: 'bagian' kosong")
+            errs.append(f"{name}: '{WADAH_BAGIAN}' kosong")
         for i, b in enumerate(bagian):
-            for k in ("id", "judul"):
+            for k in (KUNCI_ID, "judul"):
                 if not b.get(k):
-                    errs.append(f"{name}: bagian[{i}] tanpa '{k}'")
+                    errs.append(f"{name}: {WADAH_BAGIAN}[{i}] tanpa '{k}'")
 
     if "susunan" in data:  # deskriptor susunan tahlil
         for i, s in enumerate(data["susunan"]):
-            if not s.get("id") or not isinstance(s.get("bagian"), list):
-                errs.append(f"{name}: susunan[{i}] butuh 'id' dan 'bagian' (list)")
+            if not s.get(KUNCI_ID) or not isinstance(s.get(WADAH_BAGIAN), list):
+                errs.append(f"{name}: susunan[{i}] butuh '{KUNCI_ID}' dan '{WADAH_BAGIAN}' (list)")
 
     if "kota" in data:  # koordinat
         for i, k in enumerate(data["kota"]):
             if not k.get("nama") or k.get("lat") is None or k.get("lon") is None:
                 errs.append(f"{name}: kota[{i}] butuh nama/lat/lon")
 
-    if "kelompok" in data:  # dzikir: setiap entri wajib menyebut sumbernya sendiri
+    if WADAH_KELOMPOK in data:  # dzikir: setiap entri wajib menyebut sumbernya sendiri
         # sumber_url tingkat berkas terlalu umum (mis. "https://sunnah.com/"); tanpa sumber
         # per-entri, hadis daif dan ayat Qur'an tidak dapat dibedakan asalnya oleh pengguna.
-        for gi, g in enumerate(data.get("kelompok") or []):
-            for ii, it in enumerate((g or {}).get("items") or []):
+        for gi, g in enumerate(data.get(WADAH_KELOMPOK) or []):
+            for ii, it in enumerate((g or {}).get(WADAH_ITEMS) or []):
                 label = it.get("judul") or f"{gi}.{ii}"
                 if not str(it.get("sumber", "")).strip():
-                    errs.append(f"{name}: kelompok[{gi}] entri '{label}' tanpa 'sumber' per-entri")
+                    errs.append(f"{name}: {WADAH_KELOMPOK}[{gi}] entri '{label}' tanpa 'sumber' "
+                                f"per-entri")
 
     # Bacaan setelah adzan: setiap entri wajib menyatakan **kapan** dibaca — plan.txt §"Bacaan
     # Setelah Adzan": "Penjelasan waktu membacanya". Tanpa `waktu`, pengguna hanya tahu urutannya,
@@ -467,7 +493,7 @@ def main() -> int:
         entries = walk_entries(data)
         checked += len(entries)
         for node, source in entries:
-            label = node.get("judul") or node.get("nama") or node.get("id") or "(entri)"
+            label = node.get("judul") or node.get("nama") or node.get(KUNCI_ID) or "(entri)"
             if not source:
                 msg = f"{rel}: entri '{label}' tanpa sumber_url"
                 (errors if strict else warnings).append(msg)
