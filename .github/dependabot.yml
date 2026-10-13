@@ -9,50 +9,55 @@ updates:
     groups:
       gradle-minor-patch:
         update-types: ["minor", "patch"]
-    # Proyek sengaja dipatok pada compileSdk 34 + AGP 8.5.x (lihat app/build.gradle.kts).
-    # Sejumlah rilis "minor" di bawah ini menuntut compileSdk 35/36 atau AGP 9, sehingga
-    # PR-nya merah di CI (contoh: PR #20 dan #22 — plugin Hilt menolak AGP < 9.0.0).
-    # Diabaikan sampai upgrade toolchain direncanakan, agar Dependabot tetap berguna.
+    # Toolchain dipatok pada satu kombinasi yang saling cocok (lihat gradle/libs.versions.toml).
+    # Sejumlah rilis di bawah ini menuntut compileSdk 37, AGP 9, atau Kotlin yang lebih baru,
+    # sehingga PR-nya merah di CI. Diabaikan sampai kenaikan berikutnya direncanakan, agar
+    # Dependabot tetap berguna.
     #
-    # Batas versi diambil dari catatan rilis resmi, bukan tebakan:
-    #  - Dagger 2.59: "AGP 9 is now a requirement" untuk plugin Hilt (2.58 masih menahan
-    #    dukungan AGP 9). Jadi plafonnya 2.59, bukan 2.60.
-    #  - Kotlin/KSP/AGP/Compose BOM adalah satu toolchain: menaikkan salah satunya sendiri
-    #    selalu merah (PR #22: Kotlin 2.4 + KSP 2.3 + Hilt 2.59 sekaligus). Kenaikan toolchain
-    #    dilakukan sebagai satu perubahan yang diuji, bukan lewat bump parsial Dependabot.
-    #    Sejak KSP 2.3 versi KSP tidak lagi terikat versi compiler Kotlin, tetapi KSP 2.3 tetap
-    #    menuntut Kotlin yang lebih baru daripada 2.0.20 yang dipakai proyek.
-    #  - kotlinx-coroutines 1.9+ dikompilasi dengan Kotlin 2.x yang lebih baru, sehingga
-    #    metadatanya tak terbaca compiler 2.0.20.
-    #  - androidx.* di bawah ini dibangun terhadap SDK 35/36 sehingga menuntut compileSdk
-    #    yang lebih tinggi saat dikonsumsi.
+    # Batas versi diambil dari catatan rilis resmi dan dari metadata AAR pustakanya, bukan tebakan:
+    #  - Dagger 2.59: "AGP 9 is now a requirement" untuk plugin Hilt (2.58 masih menahan dukungan
+    #    AGP 9). Jadi plafonnya 2.59, bukan 2.60.
+    #  - Tidak ada AGP 8.14: setelah 8.13 rilis berikutnya langsung AGP 9.x, yang mengubah DSL dan
+    #    menyalakan Kotlin bawaan secara default. Plafonnya karena itu dipasang tepat di minor
+    #    berikutnya, 8.14 — yang berarti seluruh AGP 9.x.
+    #  - Kotlin/KSP/Compose BOM adalah satu toolchain. KSP 2.3.x mendukung KGP 2.2.10–2.3.x saja,
+    #    sehingga Kotlin 2.4+ belum bisa dipakai; plafon keduanya 2.4. Compose BOM 2026.08.00
+    #    memetakan compose-ui 1.12.0 yang menuntut compileSdk 37 + AGP 9.1.
+    #  - kotlinx-coroutines 1.12+ dikompilasi dengan Kotlin yang lebih baru daripada 2.3.21.
+    #  - Pustaka androidx di bawah ini menuntut compileSdk 37 dan/atau AGP >= 9.1.0 (dibaca dari
+    #    `minCompileSdk`/`minAndroidGradlePluginVersion` di dalam AAR-nya): core-ktx 1.19.0,
+    #    androidx.hilt 1.4.0, navigation-compose 2.10.0, lifecycle 2.11.0, dan compose-ui 1.12.0
+    #    sudah begitu.
+    #    Plafon tiap pustaka dipasang tepat di rilis pertama yang sudah menuntutnya.
     ignore:
       - dependency-name: "com.google.dagger*"                     # butuh AGP >= 9.0.0 (sejak 2.59)
         versions: [">= 2.59"]
-      - dependency-name: "com.android.tools.build:gradle"          # toolchain dipatok di AGP 8.5.x
-        versions: [">= 8.6"]
+      - dependency-name: "com.android.tools.build:gradle"          # toolchain dipatok di AGP 8.13.x
+        versions: [">= 8.14"]
       - dependency-name: "org.jetbrains.kotlin*"                   # satu kesatuan dengan KSP & Compose
-        versions: [">= 2.1"]
-      - dependency-name: "com.google.devtools.ksp"                 # KSP 2.3 menuntut Kotlin > 2.0.20
-        versions: [">= 2.1"]
-      - dependency-name: "org.jetbrains.kotlinx:*"                 # metadata Kotlin 2.x lebih baru
-        versions: [">= 1.9"]
-      - dependency-name: "androidx.compose*"                       # BOM >= 2025.01 butuh compileSdk 35
-        versions: [">= 2025.01"]
-      - dependency-name: "androidx.hilt:*"                        # mengikuti androidx.navigation/compileSdk 35
-        versions: [">= 1.3"]
-      - dependency-name: "androidx.core:core-ktx"                # butuh compileSdk 35
-        versions: [">= 1.15"]
-      - dependency-name: "androidx.navigation:navigation-compose" # butuh compileSdk 35
-        versions: [">= 2.9"]
-      - dependency-name: "androidx.room:*"                       # butuh compileSdk 35
-        versions: [">= 2.7"]
-      - dependency-name: "androidx.work:*"                       # butuh compileSdk 35
+        versions: [">= 2.4"]
+      - dependency-name: "com.google.devtools.ksp"                 # KSP 2.3.x hanya sampai Kotlin 2.3.x
+        versions: [">= 2.4"]
+      - dependency-name: "org.jetbrains.kotlinx:*"                 # metadata Kotlin yang lebih baru
+        versions: [">= 1.12"]
+      - dependency-name: "androidx.compose*"                       # BOM >= 2026.08 butuh compileSdk 37
+        versions: [">= 2026.08"]
+      - dependency-name: "androidx.hilt:*"                        # 1.4.0 butuh compileSdk 37 + AGP 9.1
+        versions: [">= 1.4"]
+      - dependency-name: "androidx.core:core-ktx"                # 1.19.0 butuh compileSdk 37 + AGP 9.1
+        versions: [">= 1.19"]
+      - dependency-name: "androidx.navigation:navigation-compose" # 2.10.0 butuh compileSdk 37 + AGP 9.1
         versions: [">= 2.10"]
-      - dependency-name: "androidx.media3:*"                     # butuh compileSdk 35
-        versions: [">= 1.5"]
-      - dependency-name: "androidx.test*"                        # dibangun terhadap SDK 35
-        versions: [">= 1.7"]
+      - dependency-name: "androidx.lifecycle:*"                  # 2.11.0 butuh compileSdk 37 + AGP 9.1
+        versions: [">= 2.11"]
+      - dependency-name: "androidx.room:*"                       # butuh compileSdk 37
+        versions: [">= 2.9"]
+      - dependency-name: "androidx.work:*"                       # butuh compileSdk 37
+        versions: [">= 2.13"]
+      - dependency-name: "androidx.media3:*"                     # butuh compileSdk 37
+        versions: [">= 1.12"]
+      - dependency-name: "androidx.test*"                        # dibangun terhadap SDK 37
+        versions: [">= 1.8"]
 
   # Versi action di .github/workflows (checkout, setup-java, gradle/actions, dsb.)
   - package-ecosystem: github-actions

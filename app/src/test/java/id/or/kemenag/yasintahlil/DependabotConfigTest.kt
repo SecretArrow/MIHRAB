@@ -33,6 +33,7 @@ class DependabotConfigTest {
         "androidx.hilt:*" to "hiltExt",
         "androidx.core:core-ktx" to "coreKtx",
         "androidx.navigation:navigation-compose" to "navigation",
+        "androidx.lifecycle:*" to "lifecycle",
         "androidx.room:*" to "room",
         "androidx.work:*" to "workmanager",
         "androidx.media3:*" to "media3",

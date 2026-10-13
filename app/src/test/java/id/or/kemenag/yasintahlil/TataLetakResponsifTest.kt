@@ -172,8 +172,8 @@ class TataLetakResponsifTest {
     /**
      * Batas lebar saja belum cukup untuk "berbagai ukuran layar": bilah sistem juga memakan tepi
      * layar. Tanpa tepi-ke-tepi, area di sekitar poni (notch) dan di belakang bilah gestur tidak
-     * terpakai — dan bila `targetSdk` kelak dinaikkan ke 35, tepi-ke-tepi diberlakukan sistem
-     * sehingga tata letak yang tak menghitung inset akan tertutup bilah.
+     * terpakai — dan sejak `targetSdk` 35 tepi-ke-tepi diberlakukan sistem, sehingga tata letak yang
+     * tak menghitung inset akan tertutup bilah.
      */
     @Test
     fun aplikasiMenggambarTepiKeTepi() {

@@ -71,7 +71,7 @@
                 tools:node="remove" />
         </provider>
 
-        <!-- Tipe layanan foreground untuk pemutaran adzan (wajib pada Android 14/targetSdk 34). -->
+        <!-- Tipe layanan foreground untuk pemutaran adzan (wajib sejak Android 14/targetSdk 34). -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="mediaPlayback"
