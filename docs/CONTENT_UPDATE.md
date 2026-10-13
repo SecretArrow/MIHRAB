@@ -65,16 +65,28 @@ pertama, jadi tidak ada aturan yang disalin ulang dan bisa berbeda.
 
 ## Sisi CI
 
-`.github/workflows/ci.yml` (job `lint`) menjalankan dua fixture:
+`.github/workflows/ci.yml` (job `lint`) menjalankan **lima** fixture: dua untuk gate konten
+bawaan (`validate_content.py`) dan tiga untuk gate bundel (`validate_bundle.py`).
 
 ```bash
+python3 tools/validate_content.py --strict tools/fixtures/konten/sah.json
+python3 tools/validate_content.py --strict --harus-gagal tools/fixtures/konten/cacat.json
+
 python3 tools/validate_bundle.py --strict tools/fixtures/bundel/sah.json
 python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/cacat.json
+python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/bacaan-cacat.json
 ```
 
-Fixture `sah.json` harus lolos; `cacat.json` (sumber tak resmi, kategori asing, teks Arab tanpa
-harakat, kunci JSON ganda) harus ditolak — bila gate-nya longgar, `--harus-gagal` justru gagal dan
-CI merah.
+Tiap gate punya pasangannya: fixture `sah.json` harus lolos, dan tiap fixture `*cacat.json`
+harus **ditolak**. Bila gate-nya longgar — atau diam-diam berhenti memeriksa apa pun —
+`--harus-gagal` justru gagal dan CI merah. Itulah satu-satunya bukti bahwa gate menggigit:
+tanpa fixture, satu-satunya cara mengujinya adalah menyunting aset yang sesungguhnya.
+
+| Fixture | Yang membuatnya cacat |
+| --- | --- |
+| `konten/cacat.json` | entri tanpa `sumber_url` (baru menggagalkan di mode `--strict`) |
+| `bundel/cacat.json` | kunci JSON ganda, sumber tak resmi, kategori asing, teks Arab tanpa harakat, entri tanpa `sumber` per-entri, bacaan tanpa `waktu` |
+| `bundel/bacaan-cacat.json` | entri pertama pada wadah `bacaan` kehilangan kunci `id` — itu **satu-satunya** cacatnya, sehingga bila fixture ini diterima berarti pemeriksaan bentuk `bacaan` tak pernah berjalan |
 
 ## Yang tidak dilakukan aplikasi
 

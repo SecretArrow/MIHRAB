@@ -11,9 +11,14 @@
 
     <!-- Penjadwalan pengingat + bertahan setelah reboot.
          Pengingat memakai WorkManager (bukan AlarmManager), jadi SCHEDULE_EXACT_ALARM /
-         USE_EXACT_ALARM sengaja TIDAK dideklarasikan — izin hanya diminta bila benar-benar
-         dipakai (lihat OfflineManifestTest). -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+         USE_EXACT_ALARM sengaja TIDAK dideklarasikan — izin alarm tepat waktu hanya muncul bila
+         kode benar-benar memakai AlarmManager (lihat OfflineManifestTest).
+
+         Aturan umumnya: izin hanya diminta bila benar-benar dipakai kode aplikasi sendiri —
+         dijaga `PemakaianIzinTest`. Karena itu WAKE_LOCK sengaja TIDAK ada di sini: tak satu pun
+         kode aplikasi memakai PowerManager/WakeLock. Pustaka yang memang membutuhkannya
+         menyatakannya di manifesnya sendiri (WorkManager mencantumkan WAKE_LOCK), sehingga izin
+         itu tetap ada di manifes gabungan tanpa aplikasi ikut memintanya. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Pemutaran adzan di latar belakang (foreground service media). -->

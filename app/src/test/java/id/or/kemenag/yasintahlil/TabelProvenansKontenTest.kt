@@ -20,7 +20,9 @@ import java.io.File
  * Uji ini menutup kedua arah: setiap berkas konten wajib tercatat, dan setiap nama di tabel wajib
  * benar-benar ada. Isinya sendiri (status ✅/⚠️, nama sumber) tidak diperiksa di sini — yang dijaga
  * adalah **kelengkapan daftarnya**, sebab daftar yang tidak lengkap membuat seluruh kolom lainnya
- * tak bermakna.
+ * tak bermakna. Satu pengecualian yang *memang* diperiksa isinya ada di bawah: **nomor hadis** yang
+ * dikutip sebuah baris harus benar-benar ada di berkas yang ditunjuknya
+ * ([nomorHadisYangDikutipBenarBenarAdaDiBerkasnya]).
  */
 class TabelProvenansKontenTest {
 
@@ -109,5 +111,39 @@ class TabelProvenansKontenTest {
         )
         assertEquals(listOf("yasin_full.json"), namaBerkas("`yasin_full.json`"))
         assertEquals(emptyList<String>(), namaBerkas("Doa **keluar masjid**"))
+    }
+
+    /**
+     * Nomor hadis yang **dikutip** tabel harus benar-benar ada di berkas yang ditunjuknya.
+     *
+     * Baris `sholat_mayit.json` dulu menulis *"sunnah.com (Muslim 963)"* padahal berkasnya tak
+     * memuat angka 963 sama sekali — entri di dalamnya hanya menyebut "HR Muslim, Tirmidzi, Ibnu
+     * Majah". Tabel provenans ada justru untuk mencegah kutipan tanpa dasar, jadi nomor yang tak
+     * dapat ditelusuri di berkasnya adalah kebalikan dari tujuannya. Uji kelengkapan daftar tak
+     * menangkapnya: nama berkasnya memang benar — yang salah isinya.
+     */
+    @Test
+    fun nomorHadisYangDikutipBenarBenarAdaDiBerkasnya() {
+        val modul = modul()
+        var jumlah = 0
+        val hilang = mutableListOf<String>()
+        dokumen.lines().filter { it.startsWith("|") }.forEach { baris ->
+            val sel = baris.trim().trimStart('|').split("|").map { it.trim() }
+            if (sel.size < 4) return@forEach
+            val nama = namaBerkas(sel[0]).singleOrNull() ?: return@forEach
+            val berkas = File(modul, "src/main/assets/content/$nama")
+            if (!berkas.isFile) return@forEach
+            val teks = berkas.readText()
+            Regex("([A-Z][A-Za-z'’]*)\\s+(\\d+)").findAll(sel[2]).forEach { m ->
+                jumlah++
+                if (!teks.contains(m.groupValues[2])) hilang += "$nama: ${m.value}"
+            }
+        }
+        assertTrue("tidak ada kutipan bernomor yang terbaca dari tabel provenans", jumlah >= 3)
+        assertTrue(
+            "tabel provenans mengutip nomor hadis yang tak ada di berkas kontennya — kutipan yang " +
+                "tak dapat ditelusuri: $hilang",
+            hilang.isEmpty(),
+        )
     }
 }
