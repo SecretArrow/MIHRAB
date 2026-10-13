@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.TeksBacaan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.CaraKelompok
 import id.or.kemenag.yasintahlil.core.sholat.KelompokSholat
@@ -164,9 +165,11 @@ fun SholatScreen(go: (String) -> Unit) {
                     }
                 }
                 items(bacaanTampil) { b ->
-                    val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
-                        Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
-                    }
+                    // Teks dari rujukan bersama, dengan cadangan medan entri sendiri — aturannya
+                    // satu tempat (`TeksBacaan`), sama dengan layar sholat mayit, rincian langkah,
+                    // dan Tahlil. Sebelumnya tiap layar mengeja `ifBlank { b.arab }` sendiri.
+                    val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
+                    val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
                     BacaanCard(JenisBacaan.id(JenisBacaan.BACAAN, b.id), b.judul, a, l, t, showLatin, showTrans, arabSize,
                         sumber = b.sumber.ifBlank { b.kapan }, showArab = showArab, kategori = b.kategori)
                     if (b.catatan.isNotBlank()) {

@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
+import id.or.kemenag.yasintahlil.core.data.TeksBacaan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -39,9 +40,10 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     }
     val cur = s.items[s.idx.coerceIn(0, s.items.size - 1)]
     val (arab, latin, trans) = remember(cur.id) {
-        repo.resolveArabLatinTerjemah(cur.rujukanFile).let {
-            Triple(it.first.ifBlank { cur.arab }, it.second.ifBlank { cur.latin }, it.third.ifBlank { cur.terjemahan })
-        }
+        // Aturan cadangan teks dari `TeksBacaan` — sama dengan layar sholat, bukan salinan
+        // `ifBlank { cur.arab }` yang dahulu diketik di sini.
+        val (ra, rl, rt) = repo.resolveArabLatinTerjemah(cur.rujukanFile)
+        TeksBacaan.pilih(cur, ra, rl, rt)
     }
     val selesai = s.count >= cur.ulangi
 

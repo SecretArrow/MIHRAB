@@ -1,7 +1,5 @@
 package id.or.kemenag.yasintahlil.core.sholat
 
-import id.or.kemenag.yasintahlil.core.data.Bacaan
-
 /**
  * Aturan teks bersama untuk dua layar sholat mayit — Ghaib dan Jenazah.
  *
@@ -28,6 +26,12 @@ import id.or.kemenag.yasintahlil.core.data.Bacaan
  * sama — jadi ejaannya tinggal di [judulTakbirBersama]. Sebelumnya ketiganya diketik di kedua
  * layar; dua salinan berarti satu perbaikan ejaan harus dikenakan dua kali, dan bila hanya satu
  * yang dikenai, kedua layar menyebut langkah yang sama dengan dua nama berbeda.
+ *
+ * Aturan **cadangan teks bacaan** ("pakai hasil rujukan bila ada, pakai medan entri sendiri bila
+ * tidak") pernah tinggal di sini sebagai `teksBacaan` — tetapi aturan itu tidak khas sholat mayit:
+ * layar Panduan Sholat, rincian langkah sholat, dan layar Tahlil memakainya juga, masing-masing
+ * dengan salinan sendiri. Ia kini satu tempat di
+ * [id.or.kemenag.yasintahlil.core.data.TeksBacaan], dan kelima layar itu memanggilnya.
  *
  * Batas yang belum ditutup, dan **tidak** diklaim sebagai perbedaan yang disengaja: cara menyajikan
  * niat masih berbeda — Ghaib memberi judul *"Varian niat:"* lalu kartunya tanpa label, Jenazah
@@ -86,16 +90,4 @@ object TampilanSholatKhusus {
 
     /** Baris catatan mazhab. */
     fun catatanMazhab(teks: String): String = "Catatan mazhab: $teks"
-
-    /**
-     * Teks bacaan yang ditampilkan: hasil rujukan bersama, atau medan entri itu sendiri bila
-     * rujukannya kosong. Aturan cadangan ini dulu disalin utuh di kedua layar.
-     */
-    fun teksBacaan(
-        b: Bacaan,
-        arab: String,
-        latin: String,
-        terjemahan: String,
-    ): Triple<String, String, String> =
-        Triple(arab.ifBlank { b.arab }, latin.ifBlank { b.latin }, terjemahan.ifBlank { b.terjemahan })
 }
