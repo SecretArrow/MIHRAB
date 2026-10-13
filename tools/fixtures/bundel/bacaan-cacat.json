@@ -1,0 +1,21 @@
+{
+  "_bundel": {
+    "skema": 1,
+    "dibuat": "2026-02-19",
+    "penerbit": "Contoh format (bukan konten asli)",
+    "catatan": "Fixture CI: bundel yang harus DITOLAK karena satu-satunya cacatnya adalah BENTUK wadah 'bacaan' — entri pertama kehilangan kunci 'id'. Berkas ini lolos setiap pemeriksaan lain (sumber resmi, kategori dikenal, tanpa prosa penunjuk, tanpa teks Arab), sehingga bila ia diterima berarti pemeriksaan bentuk 'bacaan' tidak pernah berjalan."
+  },
+  "berkas": {
+    "sholat_bacaan.json": {
+      "sumber_url": "https://sunnah.com/",
+      "kategori": "hadis",
+      "judul": "Contoh bentuk bacaan",
+      "bacaan": [
+        {
+          "judul": "Entri tanpa id",
+          "terjemahan": "Entri ini kehilangan kunci 'id' yang dibaca ContentRepo dengan getString."
+        }
+      ]
+    }
+  }
+}

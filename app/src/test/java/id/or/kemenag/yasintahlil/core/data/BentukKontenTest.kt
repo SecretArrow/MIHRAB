@@ -184,7 +184,7 @@ class BentukKontenTest {
     fun gerbangKontenMembacaBentukDariBentukKonten() {
         assertTrue("gate konten tidak menunjuk BentukKonten.kt",
             gerbangKonten.contains("/ \"BentukKonten.kt\")"))
-        listOf("ID", "BAGIAN", "KELOMPOK", "ITEMS").forEach { n ->
+        listOf("ID", "BAGIAN", "BACAAN", "KELOMPOK", "ITEMS").forEach { n ->
             assertTrue("gate konten tidak membaca BentukKonten.$n",
                 gerbangKonten.contains("""_bentuk("$n")"""))
         }
@@ -192,8 +192,12 @@ class BentukKontenTest {
             gerbangKonten.contains("baca_teks(SUMBER_BENTUK, nama, BENTUK_KONTEN)"))
         assertTrue("gate konten membaca bentuk dari berkas lain",
             gerbangKonten.contains("SUMBER_BENTUK = _sumber(BENTUK_KONTEN)"))
+        // Kedua bentuk tingkat dokumen dibaca `ContentRepo` dengan akses yang **melempar**, jadi
+        // keduanya harus diperiksa — `bacaan` dahulu tak diperiksa sama sekali.
+        assertTrue("gate konten tidak memeriksa bentuk tingkat dokumen (bagian & bacaan)",
+            gerbangKonten.contains("for wadah in (WADAH_BAGIAN, WADAH_BACAAN):"))
         // Nama wadah dan kunci `id` tidak boleh kembali disalin ke gate.
-        listOf("bagian", "kelompok", "items").forEach { n ->
+        listOf("bagian", "bacaan", "kelompok", "items").forEach { n ->
             assertFalse("gate konten menyimpan salinan nama wadah '$n'",
                 gerbangKonten.contains("\"$n\""))
         }
@@ -210,6 +214,30 @@ class BentukKontenTest {
             gerbangBundel.contains("vc.KUNCI_ID"))
         assertFalse("gate bundel mengeja kunci id entri sendiri",
             gerbangBundel.contains("get(\"id\")"))
+    }
+
+    /**
+     * Setiap fixture bundel yang cacat benar-benar dijalankan CI dengan `--harus-gagal`.
+     *
+     * Fixture yang tak pernah dijalankan adalah pembuktian yang diam-diam berhenti ada: berkasnya
+     * tetap terlihat di repositori, tetapi tak ada lagi yang membuktikan gate benar-benar
+     * menolaknya — dan berkas `*cacat.json` yang diterima gate justru akan tampak sebagai fixture
+     * yang sah.
+     */
+    @Test
+    fun setiapFixtureCacatDijalankanCi() {
+        val ci = File(repoRoot(), ".github/workflows/ci.yml").readText()
+        val cacat = File(repoRoot(), "tools/fixtures/bundel")
+            .listFiles().orEmpty()
+            .filter { it.isFile && it.name.endsWith("cacat.json") }
+            .map { it.name }
+        assertTrue("tidak ada fixture cacat di tools/fixtures/bundel", cacat.isNotEmpty())
+        cacat.forEach { nama ->
+            assertTrue("fixture '$nama' tidak dijalankan CI dengan --harus-gagal",
+                ci.contains("--harus-gagal tools/fixtures/bundel/$nama"))
+        }
+        assertTrue("CI tidak menjalankan fixture sah",
+            ci.contains("validate_bundle.py --strict tools/fixtures/bundel/sah.json"))
     }
 
     /**
