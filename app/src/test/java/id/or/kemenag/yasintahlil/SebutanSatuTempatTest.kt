@@ -3,7 +3,9 @@ package id.or.kemenag.yasintahlil
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
+import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
+import id.or.kemenag.yasintahlil.navigation.RuteKonten
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -13,7 +15,7 @@ import java.io.File
 /**
  * Sebutan untuk hal yang sama harus satu ejaan.
  *
- * Tiga sebutan yang dahulu ditulis di beberapa tempat sekaligus:
+ * Empat sebutan yang dahulu ditulis di beberapa tempat sekaligus:
  *
  *  - **nama berkas modul sholat khusus** (`sholat_ghaib.json`, `sholat_jenazah.json`) — di layar
  *    Ghaib, layar Jenazah, dan indeks pencarian. Nama berkas adalah kunci ke bundel konten, jadi
@@ -23,6 +25,8 @@ import java.io.File
  *    indeks pencarian, sehingga ayat yang sama dapat muncul dengan dua nama;
  *  - **nama mazhab Asar** beserta faktor bayangannya (`Syafi'i (1)`) — di menu Jadwal dan menu
  *    Pengaturan, yang keduanya mengatur nilai yang sama (`Store.ASAR`).
+ *  - **id entri daftar sholat khusus** (`ghaib`, `jenazah`) — di `sholat_daftar.json` dan di layar
+ *    Panduan Sholat, yang menawarkan tombol "Buka" bagi entri dengan id itu.
  */
 class SebutanSatuTempatTest {
 
@@ -85,6 +89,55 @@ class SebutanSatuTempatTest {
         val rute = BerkasKonten.SHOLAT_KHUSUS.map { it.rute }
         assertEquals("rute modul sholat khusus tidak unik", rute.size, rute.toSet().size)
         assertTrue("modul sholat khusus tanpa rute", rute.none { it.isBlank() })
+    }
+
+    /**
+     * Nama yang dipakai tombol "Buka" di Panduan Sholat harus nama yang **sama** dengan yang
+     * diberikan peta bersama `RuteKonten` untuk rute itu.
+     *
+     * Tombol yang menyebut layar tujuan dengan namanya sendiri dapat menyebut layar yang lain: nama
+     * yang tertukar di [BerkasKonten.SHOLAT_KHUSUS] membuat entri "Ghaib" menawarkan tombol
+     * *"Buka Sholat Jenazah"* yang, begitu ditekan, membuka layar Ghaib — persis kebingungan yang
+     * dicegah berkas `NamaLayar`. Peta rute → nama sudah ada satu di `RuteKonten`, jadi yang
+     * diuji di sini bukan ejaannya, melainkan **kesepakatannya**.
+     */
+    @Test
+    fun namaModulSholatKhususSelarasDenganPetaRuteKeNama() {
+        val pelanggar = BerkasKonten.SHOLAT_KHUSUS.mapNotNull { m ->
+            val jenis = JenisBacaan.BERPETA.filter { RuteKonten.rute(it) == m.rute }
+            val nama = jenis.mapNotNull { RuteKonten.namaTujuan(it) }.distinct()
+            when {
+                nama.size != 1 -> "rute ${m.rute}: tak ada nama tunggal di RuteKonten ($nama)"
+                nama.single() != m.nama -> "rute ${m.rute}: modul menulis \"${m.nama}\", " +
+                    "RuteKonten menulis \"${nama.single()}\""
+                else -> null
+            }
+        }
+        assertTrue("nama modul sholat khusus tidak selaras dengan RuteKonten: $pelanggar",
+            pelanggar.isEmpty())
+    }
+
+    /**
+     * Panduan Sholat mengenali entri yang punya modul sendiri dari daftar bersama, bukan dari id
+     * yang dieja di dalam layarnya.
+     *
+     * Sebelumnya layar itu menulis `s.id == "ghaib"` / `s.id == "jenazah"`, dan tak ada apa pun yang
+     * menyandingkan kedua id itu dengan `sholat_daftar.json`. Menggantinya di bundel karena itu
+     * menghapus tombol "Buka" **tanpa satu pun pesan galat** — entri itu jatuh ke tombol "Tata cara"
+     * yang membuka rincian tanpa isi. Menambah modul khusus pun tak menolong: yang baru tidak akan
+     * pernah dikenali, betapa pun lengkapnya barisnya di [BerkasKonten.SHOLAT_KHUSUS].
+     */
+    @Test
+    fun layarPanduanSholatMembacaDaftarModulKhusus() {
+        val k = kodeLayar("feature/sholat/SholatScreen.kt")
+        assertTrue("layar Panduan Sholat tidak memakai BerkasKonten.SHOLAT_KHUSUS",
+            k.contains("BerkasKonten.SHOLAT_KHUSUS"))
+        val dieja = BerkasKonten.SHOLAT_KHUSUS.map { it.idDaftar }.filter { k.contains("\"$it\"") }
+        assertTrue(
+            "layar Panduan Sholat mengeja id entri daftar alih-alih membacanya dari " +
+                "BerkasKonten.SHOLAT_KHUSUS: $dieja",
+            dieja.isEmpty(),
+        )
     }
 
     // ---- Judul ayat Yasin ------------------------------------------------------------------

@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.core.data
 
 import id.or.kemenag.yasintahlil.KodeSumber
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -110,6 +111,47 @@ class BerkasKontenSatuTempatTest {
     fun modulSholatKhususMemakaiNamaDariDaftarSemua() {
         val namaModul = BerkasKonten.SHOLAT_KHUSUS.map { it.berkas }
         assertTrue("modul sholat khusus memakai nama di luar SEMUA", semua.containsAll(namaModul))
+    }
+
+    /** Id seluruh entri `sholat_daftar.json` — dari kedua bagiannya, `wajib` dan `sunnah`. */
+    private fun idDiDaftarSholat(): Set<String> {
+        val d = JSONObject(File(dirKonten(), BerkasKonten.SHOLAT_DAFTAR).readText())
+        return listOf("wajib", "sunnah").flatMap { bagian ->
+            val arr = d.optJSONArray(bagian) ?: return@flatMap emptyList()
+            (0 until arr.length()).map { arr.getJSONObject(it).getString("id") }
+        }.toSet()
+    }
+
+    /**
+     * Id entri daftar yang membuka tiap modul sholat khusus harus benar-benar ada di
+     * `sholat_daftar.json`.
+     *
+     * Id itu adalah **kunci** yang menyambung berkas konten dengan layar: `SholatScreen` menawarkan
+     * tombol "Buka" kepada entri yang id-nya tercatat di [BerkasKonten.SHOLAT_KHUSUS]. Selama id-nya
+     * dieja di dalam layar, menggantinya di bundel — karena entri itu dinamai ulang, misalnya —
+     * **diam-diam** menghapus tombol itu: entri tersebut lalu jatuh ke tombol "Tata cara" yang
+     * membuka halaman rincian tanpa isi, dan tak satu pun uji gagal. Uji ini menutupnya dari sisi
+     * lain: yang menunjuk harus benar-benar ada.
+     *
+     * Daftar yang menunjuk id kembar pun ditolak — dua modul dengan id sama berarti salah satunya
+     * tidak pernah dapat dibuka, sebab `firstOrNull` hanya mengembalikan yang pertama.
+     */
+    @Test
+    fun idDaftarModulSholatKhususBenarBenarAdaDiDaftar() {
+        val khusus = BerkasKonten.SHOLAT_KHUSUS.map { it.idDaftar }
+        assertTrue("modul sholat khusus tanpa id daftar", khusus.none { it.isBlank() })
+        assertEquals("ada id daftar kembar pada modul sholat khusus", khusus.size, khusus.toSet().size)
+        assertTrue("ada modul sholat khusus tanpa nama layar",
+            BerkasKonten.SHOLAT_KHUSUS.none { it.nama.isBlank() })
+
+        val id = idDiDaftarSholat()
+        assertTrue("id entri sholat tidak terbaca dari sholat_daftar.json", id.size >= 5)
+        val hilang = khusus.filterNot { it in id }
+        assertTrue(
+            "id daftar modul sholat khusus tidak ada di sholat_daftar.json — tombol \"Buka\" bagi " +
+                "entri itu diam-diam hilang dan entri jatuh ke halaman rincian tanpa isi: $hilang",
+            hilang.isEmpty(),
+        )
     }
 
     // --- Nama harus menunjuk berkas yang benar-benar dikirim -------------------------------------

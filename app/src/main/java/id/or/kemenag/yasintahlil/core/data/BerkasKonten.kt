@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.core.data
 
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
@@ -19,17 +20,32 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * pada sebelas tempat, tanpa apa pun yang membandingkannya dengan berkas yang benar-benar dikirim.
  * Kini seluruhnya di sini, dan [SEMUA] menjadi daftar yang dapat dibandingkan dengan direktori aset.
  *
- * [SHOLAT_KHUSUS] juga menyimpan **layar** tiap modul sholat khusus, sebab pencarian harus menunjuk
- * ke mana hasilnya membuka dan layar itu sendiri yang tahu berkas mana yang dibacanya. Dengan
- * keduanya di satu tempat, menambah modul sholat khusus berarti menambah satu baris — bukan
- * mengejar nama berkas di tiga berkas berbeda.
+ * [SHOLAT_KHUSUS] juga menyimpan **layar** tiap modul sholat khusus, **id entri daftar** yang
+ * membukanya, dan **nama layarnya** bagi pengguna — sebab pencarian harus menunjuk ke mana hasilnya
+ * membuka, Panduan Sholat harus tahu entri mana yang punya layar sendiri, dan layar itu sendiri yang
+ * tahu berkas mana yang dibacanya. Dengan semuanya di satu tempat, menambah modul sholat khusus
+ * berarti menambah satu baris — bukan mengejar nama berkas, id daftar, dan rute di tiga berkas
+ * berbeda.
  *
  * Murni tanpa Android, sehingga dapat diuji langsung di JVM; [Routes] hanya kumpulan string.
  */
 object BerkasKonten {
 
-    /** Satu modul sholat khusus: [berkas] di bundel konten dan [rute] layar yang menampilkannya. */
-    data class Modul(val berkas: String, val rute: String)
+    /**
+     * Satu modul sholat khusus: berkasnya di bundel konten, layar yang menampilkannya, entri daftar
+     * yang membukanya, dan nama layar itu bagi pengguna.
+     *
+     * Keempatnya sengaja tinggal bersama. [idDaftar] adalah id entri di `sholat_daftar.json`;
+     * `SholatScreen` dahulu membandingkan id itu dengan literalnya sendiri (`s.id == "ghaib"`), dan
+     * tak ada apa pun yang menyandingkannya dengan berkas yang benar-benar dikirim. Mengganti id di
+     * bundel karena itu **diam-diam** menghapus tombol "Buka" bagi entri itu dan menyisakan tombol
+     * "Tata cara" menuju halaman rincian yang tak punya isi — tanpa satu pun pesan galat.
+     *
+     * [nama] datang dari [NamaLayar] supaya tombolnya menyebut layar tujuan dengan nama yang sama
+     * dengan judul layar itu sendiri; dahulu tombolnya menulis *"Buka panduan Ghaib"*, ejaan ketiga
+     * bagi layar yang sama.
+     */
+    data class Modul(val berkas: String, val rute: String, val idDaftar: String, val nama: String)
 
     // ---- Bacaan & panduan ----------------------------------------------------------------------
 
@@ -86,7 +102,7 @@ object BerkasKonten {
 
     /** Modul sholat khusus beserta layarnya, urut seperti di daftar Panduan Sholat. */
     val SHOLAT_KHUSUS: List<Modul> = listOf(
-        Modul(SHOLAT_GHAIB, Routes.GHAIB),
-        Modul(SHOLAT_JENAZAH, Routes.JENAZAH),
+        Modul(SHOLAT_GHAIB, Routes.GHAIB, "ghaib", NamaLayar.GHAIB),
+        Modul(SHOLAT_JENAZAH, Routes.JENAZAH, "jenazah", NamaLayar.JENAZAH),
     )
 }
