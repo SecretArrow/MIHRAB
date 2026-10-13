@@ -41,6 +41,11 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     val bacaan = remember { repo.sholatBacaan() }
     val syarat = remember { repo.sholatSyarat() }
     val info = remember { (repo.sholatWajib() + repo.sholatSunnah()).find { it.id == id } }
+    // Catatan mazhab tingkat modul dari bundel. Cadangannya tanpa klaim fiqh, supaya berkas yang
+    // kehilangan kuncinya tidak membuat layar menyatakan pendirian yang tak ada sumbernya.
+    val catatanMazhab = remember {
+        repo.sholatCatatanMazhab().ifBlank { "Perbedaan pendapat dicatat apa adanya tanpa dicampuradukkan." }
+    }
     // rememberSaveable: posisi langkah, mode ringkas, dan tanda selesai tidak hilang saat layar
     // diputar ulang. Kehilangan `step` berarti pengguna yang sedang di langkah ketujuh terlempar
     // kembali ke langkah pertama hanya karena memutar perangkat.
@@ -243,9 +248,15 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         OutlinedButton(onClick = { go(Routes.DZIKIR) }, modifier = Modifier.padding(top = 8.dp)) {
             Text("Dzikir & doa setelah sholat")
         }
-        Text("Catatan mazhab: Indonesia umumnya Syafi'i (qunut Subuh sunnah). Bacaan bertanda mazhab " +
-            "tertentu hanya tampil bila mazhab panduan cocok — perbedaan dicatat, tidak dicampuradukkan. Lihat SOURCES.md.",
-            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
+        // Catatan mazhab dibaca dari bundel, bukan diringkas di sini. Salinan lama menyatakan
+        // *"qunut Subuh sunnah"* — pendirian yang **tidak** diambil `sholat_daftar.json`, yang
+        // justru mencatat qunut Subuh sebagai ketentuan yang "memiliki perbedaan pendapat".
+        // Menampilkan sumbernya apa adanya membuat layar tidak pernah menyatakan lebih dari yang
+        // dicatat berkasnya. Kalimat cadangan sengaja tanpa klaim fiqh apa pun.
+        Text("Catatan mazhab: " + catatanMazhab, style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(top = 8.dp))
+        Text("Bacaan bertanda mazhab tertentu hanya tampil bila mazhab panduan cocok. Lihat SOURCES.md.",
+            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp))
     }
 
     if (settings) {

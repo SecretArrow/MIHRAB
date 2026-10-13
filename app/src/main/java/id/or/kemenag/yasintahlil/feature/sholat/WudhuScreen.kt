@@ -30,8 +30,13 @@ fun WudhuScreen() {
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.WUDHU, style = MaterialTheme.typography.titleLarge)
-        Text("Kerangka tata cara mengikuti program Fasolatan Ditjen Bimas Islam Kemenag; urutan rukun mazhab Syafi'i (umum di Indonesia).",
-            style = MaterialTheme.typography.labelMedium)
+        // Provenans dibaca dari bundel (`wudhu.json` → `edisi`). Salinan lama di sini lebih pendek
+        // daripada berkasnya — menghilangkan tayamum dan "Ngaji Fasolatan" — sehingga layar
+        // mengaku bersumber dari kerangka yang tidak sama dengan yang dicatat kontennya.
+        // Bila berkasnya tidak mencantumkannya, baris ini tidak ditampilkan sama sekali.
+        if (panduan.edisi.isNotBlank()) {
+            Text(panduan.edisi, style = MaterialTheme.typography.labelMedium)
+        }
 
         if (panduan.rukun.isNotEmpty()) {
             Text("Rukun wudhu", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))

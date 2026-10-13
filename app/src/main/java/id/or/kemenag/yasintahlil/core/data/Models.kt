@@ -123,6 +123,16 @@ data class PanduanBersuci(
     val pembatal: List<String> = emptyList(),
     val catatanMazhab: String = "",
     val catatanLafaz: String = "",
+    /**
+     * Provenans tingkat modul (`wudhu.json` → `edisi`) — kerangka mana yang diikuti.
+     *
+     * Layar Wudhu dahulu mencetak parafrasenya sendiri (*"Kerangka tata cara mengikuti program
+     * Fasolatan Ditjen Bimas Islam Kemenag; urutan rukun mazhab Syafi'i (umum di Indonesia)"*),
+     * padahal berkasnya memuat kalimat yang lebih lengkap — termasuk bahwa kerangkanya juga
+     * mencakup **tayamum** dan datang dari *Ngaji Fasolatan*. Salinan yang lebih pendek itu bukan
+     * sekadar ringkas: ia menghilangkan asal-usul yang sumbernya sendiri cantumkan.
+     */
+    val edisi: String = "",
 )
 
 /** Batas aurat menurut mazhab yang dipilih panduan. */

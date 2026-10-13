@@ -196,6 +196,22 @@ class ContentRepo(private val ctx: Context) {
     fun sholatPanduan(): String = doc(BerkasKonten.SHOLAT_DAFTAR).optString("panduan", "")
 
     /**
+     * Catatan mazhab tingkat modul dari `sholat_daftar.json` (`catatan_mazhab`).
+     *
+     * Layar rincian langkah sholat mencetak catatannya sendiri: *"Indonesia umumnya Syafi'i (qunut
+     * Subuh sunnah)"*. Bundelnya **tidak** mengambil pendirian itu — berkasnya menulis bahwa qunut
+     * Subuh termasuk ketentuan yang *"memiliki perbedaan pendapat"*. Jadi kalimat di layar bukan
+     * sekadar salinan yang lebih pendek: ia menyatakan sebagai mapan hal yang sumbernya sendiri
+     * catat sebagai diperselisihkan, dan tak ada apa pun yang membandingkannya dengan berkas.
+     *
+     * `catatan_mazhab` dan `edisi` adalah dua metadata provenans yang — seperti dicatat
+     * `SOURCES.md` §6 — tidak diperiksa gerbang konten, sehingga kelengkapannya hanya terjaga bila
+     * benar-benar **dibaca dan ditampilkan** seperti di sini. Kosong = tidak diklaim.
+     */
+    fun sholatCatatanMazhab(): String =
+        doc(BerkasKonten.SHOLAT_DAFTAR).optString("catatan_mazhab", "")
+
+    /**
      * Catatan tradisi tingkat modul dari `tahlil.json` (`catatan_tradisi`).
      *
      * Layar Tahlil mencetak *"susunan dapat berbeda menurut tradisi"* sebagai teks hardcode —
@@ -370,6 +386,7 @@ class ContentRepo(private val ctx: Context) {
             pembatal = stringList("pembatal"),
             catatanMazhab = d.optString("catatan_mazhab"),
             catatanLafaz = d.optString("catatan_lafaz"),
+            edisi = d.optString("edisi"),
         )
     }
 
