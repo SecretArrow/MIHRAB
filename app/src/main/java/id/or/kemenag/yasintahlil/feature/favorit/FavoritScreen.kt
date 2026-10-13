@@ -86,7 +86,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))
-                AksiBuka(RuteKonten.tujuan(h.kind, grupDzikir), "Buka", go)
+                AksiBuka(RuteKonten.tujuan(h.kind, grupDzikir), NamaAntarmuka.BUKA, go)
             }
         }
     }
@@ -110,8 +110,8 @@ private fun BarisTersimpan(
             Text(judul)
             tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
         }
-        AksiBuka(tujuan, "Buka", go)
-        TextButton(onClick = onHapus) { Text("Hapus") }
+        AksiBuka(tujuan, NamaAntarmuka.BUKA, go)
+        TextButton(onClick = onHapus) { Text(NamaAntarmuka.HAPUS) }
     }
 }
 

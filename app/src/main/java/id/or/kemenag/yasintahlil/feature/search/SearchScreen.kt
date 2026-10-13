@@ -129,7 +129,7 @@ private fun KartuHasil(h: Hit, buka: () -> Unit) {
         Column(Modifier.padding(12.dp)) {
             Text(h.judul, style = MaterialTheme.typography.titleMedium)
             Text(h.cuplikan)
-            Button(onClick = buka) { Text("Buka") }
+            Button(onClick = buka) { Text(NamaAntarmuka.BUKA) }
         }
     }
 }

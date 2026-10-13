@@ -212,7 +212,7 @@ fun AdzanScreen() {
                         // tanpa berkas apa pun yang bisa dipilih atau dipratinjau.
                         enabled = daftarSuara.size > 1,
                         onClick = { simpanSuara(DaftarSuaraAdzan.hapus(daftarSuara, s.uri), DaftarSuaraAdzan.aktifSetelahHapus(daftarSuara, s.uri, uri)) },
-                    ) { Text("Hapus") }
+                    ) { Text(NamaAntarmuka.HAPUS) }
                 }
             }
         }
@@ -342,7 +342,7 @@ fun AdzanScreen() {
                     ubahNama = null
                 }) { Text("Simpan") }
             },
-            dismissButton = { TextButton(onClick = { ubahNama = null }) { Text("Batal") } },
+            dismissButton = { TextButton(onClick = { ubahNama = null }) { Text(NamaAntarmuka.BATAL) } },
         )
     }
 

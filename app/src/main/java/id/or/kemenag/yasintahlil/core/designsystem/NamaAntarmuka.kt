@@ -4,7 +4,7 @@ package id.or.kemenag.yasintahlil.core.designsystem
  * Nama **kendali antarmuka** yang muncul di lebih dari satu tempat — bukan seluruh teks layar,
  * hanya kata yang dipakai bersama oleh beberapa layar atau oleh komponen bersama di `UiKit`.
  *
- * Lima belas di antaranya sudah terlanjur ditulis berulang:
+ * Sembilan belas di antaranya sudah terlanjur ditulis berulang:
  *
  * - *"Pengaturan bacaan"* adalah judul sheet [BacaanSettingsSheet] **dan** label tombol yang
  *   membukanya di sepuluh tempat. Nama yang sama untuk hal yang sama, ditulis sebelas kali:
@@ -29,8 +29,13 @@ package id.or.kemenag.yasintahlil.core.designsystem
  *   *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada ketiga
  *   layar itu beserta Yasin. Tiap pasangan menamai satu tindakan yang sama; kata yang berbeda di
  *   salah satunya membuat pengguna mengira ada dua tombol berbeda untuk hal yang sama.
+ * - Empat **kata tindakan baku** — *"Batal"*, *"Hapus"*, *"Reset"*, *"Buka"* — juga muncul di
+ *   beberapa layar. Karena singkat dan umum, tiap tempat cenderung mengejanya sendiri; padahal
+ *   *"Batal"* di dialog mana pun berarti menutup tanpa melakukan apa pun, dan *"Hapus"* di mana pun
+ *   berarti menghapus yang tersimpan. Kata yang berbeda di salah satunya membuat tindakan yang sama
+ *   tampak berbeda.
  *
- * Kelimabelasnya kini satu tempat, sehingga nama kendali dan komponen yang memakainya tidak dapat
+ * Semuanya kini satu tempat, sehingga nama kendali dan komponen yang memakainya tidak dapat
  * berbeda pendapat.
  *
  * **Batasnya.** *"Terjemahan"* di sini adalah label **sakelar tampilan** — menyembunyikan atau
@@ -116,4 +121,31 @@ object NamaAntarmuka {
      * tetapi awalannya satu.
      */
     const val TERAKHIR_DIBACA = "Terakhir dibaca"
+
+    // ---- Kata tindakan baku --------------------------------------------------------------------
+    //
+    // Empat kata di bawah ini adalah **tindakan** yang sama di beberapa layar: membatalkan pilihan
+    // pada dialog, menghapus sesuatu yang tersimpan, mengembalikan penghitung ke awal, dan membuka
+    // layar asal sebuah bacaan. Karena singkat dan umum, tiap tempat cenderung mengejanya sendiri —
+    // dan kata yang berbeda di salah satunya membuat tindakan yang sama tampak berbeda.
+
+    /**
+     * Tombol membatalkan pilihan pada dialog: menutupnya tanpa melakukan apa pun.
+     *
+     * Berbeda dari [BATALKAN_TANDA], yang membatalkan **tanda progres** yang sudah dibuat — bukan
+     * menutup dialog. Keduanya sengaja tetap terpisah karena yang dijanjikan tombolnya berbeda.
+     */
+    const val BATAL = "Batal"
+
+    /**
+     * Tombol menghapus sesuatu yang tersimpan — jenis suara adzan, bacaan favorit, atau satu bagian
+     * data. Di mana pun, kata ini berarti menghapus.
+     */
+    const val HAPUS = "Hapus"
+
+    /** Tombol mengembalikan penghitung ke awal. */
+    const val RESET = "Reset"
+
+    /** Tombol membuka layar asal sebuah bacaan. */
+    const val BUKA = "Buka"
 }

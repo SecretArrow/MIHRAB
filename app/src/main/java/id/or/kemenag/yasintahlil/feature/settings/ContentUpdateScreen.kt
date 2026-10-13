@@ -17,6 +17,7 @@ import id.or.kemenag.yasintahlil.core.data.MetaPembaruan
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
+import id.or.kemenag.yasintahlil.core.designsystem.NamaAntarmuka
 import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import kotlinx.coroutines.Dispatchers
@@ -145,7 +146,7 @@ fun ContentUpdateScreen() {
                     }
                 }) { Text("Kembalikan") }
             },
-            dismissButton = { TextButton(onClick = { konfirmasiKembali = false }) { Text("Batal") } },
+            dismissButton = { TextButton(onClick = { konfirmasiKembali = false }) { Text(NamaAntarmuka.BATAL) } },
         )
     }
 }

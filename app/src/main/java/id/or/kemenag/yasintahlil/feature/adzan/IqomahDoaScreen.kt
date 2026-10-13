@@ -94,7 +94,7 @@ fun IqomahScreen() {
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { remaining = total }, enabled = !running) { Text("Mulai") }
-            OutlinedButton(onClick = { remaining = -1 }) { Text(if (running) "Batal" else "Reset") }
+            OutlinedButton(onClick = { remaining = -1 }) { Text(if (running) NamaAntarmuka.BATAL else NamaAntarmuka.RESET) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
         Text("Timer berjalan selama layar ini terbuka; getar menandai waktu habis.",

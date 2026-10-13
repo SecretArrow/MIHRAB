@@ -123,7 +123,11 @@ class JenisSuaraAdzanTest {
         assertTrue("layar tidak memakai aturan DaftarSuaraAdzan", s.contains("DaftarSuaraAdzan."))
         assertTrue("tidak ada tombol menambah jenis suara", s.contains("Tambah jenis suara"))
         assertTrue("tidak ada cara memilih jenis suara aktif", s.contains("RadioButton("))
-        assertTrue("tidak ada cara menghapus jenis suara", s.contains("Hapus"))
+        // Kata tombolnya dipakai bersama: ejaannya dipaku `NamaAntarmukaSatuTempatTest`, dan yang
+        // dijaga di sini adalah bahwa layar Adzan memang memakai nama bersama itu — bukan mengeja
+        // ulang "Hapus" sendiri. (`contains("Hapus")` dulu lolos bahkan bila kata itu diketik ulang
+        // di layar, sehingga tak lagi membuktikan apa pun tentang satu tempat.)
+        assertTrue("tidak ada cara menghapus jenis suara", s.contains("NamaAntarmuka.HAPUS"))
         assertTrue("tidak ada cara menamai jenis suara", s.contains("Ubah nama"))
     }
 
