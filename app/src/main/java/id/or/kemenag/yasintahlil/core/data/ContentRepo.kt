@@ -379,6 +379,9 @@ class ContentRepo(private val ctx: Context) {
             val arr = d.optJSONArray(key) ?: return emptyList()
             return (0 until arr.length()).map { arr.getString(it) }
         }
+        // Judul bagian dibaca dari objeknya sendiri (`wudhu.judul`, `tayamum.judul`); tanpa ini
+        // layar mengetik headingnya sendiri dan keterangan di dalam judul berkasnya tak pernah tampil.
+        fun judulBagian(key: String): String = d.optJSONObject(key)?.optString("judul").orEmpty()
         return PanduanBersuci(
             rukun = stringList("rukun"),
             wudhu = langkah("wudhu"),
@@ -386,6 +389,8 @@ class ContentRepo(private val ctx: Context) {
             pembatal = stringList("pembatal"),
             catatanMazhab = d.optString("catatan_mazhab"),
             catatanLafaz = d.optString("catatan_lafaz"),
+            judulWudhu = judulBagian("wudhu"),
+            judulTayamum = judulBagian("tayamum"),
             edisi = d.optString("edisi"),
         )
     }

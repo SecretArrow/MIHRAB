@@ -380,6 +380,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Judul bagian layar Wudhu kini dibaca dari bundel, bukan diketik di layar**: `wudhu.json`
+  mencantumkan `wudhu.judul` dan `tayamum.judul`, tetapi `WudhuScreen` mengetik kedua headingnya
+  sendiri — dan salinannya sudah menyimpang. Judul tayamum di berkas berbunyi *"Tata cara tayamum
+  (pengganti wudhu saat tidak ada air / sakit)"*, sedangkan layar hanya menampilkan *"Tata cara
+  tayamum"*; keterangan di dalam tanda kurung itulah yang menjawab kapan bagian itu dipakai, dan
+  pengguna tidak pernah melihatnya. Karena salinannya di kode, mengubah judul di berkasnya pun tak
+  mengubah layar sama sekali. Kedua judul kini sampai lewat `PanduanBersuci.judulWudhu` /
+  `judulTayamum`, dengan cadangan teks di layar hanya sebagai jaring pengaman bila berkasnya
+  kehilangan judulnya — persis pola yang sudah dipakai provenans `edisi` pada layar yang sama.
+  Dijaga `JudulBagianBersuciTest`, yang juga menolak argumen judul `LangkahBagian` berupa literal
+  dan menuntut keterangan *"pengganti wudhu"* benar-benar ada di berkasnya.
 - **Label dan rujukan layar sholat mayit kini dibaca dari bundel, bukan diketik di layar**: tiga
   fakta yang berkasnya sudah mencatat dipaksakan ulang sebagai literal di kode, masing-masing
   dengan salinan yang menyimpang. **Pertama**, `sholat_ghaib.json` dan `sholat_jenazah.json`

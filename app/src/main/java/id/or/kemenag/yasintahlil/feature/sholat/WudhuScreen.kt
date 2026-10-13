@@ -43,8 +43,12 @@ fun WudhuScreen() {
             panduan.rukun.forEachIndexed { i, r -> Text("${i + 1}. $r", style = MaterialTheme.typography.bodyMedium) }
         }
 
-        LangkahBagian("Tata cara wudhu", panduan.wudhu)
-        LangkahBagian("Tata cara tayamum", panduan.tayamum)
+        // Judul kedua bagian dibaca dari bundel (`wudhu.json` → `wudhu.judul` / `tayamum.judul`).
+        // Salinan lama di sini berbunyi "Tata cara tayamum" saja, sedangkan berkasnya menambahkan
+        // "(pengganti wudhu saat tidak ada air / sakit)" — keterangan yang justru menjawab kapan
+        // bagian itu dipakai. Cadangan teks hanya jaring pengaman bila berkasnya kehilangan judulnya.
+        LangkahBagian(panduan.judulWudhu.ifBlank { "Tata cara wudhu" }, panduan.wudhu)
+        LangkahBagian(panduan.judulTayamum.ifBlank { "Tata cara tayamum" }, panduan.tayamum)
 
         if (panduan.pembatal.isNotEmpty()) {
             Text("Yang membatalkan wudhu", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 12.dp))
