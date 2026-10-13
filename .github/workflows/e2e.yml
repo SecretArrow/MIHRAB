@@ -1,4 +1,4 @@
-name: E2E (mahal — hanya main/nightly/label e2e)
+name: E2E (mahal — hanya main/nightly)
 
 on:
   push:

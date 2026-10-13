@@ -21,7 +21,7 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
 | `sholat_jenazah.json` | Sholat jenazah (syarat, langkah, niat) | **sunnah.com** (Bukhari 1335) | ✅ resmi |
-| `sholat_mayit.json` | Doa untuk mayit | **sunnah.com** (Muslim 963) | ✅ resmi |
+| `sholat_mayit.json` | Doa untuk mayit | **sunnah.com** (HR Muslim, Tirmidzi, Ibnu Majah) | ✅ resmi |
 | `wudhu.json` | Wudhu, tayamum, rukun, pembatal | **Fasolatan Kemenag** (kerangka) | ✅ resmi (tanpa lafaz) |
 | `sholat_syarat.json` | Syarat wajib/sah, persiapan, penutup aurat, kebersihan tempat | **Fasolatan Kemenag** (kerangka) | ⚠️ kerangka, menunggu verifikasi kata-per-kata |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |

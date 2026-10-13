@@ -38,6 +38,10 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
 - Perbedaan mazhab wajib tampil: Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia = Syafi'i.
 
 ## 6. Aturan konten
-- Setiap entri JSON wajib: `arab, latin, terjemahan, sumber_url, edisi, catatan_mazhab`.
+- Setiap entri JSON wajib: `sumber_url` — domain resmi, dan **gagal** di mode `--strict`.
+- Aturan tambahan per jenis entri: entri dzikir wajib `sumber` per-entri; bacaan setelah adzan wajib `waktu`.
+- **Tidak diperiksa mesin**: `edisi` dan `catatan_mazhab` — metadata provenans di tingkat berkas/bagian
+  yang menjelaskan asal-usul. Keduanya tak pernah digagalkan CI, jadi kelengkapannya harus diperiksa
+  manusia saat meninjau; jangan mengandalkan gate untuk menangkap kutipan yang hilang.
 - CI gagal jika `sumber_url` kosong atau domain di luar: `*.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id` (penjelas saja).
 - Dilarang generate teks Arab dengan AI. Dilarang karang hadis/sanad.

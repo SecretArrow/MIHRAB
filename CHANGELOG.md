@@ -380,6 +380,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Dokumen berhenti menjanjikan pemeriksaan yang tidak ada**: lima klaim di dokumentasi tidak
+  sesuai kenyataan, dan tak satu pun diperiksa — kelas yang sama dengan bug-bug sebelumnya, hanya
+  kini dokumennya yang berbohong kepada pembaca, bukan kode kepada dirinya sendiri. (1) `SOURCES.md`
+  menyatakan *"Setiap entri JSON wajib: `arab, latin, terjemahan, sumber_url, edisi, catatan_mazhab`"*,
+  padahal `tools/validate_content.py` tak pernah menyebut `edisi`/`catatan_mazhab` dan kontennya
+  sendiri hanya memuatnya di sebagian berkas (keduanya metadata tingkat berkas/bagian, bukan
+  per-entri). (2) `docs/PERMISSIONS.md` menunjuk `OfflineManifestTest.izin_alarm_tepat_waktu_sejalan_dengan_pemakaian`
+  sebagai penjaga aturan *"izin hanya dideklarasikan bila benar-benar dipakai"*, padahal uji itu
+  hanya mengawasi pasangan `AlarmManager` ↔ izin alarm — akibatnya `WAKE_LOCK` duduk di manifes
+  tanpa satu pun pemakaian di kode aplikasi. (3) `docs/CONTENT_SOURCES.md` mengutip *"Muslim 963"*
+  untuk `sholat_mayit.json`, padahal berkasnya tak memuat angka 963 sama sekali. (4) Bagian
+  *"Sisi CI"* `docs/CONTENT_UPDATE.md` menulis "dua fixture" dan tak menyebut fixture konten
+  maupun `bundel/bacaan-cacat.json`. (5) Nama `e2e.yml` menjanjikan pemicu *"label e2e"* yang tidak
+  pernah ada. Perbaikannya: aturan di `SOURCES.md` kini menyatakan apa yang benar-benar diperiksa
+  **dan** apa yang tidak; `WAKE_LOCK` dihapus dari manifes (WorkManager mencantumkannya sendiri di
+  manifesnya, jadi manifes gabungan tetap memuatnya tanpa aplikasi ikut meminta); tabel provenans
+  menyebut sumber yang benar-benar dikutip berkasnya; dokumen CI menyebut kelima fixture; dan nama
+  `e2e.yml` hanya menyebut pemicu yang ada. Masing-masing dikunci penjaga baru —
+  `KlaimAturanKontenTest`, `PemakaianIzinTest`, `FixtureCiTerdokumentasiTest`, `NamaAlurKerjaJujurTest`,
+  dan `TabelProvenansKontenTest.nomorHadisYangDikutipBenarBenarAdaDiBerkasnya`.
 - **Gerbang konten akhirnya punya bukti bahwa ia menolak**: gerbang bundel sudah lama memiliki
   fixture — `tools/fixtures/bundel/sah.json` yang wajib lolos dan dua `*cacat.json` yang wajib
   ditolak, ketiganya dijalankan `ci.yml`. Gerbang konten (`tools/validate_content.py`) tidak punya
