@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Aritmetika "menit ke hari" tinggal di satu tempat**: angka `1440` diketik telanjang di **tiga**
+  berkas — `PrayerCalc.compute` melipat hasil hisab dengannya, `JadwalHariIni.geser`/`berikutnya`
+  memutar jam melewati tengah malam dengannya, dan `PrayerScheduler.enqueueNext` menghitung jeda
+  pengingat dengannya (`if (d <= 0) d += 1440`, ditulis **dua kali** dalam satu fungsi). Yang
+  dipertaruhkan bukan kerapian: jeda itulah yang menentukan **kapan pengingat berbunyi**, sementara
+  jam yang sama menentukan **apa yang terbaca pengguna** — satu salah ketik (`1439`, atau lipatan
+  yang lupa menangani sisa bagi negatif) membuat pengingat berbunyi pada menit yang tidak sama
+  dengan jam di layar, tanpa satu pun pesan galat. Kini angkanya satu (`PrayerCalc.MENIT_SEHARI`),
+  lipatannya satu (`PrayerCalc.putaranMenit`), menit dindingnya satu (`PrayerCalc.menitHari`, yang
+  juga dipakai `toMinutes`), dan aturan jeda ke kemunculan berikutnya satu
+  (`JadwalHariIni.sisaMenit`). Yang terakhir memuat kasus tepi yang dahulu tak terdokumentasi: jam
+  yang **tepat** sekarang dibulatkan ke **depan**, bukan menjadi jeda nol — pekerja pengingat
+  menjadwalkan ulang dirinya sesudah berbunyi, sehingga jeda nol berarti pengingat yang berbunyi
+  berulang tanpa henti. Jeda pra-adzan kini dihitung dari **jam yang ditampilkan layar**
+  (`JadwalHariIni.geser(jam, -preMin)`) alih-alih dari `delta - preMin` yang ditulis ulang
+  penjadwal. Dijaga `MenitHariSatuTempatTest`, yang juga menolak `1440` diketik di berkas lain.
 - **Ejaan angka waktu tinggal di satu tempat**: format `"%02d:%02d"` ditulis ulang di **tiga**
   berkas — `PrayerCalc.compute` saat menyusun waktu sholat, `JadwalHariIni.geser` saat menggesernya,
   dan layar Iqomah saat menghitung mundur — sehingga tak ada satu pun tempat yang tahu ejaan mana

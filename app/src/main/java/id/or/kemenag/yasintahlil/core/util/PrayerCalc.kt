@@ -22,6 +22,15 @@ import kotlin.math.tan
  */
 object PrayerCalc {
 
+    /**
+     * Menit dalam satu hari. Angka ini dahulu diketik ulang di tiga berkas — [compute] saat
+     * melipat hasil hisab, `JadwalHariIni.geser`/`berikutnya` saat memutar jam melewati tengah
+     * malam, dan `PrayerScheduler.enqueueNext` saat menghitung jeda pengingat — sebagai `1440`
+     * telanjang. Satu salah ketik (mis. `1439`) membuat pengingat berbunyi pada menit yang tidak
+     * sama dengan jam yang ditampilkan layar, tanpa satu pun pesan galat.
+     */
+    const val MENIT_SEHARI = 1440
+
     enum class Method(
         val label: String,
         val fajr: Double,
@@ -88,11 +97,8 @@ object PrayerCalc {
         val noon = 12.0 + tzHours - p.lon / 15.0 - eotMin / 60.0
         val altAsar = Math.toDegrees(atan(1.0 / (p.asarFactor + tan(abs(lr - dr)))))
         val c = p.corr + List(6) { 0 }
-        fun fmt(h: Double, corrMin: Int): String {
-            var m = ((h * 60.0).roundToInt() + corrMin + p.method.ihtiyat) % 1440
-            if (m < 0) m += 1440
-            return FormatWaktu.jamMenit(m)
-        }
+        fun fmt(h: Double, corrMin: Int): String =
+            FormatWaktu.jamMenit(putaranMenit((h * 60.0).roundToInt() + corrMin + p.method.ihtiyat))
         val magrib = fmt(noon + hourAngle(-0.833), c[4])
         val isya = if (p.method.ishaIntervalMin != null) {
             fmt(noon + hourAngle(-0.833) + p.method.ishaIntervalMin / 60.0, c[5])
@@ -109,9 +115,26 @@ object PrayerCalc {
         )
     }
 
+    /**
+     * Menit ke hari [m] **dilipat** ke rentang `0..MENIT_SEHARI-1`.
+     *
+     * Dipakai [compute] saat hasil hisab jatuh di luar hari (koreksi menit dapat menarik Subuh ke
+     * sebelum tengah malam) dan [JadwalHariIni.geser] saat memutar jam. Sisa bagi Kotlin dapat
+     * bernilai negatif, jadi lipatannya ditambah satu hari lebih dulu — tanpa itu "-10 menit dari
+     * 00:05" menjadi angka negatif, bukan 23:55.
+     */
+    fun putaranMenit(m: Int): Int = ((m % MENIT_SEHARI) + MENIT_SEHARI) % MENIT_SEHARI
+
+    /**
+     * Menit ke hari dari jam [jam] dan menit [menit] — aturan yang sama dengan [toMinutes] saat
+     * membacanya dari teks, supaya jam yang dibaca dari kalender dan jam yang dibaca dari "HH:mm"
+     * tak dapat berbeda.
+     */
+    fun menitHari(jam: Int, menit: Int): Int = jam * 60 + menit
+
     /** Menit ke hari dari jam "HH:mm" — kebalikan [FormatWaktu.jamMenit]. */
     fun toMinutes(hhmm: String): Int {
         val (h, m) = hhmm.split(":").map { it.toInt() }
-        return h * 60 + m
+        return menitHari(h, m)
     }
 }
