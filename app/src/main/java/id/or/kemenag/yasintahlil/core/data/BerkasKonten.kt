@@ -3,20 +3,26 @@ package id.or.kemenag.yasintahlil.core.data
 import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
- * Nama berkas konten yang dibaca **langsung** oleh sebuah layar, bukan lewat daftar modul.
+ * Nama berkas konten — satu ejaan untuk setiap berkas di `assets/content`.
  *
- * Kebanyakan konten dibaca lewat `ContentRepo` dengan nama modul yang dikenal isinya (mis.
- * `repo.dzikir()`), tetapi dua modul sholat khusus dibaca per berkas: layar Sholat Ghaib meminta
- * `sholat_ghaib.json` dan layar Sholat Jenazah meminta `sholat_jenazah.json`. Nama itu dahulu
- * dituliskan sendiri-sendiri di **tiga** tempat — dua layar dan indeks pencarian — sehingga salah
- * ketik pada salah satunya tidak berbunyi apa pun: layar menampilkan keadaan kosong ("konten tidak
- * tersedia") sementara pencarian tetap mendaftar modulnya, atau sebaliknya. Nama berkas adalah kunci
- * ke bundel; ia tidak boleh punya lebih dari satu ejaan.
+ * Nama berkas bukan sekadar label: ia adalah **kunci** ke tiga tempat sekaligus. `assets/content`
+ * menyimpannya sebagai berkas bawaan, `filesDir/content_update/` menyimpannya sebagai penimpaan yang
+ * dipasang pengguna (lihat [ContentUpdateManager]), dan peta `berkas` pada sebuah bundel memakainya
+ * sebagai kunci entri ([BundelKonten]). Satu nama yang tertulis berbeda di salah satu tempat tidak
+ * berbunyi apa pun saat dibangun maupun diuji: `ContentRepo` mencarinya di aset, tidak menemukannya,
+ * dan barulah saat layar itu dibuka pengguna melihat kegagalan — `FileNotFoundException` dari
+ * `assets.open`, atau, pada lapisan pembaruan, **diam-diam kembali ke konten bawaan** sehingga
+ * pembaruan yang dilaporkan "terpasang" tidak mengubah apa pun.
  *
- * [SHOLAT_KHUSUS] juga menyimpan **layar** tiap modul, sebab pencarian harus menunjuk ke mana
- * hasilnya membuka dan layar itu sendiri yang tahu berkas mana yang dibacanya. Dengan keduanya di
- * satu tempat, menambah modul sholat khusus berarti menambah satu baris — bukan mengejar nama
- * berkas di tiga berkas berbeda.
+ * Karena itu namanya tinggal di sini saja. Dua nama sudah lebih dulu pindah ke sini
+ * ([SHOLAT_GHAIB], [SHOLAT_JENAZAH]) beserta penjaganya; sisanya masih dieja di dalam `ContentRepo`
+ * pada sebelas tempat, tanpa apa pun yang membandingkannya dengan berkas yang benar-benar dikirim.
+ * Kini seluruhnya di sini, dan [SEMUA] menjadi daftar yang dapat dibandingkan dengan direktori aset.
+ *
+ * [SHOLAT_KHUSUS] juga menyimpan **layar** tiap modul sholat khusus, sebab pencarian harus menunjuk
+ * ke mana hasilnya membuka dan layar itu sendiri yang tahu berkas mana yang dibacanya. Dengan
+ * keduanya di satu tempat, menambah modul sholat khusus berarti menambah satu baris — bukan
+ * mengejar nama berkas di tiga berkas berbeda.
  *
  * Murni tanpa Android, sehingga dapat diuji langsung di JVM; [Routes] hanya kumpulan string.
  */
@@ -25,8 +31,58 @@ object BerkasKonten {
     /** Satu modul sholat khusus: [berkas] di bundel konten dan [rute] layar yang menampilkannya. */
     data class Modul(val berkas: String, val rute: String)
 
+    // ---- Bacaan & panduan ----------------------------------------------------------------------
+
+    /** Seluruh surah Yasin beserta terjemahannya. */
+    const val YASIN_FULL = "yasin_full.json"
+
+    /** Seluruh bagian Tahlil beserta lafaznya. */
+    const val TAHLIL_FULL = "tahlil_full.json"
+
+    /** Daftar susunan Tahlil (urutan bagian) beserta catatan tradisi tingkat modul. */
+    const val TAHLIL_SUSUNAN = "tahlil.json"
+
+    /** Daftar sholat wajib & sunnah, lengkap dengan niat dan ketentuannya. */
+    const val SHOLAT_DAFTAR = "sholat_daftar.json"
+
+    /** Lafaz bacaan sholat dari takbir sampai salam. */
+    const val SHOLAT_BACAAN = "sholat_bacaan.json"
+
+    /** Bacaan doa mayit, terpisah agar tidak tercampur ke langkah sholat umum. */
+    const val SHOLAT_MAYIT = "sholat_mayit.json"
+
+    /** Syarat, persiapan, dan penutup aurat — daftar periksa tanpa lafaz. */
+    const val SHOLAT_SYARAT = "sholat_syarat.json"
+
+    /** Panduan bersuci: wudhu, tayamum, dan pembatalnya. */
+    const val WUDHU = "wudhu.json"
+
+    /** Kelompok dzikir beserta hitungan dan rujukan teksnya. */
+    const val DZIKIR = "dzikir.json"
+
+    /** Lafaz adzan, iqomah, jawaban adzan, dan doa setelahnya. */
+    const val ADZAN = "adzan.json"
+
+    /** Daftar kota beserta koordinatnya untuk pemilihan lokasi. */
+    const val KOTA = "kota.json"
+
+    // ---- Modul sholat khusus -------------------------------------------------------------------
+
     const val SHOLAT_GHAIB = "sholat_ghaib.json"
     const val SHOLAT_JENAZAH = "sholat_jenazah.json"
+
+    /**
+     * Seluruh berkas konten yang dibaca aplikasi, urut seperti di atas.
+     *
+     * Daftar ini ada supaya "setiap nama yang dibaca benar-benar dikirim" dapat **diperiksa** —
+     * bukan sekadar dijanjikan oleh ejaan yang kebetulan sama di sebelas tempat.
+     */
+    val SEMUA: List<String> = listOf(
+        YASIN_FULL, TAHLIL_FULL, TAHLIL_SUSUNAN,
+        SHOLAT_DAFTAR, SHOLAT_BACAAN, SHOLAT_MAYIT, SHOLAT_SYARAT,
+        WUDHU, DZIKIR, ADZAN, KOTA,
+        SHOLAT_GHAIB, SHOLAT_JENAZAH,
+    )
 
     /** Modul sholat khusus beserta layarnya, urut seperti di daftar Panduan Sholat. */
     val SHOLAT_KHUSUS: List<Modul> = listOf(

@@ -32,12 +32,14 @@ class AtribusiModulTest {
     @Test
     fun repoMembacaKeteranganTingkatModul() {
         val s = sumber(repoRel)
+        // Nama berkasnya datang dari `BerkasKonten` (lihat `BerkasKontenSatuTempatTest`), jadi yang
+        // diperiksa di sini adalah pasangan **berkas + kunci**-nya, bukan ejaan nama berkasnya.
         assertTrue("ContentRepo tidak membaca catatan_tradisi dari tahlil.json",
-            s.contains("doc(\"tahlil.json\").optString(\"catatan_tradisi\""))
+            s.contains("doc(BerkasKonten.TAHLIL_SUSUNAN).optString(\"catatan_tradisi\""))
         assertTrue("ContentRepo tidak membaca sumber_umum dari tahlil_full.json",
-            s.contains("doc(\"tahlil_full.json\").optString(\"sumber_umum\""))
+            s.contains("doc(BerkasKonten.TAHLIL_FULL).optString(\"sumber_umum\""))
         assertTrue("ContentRepo tidak membaca panduan dari sholat_daftar.json",
-            s.contains("doc(\"sholat_daftar.json\").optString(\"panduan\""))
+            s.contains("doc(BerkasKonten.SHOLAT_DAFTAR).optString(\"panduan\""))
     }
 
     /** Pembacaan itu hanya berguna bila berkasnya memang mencantumkan kuncinya. */

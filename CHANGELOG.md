@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nama berkas konten akhirnya satu ejaan**: `ContentRepo` mengeja sebelas nama berkas di dalam
+  badannya sendiri (`"dzikir.json"`, `"adzan.json"`, `"kota.json"`, …), sementara `BerkasKonten`
+  hanya menyimpan dua nama modul sholat khusus. Nama berkas bukan sekadar label: ia kunci ke tiga
+  tempat sekaligus — `assets/content`, `filesDir/content_update/` tempat bundel pembaruan dipasang,
+  dan peta `berkas` di dalam bundel itu sendiri. Yang lebih buruk, **tidak ada apa pun** yang
+  membandingkan nama yang dibaca Kotlin dengan berkas yang benar-benar dikirim: mengganti nama
+  sebuah berkas di aset, atau salah mengejanya di Kotlin, tetap lolos seluruh uji dan lolos CI, lalu
+  gagal di perangkat saat layar itu dibuka (`FileNotFoundException` dari `assets.open`) — atau, pada
+  lapisan pembaruan, sebagai penimpaan yang **diam-diam diabaikan** sehingga pembaruan yang
+  dilaporkan "terpasang" tidak mengubah apa pun. Kini ketiga belas nama tinggal di `BerkasKonten`
+  beserta daftar `SEMUA`, dan `BerkasKontenSatuTempatTest` menutup tiga arah: nama hanya dieja di
+  sana (contoh bundel di layar Pembaruan Konten pun kini memakai konstanta, bukan teks yang bisa
+  tertinggal), setiap nama benar-benar ada di `assets/content`, dan setiap berkas aset yang tidak
+  dibaca langsung Kotlin (`surah_001/112/113/114.json`, `ayat_kursi.json`) benar-benar dirujuk
+  berkas konten lain — sehingga tidak ada konten yang ikut terkirim tanpa pernah tampil. Enam belas
+  mutasi terverifikasi tertangkap, termasuk mengganti nama berkas aset yang sesungguhnya.
 - **Bentuk wadah `bacaan` akhirnya diperiksa gate**: dari tiga bentuk dokumen konten yang dibaca
   aplikasi, hanya dua yang pernah diperiksa gate CI — `bagian` (Tahlil) dan `kelompok[].items[]`
   (Dzikir). Bentuk ketiga, `bacaan` (`sholat_bacaan.json`, `sholat_mayit.json`), tak diperiksa sama

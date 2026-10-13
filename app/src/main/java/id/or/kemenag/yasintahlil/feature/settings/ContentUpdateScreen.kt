@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.BundelKonten
 import id.or.kemenag.yasintahlil.core.data.ContentUpdateManager
 import id.or.kemenag.yasintahlil.core.data.MetaPembaruan
@@ -122,7 +123,7 @@ fun ContentUpdateScreen() {
 
         Text("Berkas bundel memuat metadata dan peta nama-berkas → dokumen konten " +
                 "(`{\"${BundelKonten.KUNCI_META}\": {\"skema\": ${BundelKonten.SKEMA}, \"penerbit\": \"…\"}, " +
-                "\"${BundelKonten.KUNCI_BERKAS}\": {\"yasin_full.json\": { … }}}`). " +
+                "\"${BundelKonten.KUNCI_BERKAS}\": {\"${BerkasKonten.YASIN_FULL}\": { … }}}`). " +
                 "Simpan salinan bundelnya di tempat aman; konten bawaan tetap ada di dalam aplikasi.",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
     }

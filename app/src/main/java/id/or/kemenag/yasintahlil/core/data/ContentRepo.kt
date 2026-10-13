@@ -16,6 +16,11 @@ import java.io.File
  *
  * Nama wadah entri dan kunci `id`-nya dibaca dari [BentukKonten], satu tempat bersama penelusuran
  * rujukan ([entriRujukan]) — lihat catatan di sana tentang apa yang terjadi bila keduanya berbeda.
+ *
+ * Nama **berkasnya** pun demikian: setiap nama datang dari [BerkasKonten], sebab nama itu adalah
+ * kunci ke aset sekaligus ke direktori pembaruan. Sebelas nama dahulu dieja di dalam kelas ini dan
+ * tak satu pun dibandingkan dengan berkas yang benar-benar dikirim — berkas yang diganti namanya
+ * tetap lolos seluruh uji dan baru ketahuan saat layarnya dibuka pengguna.
  */
 class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
@@ -89,7 +94,7 @@ class ContentRepo(private val ctx: Context) {
         )
     }
 
-    val yasin: Surah get() = surah("yasin_full.json")
+    val yasin: Surah get() = surah(BerkasKonten.YASIN_FULL)
 
     /**
      * Teks Arab/Latin/terjemahan dari sebuah berkas rujukan.
@@ -133,7 +138,7 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun tahlil(susunanId: String? = null): List<TahlilItem> {
-        val d = doc("tahlil_full.json")
+        val d = doc(BerkasKonten.TAHLIL_FULL)
         val arr = d.getJSONArray(BentukKonten.BAGIAN)
         val def = d.optString("kategori", "")
         val all = (0 until arr.length()).map { i ->
@@ -163,7 +168,7 @@ class ContentRepo(private val ctx: Context) {
      * rangkaian tanpa asal-usul (`plan.txt` §"Fitur Tahlil Lengkap").
      */
     fun tahlilSusunan(): List<TahlilSusunan> {
-        val d = doc("tahlil.json")
+        val d = doc(BerkasKonten.TAHLIL_SUSUNAN)
         val arr = d.optJSONArray("susunan") ?: return emptyList()
         val edisiModul = d.optString("edisi", "")
         return (0 until arr.length()).map { i ->
@@ -188,7 +193,7 @@ class ContentRepo(private val ctx: Context) {
      * verifikasi hadis via sunnah.com"*. Keterangan itu ditulis, divalidasi gerbang konten, lalu
      * tak pernah sampai ke layar. Kosong = tidak diklaim.
      */
-    fun sholatPanduan(): String = doc("sholat_daftar.json").optString("panduan", "")
+    fun sholatPanduan(): String = doc(BerkasKonten.SHOLAT_DAFTAR).optString("panduan", "")
 
     /**
      * Catatan tradisi tingkat modul dari `tahlil.json` (`catatan_tradisi`).
@@ -198,7 +203,7 @@ class ContentRepo(private val ctx: Context) {
      * versi yang benar"*). Membacanya dari berkas menjaga agar peringatan itu ikut berubah bila
      * bundelnya diperbarui, bukan tertinggal sebagai salinan di kode.
      */
-    fun tahlilCatatanTradisi(): String = doc("tahlil.json").optString("catatan_tradisi", "")
+    fun tahlilCatatanTradisi(): String = doc(BerkasKonten.TAHLIL_SUSUNAN).optString("catatan_tradisi", "")
 
     /**
      * Sumber bacaan tingkat modul dari `tahlil_full.json` (`sumber_umum`).
@@ -207,10 +212,10 @@ class ContentRepo(private val ctx: Context) {
      * inilah yang berlaku untuk mereka (*"Bacaan Qur'an dari Mushaf Standar Indonesia LPMQ Kemenag;
      * doa dari khazanah sunnah"*). Tanpa dibaca, kartu bagian itu tampil tanpa asal-usul apa pun.
      */
-    fun tahlilSumberBacaan(): String = doc("tahlil_full.json").optString("sumber_umum", "")
+    fun tahlilSumberBacaan(): String = doc(BerkasKonten.TAHLIL_FULL).optString("sumber_umum", "")
 
     private fun sholatList(key: String): List<SholatInfo> {
-        val d = doc("sholat_daftar.json")
+        val d = doc(BerkasKonten.SHOLAT_DAFTAR)
         val defKategori = d.optString("kategori", "")
         val arr = d.getJSONArray(key)
         return (0 until arr.length()).map { i ->
@@ -232,11 +237,11 @@ class ContentRepo(private val ctx: Context) {
         }
     }
 
-    fun sholatBacaan(): List<Bacaan> = parseBacaan("sholat_bacaan.json")
+    fun sholatBacaan(): List<Bacaan> = parseBacaan(BerkasKonten.SHOLAT_BACAAN)
 
     /** Bacaan doa mayit (dipakai sholat jenazah & ghaib) — berkas terpisah agar tidak
      *  tercampur ke daftar langkah sholat umum. */
-    fun sholatMayitBacaan(): List<Bacaan> = parseBacaan("sholat_mayit.json")
+    fun sholatMayitBacaan(): List<Bacaan> = parseBacaan(BerkasKonten.SHOLAT_MAYIT)
 
     private fun parseBacaan(file: String): List<Bacaan> {
         val d = doc(file)
@@ -259,7 +264,7 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun dzikir(): List<DzikirGroup> {
-        val d = doc("dzikir.json")
+        val d = doc(BerkasKonten.DZIKIR)
         val defKategori = d.optString("kategori", "")
         val arr = d.getJSONArray(BentukKonten.KELOMPOK)
         return (0 until arr.length()).map { gi ->
@@ -288,7 +293,7 @@ class ContentRepo(private val ctx: Context) {
     }
 
     fun adzan(): List<AdzanLafaz> {
-        val d = doc("adzan.json")
+        val d = doc(BerkasKonten.ADZAN)
         val def = d.optString("kategori", "")
         val bagian = d.getJSONObject("adzan")
         val defSumber = bagian.optString("sumber", "")
@@ -301,13 +306,13 @@ class ContentRepo(private val ctx: Context) {
         }
     }
 
-    fun adzanCatatan(): String = doc("adzan.json").getJSONObject("adzan").optString("catatan_subuh")
+    fun adzanCatatan(): String = doc(BerkasKonten.ADZAN).getJSONObject("adzan").optString("catatan_subuh")
 
     /** Catatan perbedaan susunan iqomah antar mazhab/tradisi — ditampilkan apa adanya. */
-    fun iqomahCatatan(): String = doc("adzan.json").optString("catatan_mazhab")
+    fun iqomahCatatan(): String = doc(BerkasKonten.ADZAN).optString("catatan_mazhab")
 
     fun iqomah(): List<AdzanLafaz> {
-        val d = doc("adzan.json")
+        val d = doc(BerkasKonten.ADZAN)
         val def = d.optString("kategori", "")
         val bagian = d.getJSONObject("iqomah")
         val defSumber = bagian.optString("sumber", "")
@@ -324,7 +329,7 @@ class ContentRepo(private val ctx: Context) {
 
     /** Entri adzan.json sebagai [AdzanDoa] — kategori disimpulkan dari tingkat berkas bila kosong. */
     private fun adzanDoa(key: String): AdzanDoa {
-        val d = doc("adzan.json")
+        val d = doc(BerkasKonten.ADZAN)
         val o = d.getJSONObject(key)
         return AdzanDoa(o.getString("judul"), o.getString("arab"), o.getString("latin"),
             o.optString("terjemahan"), o.optString("catatan"), o.optString("waktu"),
@@ -338,7 +343,7 @@ class ContentRepo(private val ctx: Context) {
     fun sholawatAdzan(): AdzanDoa = adzanDoa("sholawat_setelah_adzan")
 
     fun kota(): List<Kota> {
-        val arr = doc("kota.json").getJSONArray("kota")
+        val arr = doc(BerkasKonten.KOTA).getJSONArray("kota")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i); Kota(o.getString("nama"), o.getDouble("lat"), o.getDouble("lon"))
         }
@@ -346,7 +351,7 @@ class ContentRepo(private val ctx: Context) {
 
     /** Panduan bersuci (wudhu, tayamum, pembatal) — langkah prosedural tanpa teks Arab. */
     fun panduanBersuci(): PanduanBersuci {
-        val d = doc("wudhu.json")
+        val d = doc(BerkasKonten.WUDHU)
         fun langkah(key: String): List<Langkah> {
             val arr = d.optJSONObject(key)?.optJSONArray("langkah") ?: return emptyList()
             return (0 until arr.length()).map { i ->
@@ -376,7 +381,7 @@ class ContentRepo(private val ctx: Context) {
      * Lafaznya ada di `sholat_bacaan.json` dan `wudhu.json` dengan sumbernya masing-masing.
      */
     fun sholatSyarat(): SholatSyarat {
-        val d = doc("sholat_syarat.json")
+        val d = doc(BerkasKonten.SHOLAT_SYARAT)
         fun stringList(key: String): List<String> {
             val arr = d.optJSONArray(key) ?: return emptyList()
             return (0 until arr.length()).map { arr.getString(it) }
