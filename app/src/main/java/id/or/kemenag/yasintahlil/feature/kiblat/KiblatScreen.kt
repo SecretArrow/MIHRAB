@@ -34,6 +34,7 @@ import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
 import id.or.kemenag.yasintahlil.core.sensor.StatusKompas
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import kotlin.math.cos
@@ -203,7 +204,7 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         Text("Peta skematik tanpa internet: posisi Anda, Ka'bah, dan rute lingkaran besar di antaranya. " +
             "Jadi acuan arah bila perangkat tak punya magnetometer atau kompas belum terkalibrasi.",
             style = MaterialTheme.typography.labelSmall)
-        Text("Verifikasi tanpa alat: Rashdul kiblat — 2x setahun matahari tepat di atas Ka'bah; bayangan benda tegak menunjuk kiblat. Jadwal: sihat.kemenag.dev/arah-kiblat",
+        Text("Verifikasi tanpa alat: Rashdul kiblat — 2x setahun matahari tepat di atas Ka'bah; bayangan benda tegak menunjuk kiblat. Jadwal: ${ContentValidator.SITUS_SIHAT}/arah-kiblat",
             style = MaterialTheme.typography.labelSmall)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {

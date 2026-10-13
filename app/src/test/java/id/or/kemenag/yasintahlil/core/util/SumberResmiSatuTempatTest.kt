@@ -65,17 +65,48 @@ class SumberResmiSatuTempatTest {
 
     private val berkasValidator = "src/main/java/id/or/kemenag/yasintahlil/core/util/ContentValidator.kt"
 
+    /**
+     * Tidak ada berkas Kotlin ketiga yang boleh menyebut host resmi — **di dalam string mana pun**.
+     *
+     * Pemeriksaannya dahulu menuntut hostnya menjadi potongan berkutip **utuh** (`"sunnah.com"`),
+     * sehingga host yang disisipkan ke dalam kalimat panjang lolos begitu saja: Pengaturan menulis
+     * `"… (quran.kemenag.go.id). Jadwal: … (sihat.kemenag.dev). … Hadis: sunnah.com. …"` sebagai satu
+     * string, dan layar Jadwal, Kiblat, serta kartu info harian mengeja hostnya sendiri-sendiri.
+     * Ketiga layar itu lalu menunjuk alamat yang **tak lagi dinilai gerbang konten** begitu daftar
+     * resminya berubah — tanpa satu pun pemeriksaan gagal, persis kegagalan sunyi yang dijaga uji ini.
+     *
+     * Karena itu isi literal string yang diperiksa ([KodeSumber.literalString]), bukan potongan
+     * berkutip: host yang benar-benar sampai ke layar berada di dalam string, sedangkan yang
+     * **diturunkan** dari daftar ([ContentValidator.SITUS_SIHAT], `allowedHosts.joinToString()`) tidak
+     * — dan itulah bedanya antara menyalin kebijakan dan memakainya.
+     */
     @Test
     fun daftarHostResmiHanyaDinyatakanDiBerkasYangDijaga() {
         val pelanggar = mutableListOf<String>()
         berkasMain().filter { it.name !in setOf("ContentValidator.kt", "DokumenLegal.kt") }
             .forEach { f ->
-                val kode = KodeSumber.kodeTanpaKomentar(f.readText())
-                ContentValidator.allowedHosts.filter { kode.contains("\"$it\"") }
-                    .forEach { pelanggar += "${f.name}: \"$it\"" }
+                KodeSumber.literalString(f.readText()).forEach { teks ->
+                    ContentValidator.allowedHosts.filter { teks.contains(it) }
+                        .forEach { pelanggar += "${f.name}: \"$it\" di dalam \"${teks.take(60)}\"" }
+                }
             }
         assertTrue("daftar host resmi dieja ulang di berkas yang tidak dijaga: $pelanggar",
             pelanggar.isEmpty())
+    }
+
+    /**
+     * Situs yang **disebut namanya** oleh layar harus benar-benar diterima
+     * [ContentValidator.isOfficialSource] — kalau tidak, layar menunjuk alamat yang justru ditolak
+     * gerbang konten, dan nilainya yang dipakai layar dipaku di sini supaya mengubahnya disengaja.
+     */
+    @Test
+    fun situsYangDisebutLayarBeradaDiDaftarResmi() {
+        assertEquals("situs SIHAT berubah", "sihat.kemenag.dev", ContentValidator.SITUS_SIHAT)
+        assertEquals("situs teks hadis berubah", "sunnah.com", ContentValidator.SITUS_HADIS)
+        listOf(ContentValidator.SITUS_SIHAT, ContentValidator.SITUS_HADIS).forEach { situs ->
+            assertTrue("situs '$situs' yang disebut layar bukan domain resmi",
+                ContentValidator.isOfficialSource("https://$situs/contoh"))
+        }
     }
 
     @Test

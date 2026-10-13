@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
@@ -190,7 +191,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         Text(
             "Jadwal dihitung di perangkat (algoritma Meeus), bukan diambil dari server — jadi " +
                 "tidak ada cache daring yang bisa basi dan jadwal tetap tersedia tanpa internet. " +
-                "Verifikasi: sihat.kemenag.dev",
+                "Verifikasi: ${ContentValidator.SITUS_SIHAT}",
             style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp),
         )
     }

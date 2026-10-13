@@ -20,6 +20,7 @@ import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
@@ -370,7 +371,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka Tentang & privasi") }
         Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
             style = MaterialTheme.typography.labelSmall)
-        Text("Teks Qur'an: LPMQ Kemenag MSI (quran.kemenag.go.id). Jadwal: metode SIHAT Bimas Islam (sihat.kemenag.dev). Kiblat: SIHAT E-Kiblat. Hadis: sunnah.com. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
+        Text("Konten keagamaan hanya berasal dari domain resmi " +
+                "(${ContentValidator.allowedHosts.joinToString()}) — keterangan pemilik tiap domain " +
+                "ada di Tentang & privasi. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), " +
+                "getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
             style = MaterialTheme.typography.labelSmall)
     }
 }

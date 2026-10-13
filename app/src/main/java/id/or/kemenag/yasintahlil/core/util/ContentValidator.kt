@@ -8,6 +8,29 @@ import java.net.URI
 object ContentValidator {
     val allowedHosts = listOf("kemenag.go.id", "kemenag.dev", "sunnah.com", "bmkg.go.id", "nu.or.id")
 
+    // ---- Situs resmi yang disebut namanya oleh layar -------------------------------------------
+
+    /**
+     * Situs SIHAT Bimas Islam — tempat hasil hitungan jadwal dan arah kiblat dapat diverifikasi.
+     *
+     * [allowedHosts] menyatakan domain yang **diterima**; beberapa layar juga perlu **menunjuk**
+     * salah satunya kepada pengguna. Dahulu layar Jadwal dan Kiblat masing-masing mengeja
+     * `sihat.kemenag.dev` di dalam kalimatnya sendiri, sehingga memindahkan domain resmi
+     * meninggalkan dua tautan ke alamat yang sudah tak dinilai gerbang konten — dan tak satu pun
+     * pemeriksaan gagal. Induknya kini dibaca dari daftar yang sama, jadi tautan itu tak dapat
+     * menyimpang lagi.
+     */
+    val SITUS_SIHAT: String get() = "sihat.$INDUK_SIHAT"
+
+    /**
+     * Situs teks hadis — dipakai kartu info harian untuk menyebut asal hadisnya, sama seperti
+     * [SITUS_SIHAT]: hostnya nama pada [allowedHosts], bukan salinan yang dapat basi.
+     */
+    val SITUS_HADIS: String get() = INDUK_HADIS
+
+    private const val INDUK_SIHAT = "kemenag.dev"
+    private const val INDUK_HADIS = "sunnah.com"
+
     /** Host dari URL, atau null bila URL tidak valid. */
     fun hostOf(url: String): String? =
         runCatching { URI(url.trim()).host?.lowercase() }.getOrNull()
