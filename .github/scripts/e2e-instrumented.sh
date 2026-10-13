@@ -136,6 +136,27 @@ periksa_crash() {
   echo "Pemeriksaan crash: bersih (tidak ada FATAL EXCEPTION/ANR pada $paket)."
 }
 
+# Bukti saat uji GAGAL. Dahulu jalur kegagalan hanya mencetak 60 baris terakhir log Gradle,
+# dan logcat tak pernah dibuang: run `main` 38466684400 merah dengan hanya "No compose
+# hierarchies found in the app" — galat yang dapat berarti Activity-nya tak pernah jalan,
+# isinya tak pernah di-`setContent`, atau prosesnya mati — tanpa satu pun jejak untuk
+# membedakannya. Jejak itulah yang dibuang di sini, selagi emulator masih hidup: buffer
+# crash, log aplikasi, dan laporan uji. Tanpa ini setiap kegagalan berbiaya satu siklus CI
+# tambahan hanya untuk menebak sebabnya.
+buang_bukti() {
+  echo "=== buffer crash (FATAL EXCEPTION) ==="
+  adb logcat -d -b crash 2>/dev/null | tail -n 120 || true
+  echo "=== logcat aplikasi (galat & ActivityManager) ==="
+  adb logcat -d 2>/dev/null \
+    | grep -iE "yasintahlil|AndroidRuntime|ActivityManager.*(START|Displayed|died|crash)|FATAL|E ActivityTaskManager" \
+    | tail -n 120 || true
+  echo "=== proses aplikasi ==="
+  adb shell ps -A 2>/dev/null | grep -i yasintahlil || echo "(proses aplikasi tidak ada)"
+  echo "=== laporan uji (XML) ==="
+  find app/build/outputs/androidTest-results -name '*.xml' -newermt '-30 minutes' 2>/dev/null \
+    | head -5 | while read -r f; do echo "--- $f"; tail -n 40 "$f"; done || true
+}
+
 adb start-server
 siapkan_perangkat || exit 1
 
@@ -145,6 +166,7 @@ if jalankan_uji; then
   exit 0
 fi
 tail -n 60 "$LOG"
+buang_bukti
 
 # Hanya kegagalan ber-tanda-tangan infrastruktur yang diulang.
 if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible devices connected|Unable to connect to adb daemon" "$LOG"; then
@@ -159,6 +181,7 @@ if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible d
     exit 0
   fi
   tail -n 60 "$LOG"
+  buang_bukti
 fi
 
 echo "::error::Uji instrumented gagal"

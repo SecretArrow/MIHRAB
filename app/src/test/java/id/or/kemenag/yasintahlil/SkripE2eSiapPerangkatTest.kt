@@ -177,4 +177,99 @@ class SkripE2eSiapPerangkatTest {
         assertFalse("workflow memaksa emulator tanpa akselerasi perangkat keras",
             alur.contains("disable-linux-hw-accel: true"))
     }
+
+    /**
+     * Jalur kegagalan harus **membuang bukti**, bukan hanya 60 baris log Gradle.
+     *
+     * Run `main` `38466684400` merah dengan keluaran uji hanya *"No compose hierarchies found in the
+     * app"* — galat yang dapat berarti Activity-nya tak pernah jalan, isinya tak pernah di-`setContent`,
+     * atau prosesnya mati — dan tak ada satu pun jejak untuk membedakannya, sebab `periksa_crash`
+     * hanya dipanggil di jalur sukses. Akibatnya setiap kegagalan berbiaya satu siklus CI tambahan
+     * hanya untuk menebak sebabnya. Uji ini menuntut jalur kegagalan memanggil `buang_bukti`, dan
+     * menuntut fungsi itu benar-benar membaca logcat **dan** laporan uji.
+     */
+    @Test
+    fun jalurKegagalanMembuangBukti() {
+        val bersih = tanpaKomentar(skrip())
+        // Potongan sesudah cabang sukses = jalur kegagalan. Diukur dari `if jalankan_uji; then`,
+        // bukan dari pencarian longgar di seluruh berkas: definisi fungsinya sendiri juga memuat
+        // namanya, sehingga "berkas memuat buang_bukti" tetap hijau meski tak satu jalur pun
+        // memanggilnya.
+        val sesudahSukses = bersih.dropWhile { it.trim() != "if jalankan_uji; then" }.joinToString("\n")
+        // Kedua jalur — percobaan pertama dan ulangan — harus membuang bukti. Satu saja berarti
+        // jalur lainnya kembali merah tanpa jejak, persis yang membuat kegagalan berikutnya
+        // berbiaya satu siklus CI tambahan.
+        assertEquals("hanya satu jalur kegagalan yang memanggil buang_bukti()", 2,
+            baris(sesudahSukses.lines(), "buang_bukti"))
+
+        val badan = badanFungsi(bersih, "buang_bukti")
+        assertTrue("buang_bukti() tidak membaca buffer crash", badan.contains("-b crash"))
+        assertTrue("buang_bukti() tidak membaca logcat aplikasi", badan.contains("adb logcat -d"))
+        assertTrue("buang_bukti() tidak memeriksa apakah proses aplikasinya masih hidup",
+            badan.contains("ps -A"))
+        assertTrue("buang_bukti() tidak membuang laporan uji XML",
+            badan.contains("androidTest-results"))
+    }
+
+    /**
+     * `NavSmokeTest` memberi izin notifikasi **sebelum** Activity diluncurkan.
+     *
+     * `MainActivity.onCreate` meminta `POST_NOTIFICATIONS` sejak API 33. Di emulator API 29 yang
+     * dipakai sebelumnya cabang itu tak pernah jalan; setelah `api-level` naik ke 36, dialog izin
+     * sistem muncul tepat saat Activity start dan mengambil fokus dari jendela aplikasi — uji yang
+     * meluncurkan Activity sungguhan lalu gagal dengan *"No compose hierarchies found"* meski
+     * aplikasinya sehat (run `main` `38466684400`: 40 uji lain lolos, hanya dua uji kelas ini merah).
+     *
+     * Pemberian izin itu harus berada di aturan **luar** rantai: `@Before` sudah terlambat, sebab
+     * aturan Compose meluncurkan Activity-nya lebih dulu.
+     */
+    @Test
+    fun ujiAsapMemberiIzinNotifikasiSebelumActivityDiluncurkan() {
+        val teks = File(
+            repo(),
+            "app/src/androidTest/java/id/or/kemenag/yasintahlil/NavSmokeTest.kt",
+        ).readText()
+        val kode = KodeSumber.kodeTanpaKomentar(teks)
+
+        assertTrue("NavSmokeTest tidak lagi meluncurkan Activity sungguhan",
+            kode.contains("createAndroidComposeRule<MainActivity>()"))
+        assertTrue("NavSmokeTest tidak lagi memberi izin POST_NOTIFICATIONS",
+            kode.contains("grantRuntimePermission"))
+        assertTrue("izin tidak diberikan lewat aturan luar rantai — @Before sudah terlambat karena " +
+                "aturan Compose meluncurkan Activity lebih dulu",
+            kode.contains("RuleChain.outerRule(izinNotifikasi).around(rule)"))
+
+        // Aturan Compose tidak boleh ber-`@Rule` sendiri: dengan begitu ia diterapkan dua kali
+        // (sekali langsung, sekali di dalam rantai) dan Activity-nya diluncurkan dua kali.
+        val anotasi = Regex("""@get:Rule""").findAll(kode).count()
+        assertEquals("NavSmokeTest memasang $anotasi aturan; hanya rantainya yang boleh ber-@Rule",
+            1, anotasi)
+        val baris = kode.lines()
+        val rantai = baris.indexOfFirst { it.contains("val rantai") }
+        assertTrue("deklarasi rantai aturan tidak ditemukan", rantai > 0)
+        val sebelumnya = baris.subList(0, rantai).last { it.isNotBlank() }.trim()
+        assertEquals("@Rule tidak lagi menempel pada rantai aturannya", "@get:Rule", sebelumnya)
+    }
+
+    /**
+     * Kesalahan kompilasi di `app/src/androidTest` harus gugur **sebelum** merge.
+     *
+     * `lintDebug`, `testDebugUnitTest`, `assembleDebug`, dan `assembleRelease` tak satu pun
+     * menyentuh `app/src/androidTest`; `e2e.yml` yang mengompilasinya — dan alur itu sengaja hanya
+     * jalan di `main`/nightly. Tanpa langkah kompilasi di `ci.yml`, uji instrumented yang tidak
+     * dapat dikompilasi tetap lolos seluruh gerbang PR, lalu merah setelah digabung: satu siklus
+     * PR penuh untuk sesuatu yang seharusnya gugur di depan. Tugas yang dituntut di sini persis
+     * yang dipakai `e2e.yml`, sehingga hasilnya terpakai lewat `--build-cache`.
+     */
+    @Test
+    fun androidTestDikompilasiSebelumMerge() {
+        val alur = File(repo(), ".github/workflows/ci.yml").readText()
+        assertTrue("ci.yml tidak lagi mengompilasi sumber androidTest — kesalahan kompilasi di " +
+                "sana baru terbaca setelah merge, saat e2e.yml menjalankannya",
+            alur.contains(":app:assembleDebugAndroidTest"))
+        val e2e = File(repo(), ".github/workflows/e2e.yml").readText()
+        assertTrue("e2e.yml tidak lagi memakai tugas kompilasi yang sama dengan ci.yml, sehingga " +
+                "hasil ci.yml tidak terpakai lewat --build-cache",
+            e2e.contains(":app:assembleDebugAndroidTest"))
+    }
 }

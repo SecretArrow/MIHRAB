@@ -35,6 +35,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `README.md`, dan penjaga yang membandingkan keduanya (`ReadmeToolchainTest`, `DependabotConfigTest`)
   ikut disesuaikan, sehingga dokumen tak bisa diam-diam menua lagi.
 
+### Diperbaiki
+- **Uji instrumented kembali hijau di emulator API 36.** Setelah emulator E2E dinaikkan ke API 36,
+  `NavSmokeTest` merah dengan *"No compose hierarchies found in the app"* sementara 40 uji lain lolos.
+  Sebabnya bukan aplikasinya: `MainActivity.onCreate` meminta izin `POST_NOTIFICATIONS` sejak API 33,
+  dan di perangkat yang izinnya belum diberikan permintaan itu memunculkan dialog izin sistem tepat
+  saat Activity start — sehingga dialog itu yang menerima fokus, bukan jendela aplikasi. Cabang izin
+  itu hanya dilalui kelas uji ini, dan di emulator lama (API 29) tak pernah jalan; karena itu
+  masalahnya baru terlihat setelah `api-level` dinaikkan. Izin kini diberikan **sebelum** Activity
+  diluncurkan, lewat aturan luar `RuleChain.outerRule(izinNotifikasi).around(rule)` — `@Before` sudah
+  terlambat, sebab aturan Compose meluncurkan Activity-nya lebih dulu. Sebagai jaring berikutnya,
+  `.github/scripts/e2e-instrumented.sh` membuang bukti pada **kedua** jalur kegagalan (buffer crash,
+  logcat aplikasi, daftar proses, dan laporan uji XML) selagi emulator masih hidup; sebelumnya hanya
+  jalur sukses yang memeriksa crash, sehingga setiap kegagalan berbiaya satu siklus CI tambahan
+  hanya untuk menebak sebabnya. Sebagai penutup lubang yang sama, `ci.yml` kini ikut mengompilasi
+  `:app:assembleDebugAndroidTest`: sebelumnya tak satu pun tugas di gerbang PR menyentuh
+  `app/src/androidTest`, sehingga kesalahan kompilasi di sana baru terbaca setelah digabung — saat
+  `e2e.yml` (yang sengaja hanya jalan di `main`/nightly) menjalankannya.
+
 ## [1.1.0] - 2026-10-13
 
 Kumpulan perubahan sejak v1.0.0 **menambah kemampuan** — panduan sholat lengkap, pustaka dzikir &
