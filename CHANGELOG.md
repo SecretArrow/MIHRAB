@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-13
+
 ### Ditambahkan
 - **Jenis suara adzan** (`plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang
   legal digunakan"* dan *"Pengaturan volume dan jenis suara"*): layar Adzan hanya punya **satu**

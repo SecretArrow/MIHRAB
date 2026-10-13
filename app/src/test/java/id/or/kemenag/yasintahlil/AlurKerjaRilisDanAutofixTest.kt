@@ -53,6 +53,27 @@ class AlurKerjaRilisDanAutofixTest {
         return sisa.substring(0, akhir)
     }
 
+    /**
+     * Teks **satu langkah** saja, dari `- name: <nama>` sampai `- name:` berikutnya.
+     *
+     * Memeriksa seluruh berkas terlalu longgar: dua langkah berbeda sama-sama memakai pembatas ref
+     * `github.ref_type == 'tag' || inputs.tag != ''` dan sama-sama menyebut `github.ref_name`,
+     * sehingga menghapusnya dari langkah yang sedang diuji takkan terlihat — asersinya terpuaskan
+     * oleh salinan di langkah lain. Pembanding tanda tangan dan pembanding versi pun sama-sama
+     * memakai `$TAG`. Karena itu setiap asersi dikunci ke bloknya sendiri.
+     */
+    private fun langkah(teks: String, nama: String): String {
+        val mulai = teks.indexOf("- name: $nama")
+        require(mulai >= 0) { "langkah '$nama' tidak ditemukan di release.yml" }
+        val sisa = teks.substring(mulai)
+        val berikut = Regex("(?m)^      - name: ").find(sisa, 1)?.range?.first ?: sisa.length
+        return sisa.substring(0, berikut)
+    }
+
+    private val langkahTandaTangan = "Verifikasi tanda tangan (keystore rilis, bukan debug)"
+    private val langkahVersi = "Versi di dalam APK cocok dengan tag rilis"
+    private val langkahRilis = "GitHub Release"
+
     @Test
     fun autofixTidakDipicuPullRequest() {
         val p = pemicu(tanpaKomentar(autofix()))
@@ -106,11 +127,11 @@ class AlurKerjaRilisDanAutofixTest {
 
     @Test
     fun langkahRilisDibatasiRef() {
-        val src = tanpaKomentar(release())
+        val blok = langkah(tanpaKomentar(release()), langkahRilis)
         assertTrue(
             "langkah action-gh-release di release.yml tidak dibatasi ref — dispatch dari cabang " +
                 "akan mencoba menerbitkan rilis bernama cabang itu",
-            src.contains("github.ref_type == 'tag'"),
+            blok.contains("github.ref_type == 'tag'"),
         )
     }
 
@@ -162,21 +183,51 @@ class AlurKerjaRilisDanAutofixTest {
      */
     @Test
     fun verifikasiTandaTanganMembandingkanSidikJariKeystore() {
-        val src = tanpaKomentar(release())
+        val blok = langkah(tanpaKomentar(release()), langkahTandaTangan)
         assertTrue(
             "sidik jari keystore tidak dihitung dari keystore yang didekode secret (keytool)",
-            src.contains("keytool") && src.contains("sidik_jks="),
+            blok.contains("keytool") && blok.contains("sidik_jks="),
         )
         assertTrue(
             "sidik jari penanda tangan APK tidak dibaca dari keluaran apksigner — " +
                 "memastikan `sidik_apk` benar-benar diisi perintah, bukan dikosongkan",
-            src.contains("sidik_apk=\$(grep"),
+            blok.contains("sidik_apk=\$(grep"),
         )
         assertTrue(
             "perbandingan kedua sidik jari tidak ditegakkan — APK yang bertanda tangan kunci lain " +
                 "(termasuk debug) akan lolos dengan tenang",
-            src.contains("\"\$sidik_jks\" != \"\$sidik_apk\"") &&
-                src.contains("::error::APK tidak bertanda tangan"),
+            blok.contains("\"\$sidik_jks\" != \"\$sidik_apk\"") &&
+                blok.contains("::error::APK tidak bertanda tangan"),
+        )
+    }
+
+    /**
+     * Versi hidup di **dua** tempat: `versionName` di `app/build.gradle.kts` (yang dibaca
+     * `BuildConfig` dan tampil di layar Tentang) dan nama tag (yang menjadi nama rilis). Bila
+     * keduanya menyimpang, rilis resmi menerbitkan APK yang di dalamnya mengaku versi lain —
+     * pengguna melihat "1.0.0" pada rilis bernama v1.0.1 — dan tak ada langkah yang memeriksanya.
+     * Langkah pembandingnya wajib ada, wajib benar-benar membandingkan, dan wajib dibatasi ref tag
+     * supaya dispatch uji build dari cabang tidak ikut gagal.
+     */
+    @Test
+    fun versiApkDibandingkanDenganTagRilis() {
+        val blok = langkah(tanpaKomentar(release()), langkahVersi)
+        // Yang dibuktikan adalah VERSI benar-benar **dibaca** dari build.gradle.kts, bukan sekadar
+        // menyebut berkas itu: menghardcode `VERSI="1.0.1"` tetap meninggalkan nama berkasnya di
+        // teks pesan galat, sehingga asersi "berkasnya disebut" akan terpuaskan oleh pesan galat.
+        assertTrue(
+            "VERSI tidak dihitung dengan membaca versionName dari app/build.gradle.kts — versi " +
+                "yang diketik di workflow menjadi salinan ketiga yang bisa menyimpang",
+            blok.contains("VERSI=\$(grep") && blok.contains("app/build.gradle.kts"),
+        )
+        assertTrue(
+            "langkah pembanding versi tidak menyatakan kegagalan saat tag dan versionName berbeda",
+            blok.contains("\"v\$VERSI\" != \"\$TAG\"") && blok.contains("::error::tag"),
+        )
+        assertTrue(
+            "langkah pembanding versi tidak dibatasi ref tag — dispatch uji build dari cabang " +
+                "akan ikut gagal karena nama cabang bukan tag",
+            blok.contains("github.ref_type == 'tag'") && blok.contains("inputs.tag"),
         )
     }
 }

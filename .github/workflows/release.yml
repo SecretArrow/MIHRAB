@@ -80,6 +80,30 @@ jobs:
           fi
           echo "OK: APK bertanda tangan keystore rilis ($sidik_apk)"
 
+      - name: Versi di dalam APK cocok dengan tag rilis
+        # Versi hidup di DUA tempat: `versionName` di app/build.gradle.kts (yang dibaca BuildConfig
+        # dan tampil di layar Tentang) dan nama tag (yang menjadi nama rilis). Bila keduanya
+        # menyimpang, rilis resmi menerbitkan APK yang di dalamnya mengaku versi lain — pengguna
+        # melihat "1.0.0" pada rilis bernama v1.0.1 — dan tak ada satu pun langkah yang memeriksanya.
+        # Dibandingkan, bukan diasumsikan, seperti sidik jari tanda tangan di langkah sebelumnya.
+        # Berlaku hanya saat ref-nya memang tag (atau tag diminta eksplisit) supaya dispatch dari
+        # cabang tetap boleh menjadi uji build.
+        if: github.ref_type == 'tag' || inputs.tag != ''
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          VERSI=$(grep -m1 -E '^[[:space:]]*versionName[[:space:]]*=' app/build.gradle.kts \
+            | sed 's/.*"\(.*\)".*/\1/')
+          if [ -z "$VERSI" ]; then
+            echo "::error::versionName tidak terbaca dari app/build.gradle.kts"
+            exit 1
+          fi
+          if [ "v$VERSI" != "$TAG" ]; then
+            echo "::error::tag '$TAG' tidak cocok dengan versionName '$VERSI' (harusnya v$VERSI)"
+            exit 1
+          fi
+          echo "OK: tag '$TAG' cocok dengan versionName '$VERSI'"
+
       - name: GitHub Release
         # Rilis hanya terbit bila ref-nya memang tag, atau bila tag diminta eksplisit saat
         # dispatch. Tanpa pembatas ini, `workflow_dispatch` dari cabang akan mencoba menerbitkan
