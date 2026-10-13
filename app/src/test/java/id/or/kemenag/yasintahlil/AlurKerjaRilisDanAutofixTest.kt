@@ -130,4 +130,53 @@ class AlurKerjaRilisDanAutofixTest {
             ci().contains("python3 tools/format_teks.py ."),
         )
     }
+
+    /**
+     * Langkah verifikasi tanda tangan **tidak pernah benar-benar berjalan** sampai keystore tersedia:
+     * ia terlewat selama `KEYSTORE_BASE64` kosong. Begitu terpasang, ia gagal dengan
+     * `Unsupported command: .../build-tools/35.0.0/apksigner` — sebab glob
+     * `$ANDROID_HOME/build-tools/<versi>/apksigner` cocok ke **lebih dari satu** versi build-tools di
+     * runner, dan glob yang meleset ke banyak berkas dipecah shell menjadi perintah + argumen.
+     * Jadi pilih satu berkas secara pasti; jangan pernah kembali ke bentuk glob telanjang itu.
+     */
+    @Test
+    fun apksignerDipilihTunggalBukanLewatGlob() {
+        val src = tanpaKomentar(release())
+        assertFalse(
+            "release.yml memanggil apksigner lewat glob `build-tools/*/apksigner` yang cocok ke " +
+                "beberapa versi build-tools — shell memecahnya jadi perintah + argumen dan " +
+                "apksigner mengeluh \"Unsupported command\"",
+            src.contains("build-tools/*/apksigner verify"),
+        )
+        assertTrue(
+            "release.yml tidak memilih satu apksigner secara pasti (harap `sort -V | tail -1`)",
+            src.contains("sort -V") && src.contains("tail -1"),
+        )
+    }
+
+    /**
+     * Langkah itu bernama "bukan debug", tetapi dahulu hanya **mencetak** sertifikat tanpa
+     * menyatakan apa pun — APK debug-signing akan lolos dengan tenang. Sekarang ia membandingkan
+     * sidik jari penanda tangan APK dengan keystore yang barusan didekode dari secret, sehingga
+     * rantai secret -> keystore -> APK dibuktikan, bukan diasumsikan.
+     */
+    @Test
+    fun verifikasiTandaTanganMembandingkanSidikJariKeystore() {
+        val src = tanpaKomentar(release())
+        assertTrue(
+            "sidik jari keystore tidak dihitung dari keystore yang didekode secret (keytool)",
+            src.contains("keytool") && src.contains("sidik_jks="),
+        )
+        assertTrue(
+            "sidik jari penanda tangan APK tidak dibaca dari keluaran apksigner — " +
+                "memastikan `sidik_apk` benar-benar diisi perintah, bukan dikosongkan",
+            src.contains("sidik_apk=\$(grep"),
+        )
+        assertTrue(
+            "perbandingan kedua sidik jari tidak ditegakkan — APK yang bertanda tangan kunci lain " +
+                "(termasuk debug) akan lolos dengan tenang",
+            src.contains("\"\$sidik_jks\" != \"\$sidik_apk\"") &&
+                src.contains("::error::APK tidak bertanda tangan"),
+        )
+    }
 }

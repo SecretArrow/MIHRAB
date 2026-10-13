@@ -30,6 +30,15 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 
 Secrets (hanya untuk rilis bertanda tangan): `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 
+Langkah verifikasi di `release.yml` **membuktikan** tanda tangannya, bukan sekadar mencetaknya: ia
+membandingkan sidik jari SHA-256 penanda tangan APK dengan keystore yang didekode dari secret, jadi
+APK yang bertanda tangan debug akan menggagalkan rilis.
+
+Brankas keystore-nya sendiri disimpan di akar repo sebagai arsip **terenkripsi**
+(`key-sign-apk.zip` + lapisan `key-sign-apk.zip.enc`). Repositori ini publik, jadi sandinya **tidak**
+ada di sini — ia hanya hidup di Secrets dan di penyimpanan pemilik. Untuk membuka sementara:
+`./pakai-keystore.sh buka` lalu `./pakai-keystore.sh bersihkan` (salinan skrip ada di brankasnya).
+
 Aplikasi **100% offline**: tidak meminta izin Internet dan tidak mengirim data ke mana pun.
 Sumber jadwal/kalender *online* resmi belum diaktifkan karena SIHAT Bimas Islam tidak
 menyediakan API publik untuk aplikasi pihak ketiga; izin Internet akan ditambahkan hanya bila
