@@ -380,6 +380,28 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Nilai awal state preferensi di layar sama dengan bawaannya**: setiap layar memegang pengaturan
+  dalam `remember` dan mengisinya dari `store.get(Store.K, BAKU)` di dalam `LaunchedEffect`. Ada
+  **dua** nilai yang menjawab pertanyaan yang sama ("apa isi pengaturan ini bagi pengguna yang belum
+  menyentuhnya?") — `BAKU`, dan nilai awal `mutableStateOf(...)` yang tampil selama pemuatan belum
+  selesai. Empat belas pasangan di tujuh layar menjawabnya dengan **literal**, bukan dengan bawaannya.
+  Kerusakannya sunyi berupa kedipan: layar sempat menampilkan pengaturan lain lalu berubah. Dua di
+  antaranya sudah pernah menjadi kenyataan: layar Adzan menulis `PrayerCalc.Method.KEMENAG` sebagai
+  nilai awal `metode` — tepat hardcode "selalu Kemenag/SIHAT" yang komentar di atasnya sendiri
+  menyebut sudah diperbaiki, sehingga layar itu masih sempat berbohong kepada pengguna yang memilih
+  metode lain — dan `showArab` ditulis `true` di tujuh layar padahal Pengaturan memakai
+  `BawaanPreferensi.TAMPIL_ARAB`, sehingga mengubah konstanta itu menyembunyikan tulisan Arab di
+  Pengaturan sementara tujuh layar lain masih sempat menampilkannya. Kini setiap nilai awal diambil
+  dari bentuk yang **sama persis** dengan pemuatannya — `BawaanPreferensi.TAMPIL_ARAB`,
+  `PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT)`, `PrayerCalc.Method.from(JadwalHariIni.METODE_DEFAULT)`,
+  `DaftarSuaraAdzan.parse(BawaanPreferensi.DAFTAR_SUARA_ADZAN)`, dan seterusnya. Penjaga
+  `NilaiAwalPreferensiTest` menuntut, untuk setiap `var N by remember… { mutableStateOf(AWAL) }` yang
+  dimuat dari `store.get(Store.K, BAKU)`, bahwa `AWAL` adalah `BAKU` itu sendiri atau seluruh bentuk
+  pemuatannya dengan `store.get(...)` diganti `BAKU`; sisi pemuatan pun dijaga, sehingga bawaan yang
+  ditulis ulang sebagai literal di sana (`store.get(Store.SHOW_ARAB, true)`) ikut tertangkap. Nilai
+  awal state yang bukan berasal dari `store.get` (state murni tampilan) dan state ViewModel yang
+  dibaca lewat `Store.flow` sengaja di luar cakupan, sebab di sana tak ada sepasang pun untuk
+  dibandingkan — batas itu dinyatakan di KDoc kelasnya.
 - **Daftar izin lokasi tinggal di satu tempat**: layar Kiblat dan Jadwal masing-masing mengetik
   `arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)` **dua kali** — empat salinan untuk satu
   keputusan. Yang membuat salinan itu berbahaya bukan panjangnya, melainkan pasangannya:

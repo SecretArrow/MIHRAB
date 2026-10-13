@@ -46,7 +46,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     var step by rememberSaveable { mutableStateOf(0) }
     var ringkas by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(true) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var selesai by rememberSaveable { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
     var settings by remember { mutableStateOf(false) }

@@ -64,7 +64,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
     // "Susunan saya" bila pengguna pernah menyusunnya di modul Tahlil.
     var susunanTersedia by remember { mutableStateOf<List<TahlilSusunan>>(emptyList()) }
-    var susunanAktif by remember { mutableStateOf("") }
+    var susunanAktif by remember { mutableStateOf(BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH) }
     var backup by remember { mutableStateOf("") }
     var ringkasan by remember { mutableStateOf<RingkasanData?>(null) }
     var ringkasanUlang by remember { mutableStateOf(0) }

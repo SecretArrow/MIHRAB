@@ -57,9 +57,9 @@ fun IqomahScreen() {
     // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(true) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var settings by remember { mutableStateOf(false) }
-    var ingatkan by remember { mutableStateOf(false) }
+    var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IQOMAH) }
     LaunchedEffect(Unit) {
         mins = PengingatAdzan.iqomahMenit(
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
@@ -177,9 +177,9 @@ fun DoaAdzanScreen() {
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(true) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var settings by remember { mutableStateOf(false) }
-    var ingatkan by remember { mutableStateOf(false) }
+    var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
