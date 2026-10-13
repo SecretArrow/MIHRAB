@@ -13,6 +13,9 @@ import java.io.File
  * Lapisan pembaruan hanya dipakai bila berkasnya ada **dan** masih lolos pemeriksaan sumber:
  * berkas yang rusak, hilang, atau kehilangan `sumber_url` resmi otomatis diabaikan sehingga
  * aplikasi kembali membaca konten bawaan yang sudah diverifikasi.
+ *
+ * Nama wadah entri dan kunci `id`-nya dibaca dari [BentukKonten], satu tempat bersama penelusuran
+ * rujukan ([entriRujukan]) — lihat catatan di sana tentang apa yang terjadi bila keduanya berbeda.
  */
 class ContentRepo(private val ctx: Context) {
     private val cache = mutableMapOf<String, JSONObject>()
@@ -131,14 +134,14 @@ class ContentRepo(private val ctx: Context) {
 
     fun tahlil(susunanId: String? = null): List<TahlilItem> {
         val d = doc("tahlil_full.json")
-        val arr = d.getJSONArray("bagian")
+        val arr = d.getJSONArray(BentukKonten.BAGIAN)
         val def = d.optString("kategori", "")
         val all = (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val rujukan = rujukanTeks(o)
             val (a, l, t) = resolveArabLatinTerjemah(rujukan)
             TahlilItem(
-                o.getString("id"), o.getString("judul"),
+                o.getString(BentukKonten.ID), o.getString("judul"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optInt("ulangi", 1),
                 rujukan,
@@ -165,9 +168,9 @@ class ContentRepo(private val ctx: Context) {
         val edisiModul = d.optString("edisi", "")
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
-            val b = o.optJSONArray("bagian") ?: org.json.JSONArray()
+            val b = o.optJSONArray(BentukKonten.BAGIAN) ?: org.json.JSONArray()
             TahlilSusunan(
-                o.getString("id"), o.optString("nama", o.getString("id")),
+                o.getString(BentukKonten.ID), o.optString("nama", o.getString(BentukKonten.ID)),
                 (0 until b.length()).map { b.getString(it) },
                 o.optString("sumber", edisiModul),
             )
@@ -215,7 +218,7 @@ class ContentRepo(private val ctx: Context) {
             val n = o.optJSONObject("niat")
             val ket = o.optJSONArray("ketentuan")?.let { k -> (0 until k.length()).map { k.getString(it) } }.orEmpty()
             SholatInfo(
-                o.getString("id"), o.getString("nama"), o.getString("rakaat"),
+                o.getString(BentukKonten.ID), o.getString("nama"), o.getString("rakaat"),
                 o.getString("waktu"), o.getString("deskripsi"),
                 n?.let {
                     Niat(it.getString("arab"), it.getString("latin"), it.getString("terjemahan"),
@@ -238,13 +241,13 @@ class ContentRepo(private val ctx: Context) {
     private fun parseBacaan(file: String): List<Bacaan> {
         val d = doc(file)
         val defKategori = d.optString("kategori", "")
-        val arr = d.getJSONArray("bacaan")
+        val arr = d.getJSONArray(BentukKonten.BACAAN)
         return (0 until arr.length()).map { i ->
             val o = arr.getJSONObject(i)
             val rujukan = rujukanTeks(o)
             val (a, l, t) = resolveArabLatinTerjemah(rujukan)
             val scope = o.optJSONArray("sholat")?.let { s -> (0 until s.length()).map { s.getString(it) } }.orEmpty()
-            Bacaan(o.getString("id"), o.getString("judul"), o.optString("kapan"),
+            Bacaan(o.getString(BentukKonten.ID), o.getString("judul"), o.optString("kapan"),
                 o.optString("arab", a), o.optString("latin", l), o.optString("terjemahan", t),
                 o.optString("sumber"),
                 rujukan,
@@ -258,11 +261,11 @@ class ContentRepo(private val ctx: Context) {
     fun dzikir(): List<DzikirGroup> {
         val d = doc("dzikir.json")
         val defKategori = d.optString("kategori", "")
-        val arr = d.getJSONArray("kelompok")
+        val arr = d.getJSONArray(BentukKonten.KELOMPOK)
         return (0 until arr.length()).map { gi ->
             val g = arr.getJSONObject(gi)
-            val items = g.getJSONArray("items")
-            DzikirGroup(g.getString("id"), g.getString("judul"),
+            val items = g.getJSONArray(BentukKonten.ITEMS)
+            DzikirGroup(g.getString(BentukKonten.ID), g.getString("judul"),
                 (0 until items.length()).map { i ->
                     val o = items.getJSONObject(i)
                     val ruj = mutableListOf<String>()
@@ -407,7 +410,7 @@ class ContentRepo(private val ctx: Context) {
         val niat = (0 until niatArr.length()).map { i ->
             val o = niatArr.getJSONObject(i)
             Bacaan(
-                o.optString("id", "niat_$i"), o.optString("judul"),
+                o.optString(BentukKonten.ID, "niat_$i"), o.optString("judul"),
                 o.optString("kapan"), o.optString("arab"), o.optString("latin"),
                 o.optString("terjemahan"), o.optString("sumber"),
                 catatan = o.optString("catatan"),
