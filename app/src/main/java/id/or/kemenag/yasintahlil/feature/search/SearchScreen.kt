@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.util.BatasRiwayat
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.JudulBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -46,7 +47,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
     var ulang by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        userData.recentHistory(50).collect { list ->
+        userData.recentHistory(BatasRiwayat.DIBACA_RINGKAS).collect { list ->
             recent = list.filter { it.kind == JenisBacaan.SEARCH }.map { it.title }.distinct()
         }
     }

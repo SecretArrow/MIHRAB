@@ -92,8 +92,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             userData.favorites().collect { list -> _state.update { it.copy(favCount = list.size) } }
         }
+        // Jumlah riwayat, bukan ukuran daftar terbaru: dahulu di sini tertulis
+        // `recentHistory(50).size`, sehingga pengguna dengan lebih dari 50 riwayat diberi tahu
+        // "Riwayat: 50" — angka yang sama dibaca layar "Manajemen data offline" lewat
+        // `ringkasan()` dan menyebut angka yang sebenarnya. `favorites()` di atas memang daftar
+        // penuh, jadi kedua angka di baris itu kini menjawab pertanyaan yang sama.
         viewModelScope.launch {
-            userData.recentHistory(50).collect { list -> _state.update { it.copy(histCount = list.size) } }
+            userData.jumlahRiwayat().collect { n -> _state.update { it.copy(histCount = n) } }
         }
 
         // Jam beranda: satu detak tiap detik, bukan satu penjadwalan ulang layar.

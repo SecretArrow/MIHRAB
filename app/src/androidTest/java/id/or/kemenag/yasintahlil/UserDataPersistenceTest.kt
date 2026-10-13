@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import id.or.kemenag.yasintahlil.core.data.local.AppDatabase
 import id.or.kemenag.yasintahlil.core.data.local.RoomUserDataRepository
 import id.or.kemenag.yasintahlil.core.domain.model.RingkasanData
+import id.or.kemenag.yasintahlil.core.util.BatasRiwayat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -90,7 +91,7 @@ class UserDataPersistenceTest {
             val after = restart()
             assertEquals(1, after.favorites().first().size)
             assertTrue(after.isFavorite("dzikir", "pagi_petang").first())
-            assertTrue(after.recentHistory().first().any { it.refId == "1" })
+            assertTrue(after.recentHistory(BatasRiwayat.DIBACA_RINGKAS).first().any { it.refId == "1" })
         }
     }
 
@@ -164,6 +165,30 @@ class UserDataPersistenceTest {
         }
     }
 
+    /**
+     * `jumlahRiwayat()` menghitung **seluruh** riwayat, bukan jatah baca `recentHistory`. Beranda
+     * memakainya untuk "Riwayat: N"; bila angkanya diambil dari daftar yang sudah dipotong jatah
+     * bacanya, pengguna dengan lebih banyak entri diberi tahu angka yang salah — dan berbeda dari
+     * angka yang sama di layar "Manajemen data offline" yang memakai `ringkasan()`.
+     */
+    @Test
+    fun jumlahRiwayatTidakTerbatasJatahBaca() {
+        runBlocking {
+            val repo = restart()
+            repeat(BatasRiwayat.DIBACA_RINGKAS + 5) { i ->
+                repo.pushHistory("yasin", "$i", "Yasin ayat $i")
+            }
+
+            val after = restart()
+            assertEquals(BatasRiwayat.DIBACA_RINGKAS + 5, after.jumlahRiwayat().first())
+            assertEquals("ringkasan() dan jumlahRiwayat() harus menyebut angka yang sama",
+                after.jumlahRiwayat().first(), after.ringkasan().riwayat)
+            assertEquals("daftar terbaru tetap dipotong jatah bacanya",
+                BatasRiwayat.DIBACA_RINGKAS,
+                after.recentHistory(BatasRiwayat.DIBACA_RINGKAS).first().size)
+        }
+    }
+
     /** Menghapus satu bagian tidak boleh menyentuh bagian lain — inti "manajemen data offline". */
     @Test
     fun hapusRiwayatTidakMenyentuhBagianLain() {
@@ -178,7 +203,7 @@ class UserDataPersistenceTest {
 
             val after = restart()
             assertEquals(0, after.ringkasan().riwayat)
-            assertTrue("riwayat masih terbaca setelah dihapus", after.recentHistory().first().isEmpty())
+            assertTrue("riwayat masih terbaca setelah dihapus", after.recentHistory(BatasRiwayat.DIBACA_RINGKAS).first().isEmpty())
             assertEquals(1, after.ringkasan().favorit)
             assertEquals(1, after.ringkasan().bookmark)
             assertEquals(1, after.ringkasan().progres)

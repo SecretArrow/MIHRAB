@@ -81,8 +81,9 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
         }
         // Kunci `kind:refId`: `FavoritViewModel` sudah menyaring riwayat agar satu bacaan hanya
         // menempati satu baris, sehingga kuncinya pasti unik — bukan lagi sekadar menghindari
-        // keluhan Compose, tetapi memang satu baris per bacaan.
-        items(s.history.take(12), key = { "h:${it.kind}:${it.refId}" }) { h ->
+        // keluhan Compose, tetapi memang satu baris per bacaan. Jatah tampilnya pun sudah dipotong
+        // ViewModel menurut `BatasRiwayat`, jadi layar tidak memotongnya lagi di sini.
+        items(s.history, key = { "h:${it.kind}:${it.refId}" }) { h ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${h.kind}: ${h.title}", style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f))

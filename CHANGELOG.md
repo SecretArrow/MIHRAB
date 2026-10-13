@@ -380,6 +380,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Jumlah riwayat di beranda bukan jumlah riwayat, dan batas daftar riwayat kini satu rumah**:
+  kartu ringkasan beranda menulis *"Favorit: 12 • Riwayat: 50"*, tetapi kedua angka di baris yang
+  sama itu dihitung dengan cara berbeda — favorit dari daftar **penuh** (`favorites()`), sedangkan
+  riwayat dari `recentHistory(50).size`, yaitu ukuran daftar yang sudah **dipotong** jatah bacanya.
+  Pengguna dengan lebih dari 50 riwayat diberi tahu "Riwayat: 50", sementara layar "Manajemen data
+  offline" menyebut angka yang sebenarnya karena membacanya dari `ringkasan()` (`COUNT(*)`): satu
+  fakta, dua jawaban, tanpa satu pun pesan galat. Beranda kini memakai `jumlahRiwayat()` — `COUNT(*)`
+  sebagai aliran — sehingga angkanya benar **dan** ikut berubah saat riwayat bertambah. Angka
+  batasnya sendiri tak lagi dieja di tempat pemakaian: `recentHistory(50)` di beranda dan Pencarian,
+  `recentHistory(60)` di Favorit, lalu jatah tampil dipotong `20` di ViewModel Favorit dan `12` lagi
+  di layarnya — hubungan "baca longgar → saring → potong" tak terlihat dari mana pun, dan
+  membalikkannya tidak berbunyi apa pun. Semuanya kini tinggal di `BatasRiwayat` (`DIBACA_DAFTAR`,
+  `DIBACA_RINGKAS`, `DITAMPILKAN`), dengan hubungan antarangka itu dipaku sebagai aturan. Bawaan
+  `recentHistory(limit = 50)` yang **tak satu pun** pemanggil pakai ikut dihapus, supaya tak ada lagi
+  kebijakan yang tampak berlaku padahal bukan. Dijaga `BatasRiwayatSatuTempatTest`; uji instrumented
+  `UserDataPersistenceTest` membuktikan `jumlahRiwayat()` menghitung seluruh riwayat sementara daftar
+  terbaru tetap dipotong jatah bacanya.
 - **Cadangan teks bacaan tinggal di satu tempat**: bacaan pada bundel konten boleh menunjuk teksnya
   ke entri lain (`rujukanFile`, mis. `surah_001.json#1`), dan rujukan itu boleh gagal — berkasnya
   hilang, id-nya berganti, atau bundelnya lebih tua daripada kodenya.

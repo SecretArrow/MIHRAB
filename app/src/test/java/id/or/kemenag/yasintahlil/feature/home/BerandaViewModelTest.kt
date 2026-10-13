@@ -38,9 +38,11 @@ class BerandaViewModelTest {
         assertTrue("keadaan beranda bukan StateFlow", s.contains("StateFlow<HomeUiState>"))
         assertTrue("preferensi Store tidak dibaca sebagai aliran",
             s.contains("store.flow("))
-        // Ringkasan favorit/riwayat harus ikut aliran Room, bukan dibaca sekali.
+        // Ringkasan favorit/riwayat harus ikut aliran Room, bukan dibaca sekali. Riwayatnya
+        // dihitung lewat `jumlahRiwayat()` — `COUNT(*)`, bukan ukuran daftar yang sudah dipotong
+        // jatah bacanya; lihat `BatasRiwayatSatuTempatTest`.
         assertTrue("favorit tidak dibaca sebagai aliran", s.contains("favorites()"))
-        assertTrue("riwayat tidak dibaca sebagai aliran", s.contains("recentHistory("))
+        assertTrue("riwayat tidak dihitung sebagai aliran", s.contains("jumlahRiwayat()"))
     }
 
     /** Hitung mundur tetap hidup dari detak di ViewModel, bukan `remember` di layar. */

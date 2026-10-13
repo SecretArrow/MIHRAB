@@ -81,6 +81,10 @@ interface HistoryDao {
     @Query("SELECT COUNT(*) FROM history")
     suspend fun count(): Int
 
+    /** Jumlah baris sebagai aliran — beranda memakainya agar "Riwayat: N" ikut berubah. */
+    @Query("SELECT COUNT(*) FROM history")
+    fun observeCount(): Flow<Int>
+
     @Insert
     suspend fun insert(item: HistoryEntity)
 

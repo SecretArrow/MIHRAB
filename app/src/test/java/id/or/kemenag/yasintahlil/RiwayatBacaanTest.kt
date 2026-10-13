@@ -105,11 +105,14 @@ class RiwayatBacaanTest {
             s.contains("distinctBy"))
         assertTrue("penyaringan riwayat tidak memakai jenis + id bacaan",
             s.contains("i.kind to i.refId"))
-        // Penyaringan harus setelah pengambilan yang lebih longgar, bukan sesudah batas 20:
-        // bila 20 baris terbaru semuanya bacaan yang sama, penyaringan setelah batas menyisakan
-        // satu baris dan menyembunyikan bacaan lain yang sebenarnya ada.
-        assertTrue("riwayat diambil dengan batas yang sama dengan yang ditampilkan",
-            s.contains("recentHistory(60)"))
+        // Penyaringan harus setelah pengambilan yang lebih longgar, bukan sesudah jatah tampil:
+        // bila semua baris terbaru adalah bacaan yang sama, penyaringan setelah jatah menyisakan
+        // satu baris dan menyembunyikan bacaan lain yang sebenarnya ada. Kedua angka itu kini
+        // tinggal di `BatasRiwayat`, dan hubungannya dipaku di `BatasRiwayatSatuTempatTest`.
+        assertTrue("riwayat tidak diambil dengan batas baca bersama (BatasRiwayat.DIBACA_DAFTAR)",
+            s.contains("recentHistory(BatasRiwayat.DIBACA_DAFTAR)"))
+        assertTrue("jatah tampil riwayat tidak memakai batas bersama (BatasRiwayat.DITAMPILKAN)",
+            s.contains("take(BatasRiwayat.DITAMPILKAN)"))
     }
 
     @Test
