@@ -74,8 +74,12 @@ fun JenazahScreen() {
         // untuk menghilangkan satu takbir — kartunya tak muncul, judulnya tetap ada.
         BacaanSholat.TAKBIR_MAYIT.map { judulLangkah.getValue(it) to cari(it) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.JENAZAH }, info.takbir),
+        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.JENAZAH }, info.takbir, info.tanpaRukuSujud),
             style = MaterialTheme.typography.titleLarge)
+        // Hukum dibaca dari bundel (`hukum`), sama seperti di layar Ghaib — bukan diketik di sini.
+        if (info.hukum.isNotBlank()) {
+            Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
+        }
         Text(TampilanSholatKhusus.dalil(info.dalil), style = MaterialTheme.typography.labelMedium)
         if (info.syarat.isNotEmpty()) {
             Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium)

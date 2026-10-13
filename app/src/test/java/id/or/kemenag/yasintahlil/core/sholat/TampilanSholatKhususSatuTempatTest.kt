@@ -71,7 +71,7 @@ class TampilanSholatKhususSatuTempatTest {
      */
     @Test
     fun aturanBersamaTidakDiejaUlangDiLayar() {
-        val terlarang = listOf("Syarat: ", "Dalil: ", "Catatan mazhab: ", "\${i + 1}. ")
+        val terlarang = listOf("Syarat: ", "Dalil: ", "Catatan mazhab: ", "Hukum: ", "\${i + 1}. ")
         mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
             terlarang.forEach { t ->
                 assertTrue("$nama mengeja ulang \"$t\" alih-alih memakai TampilanSholatKhusus",
@@ -98,11 +98,126 @@ class TampilanSholatKhususSatuTempatTest {
     @Test
     fun ejaanAturanBersamaTidakBerubah() {
         assertEquals("Sholat Ghaib — 4 takbir, tanpa ruku/sujud",
-            TampilanSholatKhusus.judul("Sholat Ghaib", 4))
+            TampilanSholatKhusus.judul("Sholat Ghaib", 4, true))
         assertEquals("3. Takbir 3 → Doa untuk mayit",
             TampilanSholatKhusus.langkah(3, "Takbir 3 → Doa untuk mayit"))
         assertEquals("Dalil: HR contoh.", TampilanSholatKhusus.dalil("HR contoh."))
         assertEquals("Catatan mazhab: Syafi'i.", TampilanSholatKhusus.catatanMazhab("Syafi'i."))
+        assertEquals("Hukum: Fardhu kifayah", TampilanSholatKhusus.hukum("fardhu_kifayah"))
+        // Kode yang belum punya labelnya tetap tampil apa adanya, bukan hilang tanpa jejak: peta
+        // labelnya sengaja hanya memuat kode yang benar-benar dipakai bundel, dan `setiapKodeHukumPunyaLabel`
+        // yang menuntut label begitu bundel memakai kode baru.
+        assertEquals("Hukum: fardhu_ain", TampilanSholatKhusus.hukum("fardhu_ain"))
+    }
+
+    // ---- Label yang datang dari bundel ----------------------------------------------------------
+
+    /**
+     * Frasa *"tanpa ruku/sujud"* mengikuti `tanpa_ruku_sujud` dari berkas kontennya, bukan diketik
+     * tetap di judul.
+     *
+     * Dahulu judulnya selalu menambahkan frasa itu apa pun isi bundelnya, sementara
+     * `sholat_ghaib.json` dan `sholat_jenazah.json` sama-sama memuat `tanpa_ruku_sujud: true` yang
+     * tak pernah dibaca kode. Dua salinan satu fakta: mengubah benderanya di bundel tak mengubah
+     * layar, dan modul baru yang **dengan** ruku/sujud akan tetap dijuduli "tanpa ruku/sujud".
+     */
+    @Test
+    fun judulMengikutiBenderaTanpaRukuSujud() {
+        assertEquals("Sholat Ghaib — 4 takbir, tanpa ruku/sujud",
+            TampilanSholatKhusus.judul("Sholat Ghaib", 4, true))
+        assertEquals("frasa \"tanpa ruku/sujud\" muncul padahal bundelnya tidak menyatakannya",
+            "Sholat Contoh — 4 takbir", TampilanSholatKhusus.judul("Sholat Contoh", 4, false))
+    }
+
+    @Test
+    fun bundelMencantumkanBenderaDanHukum() {
+        listOf("sholat_ghaib.json", "sholat_jenazah.json").forEach { berkas ->
+            val isi = KodeSumber.sumber("src/main/assets/content/$berkas")
+            assertTrue("$berkas tidak mencantumkan tanpa_ruku_sujud",
+                Regex(""""tanpa_ruku_sujud"\s*:\s*(true|false)""").containsMatchIn(isi))
+            assertTrue("$berkas tidak mencantumkan hukum",
+                Regex(""""hukum"\s*:\s*"[^"]+"""").containsMatchIn(isi))
+        }
+    }
+
+    /** Berkasnya mencantumkan kedua kunci itu — tetapi keduanya hanya berguna bila dibaca. */
+    @Test
+    fun repoMembacaBenderaDanHukumMayit() {
+        val repo = KodeSumber.kodeTanpaKomentar(
+            KodeSumber.sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ContentRepo.kt"))
+        assertTrue("ContentRepo tidak membaca tanpa_ruku_sujud dari berkas sholat khusus",
+            repo.contains("tanpaRukuSujud = d.optBoolean(\"tanpa_ruku_sujud\""))
+        assertTrue("ContentRepo tidak meneruskan hukum dari berkas sholat khusus",
+            repo.contains("hukum = d.optString(\"hukum\")"))
+    }
+
+    @Test
+    fun keduaLayarMeneruskanBenderaDanHukumDariBundel() {
+        mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
+            assertTrue("$nama tidak meneruskan tanpa_ruku_sujud dari bundel ke judulnya",
+                teks.contains("info.tanpaRukuSujud"))
+            assertTrue("$nama tidak menampilkan hukum dari bundel",
+                teks.contains("TampilanSholatKhusus.hukum(info.hukum)"))
+        }
+        // Layar Ghaib dahulu mengetik hukumnya di judul langkah pertama.
+        assertFalse("layar Ghaib masih mengetik hukumnya sendiri",
+            ghaib.contains("fardhu kifayah"))
+        assertFalse("layar Ghaib masih mengetik frasa tanpa ruku/sujud sendiri",
+            ghaib.contains("tanpa ruku/sujud"))
+    }
+
+    /** Setiap kode `hukum` yang benar-benar dipakai bundel harus punya labelnya di peta bersama. */
+    @Test
+    fun setiapKodeHukumPunyaLabel() {
+        val kode = listOf("sholat_ghaib.json", "sholat_jenazah.json").flatMap { berkas ->
+            Regex(""""hukum"\s*:\s*"([^"]+)"""")
+                .findAll(KodeSumber.sumber("src/main/assets/content/$berkas"))
+                .map { it.groupValues[1] }.toList()
+        }
+        assertTrue("tak satu pun kode hukum terbaca dari bundel", kode.isNotEmpty())
+        val tanpaLabel = kode.filter { it !in TampilanSholatKhusus.LABEL_HUKUM }
+        assertEquals("kode hukum tanpa label — akan tampil sebagai kode mentah di layar",
+            emptyList<String>(), tanpaLabel)
+    }
+
+    /**
+     * `langkah` di bundel bukan teks tampilan, tetapi ia menyatakan urutan yang **sama** dengan
+     * [BacaanSholat.TAKBIR_MAYIT] — satu langkah niat di depan, lalu kelima bacaan takbir. Uji ini
+     * memaku panjang dan ujung-ujungnya supaya satu takbir yang hilang dari salah satu pihak
+     * terbaca sebagai perbedaan, bukan sebagai langkah yang diam-diam tak pernah tampil.
+     */
+    @Test
+    fun langkahBundelSepanjangUrutanTakbirBersama() {
+        listOf("sholat_ghaib.json", "sholat_jenazah.json").forEach { berkas ->
+            val isi = KodeSumber.sumber("src/main/assets/content/$berkas")
+            val langkah = Regex(""""langkah"\s*:\s*\[([^\]]*)\]""")
+                .find(isi)?.groupValues?.get(1)
+                ?.let { Regex(""""[^"]+"""").findAll(it).map { m -> m.value.trim('"') }.toList() }
+                ?: emptyList()
+            assertEquals("$berkas: langkah bukan satu niat di depan lalu kelima bacaan takbir",
+                BacaanSholat.TAKBIR_MAYIT.size + 1, langkah.size)
+            assertEquals("$berkas: langkah tidak dimulai dengan niat", "niat", langkah.first())
+            assertEquals("$berkas: langkah tidak diakhiri salam", BacaanSholat.SALAM, langkah.last())
+        }
+    }
+
+    /**
+     * Rujukan hadis takbir 1 ditampilkan **satu kali**, dari bundel.
+     *
+     * Layar Ghaib dahulu mengetik *"… (HR Bukhari 756, Muslim 394)"* di judul langkahnya, padahal
+     * kartu bacaan di bawahnya sudah menampilkan `sumber` entri `fatihah` yang lebih lengkap
+     * (*"… (la sholata liman lam yaqra bi fatihatil kitab) — sunnah.com"*). Satu layar karena itu
+     * menampilkan **dua** kutipan berbeda untuk bacaan yang sama, dan yang lebih pendek kehilangan
+     * matan sekaligus alamat resminya.
+     */
+    @Test
+    fun rujukanHadisTakbirTidakDiketikDiLayar() {
+        assertTrue("bundel tidak lagi memuat rujukan entri fatihah — penjaganya jadi hampa",
+            KodeSumber.sumber("src/main/assets/content/sholat_bacaan.json").contains("HR Bukhari 756"))
+        mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
+            assertFalse("$nama mengetik ulang rujukan hadisnya alih-alih membiarkan kartu " +
+                "menampilkan `sumber` bundelnya", teks.contains("HR Bukhari 756"))
+        }
     }
 
     // ---- Perbedaan yang disengaja ---------------------------------------------------------------

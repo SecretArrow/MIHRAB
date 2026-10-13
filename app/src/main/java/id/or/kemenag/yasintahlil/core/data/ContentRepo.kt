@@ -443,6 +443,9 @@ class ContentRepo(private val ctx: Context) {
             judul = d.optString("judul"),
             hukum = d.optString("hukum"),
             takbir = d.optInt("takbir", 4),
+            // Dibaca supaya judul layar tidak lagi mengetik keterangan "tanpa ruku/sujud" sendiri:
+            // dahulu `TampilanSholatKhusus.judul` selalu menambahkannya, apa pun isi bundelnya.
+            tanpaRukuSujud = d.optBoolean("tanpa_ruku_sujud", false),
             dalil = d.optString("dalil"),
             catatanMazhab = d.optString("catatan_mazhab"),
             syarat = stringList("syarat"),

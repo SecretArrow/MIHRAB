@@ -28,12 +28,18 @@ import kotlinx.coroutines.launch
  * ejaannya tinggal di [TampilanSholatKhusus.judulTakbirBersama] dan digabung lewat
  * [TampilanSholatKhusus.judulLangkah]; di sini hanya yang benar-benar khas.
  *
+ * Takbir 1 **tidak** lagi menyebut rujukan hadisnya. Rujukan itu sudah ditampilkan kartu bacaan di
+ * bawahnya — dibaca dari `sumber` entri `fatihah` di bundel ("HR Bukhari 756, Muslim 394 (la sholata
+ * liman lam yaqra bi fatihatil kitab) — sunnah.com"). Salinan yang diketik di judul ini lebih pendek
+ * dan menghilangkan matan serta alamat resminya, sehingga satu layar menampilkan **dua** kutipan
+ * berbeda untuk bacaan yang sama.
+ *
  * Kuncinya adalah id bacaan dari [BacaanSholat.TAKBIR_MAYIT], jadi setiap id pada urutan bersama
  * itu pasti punya judul — penjaganya memaku cakupan itu sehingga `getValue` tidak pernah gagal.
  */
 private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangkah(
     mapOf(
-        BacaanSholat.FATIHAH to "Takbir 1 → ta'awudz + Al-Fatihah (HR Bukhari 756, Muslim 394)",
+        BacaanSholat.FATIHAH to "Takbir 1 → ta'awudz + Al-Fatihah",
         BacaanSholat.SALAM to "Salam kanan-kiri",
     ),
 )
@@ -76,14 +82,19 @@ fun GhaibScreen() {
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
     fun cari(id: String) = bacaan.find { it.id == id }
     val steps: List<Pair<String, Bacaan?>> =
-        listOf("Niat dalam hati (varian di bawah) — fardhu kifayah" to null) +
+        listOf("Niat dalam hati (varian di bawah)" to null) +
             // Urutan bacaan takbir datang dari `BacaanSholat.TAKBIR_MAYIT`; yang khas layar ini
             // hanya judulnya. Sebelumnya kelima idnya diketik ulang di sini, sehingga satu salah
             // eja cukup untuk menghilangkan satu takbir — kartunya tak muncul, judulnya tetap ada.
             BacaanSholat.TAKBIR_MAYIT.map { judulLangkah.getValue(it) to cari(it) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.GHAIB }, info.takbir),
+        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.GHAIB }, info.takbir, info.tanpaRukuSujud),
             style = MaterialTheme.typography.titleLarge)
+        // Hukum dibaca dari bundel (`hukum`) — sebelumnya langkah pertama mengetik "— fardhu
+        // kifayah" sendiri, sehingga mengganti hukum di berkasnya tak mengubah layar ini.
+        if (info.hukum.isNotBlank()) {
+            Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
+        }
         Text(TampilanSholatKhusus.dalil(info.dalil) + CATATAN_DALIL,
             style = MaterialTheme.typography.labelMedium)
         if (info.syarat.isNotEmpty()) {
