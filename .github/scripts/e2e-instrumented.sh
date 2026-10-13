@@ -29,11 +29,30 @@ tunggu_properti() {
   local i
   for i in $(seq 1 90); do
     api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')"
+    # Keluarannya harus berupa angka. adb yang belum siap kadang mengembalikan
+    # keluaran sampah (atau hanya spasi); bila nilai itu diteruskan ke AGP, AGP
+    # membacanya sebagai "API level=1" dan menolak memasang APK
+    # ("Cannot install split APKs with API level < 21") — 0 uji berjalan.
+    case "$api" in
+      '' | *[!0-9]*) api="" ;;
+    esac
     [ -n "$api" ] && break
     sleep 2
   done
   echo "Perangkat: $(adb devices | tr '\n' ' ') | API='$api'"
   [ -n "$api" ] || { echo "::error::Emulator tidak melaporkan API level"; return 1; }
+}
+
+# Penyiapan perangkat adalah SATU urutan: menunggu perangkat, menunggu boot selesai,
+# lalu memastikan properti terbaca. Dahulu urutan itu ditulis dua kali — jalur pertama
+# memanggil ketiganya, jalur ulangan hanya `tunggu_boot` — dan salinan kedua itulah
+# yang menyimpang: emulator yang boot-nya selesai tetapi adb-nya belum bisa membaca
+# properti membuat AGP menolak memasang APK, sehingga ulangan gagal dengan 0 uji
+# berjalan meski ujinya sendiri tidak salah. Kini keduanya memakai fungsi ini.
+siapkan_perangkat() {
+  adb wait-for-device
+  tunggu_boot
+  tunggu_properti
 }
 
 jalankan_uji() {
@@ -63,9 +82,7 @@ periksa_crash() {
 }
 
 adb start-server
-adb wait-for-device
-tunggu_boot
-tunggu_properti || exit 1
+siapkan_perangkat || exit 1
 
 if jalankan_uji; then
   tail -n 15 "$LOG"
@@ -79,8 +96,7 @@ if grep -qE "ShellCommandUnresponsiveException|Unknown API Level|No compatible d
   echo "::warning::Emulator tak responsif (bukan kegagalan uji) — mengulang sekali"
   adb kill-server || true
   adb start-server
-  adb wait-for-device
-  tunggu_boot
+  siapkan_perangkat || exit 1
   sleep 15
   if jalankan_uji; then
     tail -n 15 "$LOG"

@@ -380,6 +380,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Penyiapan emulator E2E tinggal di satu tempat**: skrip uji instrumented menyusun urutan
+  penyiapan perangkat — menunggu perangkat, menunggu boot selesai, memastikan properti API terbaca
+  — di **dua** jalur, dan salinan keduanya menyimpang. Jalur pertama memanggil ketiganya; jalur
+  **ulangan** (yang dipakai saat emulator tak responsif) hanya menunggu boot. Bila boot sudah
+  selesai sementara adb belum bisa membaca properti, `tunggu_boot` langsung lewat, AGP membaca API
+  level sebagai `1`, dan pemasangan APK ditolak — *"Cannot install split APKs with API level < 21"*.
+  Run `main` `38352153888` merah karena itu: **0 uji berjalan**, dan yang menunggu hanya
+  menyimpulkan ujinya merah padahal tidak ada uji yang dijalankan. Urutannya kini hidup di satu
+  fungsi `siapkan_perangkat()` yang dipanggil kedua jalur, dan API level diperiksa harus berupa
+  angka sebelum diteruskan ke AGP. Dijaga `SkripE2eSiapPerangkatTest`.
 - **Kendali langkah dan tindakan tinggal di satu tempat**: enam kata yang dipakai bersama beberapa
   layar — *"← Sebelumnya"* dan *"Berikutnya →"* (panduan sholat dan susunan Tahlil), *"Batalkan
   tanda"* (rincian sholat dan Wudhu), *"Kosongkan"* (penyaring Panduan Sholat dan Dzikir),
