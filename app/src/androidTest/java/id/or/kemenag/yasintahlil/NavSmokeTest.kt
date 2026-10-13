@@ -40,8 +40,8 @@ class NavSmokeTest {
         rule.onNodeWithText("Menu ${NamaLayar.ALAT}").assertIsDisplayed()
 
         rule.onNodeWithText(NamaLayar.PENGATURAN).performClick()
-        // "Tentang & sumber" ada di bagian bawah layar Pengaturan yang bisa digulir — gulir dulu.
-        rule.onNodeWithText("Tentang & sumber").performScrollTo().assertIsDisplayed()
+        // Judul bagian Tentang ada di bagian bawah layar Pengaturan yang bisa digulir — gulir dulu.
+        rule.onNodeWithText(NamaLayar.TENTANG).performScrollTo().assertIsDisplayed()
 
         rule.onNodeWithText(NamaLayar.BERANDA).performClick()
         rule.onNodeWithText("Assalamu'alaikum").assertIsDisplayed()

@@ -356,26 +356,30 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 "dugaan yang tampak meyakinkan.",
             style = MaterialTheme.typography.labelSmall)
 
-        Text("Pembaruan konten", style = MaterialTheme.typography.titleMedium,
+        // Judul bagian dan label tombolnya menyebut layar tujuan dengan nama bersama, bukan
+        // mengejanya sendiri: dulu bagian ini menulis "Pembaruan konten" sementara tombolnya
+        // "Buka pembaruan konten" dengan huruf kecil, dan bagian Tentang menulis tiga nama
+        // sekaligus untuk satu layar.
+        Text(NamaLayar.PEMBARUAN_KONTEN, style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
-        OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka pembaruan konten") }
+        OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka ${NamaLayar.PEMBARUAN_KONTEN}") }
         Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya (domain resmi, " +
                 "kategori, harakat). Tidak ada unduhan otomatis dan tidak ada izin jaringan.",
             style = MaterialTheme.typography.labelSmall)
 
-        Text("Tentang & sumber", style = MaterialTheme.typography.titleMedium,
+        Text(NamaLayar.TENTANG, style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp))
         Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
         // Ringkasannya tetap di sini supaya terlihat tanpa membuka apa pun; dokumen lengkapnya
         // (kebijakan privasi, daftar izin beserta alasannya, dan lisensi) ada di layar Tentang —
         // sebelumnya hanya ada di berkas `docs/` yang tak dapat dibaca pengguna aplikasi.
-        OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka Tentang & privasi") }
+        OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka ${NamaLayar.TENTANG}") }
         Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
             style = MaterialTheme.typography.labelSmall)
         Text("Konten keagamaan hanya berasal dari domain resmi " +
                 "(${ContentValidator.allowedHosts.joinToString()}) — keterangan pemilik tiap domain " +
-                "ada di Tentang & privasi. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), " +
+                "ada di ${NamaLayar.TENTANG}. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), " +
                 "getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
             style = MaterialTheme.typography.labelSmall)
     }

@@ -157,7 +157,7 @@ class NamaLayarDiUjiInstrumentedTest {
     @Test
     fun navSmokeTestMenavigasiLewatNamaBersama() {
         val k = kode(navSmoke())
-        listOf("IBADAH", "ALAT", "PENGATURAN", "BERANDA", "YASIN").forEach { kunci ->
+        listOf("IBADAH", "ALAT", "PENGATURAN", "BERANDA", "YASIN", "TENTANG").forEach { kunci ->
             assertTrue("NavSmokeTest tidak memakai NamaLayar.$kunci untuk menavigasi",
                 k.contains("NamaLayar.$kunci"))
         }

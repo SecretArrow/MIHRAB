@@ -27,12 +27,20 @@ package id.or.kemenag.yasintahlil.core.util
  * hanyalah **nama**. Karena itu `namaTujuan` (label tujuan tombol "Buka") dan judul layar yang
  * dibukanya kini membaca nama yang sama dari sini, dan ujinya menuntut keduanya sejajar.
  *
- * **Batasnya.** Nama yang hidup di sini hanyalah nama layar yang dapat dibuka pengguna dari menu,
- * kartu, tab bawah, atau tombol "Buka" bacaan tersimpan. Layar yang namanya hanya muncul di satu
- * tempat tidak dimasukkan — tidak ada salinan yang dapat menyimpang: rincian per-sholat
- * (`Routes.SHOLAT_DETAIL`) dinamai oleh bundelnya sendiri, sedangkan Pembaruan konten dan Tentang
- * hanya disebut oleh satu tombol aksi di Pengaturan yang menyebut **tindakannya** ("Buka pembaruan
- * konten"), bukan nama layarnya.
+ * **Batasnya.** Nama yang hidup di sini hanyalah nama layar yang **dapat dibuka pengguna** — dari
+ * menu, kartu, tab bawah, tombol "Buka" bacaan tersimpan, atau tombol di Pengaturan. Layar yang
+ * namanya benar-benar hanya muncul di satu tempat tidak dimasukkan, sebab tidak ada salinan yang
+ * dapat menyimpang: rincian per-sholat (`Routes.SHOLAT_DETAIL`) dinamai oleh bundelnya sendiri.
+ *
+ * Pengaturan pernah disebut pengecualian dengan alasan bahwa tombolnya menyebut **tindakannya**
+ * ("Buka pembaruan konten"), bukan nama layarnya. Alasan itu tidak bertahan begitu diperiksa: tiap
+ * bagian di sana diawali **judul bagian** yang menyebut layar tujuannya, sehingga namanya memang
+ * muncul lebih dari sekali — dan sudah menyimpang. Layar Tentang ditulis **tiga** cara sekaligus
+ * (judul layarnya *"Tentang aplikasi"*, judul bagiannya *"Tentang & sumber"*, tombolnya *"Buka
+ * Tentang & privasi"*), sedangkan Pembaruan konten memakai huruf besar-kecil yang berbeda antara
+ * judul bagian dan tombolnya. Dua uji bahkan memaku kedua ejaan itu — yang satu menuntut layarnya
+ * memuat *"Tentang aplikasi"*, yang lain menuntut Pengaturan memuat *"Tentang & sumber"* — dan
+ * bersama-sama menjaga agar satu layar tetap punya dua nama. Keduanya kini tinggal di sini.
  *
  * Tanpa Android, sehingga dapat diuji langsung di JVM — sama seperti [JenisBacaan] dan
  * [JudulBacaan].
@@ -103,4 +111,16 @@ object NamaLayar {
     const val SEARCH = "Pencarian"
 
     const val FAVORIT = "Favorit & Riwayat"
+
+    // ---- Layar yang dibuka dari Pengaturan -----------------------------------------------------
+
+    /**
+     * Layar Tentang: versi, kebijakan privasi, daftar izin, lisensi, dan sumber konten. Namanya
+     * dahulu ditulis tiga cara sekaligus — judul bagian di Pengaturan, label tombolnya, dan judul
+     * layarnya sendiri. Lihat catatan batas di atas.
+     */
+    const val TENTANG = "Tentang aplikasi"
+
+    /** Layar memasang bundel konten pilihan pengguna, dari berkas yang ia pilih sendiri. */
+    const val PEMBARUAN_KONTEN = "Pembaruan konten"
 }

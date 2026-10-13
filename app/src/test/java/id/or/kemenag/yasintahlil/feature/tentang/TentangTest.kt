@@ -48,7 +48,11 @@ class TentangTest {
     @Test
     fun layarMenampilkanKeempatHalYangDiminta() {
         val s = sumber(layarRel)
-        listOf("Tentang aplikasi", "Sumber konten", "Kebijakan privasi",
+        // Judul layarnya memakai nama bersama, bukan mengejanya sendiri: nama yang dieja di sini
+        // dahulu berbeda dari nama yang dipakai Pengaturan untuk layar yang sama.
+        assertTrue("judul layar Tentang tidak memakai NamaLayar.TENTANG",
+            KodeSumber.kodeTanpaKomentar(s).contains("Text(NamaLayar.TENTANG"))
+        listOf("Sumber konten", "Kebijakan privasi",
             "Izin aplikasi dan alasannya", "Lisensi").forEach {
             assertTrue("layar Tentang tidak memuat bagian '$it'", s.contains(it))
         }
@@ -116,9 +120,13 @@ class TentangTest {
 
         val pengaturan = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt")
         assertTrue("Pengaturan tidak membuka layar Tentang", pengaturan.contains("go(Routes.TENTANG)"))
-        // NavSmokeTest mencari teks ini; judulnya harus tetap ada.
-        assertTrue("judul bagian Tentang di Pengaturan hilang",
-            pengaturan.contains("Tentang & sumber"))
+        // NavSmokeTest mencari judul bagian ini, dan judulnya harus **nama yang sama** dengan yang
+        // dipakai layar yang dibukanya — dahulu di sini tertulis "Tentang & sumber" sementara
+        // layarnya berjudul "Tentang aplikasi".
+        assertTrue("judul bagian Tentang di Pengaturan tidak memakai nama bersama",
+            KodeSumber.kodeTanpaKomentar(pengaturan).contains("Text(NamaLayar.TENTANG"))
+        assertTrue("tombol Tentang di Pengaturan tidak memakai nama bersama",
+            KodeSumber.kodeTanpaKomentar(pengaturan).contains("Buka \${NamaLayar.TENTANG}"))
     }
 
     /** Domain resmi yang boleh dipakai konten harus punya keterangan pemiliknya. */
