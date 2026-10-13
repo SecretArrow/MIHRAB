@@ -45,19 +45,17 @@ private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangka
 )
 
 /**
- * Kalimat lanjutan setelah dalil, **khas Ghaib**: entri ghaib bersandar pada imbauan Kemenag dan
- * kritik sanad NU Online, jadi kedua rujukan itu disebut di sini. Jenazah tidak memakainya.
- */
-private const val CATATAN_DALIL =
-    " Rujukan tata cara: imbauan Kemenag; syarat & kritik sanad: NU Online. Lihat SOURCES.md."
-
-/**
  * Sholat Ghaib: 4 takbir tanpa ruku/sujud, fardhu kifayah. Seluruh konten (niat & doa)
  * dibaca dari assets ([BerkasKonten.SHOLAT_GHAIB] + bacaan bersama) — tidak ada teks Arab di Kotlin.
  *
- * Perangkaian teksnya — judul, syarat, dalil, catatan mazhab, langkah, dan cadangan teks bacaan —
- * datang dari [TampilanSholatKhusus], sama dengan layar Jenazah. Yang khas layar ini hanya
- * [judulLangkah] dan label chip layar penuhnya.
+ * Perangkaian teksnya — judul, syarat, dalil beserta catatan rujukannya, catatan mazhab, langkah,
+ * dan cadangan teks bacaan — datang dari [TampilanSholatKhusus], sama dengan layar Jenazah. Yang
+ * khas layar ini hanya [judulLangkah] dan label chip layar penuhnya.
+ *
+ * Kalimat rujukan tambahan itu dahulu diketik di sini sebagai `CATATAN_DALIL`, padahal isinya
+ * menyebut NU Online — domain yang **tidak** tercantum di `sumber_tambahan` berkasnya, sehingga
+ * daftar sumber di layar Tentang tak pernah menyebutnya. Kini `sholat_ghaib.json#catatan_rujukan`
+ * yang memuatnya dan `sumber_tambahan` mencantumkan ketiga domainnya.
  */
 @Composable
 fun GhaibScreen() {
@@ -95,7 +93,7 @@ fun GhaibScreen() {
         if (info.hukum.isNotBlank()) {
             Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
         }
-        Text(TampilanSholatKhusus.dalil(info.dalil) + CATATAN_DALIL,
+        Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
             style = MaterialTheme.typography.labelMedium)
         if (info.syarat.isNotEmpty()) {
             Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium)

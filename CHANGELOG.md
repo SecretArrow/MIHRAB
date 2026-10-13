@@ -380,6 +380,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Rujukan sholat ghaib kini tinggal di bundelnya, dan daftar sumber di layar Tentang tidak lagi
+  kehilangan NU Online**: layar Ghaib mengetik sendiri kalimat *"Rujukan tata cara: imbauan Kemenag;
+  syarat & kritik sanad: NU Online"* (`GhaibScreen.CATATAN_DALIL`), sementara
+  `sholat_ghaib.json#sumber_tambahan` hanya mencantumkan `kemenag.go.id` dan
+  `sunnah.com/muslim:394` — **NU Online tak pernah tercatat di bundel**. Layar Tentang membangun
+  daftar sumbernya dari seluruh nilai bersumber pada berkas konten dan menjanjikan daftar itu memuat
+  *setiap* domain yang dirujuk ("tidak dapat bertambah diam-diam"); karena rujukan NU Online hanya
+  hidup sebagai teks di kode, domain itu justru **hilang** dari daftar — janji yang bocor ke arah
+  sebaliknya. Kalimatnya kini tinggal di `sholat_ghaib.json#catatan_rujukan`, `sumber_tambahan`-nya
+  mencantumkan `nu.or.id`, dan layar Ghaib membacanya lewat `SholatKhusus.catatanRujukan` alih-alih
+  mengetiknya; perangkaian "dalil disambung rujukan modulnya" tinggal satu tempat di
+  `TampilanSholatKhusus.dalil(teks, catatanRujukan)` untuk kedua layar mayit, sehingga berkas
+  Jenazah yang kelak menambah catatan serupa tak perlu mengubah layarnya. Dijaga
+  `AtribusiRujukanGhaibTest` — `kalimatRujukanTinggalDiBundelGhaib`,
+  `domainYangDisebutRujukanTercatatDiSumberTambahan`, `nuOnlineDikenaliLayarTentang`,
+  `jenazahTidakMenyalinCatatanRujukanGhaib`, `repoMembacaCatatanRujukanDariBundel`,
+  `layarGhaibMenampilkanRujukanDariBundel`, dan `perangkaianDalilDanRujukanSatuAturan`.
 - **Catatan mazhab iqomah kini tinggal di bagiannya sendiri, dan yang tampil adalah ejaan lengkap**:
   `adzan.json` memuat keterangan *"susunan iqomah dapat berbeda menurut mazhab/tradisi"* **dua kali**
   — di tingkat modul (*"…; perbedaan dicatat apa adanya"*) dan di dalam bagian `iqomah` (*"… (mis.

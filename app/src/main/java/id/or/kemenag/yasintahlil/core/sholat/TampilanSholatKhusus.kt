@@ -118,8 +118,18 @@ object TampilanSholatKhusus {
      */
     fun syarat(daftar: List<String>): String = "Syarat: " + daftar.joinToString("; ") + "."
 
-    /** Baris dalil — medan yang dimuat kedua berkas konten, jadi keduanya menampilkannya. */
-    fun dalil(teks: String): String = "Dalil: $teks"
+    /**
+     * Baris dalil — medan yang dimuat kedua berkas konten, jadi keduanya menampilkannya — disambung
+     * [catatanRujukan] modulnya bila ada.
+     *
+     * Kalimat rujukan itu dahulu **diketik** di layar Ghaib saja (`CATATAN_DALIL`), padahal salah
+     * satu rujukan yang disebutnya — NU Online — tidak tercantum di `sumber_tambahan`
+     * `sholat_ghaib.json`. Akibatnya daftar sumber di layar Tentang, yang menjanjikan memuat
+     * *setiap* domain yang dirujuk, tak pernah menyebut NU Online. Kini teksnya dibaca dari bundel
+     * dan perangkaian "dalil diikuti rujukan" tinggal satu tempat untuk kedua layar.
+     */
+    fun dalil(teks: String, catatanRujukan: String = ""): String =
+        "Dalil: $teks" + if (catatanRujukan.isNotBlank()) " $catatanRujukan" else ""
 
     /** Baris catatan mazhab. */
     fun catatanMazhab(teks: String): String = "Catatan mazhab: $teks"

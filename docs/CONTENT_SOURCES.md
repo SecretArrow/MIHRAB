@@ -19,7 +19,7 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `dzikir.json` | Dzikir & doa harian — 5 kelompok: *setelah sholat*, *pagi & petang*, *harian*, *doa khusus*, *doa memohon ampunan* | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
-| `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) | ✅ resmi |
+| `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) + imbauan Kemenag + **NU Online** (kritik sanad) | ✅ resmi |
 | `sholat_jenazah.json` | Sholat jenazah (syarat, langkah, niat) | **sunnah.com** (Bukhari 1335) | ✅ resmi |
 | `sholat_mayit.json` | Doa untuk mayit | **sunnah.com** (HR Muslim, Tirmidzi, Ibnu Majah) | ✅ resmi |
 | `wudhu.json` | Wudhu, tayamum, rukun, pembatal | **Fasolatan Kemenag** (kerangka) | ✅ resmi (tanpa lafaz) |

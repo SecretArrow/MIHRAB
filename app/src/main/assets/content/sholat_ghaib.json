@@ -6,8 +6,13 @@
   "takbir": 4,
   "tanpa_ruku_sujud": true,
   "sumber_url": "https://sunnah.com/bukhari:1335",
-  "sumber_tambahan": ["https://www.kemenag.go.id/", "https://sunnah.com/muslim:394"],
+  "sumber_tambahan": [
+    "https://www.kemenag.go.id/",
+    "https://sunnah.com/muslim:394",
+    "https://nu.or.id/"
+  ],
   "dalil": "HR Muttafaq Alaih (Abu Hurairah): Nabi sholat ghaib untuk Raja Najasyi, 4 takbir.",
+  "catatan_rujukan": "Rujukan tata cara: imbauan Kemenag; syarat & kritik sanad: NU Online. Lihat SOURCES.md.",
   "catatan_mazhab": "Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia: Syafi'i.",
   "syarat": ["jenazah jauh/sulit dijangkau", "sudah dimandikan atau niat digantungkan pada sucinya"],
   "niat": [

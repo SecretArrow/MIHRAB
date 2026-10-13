@@ -80,7 +80,10 @@ fun JenazahScreen() {
         if (info.hukum.isNotBlank()) {
             Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
         }
-        Text(TampilanSholatKhusus.dalil(info.dalil), style = MaterialTheme.typography.labelMedium)
+        // Catatan rujukan diteruskan walau berkas Jenazah belum memuatnya: aturannya satu tempat,
+        // jadi modul yang menambahkannya kelak tak perlu mengubah layar ini.
+        Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
+            style = MaterialTheme.typography.labelMedium)
         if (info.syarat.isNotEmpty()) {
             Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium)
         }
