@@ -41,24 +41,27 @@ internal fun rujukanTeks(o: JSONObject): String? = rujukanTeksSemua(o).firstOrNu
  * seperti "Doa memohon ampunan" hanya bisa dibuat dengan menyalin lafaz yang sudah terverifikasi
  * ke tempat kedua — dan setiap salinan adalah kesempatan baru untuk menyimpang dari sumbernya.
  *
+ * Nama wadah dan kunci `id`-nya datang dari [BentukKonten], satu tempat bersama [ContentRepo] yang
+ * benar-benar membaca dokumen itu — lihat catatan di sana.
+ *
  * @return objek entri, atau `null` bila [id] tidak ditemukan pada bentuk mana pun. `null` berarti
  *   rujukan mati; pemanggil harus memperlakukannya sebagai teks kosong, bukan mengarang isi.
  */
 internal fun entriRujukan(dokumen: JSONObject, id: String): JSONObject? {
     if (id.isBlank()) return null
-    val langsung = dokumen.optJSONArray("bagian") ?: dokumen.optJSONArray("bacaan")
+    val langsung = BentukKonten.DAFTAR_ENTRI.firstNotNullOfOrNull { dokumen.optJSONArray(it) }
     if (langsung != null) {
         for (i in 0 until langsung.length()) {
             val o = langsung.optJSONObject(i) ?: continue
-            if (o.optString("id") == id) return o
+            if (o.optString(BentukKonten.ID) == id) return o
         }
     }
-    val kelompok = dokumen.optJSONArray("kelompok") ?: return null
+    val kelompok = dokumen.optJSONArray(BentukKonten.KELOMPOK) ?: return null
     for (g in 0 until kelompok.length()) {
-        val items = kelompok.optJSONObject(g)?.optJSONArray("items") ?: continue
+        val items = kelompok.optJSONObject(g)?.optJSONArray(BentukKonten.ITEMS) ?: continue
         for (i in 0 until items.length()) {
             val o = items.optJSONObject(i) ?: continue
-            if (o.optString("id") == id) return o
+            if (o.optString(BentukKonten.ID) == id) return o
         }
     }
     return null

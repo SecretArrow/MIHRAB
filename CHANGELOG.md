@@ -380,6 +380,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Bentuk dokumen konten tak lagi dieja di dua pembaca**: berkas konten menyimpan entri yang dapat
+  dirujuk dalam tiga bentuk — `bagian`, `bacaan`, dan `kelompok[].items[]` — beserta kunci `id`
+  entrinya. Bentuk itu dibaca **dua peran yang tak pernah saling melihat**: `ContentRepo`, yang
+  membangun daftar bacaan dari dokumennya, dan `entriRujukan`, yang mengikuti rujukan
+  `berkas.json#id` dari dokumen lain (dan karena itu juga menentukan apakah pemeriksa bundel
+  menyebut sebuah rujukan sah atau mati). Dahulu keduanya menuliskan nama wadah dan kunci `id`
+  sendiri-sendiri — sebelas tempat di satu sisi, empat di sisi lain — dan salinan yang menyimpang
+  menyesatkan ke arah mana pun ia bergeser: pembaca menampilkan entri **kosong tanpa galat**, atau
+  pemeriksa menolak bundel yang sah dengan alasan "menunjuk entri yang tidak ada" sehingga
+  kesalahannya dituduhkan ke konten, bukan ke kode. Nama wadah, kunci `id`, dan daftar bentuk
+  tingkat dokumen kini tinggal di `BentukKonten`; `ContentRepo` dan `entriRujukan` sama-sama
+  memakainya, sehingga menambah atau mengganti satu bentuk memindahkan keduanya sekaligus.
+  `BentukKontenTest` menutup dua hal sekaligus: perilakunya (penelusuran benar-benar menemukan entri
+  di ketiga bentuk, dan bentuk pertama pada daftar yang menang bila dokumen keliru memuat dua) dan
+  sumbernya (kedua berkas tak boleh mengeja satu pun nama wadah itu lagi). Dua puluh mutasi
+  terverifikasi tertangkap.
 - **Kunci data masukan pekerja pengingat tak lagi dieja di dua sisi**: `PrayerScheduler` menulis
   `workDataOf("nama" to …, "jenis" to …)` dan `ReminderWorker` membacanya dengan ejaan sendiri —
   dua kelas yang tak pernah saling melihat, sehingga tak ada yang membandingkan keduanya. Salinan
