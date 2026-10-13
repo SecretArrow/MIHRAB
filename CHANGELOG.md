@@ -380,6 +380,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Gate CI membaca bentuk dokumen konten dari satu tempat**: `tools/validate_content.py` mengeja
+  sendiri nama wadah entri konten (`bagian`, `kelompok`, `items`) dan kunci `id`-nya, padahal
+  aplikasi membacanya dari `BentukKonten`. Salinan itu paling sunyi penyimpangannya dari semua
+  salinan sejenis: pemeriksaan bentuk tahlil dimulai dengan pertanyaan *"apakah berkas ini punya
+  wadah itu"*, jadi salinan yang tertinggal **tidak pernah cocok lagi** — seluruh pemeriksaan
+  berkas tahlil dilewati, dan berkas yang kehilangan `id`/`judul` di tiap bagiannya lolos CI tanpa
+  satu pun galat, sementara aplikasi tetap membaca wadah itu lewat `BentukKonten`. Nama wadah dan
+  kunci `id` kini dibaca gate dari `BentukKonten.kt` lewat pola pengambil yang ditulis persis sama
+  di penjaganya, dan `tools/validate_bundle.py` — yang memanggil pemeriksa yang sama — ikut memakai
+  kunci bersama itu alih-alih mengeja labelnya sendiri. `BentukKontenTest` menuntut gate benar-benar
+  menunjuk berkas itu, memakai pola pengambil yang sama, dan tidak menyimpan satu pun nama wadah;
+  uji itu juga membuktikan polanya menghasilkan nilai aplikasi, bukan sekadar cocok. Lima belas
+  mutasi terverifikasi tertangkap.
 - **Bentuk dokumen konten tak lagi dieja di dua pembaca**: berkas konten menyimpan entri yang dapat
   dirujuk dalam tiga bentuk — `bagian`, `bacaan`, dan `kelompok[].items[]` — beserta kunci `id`
   entrinya. Bentuk itu dibaca **dua peran yang tak pernah saling melihat**: `ContentRepo`, yang

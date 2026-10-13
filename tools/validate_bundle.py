@@ -96,7 +96,7 @@ def validasi(path: Path, strict: bool) -> list[str]:
         errs += vc.check_kategori(nama, doc)
 
         for node, source in vc.walk_entries(doc):
-            label = node.get("judul") or node.get("nama") or node.get("id") or "(entri)"
+            label = node.get("judul") or node.get("nama") or node.get(vc.KUNCI_ID) or "(entri)"
             if not source:
                 if strict:
                     errs.append(f"{path}: {nama} entri '{label}' tanpa sumber_url")
