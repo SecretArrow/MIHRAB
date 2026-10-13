@@ -380,6 +380,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Aturan teks dua layar sholat mayit tinggal di satu tempat**: layar Sholat Ghaib dan Sholat
+  Jenazah menampilkan **medan yang sama** dari berkas kontennya (`sholat_ghaib.json` /
+  `sholat_jenazah.json`) — judul, jumlah takbir, syarat, dalil, catatan mazhab, niat, dan langkah
+  takbir — tetapi tiap layar merangkainya sendiri, dan salinannya sudah menyimpang **tanpa satu pun
+  perbedaan tercatat sebagai pilihan**: syarat yang sama dipisah `"; "` di Ghaib tetapi `", "` lalu
+  diberi titik di Jenazah, sehingga satu daftar tampak seperti dua aturan berbeda; dalil yang
+  dimuat `sholat_jenazah.json` **tak pernah tampil** di layarnya, padahal Ghaib menampilkan medan
+  yang sama — konten yang ditulis, divalidasi gerbang konten, lalu tak sampai ke pengguna; judul
+  layar menyebut *"tanpa ruku/sujud"* di Ghaib saja, padahal dalil kedua entri menyatakan hal yang
+  sama; dan terjemahan niat ditampilkan di Jenazah tetapi disembunyikan di Ghaib
+  (`showTrans = false`) padahal kedua berkas memuat terjemahannya. Perangkaian teksnya kini satu
+  tempat di `TampilanSholatKhusus` (`judul`, `langkah`, `syarat`, `dalil`, `catatanMazhab`,
+  `teksBacaan`) dan dipakai kedua layar. Yang **khas tiap layar** tetap tinggal di layarnya: peta
+  judul langkah takbir (Ghaib membaca ta'awudz sebelum Al-Fatihah dan salamnya menoleh dua sisi,
+  Jenazah tidak) dan label chip layar penuh (`LAYAR_PENUH_IMAM` vs `LAYAR_PENUH`) — perbedaan yang
+  disengaja, dan `TampilanSholatKhususSatuTempatTest` memakunya supaya tidak "dirapikan" menjadi
+  salinan.
 - **Kata tindakan baku tinggal di satu tempat**: empat kata yang dipakai beberapa layar — *"Batal"*
   (tombol dialog di Adzan, Pembaruan konten, dan Pengaturan, serta pembatal timer Iqomah),
   *"Hapus"* (jenis suara adzan, baris favorit/bookmark, dan satu bagian data di Pengaturan),
