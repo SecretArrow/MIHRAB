@@ -1,5 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.adzan
 
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -65,6 +66,60 @@ class AtribusiLafazAdzanTest {
             json.contains("HR Abu Dawud, Tirmidzi"))
     }
 
+    // ---- Catatan perbedaan susunan iqomah: satu keterangan, satu rumah ----
+
+    /**
+     * Catatan itu tinggal di **bagiannya sendiri** (`iqomah.catatan_mazhab`), bukan di tingkat modul.
+     *
+     * Berkasnya dahulu memuat keterangan ini dua kali: salinan tingkat modul (yang dibaca
+     * [ContentRepo.iqomahCatatan], tanpa contoh perbedaannya) dan salinan di dalam `iqomah` (tak
+     * pernah dibaca, tetapi menyebut *"(mis. jumlah lafaz)"*). Yang tampil di layar Iqomah karena
+     * itu bukan salinan yang setara, melainkan salinan yang **kehilangan contoh** yang menjelaskan
+     * apa yang berbeda antar mazhab.
+     *
+     * Konvensi berkasnya sendiri sudah menunjukkannya: catatan yang berlaku untuk satu bagian
+     * tinggal di dalam bagian itu — `adzan.catatan_subuh` dibaca dari `adzan`, dan `iqomah` punya
+     * `judul`/`sumber`/`sumber_url` sendiri. Uji ini menjaga kedua-duanya sekaligus, supaya
+     * perpindahan ke arah sebaliknya (catatan bagian naik ke tingkat modul) ikut ketahuan.
+     */
+    @Test
+    fun catatanPerBagianTinggalDiBagiannya() {
+        val d = org.json.JSONObject(sumber("src/main/assets/content/adzan.json"))
+        assertTrue("iqomah.json tidak lagi mencantumkan catatan_mazhab di bagiannya",
+            d.getJSONObject("iqomah").has("catatan_mazhab"))
+        assertFalse("catatan_mazhab kembali disalin ke tingkat modul",
+            d.has("catatan_mazhab"))
+        assertTrue("adzan tidak lagi mencantumkan catatan_subuh di bagiannya",
+            d.getJSONObject("adzan").has("catatan_subuh"))
+        assertFalse("catatan_subuh disalin ke tingkat modul",
+            d.has("catatan_subuh"))
+    }
+
+    /**
+     * Yang tinggal adalah ejaan yang **lebih lengkap** — salinan tingkat modul yang dahulu dibaca
+     * berbunyi *"…menurut mazhab/tradisi; perbedaan dicatat apa adanya"*, sedangkan yang di dalam
+     * `iqomah` menambahkan contohnya. Memindahkan yang lebih pendek berarti layar terus menyembunyikan
+     * *apa* yang berbeda antar mazhab.
+     */
+    @Test
+    fun catatanMazhabIqomahMenyebutContohPerbedaan() {
+        val isi = org.json.JSONObject(sumber("src/main/assets/content/adzan.json"))
+            .getJSONObject("iqomah").getString("catatan_mazhab").lowercase()
+        assertTrue("catatan mazhab iqomah tidak lagi menyebut contoh perbedaannya: $isi",
+            isi.contains("mis. jumlah lafaz"))
+        assertTrue("catatan mazhab iqomah tidak lagi menyatakan perbedaan dicatat apa adanya: $isi",
+            isi.contains("apa adanya"))
+    }
+
+    /** Pembacaan itu harus menunjuk bagiannya, bukan tingkat modul. */
+    @Test
+    fun repoMembacaCatatanMazhabIqomahDariBagiannya() {
+        val s = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ContentRepo.kt")
+        val badan = s.substringAfter("fun iqomahCatatan()").substringBefore("fun iqomah(")
+        assertTrue("ContentRepo tidak membaca catatan mazhab dari bagian iqomah",
+            badan.contains("getJSONObject(\"iqomah\").optString(\"catatan_mazhab\")"))
+    }
+
     // ---- Layar ----
 
     @Test
@@ -112,11 +167,21 @@ class AtribusiLafazAdzanTest {
         }
     }
 
-    /** Catatan perbedaan susunan iqomah tetap ditampilkan apa adanya. */
+    /**
+     * Catatan perbedaan susunan iqomah tetap ditampilkan apa adanya.
+     *
+     * Yang diperiksa adalah **syarat** tampilnya, bukan sekadar adanya pemanggilan: cabang yang
+     * dimatikan (`if (false)`) tetap memuat `repo.iqomahCatatan()` di dalam badannya, jadi uji yang
+     * hanya mencari nama fungsinya akan tetap hijau meski layarnya berhenti menampilkan apa pun —
+     * mutasi `F layarIqomahBerhentiMenampilkanCatatan` pada `mutate65.py` memang lolos sebelum
+     * syaratnya ikut diperiksa.
+     */
     @Test
     fun catatanPerbedaanSusunanTetapTampil() {
         val s = layarIqomah()
         assertTrue("layar Iqomah tidak lagi menampilkan catatan perbedaan susunan",
             s.contains("repo.iqomahCatatan()"))
+        assertTrue("layar Iqomah memanggil catatannya di cabang yang tidak pernah berjalan",
+            s.contains("if (repo.iqomahCatatan().isNotBlank()) {"))
     }
 }

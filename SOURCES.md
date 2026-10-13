@@ -46,12 +46,16 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
   - Karena itu keduanya **wajib dibaca dan ditampilkan** oleh layar yang bersangkutan, bukan
     diringkas ulang di kode: `sholat_daftar.json#catatan_mazhab` oleh layar rincian langkah sholat,
     `wudhu.json#edisi` oleh layar Wudhu, `tahlil.json#edisi` oleh layar Tahlil (sebagai sumber
-    cadangan tiap susunan). Penjaganya `AtribusiModulTest` dan `AtribusiSusunanTahlilTest`; dahulu
+    cadangan tiap susunan), `adzan.json#iqomah#catatan_mazhab` oleh layar Iqomah. Penjaganya
+    `AtribusiModulTest`, `AtribusiSusunanTahlilTest`, dan `AtribusiLafazAdzanTest`; dahulu
     `catatan_mazhab` dan `edisi` tak pernah terbaca sehingga layar menampilkan parafrase yang
     menyimpang — termasuk menyatakan *qunut Subuh sunnah* padahal berkasnya mencatatnya sebagai
     ketentuan yang diperselisihkan.
   - Satu keterangan, satu rumah: `edisi`/`catatan_*` tingkat modul **tidak boleh disalin** ke berkas
     lain, sebab salinan di berkas yang tak dibaca kode tak akan pernah tampil — dan bila ejaannya
-    berbeda, justru ejaan yang dibaca yang menentukan apa yang pengguna lihat.
+    berbeda, justru ejaan yang dibaca yang menentukan apa yang pengguna lihat. Berlaku juga **di
+    dalam satu berkas**: catatan yang hanya berlaku untuk satu bagian tinggal di bagian itu
+    (`adzan.json#adzan#catatan_subuh`, `adzan.json#iqomah#catatan_mazhab`), bukan dinaikkan ke
+    tingkat modul.
 - CI gagal jika `sumber_url` kosong atau domain di luar: `*.kemenag.go.id, *.kemenag.dev, sunnah.com, bmkg.go.id, nu.or.id` (penjelas saja).
 - Dilarang generate teks Arab dengan AI. Dilarang karang hadis/sanad.

@@ -332,8 +332,21 @@ class ContentRepo(private val ctx: Context) {
 
     fun adzanCatatan(): String = doc(BerkasKonten.ADZAN).getJSONObject("adzan").optString("catatan_subuh")
 
-    /** Catatan perbedaan susunan iqomah antar mazhab/tradisi — ditampilkan apa adanya. */
-    fun iqomahCatatan(): String = doc(BerkasKonten.ADZAN).optString("catatan_mazhab")
+    /**
+     * Catatan perbedaan susunan iqomah antar mazhab/tradisi — ditampilkan apa adanya.
+     *
+     * Dibaca dari **bagiannya sendiri** (`adzan.json` → `iqomah.catatan_mazhab`), mengikuti
+     * konvensi berkasnya: catatan yang berlaku untuk satu bagian tinggal di dalam bagian itu,
+     * seperti `adzan.catatan_subuh` yang dibaca [adzanCatatan]. Berkasnya dahulu memuat keterangan
+     * ini **dua kali** — salinan di tingkat modul (dibaca fungsi ini, tanpa contoh perbedaannya)
+     * dan salinan di dalam `iqomah` (tak pernah dibaca, tetapi menyebut *"(mis. jumlah lafaz)"*).
+     * Jadi yang tampil di layar Iqomah bukan sekadar salinan yang lebih pendek: contoh yang
+     * menjelaskan **apa** yang berbeda antar mazhab justru hilang. Salinan tingkat modul dihapus dan
+     * ejaan yang lebih lengkap tinggal di `iqomah` — satu keterangan, satu rumah. Kosong = tidak
+     * diklaim.
+     */
+    fun iqomahCatatan(): String =
+        doc(BerkasKonten.ADZAN).getJSONObject("iqomah").optString("catatan_mazhab")
 
     fun iqomah(): List<AdzanLafaz> {
         val d = doc(BerkasKonten.ADZAN)
