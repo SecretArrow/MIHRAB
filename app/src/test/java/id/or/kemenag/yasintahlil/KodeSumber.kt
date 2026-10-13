@@ -32,8 +32,12 @@ object KodeSumber {
      *   `store.get(Store.SHOW_ARAB, true)` di dalam KDoc tidak dihitung sebagai pelanggaran. Bila
      *   `false`, string dipertahankan apa adanya agar pencarian potongan berkutip
      *   (mis. `startsWith("yasin")`) tetap bekerja.
+     * @param mentah bila `true`, isi string mentah (`"""…"""`) ikut dipertahankan, bukan dibuang.
+     *   Bawaannya `false` karena string mentah hampir selalu prosa penjelas, bukan kode. Penjaga
+     *   yang memeriksa **argumen pemanggilan fungsi** menyalakannya: argumen pun boleh ditulis
+     *   sebagai string mentah, dan bila isinya dibuang, pemanggilan itu luput tanpa jejak.
      */
-    fun kodeTanpaKomentar(teks: String, buangString: Boolean = false): String {
+    fun kodeTanpaKomentar(teks: String, buangString: Boolean = false, mentah: Boolean = false): String {
         val sb = StringBuilder()
         var i = 0
         var blok = 0
@@ -45,10 +49,13 @@ object KodeSumber {
                     i = if (akhir < 0) teks.length else akhir
                 }
                 teks.startsWith("/*", i) -> { blok++; i += 2 }
-                // String mentah (`"""…"""`) tidak berisi kode, jadi dibuang seluruhnya.
+                // String mentah (`"""…"""`) tidak berisi kode, jadi dibuang seluruhnya — kecuali
+                // bila [mentah] memintanya dipertahankan.
                 teks.startsWith("\"\"\"", i) -> {
+                    val mulai = i
                     val akhir = teks.indexOf("\"\"\"", i + 3)
                     i = if (akhir < 0) teks.length else akhir + 3
+                    if (mentah) sb.append(teks, mulai, i)
                 }
                 teks[i] == '"' -> {
                     val mulai = i
