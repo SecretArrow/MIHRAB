@@ -380,6 +380,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   menyentuh indentasi, panjang baris, urutan impor, atau isi teks keagamaan.
 
 ### Diperbaiki
+- **Cadangan teks bacaan tinggal di satu tempat**: bacaan pada bundel konten boleh menunjuk teksnya
+  ke entri lain (`rujukanFile`, mis. `surah_001.json#1`), dan rujukan itu boleh gagal — berkasnya
+  hilang, id-nya berganti, atau bundelnya lebih tua daripada kodenya.
+  `ContentRepo.resolveArabLatinTerjemah` mengembalikan teks **kosong** untuk rujukan yang tak dapat
+  ditelusuri, bukan melempar, sehingga tiap layar harus tahu apa yang ditampilkan bila rujukannya
+  kosong: teks milik entri itu sendiri. Aturan cadangan itu dulu hidup di **lima** tempat — dua
+  layar sholat mayit (Ghaib, Jenazah) memanggil salinannya lewat `TampilanSholatKhusus.teksBacaan`,
+  sementara layar Panduan Sholat, rincian langkah sholat, dan layar Tahlil masing-masing mengeja
+  `Triple(it.first.ifBlank { b.arab }, …)` sendiri. Kelimanya hari ini menghasilkan hal yang sama —
+  dan justru itulah yang membuatnya berbahaya: satu perubahan aturan (mis. ikut memangkas spasi,
+  atau memakai judul entri sebagai cadangan) yang dikenakan pada satu salinan saja tidak berbunyi
+  apa pun, dan pengguna membaca teks yang berbeda dari layar yang menampilkan entri yang sama.
+  Aturannya kini satu rumah, `core/data/TeksBacaan`, dengan dua bentuk entri (`Bacaan` dan
+  `TahlilItem`) dan ketiga medan dipilih **sendiri-sendiri** — sebab satu rujukan boleh memuat
+  Arabnya tetapi tidak terjemahannya, dan memilih ketiganya sekaligus akan membuang terjemahan entri
+  yang justru ada. Dijaga `TeksBacaanSatuTempatTest`, yang memaku aturannya sekaligus menuntut
+  kelima layar memakainya dan tak satu pun mengeja `ifBlank { … .arab|latin|terjemahan }` kembali;
+  penjaga lama `TampilanSholatKhususSatuTempatTest` kini menyebut rumah barunya, bukan lagi
+  `teksBacaan` yang sudah tidak ada.
 - **Hitung mundur *"Berikutnya: …"* tinggal di satu tempat**: jeda ke waktu sholat berikutnya
   dahulu **dieja tiap layar sendiri-sendiri** meski waktu berikutnya sudah lama datang dari satu
   tempat (`JadwalHariIni.berikutnya`). Beranda menulis `$sisaMenit / 60` lalu `j` dan

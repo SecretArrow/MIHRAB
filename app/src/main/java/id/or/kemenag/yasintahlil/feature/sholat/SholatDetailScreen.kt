@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.TeksBacaan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 import id.or.kemenag.yasintahlil.core.sholat.Mazhab
@@ -189,9 +190,10 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
             val b = steps[step.coerceIn(0, steps.size - 1)]
-            val (a, l, t) = repo.resolveArabLatinTerjemah(b.rujukanFile).let {
-                Triple(it.first.ifBlank { b.arab }, it.second.ifBlank { b.latin }, it.third.ifBlank { b.terjemahan })
-            }
+            // Aturan cadangan teks satu tempat (`TeksBacaan`) — bukan `ifBlank { b.arab }` yang
+            // dieja di sini, supaya layar ini tak dapat menyimpang dari layar bacaan lain.
+            val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
+            val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
             Text(b.judul, style = MaterialTheme.typography.titleMedium)
             if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
             // Ilustrasi skematik posisi tubuh + deskripsi (plan: tiap gerakan punya visual yang sopan).

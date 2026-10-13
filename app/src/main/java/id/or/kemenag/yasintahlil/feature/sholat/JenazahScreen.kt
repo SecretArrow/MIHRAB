@@ -12,6 +12,7 @@ import id.or.kemenag.yasintahlil.core.data.Bacaan
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.TeksBacaan
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.sholat.BacaanSholat
 import id.or.kemenag.yasintahlil.core.sholat.TampilanSholatKhusus
@@ -96,7 +97,7 @@ fun JenazahScreen() {
                 modifier = Modifier.padding(top = 8.dp))
             if (b != null) {
                 val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
-                val (a, l, t) = TampilanSholatKhusus.teksBacaan(b, ra, rl, rt)
+                val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
                 BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, b.id), b.judul, a, l, t, showLatin, showTrans,
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)

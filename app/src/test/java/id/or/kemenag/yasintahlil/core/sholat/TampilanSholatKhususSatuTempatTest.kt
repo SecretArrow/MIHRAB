@@ -1,7 +1,6 @@
 package id.or.kemenag.yasintahlil.core.sholat
 
 import id.or.kemenag.yasintahlil.KodeSumber
-import id.or.kemenag.yasintahlil.core.data.Bacaan
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -24,6 +23,12 @@ import org.junit.Test
  * layar penuh — harus tetap berbeda supaya tidak "dirapikan" menjadi salinan, dan (3) judul takbir
  * 2–4 yang memang sama di kedua layar harus tinggal di **satu** tempat, bukan di dua salinan yang
  * bisa menyimpang tanpa ketahuan.
+ *
+ * Satu aturan pernah tinggal di sini lalu **pindah**: cadangan teks bacaan (`teksBacaan`) ternyata
+ * bukan aturan sholat mayit — layar Panduan Sholat, rincian langkah sholat, dan Tahlil memakainya
+ * juga, masing-masing dengan salinan sendiri. Rumahnya kini `core/data/TeksBacaan.kt`, dan
+ * penjaganya `TeksBacaanSatuTempatTest`. Di sini yang tinggal hanya aturan yang benar-benar
+ * milik kedua layar mayit.
  */
 class TampilanSholatKhususSatuTempatTest {
 
@@ -46,12 +51,16 @@ class TampilanSholatKhususSatuTempatTest {
     /** Kedua layar harus memanggil tiap aturan bersama — bukan hanya sebagian. */
     @Test
     fun keduaLayarMemakaiAturanBersama() {
-        val aturan = listOf("judul(", "langkah(", "syarat(", "dalil(", "catatanMazhab(", "teksBacaan(")
+        val aturan = listOf("judul(", "langkah(", "syarat(", "dalil(", "catatanMazhab(")
         mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
             aturan.forEach { a ->
                 assertTrue("$nama tidak memakai TampilanSholatKhusus.$a untuk teks yang sama",
                     teks.contains("TampilanSholatKhusus.$a"))
             }
+            // Cadangan teks bacaan tidak lagi milik objek ini: aturannya dipakai juga oleh layar
+            // sholat biasa dan Tahlil, jadi rumahnya `TeksBacaan` — lihat `TeksBacaanSatuTempatTest`.
+            assertTrue("$nama tidak memakai aturan cadangan teks bersama (TeksBacaan.pilih)",
+                teks.contains("TeksBacaan.pilih("))
         }
     }
 
@@ -79,7 +88,13 @@ class TampilanSholatKhususSatuTempatTest {
         assertEquals("Syarat: satu.", TampilanSholatKhusus.syarat(listOf("satu")))
     }
 
-    /** Judul, langkah, dalil, dan catatan mazhab dipaku ejaannya. */
+    /**
+     * Judul, langkah, dalil, dan catatan mazhab dipaku ejaannya.
+     *
+     * Cadangan teks bacaan dahulu ikut diuji di sini; aturannya kini tinggal di
+     * `core/data/TeksBacaan.kt` karena dipakai juga oleh layar sholat biasa dan Tahlil, dan
+     * pengujiannya pindah ke `TeksBacaanSatuTempatTest`.
+     */
     @Test
     fun ejaanAturanBersamaTidakBerubah() {
         assertEquals("Sholat Ghaib — 4 takbir, tanpa ruku/sujud",
@@ -88,16 +103,6 @@ class TampilanSholatKhususSatuTempatTest {
             TampilanSholatKhusus.langkah(3, "Takbir 3 → Doa untuk mayit"))
         assertEquals("Dalil: HR contoh.", TampilanSholatKhusus.dalil("HR contoh."))
         assertEquals("Catatan mazhab: Syafi'i.", TampilanSholatKhusus.catatanMazhab("Syafi'i."))
-    }
-
-    /** Cadangan teks bacaan: hasil rujukan bersama bila ada, medan entri bila rujukannya kosong. */
-    @Test
-    fun cadanganTeksBacaanSatuAturan() {
-        val b = Bacaan(id = "x", judul = "X", arab = "arab-entri", latin = "latin-entri", terjemahan = "terj-entri")
-        assertEquals(Triple("arab-rujukan", "latin-rujukan", "terj-rujukan"),
-            TampilanSholatKhusus.teksBacaan(b, "arab-rujukan", "latin-rujukan", "terj-rujukan"))
-        assertEquals(Triple("arab-entri", "latin-entri", "terj-entri"),
-            TampilanSholatKhusus.teksBacaan(b, "", "", ""))
     }
 
     // ---- Perbedaan yang disengaja ---------------------------------------------------------------
