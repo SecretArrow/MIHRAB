@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
@@ -27,6 +27,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ThemeAndScreenSizeTest {
 
+    // Diimpor dari `…junit4.v2`: bentuk lama `createComposeRule` ditandai usang sejak Compose 1.11.
+    // Tipe yang dikembalikan sama; yang berubah hanya dispatcher internalnya, dan uji di kelas ini
+    // hanya `setContent` lalu memeriksa simpul, jadi tak bergantung pada eksekusi segera.
     @get:Rule
     val rule = createComposeRule()
 

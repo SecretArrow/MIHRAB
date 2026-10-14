@@ -3,7 +3,7 @@ package id.or.kemenag.yasintahlil
 import android.Manifest
 import android.os.Build
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -52,6 +52,12 @@ class NavSmokeTest {
      * Aturan Compose, **tanpa** anotasi `@Rule` — ia dipasang lewat [rantai] di bawah. Memberinya
      * `@Rule` sekaligus akan membuatnya diterapkan dua kali (sekali sendiri, sekali di dalam
      * rantai), sehingga Activity-nya diluncurkan dua kali.
+     *
+     * Diimpor dari `…junit4.v2`, bukan paket lamanya: sejak Compose 1.11 bentuk lama ditandai
+     * **usang** (`createAndroidComposeRule` lama). Yang berbeda hanyalah dispatcher internalnya —
+     * `StandardTestDispatcher` menggantikan `UnconfinedTestDispatcher`, sehingga korutin di-*queue*
+     * alih-alih langsung dijalankan — sedangkan tipe yang dikembalikan tetap sama. Uji di kelas ini
+     * tidak bergantung pada eksekusi segera, jadi peralihannya tidak mengubah perilakunya.
      */
     val rule = createAndroidComposeRule<MainActivity>()
 
