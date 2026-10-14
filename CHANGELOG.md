@@ -5,6 +5,13 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-14
+
+**Rilis pertama yang memenuhi syarat pengajuan Google Play.** v1.1.0 dipotong dari basis kode yang
+masih `targetSdk` 34, sedangkan Play mewajibkan API 36 sejak 31 Agustus 2026 — jadi v1.1.0 tidak
+dapat diajukan sama sekali. Perubahan di bawah ini tidak menambah kemampuan apa pun (karena itu
+PATCH, bukan MINOR): yang berubah adalah toolchain, `targetSdk`, dan kebersihan kompilasi.
+
 ### Diubah
 - **Toolchain dinaikkan sebagai satu kesatuan: AGP 8.13.2, Kotlin 2.3.21, KSP 2.3.12, Hilt 2.58,
   Compose BOM 2026.06.01, Gradle 8.14.6, `compileSdk`/`targetSdk` 36.** Google Play mewajibkan aplikasi
