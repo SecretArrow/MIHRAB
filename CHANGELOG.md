@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-14
+
 ### Diubah
 - **Seluruh layar konten dirapikan dan keterangan panjang dipindah ke activity keterangan.**
   Badan setiap layar konten (Surat Yasin, Tahlil, Dzikir, Panduan Sholat beserta rinciannya,
@@ -21,6 +23,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   (`TombolInfo`, `Routes.keterangan(asal)`). Layar keterangan membaca ulang isi dari bundel
   konten dan aturan bersama — satu fakta tetap satu rumah — dan dijaga uji baru
   `KeteranganLayarTest`.
+
+**Rilis otomatis** dari commit `402f46b60011fcf6b9212fef1f657f00dbae92ed`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.3.0`.
 
 ## [1.2.0] - 2026-10-14
 
