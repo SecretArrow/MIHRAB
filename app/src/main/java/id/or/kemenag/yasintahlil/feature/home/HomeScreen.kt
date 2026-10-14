@@ -1,15 +1,60 @@
 package id.or.kemenag.yasintahlil.feature.home
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.PersonOff
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import id.or.kemenag.yasintahlil.core.designsystem.*
+import id.or.kemenag.yasintahlil.core.designsystem.ArabText
+import id.or.kemenag.yasintahlil.core.designsystem.BagianJudul
+import id.or.kemenag.yasintahlil.core.designsystem.GradienZamrud
+import id.or.kemenag.yasintahlil.core.designsystem.MenuTile
+import id.or.kemenag.yasintahlil.core.designsystem.NamaAntarmuka
+import id.or.kemenag.yasintahlil.core.designsystem.OrnamenIslami
 import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
@@ -27,6 +72,10 @@ import java.util.*
  * Seluruh keadaan datang dari [HomeViewModel] sebagai `StateFlow` — bukan `remember` di layar —
  * sehingga bertahan saat rotasi dan ikut berubah begitu pengguna mengganti lokasi/metode di layar
  * Jadwal atau mematikan pengingat, tanpa membuka ulang beranda.
+ *
+ * Tata letaknya kini bertingkat: kepala sapaan di atas bidang mint bermotif khatam, kartu waktu
+ * sholat berikutnya di atas gradien zamrud dengan hitung mundur besar, lalu kisi aksi cepat
+ * berikon — semuanya membaca keadaan yang sama dari ViewModel, tidak ada yang dihitung sendiri.
  */
 @Composable
 fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
@@ -60,104 +109,357 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
     // ulang di sini dengan cabang cadangan `?: times.isya` — cabang yang diam-diam menampilkan jam
     // sholat lain lebih buruk daripada tak ada.
     val berikut = JadwalHariIni.berikutnya(nowMin, times)
+    // Baris lima waktu memakai daftar nama & jam yang sama dengan hitung mundur di atas dan
+    // dengan penjadwal pengingat (`LIMA_WAKTU`/`adzan`), bukan pasangan nama→field yang
+    // ditulis ulang di sini — salinan itu dapat menampilkan jam yang berbeda dari waktu yang
+    // sedang dihitung mundurnya.
+    val jadwal = JadwalHariIni.LIMA_WAKTU.zip(JadwalHariIni.adzan(times))
+    // Aksi cepat: label dari satu sumber nama (`NamaLayar`) + rute + ikon; urutannya mengikuti
+    // alur ibadah harian, tiga ubin tiap baris.
+    val aksiCepat = listOf(
+        Triple(NamaLayar.YASIN, Routes.YASIN, Icons.AutoMirrored.Filled.MenuBook),
+        Triple(NamaLayar.TAHLIL, Routes.TAHLIL, Icons.Filled.VolunteerActivism),
+        Triple(NamaLayar.SHOLAT, Routes.SHOLAT, Icons.Filled.SelfImprovement),
+        Triple(NamaLayar.GHAIB, Routes.GHAIB, Icons.Filled.PersonOff),
+        Triple(NamaLayar.ADZAN, Routes.ADZAN, Icons.Filled.NotificationsActive),
+        Triple(NamaLayar.DOA_ADZAN, Routes.DOA_ADZAN, Icons.Filled.Campaign),
+        Triple(NamaLayar.IQOMAH, Routes.IQOMAH, Icons.Filled.Timer),
+        Triple(NamaLayar.KIBLAT, Routes.KIBLAT, Icons.Filled.Explore),
+        Triple(NamaLayar.DZIKIR, Routes.DZIKIR, Icons.Filled.AutoAwesome),
+        Triple(NamaLayar.SEARCH, Routes.SEARCH, Icons.Filled.Search),
+        Triple(NamaLayar.FAVORIT, Routes.FAVORIT, Icons.Filled.Favorite),
+    )
 
-    Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        // Ornamen geometris Islami halus (`plan.txt` §"Konsep dan Identitas Aplikasi"). Digambar di
-        // belakang blok salam dengan alfa sangat rendah dan mengikuti tinggi blok itu, sehingga
-        // berfungsi sebagai tekstur latar — bukan hiasan yang mengurangi keterbacaan teks di atasnya.
-        Box(Modifier.fillMaxWidth()) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        // Kepala sapaan: bidang mint penuh dengan ornamen khatam di belakangnya — tekstur, bukan
+        // hiasan yang mengurangi keterbacaan (`plan.txt` §"Konsep dan Identitas Aplikasi").
+        Box(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)) {
             OrnamenIslami(Modifier.matchParentSize())
-            Column {
-                Text("Assalamu'alaikum", style = MaterialTheme.typography.titleLarge)
-                Text("$masehi • $jam")
-                Text(HijriCalc.format(now, s.hijriCorr), style = MaterialTheme.typography.labelMedium)
+            Column(
+                Modifier.fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 28.dp)
+            ) {
+                Text(
+                    "Assalamu'alaikum",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                Text(
+                    "$masehi • $jam",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+                Spacer(Modifier.height(12.dp))
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.primary,
+                ) {
+                    Text(
+                        HijriCalc.format(now, s.hijriCorr),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    )
+                }
             }
         }
-        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Text("${s.city} — Berikutnya: ${berikut.nama} ${berikut.jam} " +
-                    "(${FormatWaktu.durasiJamMenit(berikut.sisaMenit)} lagi)",
-                    style = MaterialTheme.typography.titleMedium)
-                // Baris jam memakai daftar nama & jam yang sama dengan hitung mundur di atas dan
-                // dengan penjadwal pengingat (`LIMA_WAKTU`/`adzan`), bukan pasangan nama→field yang
-                // ditulis ulang di sini — dahulu baris ini menyalinnya, dan salinan itu dapat
-                // menampilkan jam yang berbeda dari waktu yang sedang dihitung mundurnya.
-                Text(JadwalHariIni.LIMA_WAKTU.zip(JadwalHariIni.adzan(times))
-                    .joinToString(" • ") { (nama, jamnya) -> "$nama $jamnya" })
-                Text("Metode: ${s.method.label}", style = MaterialTheme.typography.labelSmall)
-                Button(onClick = { go(Routes.JADWAL) }) { Text("Jadwal lengkap / ganti lokasi") }
+
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            // Kartu waktu sholat berikutnya: satu-satunya blok berwarna penuh di beranda, supaya
+            // mata jatuh ke sana lebih dulu — informasi paling penting bagi pengguna harian.
+            Box(
+                Modifier.fillMaxWidth().padding(top = 16.dp)
+                    .clip(MaterialTheme.shapes.large).background(GradienZamrud)
+            ) {
+                Column(Modifier.padding(18.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = Color.White.copy(alpha = 0.85f),
+                            modifier = Modifier.size(15.dp),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            s.city,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White.copy(alpha = 0.9f),
+                        )
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column {
+                            Text(
+                                "Waktu sholat berikutnya",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White.copy(alpha = 0.75f),
+                            )
+                            Text(
+                                berikut.nama,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.White,
+                            )
+                            Text(
+                                berikut.jam,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White.copy(alpha = 0.9f),
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                FormatWaktu.durasiJamMenit(berikut.sisaMenit),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = Color.White,
+                            )
+                            Text(
+                                "lagi",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White.copy(alpha = 0.75f),
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(14.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        jadwal.forEach { (nama, jamnya) ->
+                            val aktif = nama == berikut.nama
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(
+                                        if (aktif) Color.White.copy(alpha = 0.20f)
+                                        else Color.Transparent
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                            ) {
+                                Text(
+                                    nama,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (aktif) Color.White
+                                    else Color.White.copy(alpha = 0.7f),
+                                )
+                                Text(
+                                    jamnya,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Color.White,
+                                )
+                            }
+                        }
+                    }
+                    TextButton(
+                        onClick = { go(Routes.JADWAL) },
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color.White),
+                    ) { Text("Jadwal lengkap / ganti lokasi") }
+                    Text(
+                        "Metode: ${s.method.label}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.7f),
+                    )
+                }
             }
-        }
-        Text("Aksi cepat:", style = MaterialTheme.typography.titleMedium)
-        listOf(NamaLayar.YASIN to Routes.YASIN, NamaLayar.TAHLIL to Routes.TAHLIL,
-            NamaLayar.SHOLAT to Routes.SHOLAT, NamaLayar.GHAIB to Routes.GHAIB,
-            NamaLayar.ADZAN to Routes.ADZAN, NamaLayar.DOA_ADZAN to Routes.DOA_ADZAN,
-            NamaLayar.IQOMAH to Routes.IQOMAH, NamaLayar.KIBLAT to Routes.KIBLAT,
-            NamaLayar.DZIKIR to Routes.DZIKIR, NamaLayar.SEARCH to Routes.SEARCH,
-            NamaLayar.FAVORIT to Routes.FAVORIT).chunked(2).forEach { row ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                row.forEach { (label, r) -> Button(onClick = { go(r) }, modifier = Modifier.weight(1f)) { Text(label) } }
-                if (row.size == 1) Spacer(Modifier.weight(1f))
+
+            // Aksi cepat: kisi tiga ubin berikon, bukan deretan tombol teks.
+            BagianJudul("Aksi cepat")
+            aksiCepat.chunked(3).forEach { baris ->
+                Row(
+                    Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    baris.forEach { (label, rute, ikon) ->
+                        MenuTile(label, ikon, { go(rute) }, Modifier.weight(1f))
+                    }
+                    if (baris.size < 3) Spacer(Modifier.weight(1f))
+                }
             }
-        }
-        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(PengingatAdzan.NAMA_PENGINGAT_WAKTU, style = MaterialTheme.typography.titleMedium)
+
+            // Saklar pengingat dengan penjelasannya — datang dan berpulang lewat ViewModel yang
+            // sama dengan penjadwal pengingat.
+            KartuIsi {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IkonBulat(Icons.Filled.NotificationsActive)
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            PengingatAdzan.NAMA_PENGINGAT_WAKTU,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            "Pengingat memakai lokasi & metode hisab dari menu Jadwal. " +
+                                "Atur suara adzan di menu Adzan.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                     Switch(s.notif, { vm.setNotif(it) })
                 }
-                Text("Pengingat memakai lokasi & metode hisab dari menu Jadwal. Atur suara adzan di menu Adzan.",
-                    style = MaterialTheme.typography.labelSmall)
             }
-        }
-        Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Text("Favorit: ${s.favCount} • Riwayat: ${s.histCount}", style = MaterialTheme.typography.titleMedium)
-                Button(onClick = { go(Routes.FAVORIT) }) { Text("Buka favorit & riwayat") }
-            }
-        }
-        if (s.last.isNotBlank()) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${s.last}")
-                // Tujuan ditentukan `RuteKonten` — aturan yang sama dengan layar Favorit — bukan
-                // cabang `startsWith("yasin")` yang dahulu mengirim setiap bacaan Tahlil ke Favorit.
-                // Id kelompok dzikir dari keadaan layar ikut disertakan: dahulu tidak, sehingga
-                // jenis yang sama terbaca berbeda di beranda dan di layar Favorit.
-                val tujuan = RuteKonten.tujuanTerakhir(s.last, s.grupDzikir)
-                if (tujuan != null) {
-                    Text(tujuan.nama, style = MaterialTheme.typography.labelSmall)
-                    Button(onClick = { go(tujuan.rute) }) { Text(NamaAntarmuka.LANJUTKAN) }
-                } else {
-                    Text(RuteKonten.TIDAK_DIKENAL, style = MaterialTheme.typography.labelSmall)
+
+            // Ringkasan simpanan: dua angka besar bersebelahan, bukan satu kalimat panjang.
+            KartuIsi {
+                Column(Modifier.fillMaxWidth()) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        KolomAngka("${s.favCount}", "Favorit")
+                        KolomAngka("${s.histCount}", "Riwayat")
+                    }
+                    FilledTonalButton(
+                        onClick = { go(Routes.FAVORIT) },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp),
+                    ) { Text("Buka favorit & riwayat") }
                 }
             }
-        }
-        if (s.infoCard) Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Text("Info Islami harian", style = MaterialTheme.typography.titleMedium)
-                // Isinya berganti mengikuti tanggal dan diambil dari pustaka dzikir yang sudah
-                // terverifikasi (`InfoHarian`) — dahulu kartu ini memuat satu kalimat tetap yang
-                // khusus hari Jumat tetapi ditampilkan setiap hari.
-                val gagal = s.infoGagal
-                val b = s.info
-                when {
-                    gagal != null -> Text(gagal, style = MaterialTheme.typography.labelSmall)
-                    b == null -> Text("Belum ada butir untuk hari ini.",
-                        style = MaterialTheme.typography.labelSmall)
-                    else -> {
-                        Text(b.judul, style = MaterialTheme.typography.titleSmall)
-                        // Ukuran Arab di kartu ini tetap: kartu beranda adalah ringkasan, bukan
-                        // permukaan bacaan — ukuran pilihan pengguna berlaku di pustaka dzikirnya.
-                        // Namun chip "Arab" di Pengaturan tetap dihormati: bila dimatikan, teks Arab
-                        // disembunyikan di sini juga, agar preferensi itu tak menjadi kontrol mati.
-                        if (s.showArab && b.arab.isNotBlank()) ArabText(b.arab, sizeSp = 20f)
-                        if (b.teks.isNotBlank()) Text(b.teks)
-                        if (b.sumber.isNotBlank()) Text("Sumber: ${b.sumber}",
-                            style = MaterialTheme.typography.labelSmall)
-                        TextButton(onClick = { go(Routes.DZIKIR) }) { Text("Buka pustaka dzikir") }
+
+            if (s.last.isNotBlank()) KartuIsi {
+                Column(Modifier.fillMaxWidth()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IkonBulat(Icons.AutoMirrored.Filled.MenuBook)
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            "${NamaAntarmuka.TERAKHIR_DIBACA}: ${s.last}",
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                    }
+                    // Tujuan ditentukan `RuteKonten` — aturan yang sama dengan layar Favorit — bukan
+                    // cabang `startsWith("yasin")` yang dahulu mengirim setiap bacaan Tahlil ke Favorit.
+                    // Id kelompok dzikir dari keadaan layar ikut disertakan: dahulu tidak, sehingga
+                    // jenis yang sama terbaca berbeda di beranda dan di layar Favorit.
+                    val tujuan = RuteKonten.tujuanTerakhir(s.last, s.grupDzikir)
+                    if (tujuan != null) {
+                        Text(
+                            tujuan.nama,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        FilledTonalButton(
+                            onClick = { go(tujuan.rute) },
+                            modifier = Modifier.padding(top = 8.dp),
+                        ) { Text(NamaAntarmuka.LANJUTKAN) }
+                    } else {
+                        Text(
+                            RuteKonten.TIDAK_DIKENAL,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
                     }
                 }
             }
+
+            // Kartu info harian dapat dimatikan dari Pengaturan; isinya berganti mengikuti tanggal
+            // dan diambil dari pustaka dzikir yang sudah terverifikasi (`InfoHarian`).
+            if (s.infoCard) KartuIsi {
+                Column(Modifier.fillMaxWidth()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IkonBulat(
+                            Icons.Filled.AutoAwesome,
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text("Info Islami harian", style = MaterialTheme.typography.titleMedium)
+                    }
+                    val gagal = s.infoGagal
+                    val b = s.info
+                    when {
+                        gagal != null -> Text(
+                            gagal,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        b == null -> Text(
+                            "Belum ada butir untuk hari ini.",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        else -> {
+                            Text(
+                                b.judul,
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
+                            // Ukuran Arab di kartu ini tetap: kartu beranda adalah ringkasan, bukan
+                            // permukaan bacaan — ukuran pilihan pengguna berlaku di pustaka dzikirnya.
+                            // Namun chip "Arab" di Pengaturan tetap dihormati: bila dimatikan, teks Arab
+                            // disembunyikan di sini juga, agar preferensi itu tak menjadi kontrol mati.
+                            if (s.showArab && b.arab.isNotBlank()) {
+                                ArabText(b.arab, sizeSp = 20f, modifier = Modifier.padding(top = 6.dp))
+                            }
+                            if (b.teks.isNotBlank()) {
+                                Text(b.teks, modifier = Modifier.padding(top = 6.dp))
+                            }
+                            if (b.sumber.isNotBlank()) {
+                                Text(
+                                    "Sumber: ${b.sumber}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
+                            }
+                            TextButton(onClick = { go(Routes.DZIKIR) }) { Text("Buka pustaka dzikir") }
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(24.dp))
         }
+    }
+}
+
+/** Kartu isi standar beranda: permukaan terangkat, sudut besar, garis tepi tipis. */
+@Composable
+private fun KartuIsi(konten: @Composable () -> Unit) {
+    Card(
+        Modifier.fillMaxWidth().padding(top = 12.dp),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        Column(Modifier.padding(16.dp)) { konten() }
+    }
+}
+
+/** Wadah ikon bulat di dalam kartu — wadah zamrud lembut, atau warna lain bila [warna] diisi. */
+@Composable
+private fun IkonBulat(
+    ikon: ImageVector,
+    warna: Color = MaterialTheme.colorScheme.primaryContainer,
+    warnaIkon: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+) {
+    Surface(shape = CircleShape, color = warna) {
+        Icon(
+            ikon,
+            contentDescription = null,
+            tint = warnaIkon,
+            modifier = Modifier.padding(10.dp).size(20.dp),
+        )
+    }
+}
+
+/** Pasangan angka besar + keterangan kecil untuk ringkasan simpanan. */
+@Composable
+private fun KolomAngka(angka: String, keterangan: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            angka,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            keterangan,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

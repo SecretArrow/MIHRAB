@@ -6,11 +6,55 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
@@ -122,31 +166,96 @@ fun BacaanCard(
         // terjemahan adalah teks terpanjang di aplikasi, dan baris yang terlalu panjang melelahkan
         // mata. `animateContentSize` membuat tinggi kartu berubah halus saat chip "Arab"/"Latin"/
         // "Terjemahan" di Pengaturan bacaan dinyalakan atau dimatikan, bukan melompat seketika.
-        Card(Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).lebarBaca()
-            .animateContentSize().padding(vertical = 4.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(judul, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    // Penanda jumlah ulangan — teks, bukan tombol. Sebelumnya AssistChip dengan onClick
-                    // kosong: tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
-                    if (ulangi > 1) Text("${ulangi}x", style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary)
+        Card(
+            Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).lebarBaca()
+                .animateContentSize().padding(vertical = 4.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        ) {
+            Column(Modifier.padding(16.dp)) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(judul, style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f))
+                    // Penanda jumlah ulangan — lencana tonal, bukan tombol. Sebelumnya AssistChip
+                    // dengan onClick kosong: tombol yang tampak bisa ditekan tetapi tak melakukan
+                    // apa pun.
+                    if (ulangi > 1) Surface(
+                        shape = RoundedCornerShape(50),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                    ) {
+                        Text(
+                            "${ulangi}x",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                        )
+                    }
                 }
-                if (showArab && arab.isNotBlank()) ArabText(arab, arabSize, lineHeightFactor = tinggiBaris)
-                if (showLatin && latin.isNotBlank()) Text(latin, fontSize = ukuranLatin.sp,
-                    color = MaterialTheme.colorScheme.secondary)
-                if (showTrans && terjemahan.isNotBlank()) Text(terjemahan, fontSize = ukuranLatin.sp)
-                if (sumber.isNotBlank()) Text("Sumber: $sumber", style = MaterialTheme.typography.labelSmall)
-                SumberKategoriLabel(kategori)
-                Row {
+                // Kertas bacaan Arab: permukaan pasir lembut dengan sudut membulat, sehingga
+                // baris Arab terbaca sebagai satu bidang mushaf — bukan teks mengambang. Pada
+                // tema halaman krem/gelap, `surfaceVariant` sudah diganti skemaHalaman menjadi
+                // warna kertasnya, jadi kertas ini ikut berganti tanpa pengkabelan tambahan.
+                if (showArab && arab.isNotBlank()) Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                ) {
+                    ArabText(
+                        arab, arabSize,
+                        lineHeightFactor = tinggiBaris,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                    )
+                }
+                if (showLatin && latin.isNotBlank()) Text(
+                    latin, fontSize = ukuranLatin.sp,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+                if (showTrans && terjemahan.isNotBlank()) Text(
+                    terjemahan, fontSize = ukuranLatin.sp,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+                if (sumber.isNotBlank()) Text(
+                    "Sumber: $sumber",
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+                SumberKategoriLabel(kategori, Modifier.padding(top = 2.dp))
+                Row(
+                    Modifier.padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
                     TextButton(onClick = {
                         ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
                         scope.launch { userData.pushHistory(favKind, favRef, judul) }
-                    }) { Text("Salin") }
-                    TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) { Text("Bagikan") }
+                    }) {
+                        Icon(Icons.Filled.ContentCopy, contentDescription = null,
+                            modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Salin")
+                    }
+                    TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) {
+                        Icon(Icons.Filled.Share, contentDescription = null,
+                            modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Bagikan")
+                    }
                     TextButton(onClick = {
                         scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
-                    }) { Text(if (fav) "★ Favorit" else "☆ Favorit") }
+                    }) {
+                        Icon(
+                            if (fav) Icons.Filled.Star else Icons.Filled.StarBorder,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Favorit")
+                    }
                     if (onOpen != null) TextButton(onClick = onOpen) { Text(NamaAntarmuka.BUKA) }
                 }
             }
@@ -157,20 +266,39 @@ fun BacaanCard(
 
 @Composable
 fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit, onReset: () -> Unit) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-        Button(onClick = onMinus) { Text("−") }
-        Text("$count / $target", style = MaterialTheme.typography.headlineSmall)
-        Button(onClick = onPlus) { Text("+") }
-        OutlinedButton(onClick = onReset) { Text(NamaAntarmuka.RESET) }
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            FilledTonalButton(
+                onClick = onMinus,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+            ) { Icon(Icons.Filled.Remove, contentDescription = null) }
+            Text("$count / $target", style = MaterialTheme.typography.headlineSmall)
+            FilledTonalButton(
+                onClick = onPlus,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+            ) { Icon(Icons.Filled.Add, contentDescription = null) }
+        }
+        OutlinedButton(
+            onClick = onReset,
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp),
+        ) { Text(NamaAntarmuka.RESET) }
+        // Progres dihaluskan agar setiap ketukan penghitung terlihat sebagai gerakan, bukan
+        // lompatan — "animasi secukupnya" (`plan.txt`) sekaligus umpan balik visual atas ketukan
+        // itu.
+        val progres by animateFloatAsState(
+            targetValue = (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f),
+            label = "progres-hitung",
+        )
+        LinearProgressIndicator(
+            progress = { progres },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                .height(6.dp).clip(MaterialTheme.shapes.small),
+        )
     }
-    // Progres dihaluskan agar setiap ketukan penghitung terlihat sebagai gerakan, bukan lompatan —
-    // "animasi secukupnya" (`plan.txt`) sekaligus umpan balik visual atas ketukan itu.
-    val progres by animateFloatAsState(
-        targetValue = (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f),
-        label = "progres-hitung",
-    )
-    LinearProgressIndicator(progress = { progres },
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
 }
 
 // --- Keadaan layar: kosong, gagal, memuat ------------------------------------------------
@@ -195,9 +323,16 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        Icon(
+            Icons.Filled.Inbox,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.size(36.dp),
+        )
         Text(judul, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
         if (pesan.isNotBlank()) {
-            Text(pesan, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+            Text(pesan, style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         }
         if (onTombol != null) OutlinedButton(onClick = onTombol) { Text(labelTombol) }
     }
@@ -211,6 +346,12 @@ fun ErrorState(pesan: String, onRetry: (() -> Unit)? = null, modifier: Modifier 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        Icon(
+            Icons.Filled.ErrorOutline,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(36.dp),
+        )
         Text(pesan, style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
         if (onRetry != null) Button(onClick = onRetry) { Text(NamaAntarmuka.COBA_LAGI) }
@@ -237,8 +378,13 @@ fun LoadingState(pesan: String = "Memuat…", modifier: Modifier = Modifier) {
  */
 @Composable
 fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
-    Card(modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Card(
+        modifier.fillMaxWidth().padding(vertical = 4.dp),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             repeat(baris.coerceAtLeast(1)) { i ->
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
@@ -288,7 +434,7 @@ fun BacaanSettingsSheet(
             Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(NamaAntarmuka.PENGATURAN_BACAAN, style = MaterialTheme.typography.titleMedium)
+            Text(NamaAntarmuka.PENGATURAN_BACAAN, style = MaterialTheme.typography.titleLarge)
             Text("Berlaku untuk semua bacaan dan tersimpan otomatis.",
                 style = MaterialTheme.typography.labelSmall)
             Row(

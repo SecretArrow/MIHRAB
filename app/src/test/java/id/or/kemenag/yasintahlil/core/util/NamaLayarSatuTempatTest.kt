@@ -218,32 +218,38 @@ class NamaLayarSatuTempatTest {
         assertTrue("$nama menamai layar dengan nama yang bukan miliknya: $tertukar", tertukar.isEmpty())
     }
 
-    /** Kartu "Aksi cepat" di beranda. */
+    /** Kartu "Aksi cepat" di beranda — kisi ubin `Triple(NamaLayar, Routes, ikon)`. */
     @Test
     fun kartuBerandaMemakaiNamaLayarYangBenar() {
         periksa(
             "HomeScreen.kt",
-            pasangan("feature/home/HomeScreen.kt", """NamaLayar\.(\w+) to Routes\.(\w+)""")
+            pasangan("feature/home/HomeScreen.kt", """NamaLayar\.(\w+),\s*Routes\.(\w+),""")
                 .entries.associate { (konstanta, rute) -> rute to konstanta },
             setOf("YASIN", "TAHLIL", "SHOLAT", "GHAIB", "ADZAN", "DOA_ADZAN", "IQOMAH",
                 "KIBLAT", "DZIKIR", "SEARCH", "FAVORIT"),
         )
     }
 
-    /** Tombol menu Ibadah dan Alat — dua tempat yang dahulu memakai nama paling berbeda. */
+    /**
+     * Tombol menu Ibadah dan Alat — dua tempat yang dahulu memakai nama paling berbeda.
+     *
+     * Kedua menu kini berbentuk baris ubin `Triple(Routes, NamaLayar, ikon)` yang diberikan ke
+     * komponen bersama `MenuBaris`; labelnya bukan lagi `Button { Text(NamaLayar) }`, tetapi
+     * pasangan rute→nama tetap dipetakan dari daftar itu — nama yang salah pasang tetap tertangkap.
+     */
     @Test
     fun menuIbadahDanAlatMenamaiLayarTujuannya() {
         periksa(
             "IbadahScreen.kt",
             pasangan("feature/ibadah/IbadahScreen.kt",
-                """go\(Routes\.(\w+)\)\s*\}\)\s*\{\s*Text\(NamaLayar\.(\w+)\)"""),
+                """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
             setOf("YASIN", "TAHLIL", "SHOLAT", "WUDHU", "GHAIB", "JENAZAH", "DZIKIR",
                 "DOA_ADZAN", "SEARCH", "FAVORIT"),
         )
         periksa(
             "AlatScreen.kt",
             pasangan("feature/alat/AlatScreen.kt",
-                """go\(Routes\.(\w+)\)\s*\}\)\s*\{\s*Text\(NamaLayar\.(\w+)\)"""),
+                """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
             setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH", "SEARCH"),
         )
         periksa(

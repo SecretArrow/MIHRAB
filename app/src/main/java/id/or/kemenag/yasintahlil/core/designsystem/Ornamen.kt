@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.Dp
@@ -18,6 +19,9 @@ private val UBIN_ORNAMEN: Dp = 64.dp
 /** Alfa bawaan ornamen — cukup terlihat sebagai tekstur, tidak sampai mengganggu bacaan. */
 private const val ALFA_ORNAMEN = 0.07f
 
+/** Sudut putaran kotak kedua — dua bujur sangkar yang saling diputar 45° membentuk khatam. */
+private const val SUDUT_SEGI_DELAPAN = 45
+
 /**
  * Ornamen geometris Islami yang halus (`plan.txt` §"Konsep dan Identitas Aplikasi": *"Ornamen
  * geometris Islami yang halus, tanpa membuat antarmuka terlihat ramai"*).
@@ -27,6 +31,10 @@ private const val ALFA_ORNAMEN = 0.07f
  * jadi tidak ada teks yang perlu diverifikasi sumbernya. Digambar sebagai garis tipis dengan alfa
  * sangat rendah dan diulang sebagai kisi, supaya berfungsi sebagai tekstur latar — bukan hiasan
  * yang berebut perhatian dengan teks.
+ *
+ * Tiap ubin menggambar tiga lapis garis: kedua bujur sangkar, segi delapan yang menyambung
+ * kedelapan ujung bintangnya, dan titik pusat kecil — bingkai girih yang lebih kaya tetap tanpa
+ * memekatkan garis, karena seluruh lapis memakai alfa yang sama.
  *
  * @param warna warna garis; bawaan mengikuti warna utama tema.
  * @param alpha kepekatan ornamen (0..1). Bawaan sengaja sangat rendah.
@@ -43,7 +51,7 @@ fun OrnamenIslami(
         val sisi = ubin.toPx()
         if (sisi <= 0f) return@Canvas
         val garis = warna.copy(alpha = alpha.coerceIn(0f, 1f))
-        val tebal = (sisi * 0.035f).coerceAtLeast(1f)
+        val tebal = (sisi * 0.030f).coerceAtLeast(1f)
         val panjang = sisi * 0.40f
         val kolom = (size.width / sisi).toInt() + 1
         val baris = (size.height / sisi).toInt() + 1
@@ -57,6 +65,23 @@ fun OrnamenIslami(
                 rotate(45f, pusat) {
                     drawRect(garis, topLeft = kiriAtas, size = kotak, style = Stroke(tebal))
                 }
+                // Segi delapan yang menyambung kedelapan ujung bintang: kedua kotak berbagi
+                // jari-jari lingkar luar yang sama, satu digeser 45°, maka ujung-ujungnya
+                // bergantian membentuk segi delapan beraturan.
+                val jari = panjang / 2f * 1.4142135f
+                val bingkai = Path()
+                for (k in 0 until 8) {
+                    val sudut = Math.toRadians((k * SUDUT_SEGI_DELAPAN).toDouble())
+                    val titik = Offset(
+                        pusat.x + jari * Math.cos(sudut).toFloat(),
+                        pusat.y + jari * Math.sin(sudut).toFloat(),
+                    )
+                    if (k == 0) bingkai.moveTo(titik.x, titik.y) else bingkai.lineTo(titik.x, titik.y)
+                }
+                bingkai.close()
+                drawPath(bingkai, garis, style = Stroke(tebal * 0.75f))
+                // Titik pusat kecil menutup motif; tetap sehalus garis lainnya.
+                drawCircle(garis, radius = tebal * 1.4f, center = pusat)
             }
         }
     }
