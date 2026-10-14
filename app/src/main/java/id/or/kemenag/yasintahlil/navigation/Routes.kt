@@ -24,6 +24,18 @@ object Routes {
     const val TENTANG = "settings/tentang"
 
     /**
+     * Layar keterangan (activity terpisah) — keterangan panjang yang dahulu menumpuk di badan
+     * layar konten kini tinggal di sini, dibuka lewat ikon Info kecil.
+     *
+     * Sengaja **bukan** anggota [LANGSUNG]: layar ini hanya bermakna bersama layar asalnya, dan
+     * ketukan notifikasi tidak pernah dimaksudkan membukanya tanpa konteks.
+     */
+    const val KETERANGAN = "keterangan"
+
+    /** Rute layar keterangan untuk satu layar asal, mis. `keterangan/tahlil`. */
+    fun keterangan(asal: String): String = "$KETERANGAN/$asal"
+
+    /**
      * Rute yang boleh dituju langsung dari luar layar (mis. ketukan notifikasi pengingat).
      *
      * [SHOLAT_DETAIL] sengaja tidak ada di sini: rutenya butuh argumen `{id}`, sehingga membuka

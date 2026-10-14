@@ -6,7 +6,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Bacaan
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
@@ -20,6 +22,7 @@ import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
 /**
@@ -47,7 +50,7 @@ private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangka
  * [judulLangkah] dan label chip layar penuhnya.
  */
 @Composable
-fun JenazahScreen() {
+fun JenazahScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
@@ -74,20 +77,44 @@ fun JenazahScreen() {
         // untuk menghilangkan satu takbir — kartunya tak muncul, judulnya tetap ada.
         BacaanSholat.TAKBIR_MAYIT.map { judulLangkah.getValue(it) to cari(it) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.JENAZAH }, info.takbir, info.tanpaRukuSujud),
-            style = MaterialTheme.typography.titleLarge)
-        // Hukum dibaca dari bundel (`hukum`), sama seperti di layar Ghaib — bukan diketik di sini.
-        if (info.hukum.isNotBlank()) {
-            Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(TampilanSholatKhusus.judul(info.judul.ifBlank { NamaLayar.JENAZAH }, info.takbir, info.tanpaRukuSujud),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("jenazah")) }
         }
-        // Catatan rujukan diteruskan walau berkas Jenazah belum memuatnya: aturannya satu tempat,
-        // jadi modul yang menambahkannya kelak tak perlu mengubah layar ini.
-        Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
-            style = MaterialTheme.typography.labelMedium)
-        if (info.syarat.isNotEmpty()) {
-            Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium)
+        // Keterangan modul — hukum, dalil beserta rujukannya, syarat, dan catatan mazhab —
+        // dipadatkan ke satu kartu ringkas (semua dirangkai aturan bersama `TampilanSholatKhusus`,
+        // sama dengan layar Ghaib); keterangannya yang utuh dibuka lewat ikon Info. Dahulu
+        // keempatnya menumpuk sebagai baris-baris teks lepas di atas kartu bacaan.
+        KartuKeterangan(
+            onInfo = { go(Routes.keterangan("jenazah")) },
+            modifier = Modifier.padding(top = 6.dp),
+        ) {
+            // Hukum dibaca dari bundel (`hukum`), sama seperti di layar Ghaib — bukan diketik di sini.
+            if (info.hukum.isNotBlank()) {
+                Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
+            }
+            // Catatan rujukan diteruskan walau berkas Jenazah belum memuatnya: aturannya satu tempat,
+            // jadi modul yang menambahkannya kelak tak perlu mengubah layar ini.
+            Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (info.syarat.isNotEmpty()) {
+                Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+            if (info.catatanMazhab.isNotBlank()) {
+                Text(TampilanSholatKhusus.catatanMazhab(info.catatanMazhab),
+                    style = MaterialTheme.typography.labelMedium,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BarisChip(Modifier.padding(vertical = 4.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
@@ -100,8 +127,7 @@ fun JenazahScreen() {
             if (n.catatan.isNotBlank()) Text(n.catatan, style = MaterialTheme.typography.labelSmall)
         }
         steps.forEachIndexed { i, (judul, b) ->
-            Text(TampilanSholatKhusus.langkah(i + 1, judul), style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 8.dp))
+            BagianJudul(TampilanSholatKhusus.langkah(i + 1, judul))
             if (b != null) {
                 val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
                 val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
@@ -109,10 +135,6 @@ fun JenazahScreen() {
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
                     showArab = showArab, kategori = b.kategori)
             }
-        }
-        if (info.catatanMazhab.isNotBlank()) {
-            Text(TampilanSholatKhusus.catatanMazhab(info.catatanMazhab),
-                style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
         }
     }
 

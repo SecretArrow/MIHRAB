@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.Langkah
@@ -12,15 +13,19 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
 /**
  * Panduan bersuci: wudhu, tayamum, dan pembatal wudhu. Langkah disajikan sebagai
  * prosedur (kerangka Fasolatan/Bimas Islam) tanpa teks Arab — lafaz niat/doa menunggu
  * verifikasi sumber resmi, sesuai aturan proyek.
+ *
+ * Catatan mazhab dan catatan lafaz tinggal di layar keterangan (dibuka lewat ikon Info),
+ * sehingga badan layar hanya memuat prosedurnya.
  */
 @Composable
-fun WudhuScreen() {
+fun WudhuScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val userData = rememberUserData()
     val scope = rememberCoroutineScope()
@@ -29,18 +34,40 @@ fun WudhuScreen() {
     LaunchedEffect(Unit) { userData.progress(KIND, KunciProgres.WUDHU).collect { selesai = (it?.value ?: 0) > 0 } }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(NamaLayar.WUDHU, style = MaterialTheme.typography.titleLarge)
-        // Provenans dibaca dari bundel (`wudhu.json` → `edisi`). Salinan lama di sini lebih pendek
-        // daripada berkasnya — menghilangkan tayamum dan "Ngaji Fasolatan" — sehingga layar
-        // mengaku bersumber dari kerangka yang tidak sama dengan yang dicatat kontennya.
-        // Bila berkasnya tidak mencantumkannya, baris ini tidak ditampilkan sama sekali.
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.WUDHU, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("wudhu")) }
+        }
+        // Provenans dibaca dari bundel (`wudhu.json` → `edisi`) dan tetap tampil sekilas sebagai
+        // kartu keterangan; catatan mazhab dan catatan lafaz yang menyertainya dibuka lewat ikon
+        // Info. Bila berkasnya tidak mencantumkannya, kartu ini tidak digambar sama sekali.
         if (panduan.edisi.isNotBlank()) {
-            Text(panduan.edisi, style = MaterialTheme.typography.labelMedium)
+            KartuKeterangan(
+                onInfo = { go(Routes.keterangan("wudhu")) },
+                modifier = Modifier.padding(top = 6.dp),
+            ) {
+                Text(panduan.edisi, style = MaterialTheme.typography.labelMedium)
+            }
         }
 
         if (panduan.rukun.isNotEmpty()) {
-            Text("Rukun wudhu", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
-            panduan.rukun.forEachIndexed { i, r -> Text("${i + 1}. $r", style = MaterialTheme.typography.bodyMedium) }
+            BagianJudul("Rukun wudhu")
+            panduan.rukun.forEachIndexed { i, r ->
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    LangkahNomor(i + 1)
+                    Text(r, style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f))
+                }
+            }
         }
 
         // Judul kedua bagian dibaca dari bundel (`wudhu.json` → `wudhu.judul` / `tayamum.judul`).
@@ -51,22 +78,14 @@ fun WudhuScreen() {
         LangkahBagian(panduan.judulTayamum.ifBlank { "Tata cara tayamum" }, panduan.tayamum)
 
         if (panduan.pembatal.isNotEmpty()) {
-            Text("Yang membatalkan wudhu", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 12.dp))
-            panduan.pembatal.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
-        }
-
-        if (panduan.catatanMazhab.isNotBlank()) {
-            Text(panduan.catatanMazhab, style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 8.dp))
-        }
-        if (panduan.catatanLafaz.isNotBlank()) {
-            Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                Text(panduan.catatanLafaz, style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(12.dp))
+            BagianJudul("Yang membatalkan wudhu")
+            panduan.pembatal.forEach {
+                Text("• $it", style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 4.dp, top = 2.dp))
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 16.dp)) {
             Button(onClick = { scope.launch { userData.setProgress(KIND, KunciProgres.WUDHU, 1) } }, enabled = !selesai) {
                 Text(if (selesai) "✓ Sudah ditandai dipelajari" else "Tandai sudah dipelajari")
             }
@@ -80,12 +99,15 @@ fun WudhuScreen() {
 @Composable
 private fun LangkahBagian(title: String, steps: List<Langkah>) {
     if (steps.isEmpty()) return
-    Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 12.dp))
+    BagianJudul(title)
     steps.forEach { l ->
-        Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-            Column(Modifier.padding(12.dp)) {
-                Text("${l.no}. ${l.judul}", style = MaterialTheme.typography.titleSmall)
-                if (l.keterangan.isNotBlank()) Text(l.keterangan, style = MaterialTheme.typography.bodyMedium)
+        KartuEntri(
+            judul = l.judul,
+            lencana = listOf("Langkah ${l.no}"),
+        ) {
+            if (l.keterangan.isNotBlank()) {
+                Text(l.keterangan, style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

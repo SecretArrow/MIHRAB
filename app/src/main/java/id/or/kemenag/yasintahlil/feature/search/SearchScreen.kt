@@ -78,7 +78,7 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { catat() }),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
         )
 
         when {
@@ -130,12 +130,14 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
 /** Kartu satu hasil: judul, cuplikan yang memuat kata kunci, dan tombol menuju layarnya. */
 @Composable
 private fun KartuHasil(h: Hit, buka: () -> Unit) {
-    Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Text(h.judul, style = MaterialTheme.typography.titleMedium)
-            Text(h.cuplikan)
-            Button(onClick = buka) { Text(NamaAntarmuka.BUKA) }
-        }
+    KartuEntri(
+        judul = h.judul,
+        modifier = Modifier.padding(vertical = 2.dp),
+    ) {
+        Text(h.cuplikan, style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+    } aksi {
+        FilledTonalButton(onClick = buka) { Text(NamaAntarmuka.BUKA) }
     }
 }
 

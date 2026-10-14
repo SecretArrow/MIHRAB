@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -20,9 +21,11 @@ import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
+fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val surah = vm.surah
     val ctx = LocalContext.current
@@ -80,45 +83,53 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
         targetAyat = n
     }
 
+    // Asal teks Arab/transliterasi/terjemahan dibaca dari bundel untuk menentukan ada-tidaknya
+    // keterangan yang layak dibuka; kalimatnya yang utuh tinggal di layar keterangan, sehingga
+    // badan layar tidak lagi dibuka oleh tiga baris atribusi.
+    val atribusi = remember(surah) { AtribusiTeks.surah(surah) }
+
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         if (!focus) {
-            Text("${NamaLayar.YASIN} — ${surah.ayatCount} ayat", style = MaterialTheme.typography.titleLarge)
-            // Sumber teks ditampilkan apa adanya dari bundel: teks Arab, transliterasi, dan
-            // terjemahan dicatat terpisah di berkasnya (MSI LPMQ Kemenag / transliterasi resmi
-            // Kemenag / terjemah edisi 2019). Sebelumnya layar hanya menuliskan "(MSI Kemenag)"
-            // di judul — hardcode yang tidak menyebut asal transliterasi maupun terjemahan, dan
-            // tidak berubah bila bundelnya berubah.
-            val atribusi = remember(surah) { AtribusiTeks.surah(surah) }
-            if (atribusi.isNotBlank()) {
-                Text(atribusi, style = MaterialTheme.typography.labelSmall)
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    "${NamaLayar.YASIN} — ${surah.ayatCount} ayat",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                if (atribusi.isNotBlank()) {
+                    TombolInfo { go(Routes.keterangan("yasin")) }
+                }
             }
             Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${if (s.mark in 1..surah.ayatCount) "ayat ${s.mark}" else "belum ada"}",
-                style = MaterialTheme.typography.labelMedium)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(
+                Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 OutlinedTextField(jump, { jump = it.filter(Char::isDigit).take(2) },
-                    label = { Text("Ayat") }, modifier = Modifier.weight(1f))
+                    label = { Text("Ayat") }, singleLine = true,
+                    modifier = Modifier.weight(1f))
                 Button(onClick = { jump.toIntOrNull()?.let { lompatKe(it, tandai = true) } }) { Text("Ke ayat") }
             }
             OutlinedTextField(query, { query = it }, label = { Text("Cari dalam Yasin (teks/ayat)") },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
             if (query.isNotBlank()) Text("${shown.size} ayat cocok", style = MaterialTheme.typography.labelSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Deretan kendali dipindah ke baris yang dapat digulir: empat chip + tombol pengaturan
+            // tidak pernah meluber keluar layar sempit, ia digulir.
+            BarisChip(Modifier.padding(vertical = 4.dp)) {
                 OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
                 FilterChip(focus, { focus = !focus }, { Text(NamaAntarmuka.LAYAR_PENUH) })
                 FilterChip(keepOn, { keepOn = !keepOn }, { Text("Tetap menyala") })
                 FilterChip(showBookmarks, { showBookmarks = !showBookmarks }, { Text("Bookmark ${s.bookmarks.size}") })
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (s.mark in 1..surah.ayatCount) Button(onClick = { lompatKe(s.mark) }) { Text("Lanjut ayat ${s.mark}") }
-            }
-            if (showBookmarks) {
-                Text("Bookmark:", style = MaterialTheme.typography.titleSmall)
-                if (s.bookmarks.isEmpty()) Text("Belum ada bookmark. Tandai ayat untuk menyimpan.",
-                    style = MaterialTheme.typography.labelSmall)
-                s.bookmarks.forEach { b ->
-                    TextButton(onClick = {
-                        b.refId.toIntOrNull()?.let { n -> lompatKe(n); showBookmarks = false }
-                    }) { Text(b.label.ifBlank { "Ayat ${b.refId}" }) }
+                if (s.mark in 1..surah.ayatCount) {
+                    FilterChip(false, { lompatKe(s.mark) }, { Text("Lanjut ayat ${s.mark}") })
                 }
             }
         } else {
@@ -131,6 +142,7 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                 val marked = s.bookmarks.any { it.refId == v.nomor.toString() }
                 Row {
                     Text("${v.nomor}", style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(end = 8.dp, top = 12.dp))
                     Column(Modifier.weight(1f)) {
                         // Mode fokus menyembunyikan bilah bawah dan berarti bacaan dibaca dari
@@ -149,6 +161,27 @@ fun YasinScreen(vm: YasinViewModel = hiltViewModel()) {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // Daftar bookmark menjadi panel tersendiri: dahulu ia menumpuk di badan layar dan mendorong
+    // ayat-ayat di bawahnya keluar tampakan setiap kali dibuka.
+    if (showBookmarks) {
+        ModalBottomSheet(onDismissRequest = { showBookmarks = false },
+            sheetState = rememberModalBottomSheetState()) {
+            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+                Text("Bookmark", style = MaterialTheme.typography.titleLarge)
+                if (s.bookmarks.isEmpty()) {
+                    Text("Belum ada bookmark. Tandai ayat untuk menyimpan.",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(top = 4.dp))
+                }
+                s.bookmarks.forEach { b ->
+                    TextButton(onClick = {
+                        b.refId.toIntOrNull()?.let { n -> lompatKe(n); showBookmarks = false }
+                    }) { Text(b.label.ifBlank { "Ayat ${b.refId}" }) }
                 }
             }
         }

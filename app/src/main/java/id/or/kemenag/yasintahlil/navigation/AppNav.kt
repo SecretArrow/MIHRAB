@@ -36,6 +36,7 @@ import id.or.kemenag.yasintahlil.feature.favorit.FavoritScreen
 import id.or.kemenag.yasintahlil.feature.home.HomeScreen
 import id.or.kemenag.yasintahlil.feature.ibadah.IbadahScreen
 import id.or.kemenag.yasintahlil.feature.jadwal.JadwalScreen
+import id.or.kemenag.yasintahlil.feature.keterangan.KeteranganScreen
 import id.or.kemenag.yasintahlil.feature.kiblat.KiblatScreen
 import id.or.kemenag.yasintahlil.feature.search.SearchScreen
 import id.or.kemenag.yasintahlil.feature.settings.ContentUpdateScreen
@@ -95,26 +96,38 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.IBADAH) { IbadahScreen { nav.navigate(it) } }
                 composable(Routes.ALAT) { AlatScreen { nav.navigate(it) } }
                 composable(Routes.SETTINGS) { SettingsScreen { nav.navigate(it) } }
-                composable(Routes.YASIN) { YasinScreen() }
-                composable(Routes.TAHLIL) { TahlilScreen() }
+                composable(Routes.YASIN) { YasinScreen(go = { nav.navigate(it) }) }
+                composable(Routes.TAHLIL) { TahlilScreen(go = { nav.navigate(it) }) }
                 composable(Routes.SHOLAT) { SholatScreen { nav.navigate(it) } }
                 composable("${Routes.SHOLAT_DETAIL}/{id}",
                     arguments = listOf(navArgument("id") { type = NavType.StringType })) {
                     SholatDetailScreen(it.arguments?.getString("id").orEmpty()) { r -> nav.navigate(r) }
                 }
-                composable(Routes.GHAIB) { GhaibScreen() }
-                composable(Routes.JENAZAH) { JenazahScreen() }
-                composable(Routes.WUDHU) { WudhuScreen() }
-                composable(Routes.ADZAN) { AdzanScreen() }
-                composable(Routes.DOA_ADZAN) { DoaAdzanScreen() }
-                composable(Routes.IQOMAH) { IqomahScreen() }
-                composable(Routes.KIBLAT) { KiblatScreen() }
-                composable(Routes.JADWAL) { JadwalScreen() }
-                composable(Routes.DZIKIR) { DzikirScreen() }
+                composable(Routes.GHAIB) { GhaibScreen(go = { nav.navigate(it) }) }
+                composable(Routes.JENAZAH) { JenazahScreen(go = { nav.navigate(it) }) }
+                composable(Routes.WUDHU) { WudhuScreen(go = { nav.navigate(it) }) }
+                composable(Routes.ADZAN) { AdzanScreen(go = { nav.navigate(it) }) }
+                composable(Routes.DOA_ADZAN) { DoaAdzanScreen(go = { nav.navigate(it) }) }
+                composable(Routes.IQOMAH) { IqomahScreen(go = { nav.navigate(it) }) }
+                composable(Routes.KIBLAT) { KiblatScreen(go = { nav.navigate(it) }) }
+                composable(Routes.JADWAL) { JadwalScreen(go = { nav.navigate(it) }) }
+                composable(Routes.DZIKIR) { DzikirScreen(go = { nav.navigate(it) }) }
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
                 composable(Routes.TENTANG) { TentangScreen() }
+                // Layar keterangan: keterangan panjang tinggal di sini, dibuka lewat ikon Info
+                // kecil pada layar konten. Asalnya menjadi argumen supaya keterangannya dibaca
+                // ulang dari sumber yang sama — bukan disalin dari layar pembukanya.
+                composable(
+                    "${Routes.KETERANGAN}/{asal}",
+                    arguments = listOf(navArgument("asal") { type = NavType.StringType }),
+                ) {
+                    KeteranganScreen(
+                        it.arguments?.getString("asal").orEmpty(),
+                        kembali = { nav.popBackStack() },
+                    )
+                }
             }
             }
         }

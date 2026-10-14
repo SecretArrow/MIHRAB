@@ -5,6 +5,23 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Seluruh layar konten dirapikan dan keterangan panjang dipindah ke activity keterangan.**
+  Badan setiap layar konten (Surat Yasin, Tahlil, Dzikir, Panduan Sholat beserta rinciannya,
+  Wudhu & Tayamum, Sholat Ghaib/Jenazah, Adzan & Pengingat, Iqomah, Doa Adzan, Arah Kiblat,
+  Jadwal Sholat, Pencarian, Favorit) ditata ulang: kepala layar berikut deretan kendali yang
+  dapat digulir (`BarisChip`) menggantikan tumpukan tombol yang meluber di layar sempit,
+  daftar panjang (bookmark Yasin, seluruh bagian Tahlil) menjadi panel tersendiri, kartu entri
+  berlencana (`KartuEntri`) dan langkah bernomor (`LangkahNomor`) menyatukan bentuk seluruh
+  daftar, serta penghitung (`CounterRow`) dipadatkan. Keterangan yang dahulu menumpuk sebagai
+  baris-baris teks lepas — atribusi teks Yasin, catatan tradisi dan sumber susunan Tahlil,
+  hukum/dalil/syarat sholat mayit, edisi wudhu, cara kerja pengingat adzan, verifikasi rashdul
+  kiblat, perhitungan jadwal — kini dipadatkan ke kartu keterangan ringkas (`KartuKeterangan`)
+  dengan versi lengkapnya di layar keterangan terpisah, dibuka lewat ikon **Info** kecil
+  (`TombolInfo`, `Routes.keterangan(asal)`). Layar keterangan membaca ulang isi dari bundel
+  konten dan aturan bersama — satu fakta tetap satu rumah — dan dijaga uji baru
+  `KeteranganLayarTest`.
+
 ## [1.2.0] - 2026-10-14
 
 ### Ditambahkan

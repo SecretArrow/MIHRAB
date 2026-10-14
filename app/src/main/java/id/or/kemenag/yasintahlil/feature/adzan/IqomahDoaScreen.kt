@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,7 +57,7 @@ private fun simpanMins(store: Store, scope: CoroutineScope, mins: Int, ctx: Cont
 }
 
 @Composable
-fun IqomahScreen() {
+fun IqomahScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
@@ -95,18 +97,32 @@ fun IqomahScreen() {
     val shown = if (remaining < 0) total else remaining
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(NamaLayar.IQOMAH, style = MaterialTheme.typography.titleLarge)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.IQOMAH, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("iqomah")) }
+        }
         Text("Timer opsional setelah masuk waktu (± $mins mnt). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
             style = MaterialTheme.typography.labelMedium)
 
         // Durasi, bukan jam: ejaannya dari aturan bersama, tetapi namanya sengaja beda —
-        // lihat `FormatWaktu.menitDetik`.
-        Text(FormatWaktu.menitDetik(shown), style = MaterialTheme.typography.displayMedium)
+        // lihat `FormatWaktu.menitDetik`. Timer menjadi pusat layar: angkanya besar dan tengahannya
+        // diberi ruang, karena itulah yang dilihat pengguna dari kejauhan saat menunggu iqomah.
+        Text(
+            FormatWaktu.menitDetik(shown),
+            style = MaterialTheme.typography.displayMedium,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        )
         LinearProgressIndicator(
             progress = { if (total == 0) 0f else (1f - shown.toFloat() / total).coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BarisChip {
             Button(onClick = { remaining = total }, enabled = !running) { Text("Mulai") }
             OutlinedButton(onClick = { remaining = -1 }) { Text(if (running) NamaAntarmuka.BATAL else NamaAntarmuka.RESET) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
@@ -162,6 +178,7 @@ fun IqomahScreen() {
         // ("HR Abu Dawud, Tirmidzi — sunnah.com"), bukan tampil sebagai rangkaian telanjang.
         // Nomor urut juga membuat id kartu unik: sebelumnya id memakai 10 huruf Arab pertama,
         // yang sama untuk lafaz berulang, sehingga favorit satu lafaz menandai lafaz lain juga.
+        BagianJudul("Lafaz iqomah")
         items.forEachIndexed { i, l ->
             BacaanCard(JenisBacaan.idLafazIqomah(i + 1),
                 "Lafaz iqomah ${i + 1} dari ${items.size}",
@@ -183,7 +200,7 @@ fun IqomahScreen() {
 }
 
 @Composable
-fun DoaAdzanScreen() {
+fun DoaAdzanScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
@@ -205,10 +222,17 @@ fun DoaAdzanScreen() {
         ingatkan = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text("${NamaLayar.DOA_ADZAN} — sebelum & sesudah adzan", style = MaterialTheme.typography.titleLarge)
-        Text("Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: menjawab adzan, sholawat, lalu doa setelah adzan.",
-            style = MaterialTheme.typography.labelMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text("${NamaLayar.DOA_ADZAN} — sebelum & sesudah adzan",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("doa_adzan")) }
+        }
+        BarisChip(Modifier.padding(vertical = 4.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat

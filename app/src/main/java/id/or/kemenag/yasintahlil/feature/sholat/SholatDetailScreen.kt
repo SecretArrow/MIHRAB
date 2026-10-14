@@ -1,7 +1,6 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
@@ -31,6 +31,9 @@ import kotlinx.coroutines.launch
  * `plan.txt` §"Tata Cara Sholat Langkah demi Langkah": bersuci, penentuan arah kiblat, dan dzikir
  * setelah sholat. Ketiganya sudah punya layar sendiri berisi konten terverifikasi; menautkannya di
  * sini membuat pembaca langkah demi langkah tidak perlu menebak di mana mencarinya.
+ *
+ * Uraian panjang tiap sholat (deskripsi, ketentuan, tujuan) tinggal di layar keterangan — dibuka
+ * lewat ikon Info di kepala layar — sehingga badan layar fokus pada urutan langkahnya.
  */
 @Composable
 fun SholatDetailScreen(id: String, go: (String) -> Unit) {
@@ -89,10 +92,24 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     // Jaga indeks langkah tetap sah bila daftar menyusut setelah ganti mazhab.
     LaunchedEffect(steps.size) { if (step > steps.size - 1) step = (steps.size - 1).coerceAtLeast(0) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(info?.nama ?: id, style = MaterialTheme.typography.titleLarge)
-        Text("${info?.rakaat.orEmpty()} • ${info?.waktu.orEmpty()}")
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(info?.nama ?: id, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("sholat:$id")) }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOfNotNull(info?.rakaat?.takeIf { it.isNotBlank() },
+                info?.waktu?.takeIf { it.isNotBlank() }).forEach { Lencana(it) }
+        }
         // Sholat wajib tidak punya kolom tujuan, jadi baris ini hanya muncul untuk sholat sunnah.
-        info?.tujuan?.takeIf { it.isNotBlank() }?.let { Text("Tujuan: $it") }
+        info?.tujuan?.takeIf { it.isNotBlank() }?.let {
+            Text("Tujuan: $it", style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         info?.niat?.let { n ->
             BacaanCard(JenisBacaan.id(JenisBacaan.NIAT, id), "Niat", n.arab, n.latin, n.terjemahan, showLatin, showTrans, arabSize,
                 showArab = showArab, kategori = n.kategori)
@@ -102,7 +119,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 Text(it, style = MaterialTheme.typography.labelMedium)
             }
         }
-        if (info?.deskripsi != null) Text(info.deskripsi)
         info?.ketentuan?.takeIf { it.isNotEmpty() }?.let { ket ->
             Text("Ketentuan:", style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(top = 4.dp))
@@ -120,8 +136,7 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         // sah. Wudhu dan kiblat punya layar sendiri, jadi cukup ditautkan — kontennya tidak disalin.
         Text("Sebelum sholat", style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.horizontalScroll(rememberScrollState())) {
+        BarisChip {
             OutlinedButton(onClick = { go(Routes.WUDHU) }) { Text(NamaLayar.WUDHU) }
             OutlinedButton(onClick = { go(Routes.KIBLAT) }) { Text(NamaLayar.KIBLAT) }
         }
@@ -165,14 +180,15 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 }
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Mode belajar & pengaturan: satu baris yang dapat digulir, tidak lagi menumpuk tiga baris.
+        BarisChip(Modifier.padding(top = 4.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
+        BarisChip {
             Mazhab.SEMUA.forEach { (key, label) ->
                 FilterChip(mazhab == key, {
                     mazhab = key
@@ -191,7 +207,10 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             Text("Muat ulang bundel konten di Pengaturan → Konten, atau pilih sholat lain dari daftar.",
                 style = MaterialTheme.typography.labelSmall)
         } else {
-            Text("Langkah ${step + 1} dari ${steps.size}")
+            Text("Langkah ${step + 1} dari ${steps.size}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp))
             LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
             val b = steps[step.coerceIn(0, steps.size - 1)]
@@ -212,7 +231,8 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                     )
                     Column(Modifier.padding(start = 8.dp)) {
                         Text(p.label, style = MaterialTheme.typography.titleSmall)
-                        Text(p.deskripsi, style = MaterialTheme.typography.bodySmall)
+                        Text(p.deskripsi, style = MaterialTheme.typography.bodySmall,
+                            maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
@@ -225,9 +245,9 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
                 Text(b.catatan, style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(top = 4.dp))
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            BarisChip(Modifier.padding(top = 4.dp)) {
                 Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
-                Button(onClick = { step = 0 }) { Text("Ulangi") }
+                OutlinedButton(onClick = { step = 0 }) { Text("Ulangi") }
                 Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
             }
             if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
@@ -255,8 +275,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         // dicatat berkasnya. Kalimat cadangan sengaja tanpa klaim fiqh apa pun.
         Text("Catatan mazhab: " + catatanMazhab, style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 8.dp))
-        Text("Bacaan bertanda mazhab tertentu hanya tampil bila mazhab panduan cocok. Lihat SOURCES.md.",
-            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp))
     }
 
     if (settings) {

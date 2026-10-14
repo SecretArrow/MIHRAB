@@ -13,14 +13,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
-import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
+import id.or.kemenag.yasintahlil.navigation.Routes
 
 @Composable
-fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
+fun JadwalScreen(go: (String) -> Unit = {}, vm: JadwalViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     var drop by remember { mutableStateOf(false) }
     var methodDrop by remember { mutableStateOf(false) }
@@ -43,14 +43,23 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
     }
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(NamaLayar.JADWAL, style = MaterialTheme.typography.titleLarge)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.JADWAL, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("jadwal")) }
+        }
         Text(
             "Metode: ${s.method.label} • ${JadwalHariIni.metodeRingkas(s.method)} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
             style = MaterialTheme.typography.labelMedium,
         )
 
         // Metode perhitungan
-        OutlinedButton(onClick = { methodDrop = !methodDrop; tzDrop = false; drop = false }) {
+        OutlinedButton(onClick = { methodDrop = !methodDrop; tzDrop = false; drop = false },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
             Text("Metode: ${s.method.label} ▾")
         }
         if (methodDrop) PrayerCalc.Method.entries.forEach { m ->
@@ -58,7 +67,8 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         }
 
         // Kota
-        OutlinedButton(onClick = { drop = !drop; methodDrop = false; tzDrop = false }) { Text("Kota: ${s.city} ▾") }
+        OutlinedButton(onClick = { drop = !drop; methodDrop = false; tzDrop = false },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Kota: ${s.city} ▾") }
         // Daftar kosong diberi keterangan, bukan dibiarkan tampak seperti tombol yang rusak: sebabnya
         // dibawa dari `JadwalViewModel.kotaGagal` (bundel konten tidak terbaca).
         if (drop && vm.kota.isEmpty()) {
@@ -76,7 +86,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
             } else {
                 vm.useGps()
             }
-        }) { Text("Pakai lokasi GPS") }
+        }, modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) { Text("Pakai lokasi GPS") }
 
         // `plan.txt`: "Pembaruan jadwal saat lokasi berubah" — tanpa saklar ini jadwal hanya
         // diperbarui saat tombol di atas ditekan, bukan saat pengguna benar-benar berpindah.
@@ -110,7 +120,8 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
         }
 
         // Zona waktu
-        OutlinedButton(onClick = { tzDrop = !tzDrop; methodDrop = false; drop = false }) {
+        OutlinedButton(onClick = { tzDrop = !tzDrop; methodDrop = false; drop = false },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
             val label = JadwalViewModel.TZ_OPTIONS.firstOrNull { it.first == s.tzId }?.second ?: s.tzId
             Text("Zona waktu: $label ▾")
         }
@@ -120,7 +131,7 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
 
         // Mazhab Asar. Nama mazhabnya dari aturan bersama; awalan "Asar" milik layar ini karena
         // chip di sini berdiri tanpa judul bagian (di menu Pengaturan sudah ada judul "Mazhab Asar:").
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BarisChip {
             FilterChip(!s.asarHanafi, { vm.setAsarHanafi(false) },
                 { Text("Asar ${JadwalHariIni.asarLabel(false)}") })
             FilterChip(s.asarHanafi, { vm.setAsarHanafi(true) },
@@ -187,11 +198,5 @@ fun JadwalScreen(vm: JadwalViewModel = hiltViewModel()) {
                 onTombol = { vm.muatUlang() },
             )
         }
-        Text(
-            "Jadwal dihitung di perangkat (algoritma Meeus), bukan diambil dari server — jadi " +
-                "tidak ada cache daring yang bisa basi dan jadwal tetap tersedia tanpa internet. " +
-                "Verifikasi: ${ContentValidator.SITUS_SIHAT}",
-            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp),
-        )
     }
 }

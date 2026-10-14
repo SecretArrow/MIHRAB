@@ -31,6 +31,7 @@ import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -41,7 +42,7 @@ import java.util.Calendar
  * (notifikasi, optimasi baterai, akses DND).
  */
 @Composable
-fun AdzanScreen() {
+fun AdzanScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
@@ -146,8 +147,16 @@ fun AdzanScreen() {
         )))
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(NamaLayar.ADZAN, style = MaterialTheme.typography.titleLarge)
-        Text("Aktif/nonaktif per waktu:", style = MaterialTheme.typography.titleMedium)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.ADZAN, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("adzan")) }
+        }
+        BagianJudul("Waktu adzan")
         names.forEachIndexed { i, n ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
@@ -174,21 +183,26 @@ fun AdzanScreen() {
                 })
             }
         }
-        Text("Jam di atas dihitung di perangkat untuk hari ini dari lokasi, metode, mazhab Asar, " +
-                "koreksi menit, dan zona waktu yang sama dengan menu Jadwal (metode ${metode.label}). " +
-                "Menonaktifkan sebuah waktu mematikan adzan sekaligus pengingatnya.",
-            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 4.dp))
+        // Penjelasan pengaturan waktu dipadatkan ke kartu keterangan; cara kerja pengingat yang
+        // lebih panjang (WorkManager, Doze, optimasi baterai) dibuka lewat ikon Info.
+        KartuKeterangan(
+            onInfo = { go(Routes.keterangan("adzan")) },
+            modifier = Modifier.padding(top = 4.dp),
+        ) {
+            Text("Jam di atas dihitung di perangkat untuk hari ini dari lokasi, metode, mazhab Asar, " +
+                    "koreksi menit, dan zona waktu yang sama dengan menu Jadwal. Metode aktif: " +
+                    "${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; ubah metode, koreksi " +
+                    "menit, dan zona waktu di menu Jadwal. Menonaktifkan sebuah waktu mematikan " +
+                    "adzan sekaligus pengingatnya.",
+                style = MaterialTheme.typography.labelMedium)
+        }
 
         // `plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang legal digunakan"*
         // dan *"Pengaturan volume dan jenis suara"*. Aplikasi tidak menyertakan audio bawaan, jadi
         // jenis suara = berkas pilihan pengguna yang diberi nama; beberapa boleh disimpan sekaligus
-        // dan satu dipilih sebagai yang aktif.
-        Text("Jenis suara adzan", style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
-        Text("Aplikasi tidak menyertakan audio bawaan karena lisensi: setiap jenis suara adalah " +
-                "berkas pilihan Anda sendiri yang diberi nama. Simpan beberapa (mis. \"adzan masjid " +
-                "lokal\") lalu pilih satu yang dipakai pengingat. Nama hanya penanda pilihan Anda.",
-            style = MaterialTheme.typography.labelSmall)
+        // dan satu dipilih sebagai yang aktif. Penjelasan lengkapnya (mengapa tanpa audio bawaan,
+        // cara kerja pengingat WorkManager) tinggal di layar keterangan.
+        BagianJudul("Jenis suara adzan")
         if (daftarSuara.isEmpty()) {
             Text("Belum ada jenis suara tersimpan.", style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 4.dp))
@@ -294,8 +308,10 @@ fun AdzanScreen() {
                 else "Akses Kebijakan Notifikasi: belum diberikan. Aktifkan lewat \"Atur akses DND\" di Pengaturan sistem.",
             style = MaterialTheme.typography.labelSmall)
 
-        Text("Izin yang dibutuhkan:", style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
+        // Saklar & pintasan izin sistem tetap di badan layar — keduanya tindakan, bukan keterangan;
+        // penjelasan cara kerjanya (WorkManager, Doze, batasan optimasi baterai) tinggal di layar
+        // keterangan bersama penjelasan jenis suara.
+        BagianJudul("Izin yang dibutuhkan")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = {
                 if (Build.VERSION.SDK_INT >= 33) notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -303,15 +319,9 @@ fun AdzanScreen() {
             }) { Text("Izin notifikasi") }
             OutlinedButton(onClick = { openBatterySettings(ctx) }) { Text("Optimasi baterai") }
         }
-        Text("Pengingat dijadwalkan lewat WorkManager (tanpa izin alarm tepat waktu): waktu dapat " +
-                "bergeser beberapa menit saat perangkat tidur (Doze) atau dibatasi optimasi baterai — " +
-                "buka \"Optimasi baterai\" di atas agar lebih tepat. Jadwal dihitung di perangkat " +
-                "dengan metode ${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; " +
-                "ubah metode, koreksi menit, dan zona waktu di menu Jadwal.",
-            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(vertical = 8.dp))
 
-        Text("Lafaz adzan:", style = MaterialTheme.typography.titleMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BagianJudul("Lafaz adzan")
+        BarisChip {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         if (lafaz.isEmpty()) {

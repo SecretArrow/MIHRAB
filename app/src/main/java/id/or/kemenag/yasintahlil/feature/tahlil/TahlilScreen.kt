@@ -20,9 +20,11 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
+fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
     // rememberSaveable: pilihan tampilan (mode jamaah, layar penuh, panel susunan) tidak hilang
@@ -31,6 +33,7 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
+    var daftar by remember { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
 
     if (s.items.isEmpty()) {
@@ -48,25 +51,43 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
     val selesai = s.count >= cur.ulangi
 
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text("${NamaLayar.TAHLIL} — bagian ${s.idx + 1} dari ${s.items.size}", style = MaterialTheme.typography.titleLarge)
-        // Catatan tradisi dibaca dari bundel (`tahlil.json` → `catatan_tradisi`) dengan kalimat
-        // cadangan bila berkasnya kosong: sebelumnya kalimat ini ditulis di kode, jadi ia tidak
-        // ikut berubah bila bundelnya diperbarui — dan bundelnya memuat versi yang lebih lengkap.
-        Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}. " +
-                repo.tahlilCatatanTradisi().ifBlank { "Susunan dapat berbeda menurut tradisi." },
-            style = MaterialTheme.typography.labelMedium)
-        // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan yang *"berdasarkan sumber atau tradisi
-        // yang jelas"*. Menampilkan nama susunan saja tidak cukup: nama bukan sumber. Bila susunan
-        // itu tidak mengklaim sumber apa pun (mis. "Susunan saya"), hal itu dikatakan terus terang —
-        // bukan diisi rujukan karangan.
-        Text(if (s.sumberSusunan.isNotBlank()) "Sumber: ${s.sumberSusunan}"
-                else "Sumber: susunan ini disusun sendiri oleh Anda, bukan rangkaian dari rujukan atau tradisi tertentu.",
-            style = MaterialTheme.typography.labelSmall)
-        // Sumber bacaan tingkat modul: sebagian besar bagian tahlil tidak menyebut sumbernya
-        // sendiri, dan berkasnya sudah menyediakan keterangan yang berlaku untuk semuanya.
-        val sumberBacaan = remember { repo.tahlilSumberBacaan() }
-        if (sumberBacaan.isNotBlank()) {
-            Text("Sumber bacaan: $sumberBacaan", style = MaterialTheme.typography.labelSmall)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text("${NamaLayar.TAHLIL} — bagian ${s.idx + 1} dari ${s.items.size}",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("tahlil")) }
+        }
+        // Keterangan susunan dipadatkan ke satu kartu: catatan tradisi, sumber susunan aktif, dan
+        // sumber bacaan tingkat modul tetap terbaca sekilas (dari bundel, dengan cadangannya),
+        // sementara penjelas yang lebih panjang — daftar susunan beserta sumbernya — dibuka lewat
+        // ikon Info. Dahulu ketiganya menumpuk sebagai tiga baris teks lepas di atas layar.
+        KartuKeterangan(
+            onInfo = { go(Routes.keterangan("tahlil")) },
+            modifier = Modifier.padding(top = 6.dp),
+        ) {
+            // Catatan tradisi dibaca dari bundel (`tahlil.json` → `catatan_tradisi`) dengan kalimat
+            // cadangan bila berkasnya kosong: sebelumnya kalimat ini ditulis di kode, jadi ia tidak
+            // ikut berubah bila bundelnya diperbarui — dan bundelnya memuat versi yang lebih lengkap.
+            Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}. " +
+                    repo.tahlilCatatanTradisi().ifBlank { "Susunan dapat berbeda menurut tradisi." },
+                style = MaterialTheme.typography.labelMedium)
+            // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan yang *"berdasarkan sumber atau tradisi
+            // yang jelas"*. Menampilkan nama susunan saja tidak cukup: nama bukan sumber. Bila susunan
+            // itu tidak mengklaim sumber apa pun (mis. "Susunan saya"), hal itu dikatakan terus terang —
+            // bukan diisi rujukan karangan.
+            Text(if (s.sumberSusunan.isNotBlank()) "Sumber: ${s.sumberSusunan}"
+                    else "Sumber: susunan ini disusun sendiri oleh Anda, bukan rangkaian dari rujukan atau tradisi tertentu.",
+                style = MaterialTheme.typography.labelMedium)
+            // Sumber bacaan tingkat modul: sebagian besar bagian tahlil tidak menyebut sumbernya
+            // sendiri, dan berkasnya sudah menyediakan keterangan yang berlaku untuk semuanya.
+            val sumberBacaan = remember { repo.tahlilSumberBacaan() }
+            if (sumberBacaan.isNotBlank()) {
+                Text("Sumber bacaan: $sumberBacaan", style = MaterialTheme.typography.labelMedium)
+            }
         }
 
         if (s.susunan.size > 1) {
@@ -80,25 +101,26 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         }
         LinearProgressIndicator(progress = { ((s.idx + 1).toFloat() / s.items.size).coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { vm.prev() }, enabled = s.idx > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
+        // Navigasi antarbagian: tombol langkah mengapit chip mode, semuanya pada baris yang dapat
+        // digulir supaya tak pernah meluber di layar sempit.
+        BarisChip(Modifier.padding(bottom = 4.dp)) {
+            OutlinedButton(onClick = { vm.prev() }, enabled = s.idx > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
             Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
             FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             OutlinedButton(onClick = { susun = true }) { Text("Sesuaikan susunan") }
+            OutlinedButton(onClick = { daftar = true }) { Text("Semua bagian") }
         }
         CounterRow(s.count, cur.ulangi,
             onPlus = { vm.setCount(s.count + 1) },
             onMinus = { vm.setCount(s.count - 1) },
             onReset = { vm.setCount(0) })
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1 && selesai) {
-                Text(if (selesai) "✓ Tandai selesai →" else "Selesaikan dulu")
-            }
-        }
+        if (selesai) Button(
+            onClick = { vm.next() },
+            enabled = s.idx < s.items.size - 1,
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        ) { Text("✓ Tandai selesai → ${NamaAntarmuka.BERIKUTNYA}") }
         // Dua mode berarti bacaan dibaca dari jauh — "Jamaah" (dibaca bersama) dan "Layar penuh" —
         // dan keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
         // Jenazah, Iqomah, Yasin, dan Dzikir. Sebelumnya hanya mode jamaah yang menaikkannya,
@@ -118,14 +140,23 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
                 if (selesai) Text("✓ Selesai — lanjut ke bagian berikutnya.",
                     color = MaterialTheme.colorScheme.primary)
             }
-            item {
-                Text("Semua bagian:", style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 12.dp))
-            }
-            items(s.items) { it ->
-                val i = s.items.indexOf(it)
-                TextButton(onClick = { vm.jumpTo(i) }) {
-                    Text("${i + 1}. ${it.judul}${if (it.ulangi > 1) " (${it.ulangi}x)" else ""}")
+        }
+    }
+
+    // Daftar seluruh bagian menjadi panel tersendiri: dahulu ia menumpuk di bawah kartu bacaan dan
+    // mendorong bagian yang sedang dibaca keluar tampakan.
+    if (daftar) {
+        ModalBottomSheet(onDismissRequest = { daftar = false },
+            sheetState = rememberModalBottomSheetState()) {
+            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+                Text("Semua bagian", style = MaterialTheme.typography.titleLarge)
+                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
+                    items(s.items) { it ->
+                        val i = s.items.indexOf(it)
+                        TextButton(onClick = { vm.jumpTo(i); daftar = false }) {
+                            Text("${i + 1}. ${it.judul}${if (it.ulangi > 1) " (${it.ulangi}x)" else ""}")
+                        }
+                    }
                 }
             }
         }

@@ -29,9 +29,15 @@ class PengingatDoaAdzanTest {
         val semua = Regex("""const val (\w+) = """").findAll(routes).map { it.groupValues[1] }.toList()
         assertTrue("rute tak terbaca", semua.size >= 15)
 
-        val kurang = semua.filterNot { it == "SHOLAT_DETAIL" || blok.contains(it) }
+        // Rute berargumen tak mungkin dibuka dari notifikasi: rinciannya menempel pada argumennya —
+        // rincian sholat pada id sholatnya, keterangan pada layar asalnya (`keterangan/{asal}`).
+        // Keduanya karena itu sengaja bukan anggota LANGSUNG, sama seperti sebelum keterangan ada.
+        val berargumen = setOf("SHOLAT_DETAIL", "KETERANGAN")
+        val kurang = semua.filterNot { it in berargumen || blok.contains(it) }
         assertTrue("rute tidak boleh dibuka dari notifikasi: $kurang", kurang.isEmpty())
-        assertFalse("rute berargumen tidak boleh ikut", blok.contains("SHOLAT_DETAIL"))
+        berargumen.forEach {
+            assertFalse("rute berargumen tidak boleh ikut: $it", blok.contains(it))
+        }
     }
 
     @Test

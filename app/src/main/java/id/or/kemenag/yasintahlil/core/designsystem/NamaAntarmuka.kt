@@ -148,4 +148,14 @@ object NamaAntarmuka {
 
     /** Tombol membuka layar asal sebuah bacaan. */
     const val BUKA = "Buka"
+
+    /**
+     * Pintu ke layar keterangan (activity terpisah): label aksesibilitas ikon Info kecil dan
+     * awalan judul layar keterangannya. Satu nama untuk satu tujuan — tombol yang menyebutnya
+     * memang membuka keterangan, bukan hal lain.
+     */
+    const val KETERANGAN = "Keterangan"
+
+    /** Tombol kembali dari layar keterangan ke layar yang membukanya. */
+    const val KEMBALI = "Kembali"
 }

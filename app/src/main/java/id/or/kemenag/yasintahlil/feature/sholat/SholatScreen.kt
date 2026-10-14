@@ -1,15 +1,14 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.BerkasKonten
@@ -62,13 +61,25 @@ fun SholatScreen(go: (String) -> Unit) {
     }
     val kelompokSunnah = remember(sunnahTampil, cara) { KelompokSholat.kelompok(sunnahTampil, cara) }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text(NamaLayar.SHOLAT, style = MaterialTheme.typography.titleLarge)
-        // Sumber panduan dibaca dari bundel (`sholat_daftar.json` → `panduan`): sebelumnya layar
-        // hanya menulis "(Fasolatan Kemenag)" sebagai teks hardcode, sedangkan berkasnya mencatat
-        // keterangan yang lebih tepat — termasuk bahwa hadisnya diverifikasi lewat sunnah.com.
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(NamaLayar.SHOLAT, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("sholat")) }
+        }
+        // Sumber panduan dipadatkan ke kartu keterangan: barisnya tetap dibaca dari bundel
+        // (`sholat_daftar.json` → `panduan`) dan tetap tampil sekilas, sementara catatan mazhab
+        // modul dan penjelas isi panduan dibuka lewat ikon Info.
         val panduan = remember { repo.sholatPanduan() }
         if (panduan.isNotBlank()) {
-            Text("Sumber panduan: $panduan", style = MaterialTheme.typography.labelSmall)
+            KartuKeterangan(
+                onInfo = { go(Routes.keterangan("sholat")) },
+                modifier = Modifier.padding(top = 6.dp),
+            ) {
+                Text("Sumber panduan: $panduan", style = MaterialTheme.typography.labelMedium)
+            }
         }
         // `PrimaryTabRow` (bukan `TabRow` yang usang): indikatornya kini batang membulat 24 dp di
         // bawah label, sesuai varian tab M3 terbaru. Perilaku tab — tiga pilihan tetap, tanpa
@@ -105,22 +116,30 @@ fun SholatScreen(go: (String) -> Unit) {
         }
         LazyColumn(Modifier.fillMaxSize()) {
             if (tab == 0) items(wajibTampil) { s ->
-                Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(s.nama, style = MaterialTheme.typography.titleMedium)
-                        Text("${s.rakaat} • ${s.waktu}")
-                        Text(s.deskripsi)
-                        Row {
-                            // Entri yang punya modul sendiri (Ghaib, Jenazah) dikenali dari daftar
-                            // bersama `BerkasKonten.SHOLAT_KHUSUS` — daftar itu memuat id entrinya di
-                            // `sholat_daftar.json`, rutenya, dan nama layarnya. Sebelumnya id-nya
-                            // dieja di sini (`s.id == "ghaib"`), dan tak ada apa pun yang
-                            // membandingkannya dengan bundel: mengganti id di sana menghapus tombol
-                            // ini diam-diam, dan entri itu jatuh ke halaman rincian tanpa isi.
-                            val modul = BerkasKonten.SHOLAT_KHUSUS.firstOrNull { it.idDaftar == s.id }
-                            if (modul != null) Button(onClick = { go(modul.rute) }) { Text("Buka ${modul.nama}") }
-                            else Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
-                        }
+                // Entri yang punya modul sendiri (Ghaib, Jenazah) dikenali dari daftar bersama
+                // `BerkasKonten.SHOLAT_KHUSUS` — daftar itu memuat id entrinya di `sholat_daftar.json`,
+                // rutenya, dan nama layarnya. Sebelumnya id-nya dieja di sini (`s.id == "ghaib"`), dan
+                // tak ada apa pun yang membandingkannya dengan bundel: mengganti id di sana menghapus
+                // tombol ini diam-diam, dan entri itu jatuh ke halaman rincian tanpa isi.
+                val modul = BerkasKonten.SHOLAT_KHUSUS.firstOrNull { it.idDaftar == s.id }
+                KartuEntri(
+                    judul = s.nama,
+                    lencana = listOf(s.rakaat, s.waktu),
+                ) {
+                    // Ringkasan tiga baris: uraian lengkapnya tinggal di rincian tata cara dan di
+                    // layar keterangan, sehingga daftar tetap terbaca sebagai deretan ringkas.
+                    Text(
+                        s.deskripsi,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                } aksi {
+                    if (modul != null) {
+                        FilledTonalButton(onClick = { go(modul.rute) }) { Text("Buka ${modul.nama}") }
+                    } else {
+                        Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                     }
                 }
             }
@@ -130,11 +149,7 @@ fun SholatScreen(go: (String) -> Unit) {
                 // tidak menjawab semua pertanyaan: "mana yang dikerjakan malam ini" berbeda dari
                 // "mana yang tujuannya memohon ampunan".
                 item {
-                    Row(
-                        modifier = Modifier.horizontalScroll(rememberScrollState())
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
+                    BarisChip(Modifier.padding(vertical = 4.dp)) {
                         Text("Kelompok:", style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.align(Alignment.CenterVertically))
                         CaraKelompok.entries.forEach { c ->
@@ -148,22 +163,30 @@ fun SholatScreen(go: (String) -> Unit) {
                             modifier = Modifier.padding(top = 8.dp))
                     }
                     items(isi, key = { "s:${it.id}" }) { s ->
-                        Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                            Column(Modifier.padding(12.dp)) {
-                                Text(s.nama, style = MaterialTheme.typography.titleMedium)
-                                Text("${s.rakaat} • ${s.waktu}")
-                                if (s.tujuan.isNotBlank()) Text("Tujuan: ${s.tujuan}")
-                                Text(s.deskripsi)
-                                Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
-                            }
+                        KartuEntri(
+                            judul = s.nama,
+                            // Label "Tujuan:" tetap dibawa lencananya: tanpa label, teks tujuan
+                            // tak berbeda dari keterangan bebas — pembaca tak tahu sedang membaca
+                            // tujuan sholat itu, bukan catatan lain.
+                            lencana = if (s.tujuan.isBlank()) listOf(s.rakaat, s.waktu)
+                            else listOf(s.rakaat, s.waktu, "Tujuan: ${s.tujuan}"),
+                        ) {
+                            Text(
+                                s.deskripsi,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        } aksi {
+                            Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                         }
                     }
                 }
             }
             if (tab == 2) {
                 item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(vertical = 4.dp)) {
+                    BarisChip(Modifier.padding(vertical = 4.dp)) {
                         OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
                     }
                 }

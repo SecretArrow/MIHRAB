@@ -17,9 +17,10 @@ import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 
 @Composable
-fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
+fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val groups = vm.groups
     // rememberSaveable: tab dan mode layar penuh pilihan pengguna tidak hilang saat diputar ulang.
@@ -38,8 +39,15 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
         return
     }
     Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Text(NamaLayar.DZIKIR, style = MaterialTheme.typography.titleLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            Text(NamaLayar.DZIKIR, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("dzikir")) }
+        }
+        BarisChip(Modifier.padding(vertical = 4.dp)) {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }

@@ -9,7 +9,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,12 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
@@ -33,9 +32,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -182,20 +182,10 @@ fun BacaanCard(
                 ) {
                     Text(judul, style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f))
-                    // Penanda jumlah ulangan — lencana tonal, bukan tombol. Sebelumnya AssistChip
-                    // dengan onClick kosong: tombol yang tampak bisa ditekan tetapi tak melakukan
-                    // apa pun.
-                    if (ulangi > 1) Surface(
-                        shape = RoundedCornerShape(50),
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                    ) {
-                        Text(
-                            "${ulangi}x",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
-                        )
-                    }
+                    // Penanda jumlah ulangan — lencana tonal bersama ([Lencana]), bukan tombol.
+                    // Sebelumnya AssistChip dengan onClick kosong: tombol yang tampak bisa
+                    // ditekan tetapi tak melakukan apa pun.
+                    if (ulangi > 1) Lencana("${ulangi}x")
                 }
                 // Kertas bacaan Arab: permukaan pasir lembut dengan sudut membulat, sehingga
                 // baris Arab terbaca sebagai satu bidang mushaf — bukan teks mengambang. Pada
@@ -229,7 +219,7 @@ fun BacaanCard(
                 SumberKategoriLabel(kategori, Modifier.padding(top = 2.dp))
                 Row(
                     Modifier.padding(top = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     TextButton(onClick = {
                         ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
@@ -268,37 +258,47 @@ fun BacaanCard(
 @Composable
 fun CounterRow(count: Int, target: Int, onPlus: () -> Unit, onMinus: () -> Unit, onReset: () -> Unit) {
     Column(Modifier.fillMaxWidth()) {
+        // Baris penghitung dipadatkan: tombol ikon tonal mengapit angkanya, sehingga deretan
+        // penghitung pada layar yang menampilkannya per bacaan (Dzikir) tidak memakan tinggi
+        // layar lebih besar daripada bacaannya sendiri.
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FilledTonalButton(
-                onClick = onMinus,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
-            ) { Icon(Icons.Filled.Remove, contentDescription = null) }
-            Text("$count / $target", style = MaterialTheme.typography.headlineSmall)
-            FilledTonalButton(
-                onClick = onPlus,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
-            ) { Icon(Icons.Filled.Add, contentDescription = null) }
+            FilledTonalIconButton(onClick = onMinus) {
+                Icon(Icons.Filled.Remove, contentDescription = "Kurangi")
+            }
+            Text("$count / $target", style = MaterialTheme.typography.titleLarge)
+            FilledTonalIconButton(onClick = onPlus) {
+                Icon(Icons.Filled.Add, contentDescription = "Tambah")
+            }
         }
-        OutlinedButton(
-            onClick = onReset,
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp),
-        ) { Text(NamaAntarmuka.RESET) }
         // Progres dihaluskan agar setiap ketukan penghitung terlihat sebagai gerakan, bukan
         // lompatan — "animasi secukupnya" (`plan.txt`) sekaligus umpan balik visual atas ketukan
-        // itu.
+        // itu. Tombol reset menempel di ujungnya sebagai ikon, bukan tombol penuh lebar.
         val progres by animateFloatAsState(
             targetValue = (count.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f),
             label = "progres-hitung",
         )
-        LinearProgressIndicator(
-            progress = { progres },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                .height(6.dp).clip(MaterialTheme.shapes.small),
-        )
+        Row(
+            Modifier.fillMaxWidth().padding(top = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            LinearProgressIndicator(
+                progress = { progres },
+                modifier = Modifier.weight(1f).height(6.dp)
+                    .clip(MaterialTheme.shapes.small),
+            )
+            IconButton(onClick = onReset, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Filled.Refresh,
+                    contentDescription = NamaAntarmuka.RESET,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
     }
 }
 

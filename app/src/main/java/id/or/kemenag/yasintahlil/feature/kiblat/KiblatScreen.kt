@@ -33,16 +33,16 @@ import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
 import id.or.kemenag.yasintahlil.core.sensor.StatusKompas
-import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
+import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /** Kompas kiblat: azimut matematis (Ka'bah SIHAT Kemenag) + jarum sensor. Akurasi sensor tidak dijamin. */
 @Composable
-fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
+fun KiblatScreen(go: (String) -> Unit = {}, vm: KiblatViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -78,24 +78,44 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
     val azimutTeks = TampilanKompas.formatAzimut(kiblat, s.unit)
 
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
-        Text(NamaLayar.KIBLAT, style = MaterialTheme.typography.titleLarge)
-        Text("Azimut: $azimutTeks $arah dari (%.4f, %.4f)%s".format(
-            s.lat, s.lon, if (s.liveFix) " • GPS live" else ""))
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.KIBLAT, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("kiblat")) }
+        }
+        // Azimut adalah jawaban utama layar ini, jadi ia tampil besar di depan; kompas dan peta di
+        // bawahnya menjadi alat verifikasi, bukan sebaliknya.
+        Text("$azimutTeks $arah", style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary)
+        Text("dari (%.4f, %.4f)%s".format(
+            s.lat, s.lon, if (s.liveFix) " • GPS live" else ""),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
         // Judul dahulu berbunyi "(SIHAT Kemenag)" — melekatkan nama lembaga pada angka yang justru
         // dihitung sendiri di perangkat. Yang benar-benar berasal dari SIHAT adalah **koordinat
         // Ka'bah** yang dipakai sebagai titik acuan, jadi itulah yang disebut; dan disebutkan pula
-        // bahwa aplikasi tidak menghubungi server, agar klaimnya dapat diperiksa.
-        Text(
-            "Azimut dihitung di perangkat dari koordinat Ka'bah yang diterbitkan SIHAT Bimas Islam " +
-                "(E-Kiblat); aplikasi tidak menghubungi server. Ketelitiannya bergantung pada " +
-                "ketelitian lokasi dan sensor perangkat.",
-            style = MaterialTheme.typography.labelSmall,
-        )
-        Text(
-            if (s.useGps) "Sumber lokasi: GPS perangkat."
-            else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
-            style = MaterialTheme.typography.labelMedium,
-        )
+        // bahwa aplikasi tidak menghubungi server, agar klaimnya dapat diperiksa. Penjelasan
+        // verifikasi tanpa alat (rashdul kiblat) dan rincian kompas/peta dibuka lewat ikon Info.
+        KartuKeterangan(
+            onInfo = { go(Routes.keterangan("kiblat")) },
+            modifier = Modifier.padding(top = 6.dp),
+        ) {
+            Text(
+                "Azimut dihitung di perangkat dari koordinat Ka'bah yang diterbitkan SIHAT Bimas Islam " +
+                    "(E-Kiblat); aplikasi tidak menghubungi server. Ketelitiannya bergantung pada " +
+                    "ketelitian lokasi dan sensor perangkat.",
+                style = MaterialTheme.typography.labelMedium,
+            )
+            Text(
+                if (s.useGps) "Sumber lokasi: GPS perangkat."
+                else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
 
         if (!s.hasPermission) {
             Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
@@ -200,10 +220,8 @@ fun KiblatScreen(vm: KiblatViewModel = hiltViewModel()) {
         Text("Peta skematik tanpa internet: posisi Anda, Ka'bah, dan rute lingkaran besar di antaranya. " +
             "Jadi acuan arah bila perangkat tak punya magnetometer atau kompas belum terkalibrasi.",
             style = MaterialTheme.typography.labelSmall)
-        Text("Verifikasi tanpa alat: Rashdul kiblat — 2x setahun matahari tepat di atas Ka'bah; bayangan benda tegak menunjuk kiblat. Jadwal: ${ContentValidator.SITUS_SIHAT}/arah-kiblat",
-            style = MaterialTheme.typography.labelSmall)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+        BarisChip(Modifier.padding(top = 8.dp)) {
             FilterChip(s.useGps, {
                 if (!s.hasPermission) {
                     permLauncher.launch(LocationProvider.IZIN.toTypedArray())

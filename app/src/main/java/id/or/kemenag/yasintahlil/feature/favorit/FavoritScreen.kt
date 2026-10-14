@@ -93,7 +93,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
     }
 }
 
-/** Satu baris favorit atau bookmark: judul, layar tujuannya, tombol buka dan hapus. */
+/** Satu baris favorit atau bookmark: kartu ringkas berisi judul, layar tujuannya, tombol buka dan hapus. */
 @Composable
 private fun BarisTersimpan(
     judul: String,
@@ -106,11 +106,12 @@ private fun BarisTersimpan(
     // ditulis lagi oleh [AksiBuka] ketika rutenya kosong, sehingga satu baris yang tak punya tujuan
     // menampilkan kalimat itu dua kali berturut-turut.
     val tujuan = RuteKonten.tujuan(kind, grupDzikir)
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Column(Modifier.weight(1f)) {
-            Text(judul)
-            tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
-        }
+    KartuEntri(
+        judul = judul,
+        modifier = Modifier.padding(vertical = 2.dp),
+    ) {
+        tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
+    } aksi {
         AksiBuka(tujuan, NamaAntarmuka.BUKA, go)
         TextButton(onClick = onHapus) { Text(NamaAntarmuka.HAPUS) }
     }
