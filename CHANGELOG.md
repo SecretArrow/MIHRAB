@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-14
+
 ### Ditambahkan
 - **Rilis otomatis di setiap akhir pipeline.** Setiap push ke `main` yang lulus seluruh
   pipeline-nya (CI lint+unit+build, E2E emulator API 36, workflow-lint) kini berujung rilis
@@ -24,6 +26,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   aksi cepat `MenuTile`, serta menu Ibadah/Alat yang kini baris berikon. Status kosong/gagal,
   penggeser ukuran bacaan, dan seluruh layar bacaan ikut disesuaikan; E2E instrumen
   (NavSmokeTest, ThemeAndScreenSizeTest) tetap hijau di atas UI baru.
+
+**Rilis otomatis** dari commit `8a7e2918e5801dbd77b3476a4a71ce294992f0e9`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.2.0`.
 
 ## [1.1.1] - 2026-10-14
 
