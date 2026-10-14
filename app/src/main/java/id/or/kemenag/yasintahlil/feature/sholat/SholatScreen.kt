@@ -132,17 +132,19 @@ fun SholatScreen(go: (String) -> Unit) {
                             Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                         }
                     },
-                ) {
-                    // Ringkasan tiga baris: uraian lengkapnya tinggal di rincian tata cara dan di
-                    // layar keterangan, sehingga daftar tetap terbaca sebagai deretan ringkas.
-                    Text(
-                        s.deskripsi,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                    // Dua lambda tak mungkin sekaligus menempati posisi ekor — keduanya diberi nama.
+                    isi = {
+                        // Ringkasan tiga baris: uraian lengkapnya tinggal di rincian tata cara dan di
+                        // layar keterangan, sehingga daftar tetap terbaca sebagai deretan ringkas.
+                        Text(
+                            s.deskripsi,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                )
             }
             if (tab == 1) {
                 // `plan.txt` §"Sholat Sunnah": "Kelompokkan sholat berdasarkan waktu pelaksanaan,
@@ -174,15 +176,17 @@ fun SholatScreen(go: (String) -> Unit) {
                             aksi = {
                                 Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                             },
-                        ) {
-                            Text(
-                                s.deskripsi,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 3,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
+                            // Dua lambda tak mungkin sekaligus menempati posisi ekor — keduanya diberi nama.
+                            isi = {
+                                Text(
+                                    s.deskripsi,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            },
+                        )
                     }
                 }
             }

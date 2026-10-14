@@ -136,10 +136,12 @@ private fun KartuHasil(h: Hit, buka: () -> Unit) {
         aksi = {
             FilledTonalButton(onClick = buka) { Text(NamaAntarmuka.BUKA) }
         },
-    ) {
-        Text(h.cuplikan, style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
+        // Dua lambda tak mungkin sekaligus menempati posisi ekor — keduanya diberi nama.
+        isi = {
+            Text(h.cuplikan, style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        },
+    )
 }
 
 private fun sebab(t: Throwable): String =

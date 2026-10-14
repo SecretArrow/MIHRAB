@@ -113,9 +113,11 @@ private fun BarisTersimpan(
             AksiBuka(tujuan, NamaAntarmuka.BUKA, go)
             TextButton(onClick = onHapus) { Text(NamaAntarmuka.HAPUS) }
         },
-    ) {
-        tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
-    }
+        // Dua lambda tak mungkin sekaligus menempati posisi ekor — keduanya diberi nama.
+        isi = {
+            tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
+        },
+    )
 }
 
 /**
