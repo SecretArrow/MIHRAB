@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-14
+
 ### Diubah
 - **Layar Surat Yasin diringkas jadi minimalis.** Kotak cari dalam Yasin dihapus — mencari ayat
   kini tugas layar Pencarian yang menelusuri seluruh konten, bukan hanya Yasin. Tombol layar
@@ -22,6 +24,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Layar Pencarian didesain ulang** agar luas dan ramah: kotak cari lebar dengan ikon kaca
   pembesar dan tombol kosongkan, saran cepat serta pencarian terbaru berbentuk chip, dan jumlah
   hasil yang jelas. Keterangan "Cara membaca" Yasin ikut diperbarui mengikuti kendali barunya.
+
+**Rilis otomatis** dari commit `3ece393f62e8a80386117115dff1d3e3776aa207`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.4.0`.
 
 ## [1.3.1] - 2026-10-14
 
