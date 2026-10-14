@@ -93,7 +93,11 @@ class AturanMetodeSatuTempatTest {
     fun metodeDiLayarBerasalDariPreferensi() {
         layarPenyebutMetode.forEach { rel ->
             val berkas = File(KodeSumber.root(), rel)
-            val sePaket = berkas.parentFile.listFiles { f -> f.isFile && f.extension == "kt" }.orEmpty()
+            // `parentFile` bertipe `File?` menurut anotasi JDK. Direktori induknya selalu ada karena
+            // [rel] berupa jalur relatif berisi pemisah — `?: error` menjaga invarian itu terbaca,
+            // bukan menyamarkannya sebagai "tidak ada berkas di paket ini".
+            val dirPaket = berkas.parentFile ?: error("$rel tidak punya direktori induk")
+            val sePaket = dirPaket.listFiles { f -> f.isFile && f.extension == "kt" }.orEmpty()
             assertTrue("$rel menyebut metode tetapi tak ada berkas di paketnya yang membaca " +
                 "`Store.METHOD` — nama metodenya pasti tetap",
                 sePaket.any { KodeSumber.kodeTanpaKomentar(it.readText()).contains("store.get(Store.METHOD") })

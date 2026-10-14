@@ -45,6 +45,15 @@ class FixtureGateKontenTest {
 
     private fun kunci(o: JSONObject): Set<String> = o.keys().asSequence().toSet()
 
+    /**
+     * Nilai entri sebagai teks. `opt` bernilai `null` **hanya** bila kuncinya tidak ada — dan uji di
+     * bawah sudah memastikan kedua entri memakai kunci yang sama, jadi `null` di sini adalah keadaan
+     * yang mustahil. `?: error` menyatakannya sebagai invarian yang gagal terbaca, bukan membiarkan
+     * `null` ikut dibandingkan seolah-olah sebuah nilai (`"null" == "null"` akan lolos diam-diam).
+     */
+    private fun nilai(o: JSONObject, k: String): String =
+        (o.opt(k) ?: error("entri '$k' tidak ada")).toString()
+
     // --- Fixture ada dan hanya menguji satu aturan ----------------------------------------------
 
     @Test
@@ -87,7 +96,7 @@ class FixtureGateKontenTest {
         assertEquals("cacat punya kunci yang tidak ada di sah",
             emptySet<String>(), kunci(eCacat) - kunci(eSah))
         kunci(eCacat).forEach { k ->
-            assertEquals("nilai entri '$k' berbeda", eSah.opt(k).toString(), eCacat.opt(k).toString())
+            assertEquals("nilai entri '$k' berbeda", nilai(eSah, k), nilai(eCacat, k))
         }
     }
 
