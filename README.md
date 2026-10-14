@@ -27,6 +27,10 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - main: sama seperti PR.
 - tag `v*.*.*`: release AAB/APK + GitHub Release otomatis. **Signed** bila Secrets keystore tersedia; bila tidak, APK release bersifat *unsigned* (hanya untuk memvalidasi build R8).
 - `workflow_dispatch` pada release: menguji build rilis **tanpa menerbitkan apa pun**; isi masukan `tag` untuk menerbitkan rilis bagi tag yang sudah ada.
+- **Peringatan kompilator Kotlin = galat** (`allWarningsAsErrors`), berlaku untuk seluruh kompilasi
+  modul: main, uji unit, dan uji instrumentasi (`assembleDebugAndroidTest`). Ini menggantikan
+  pemeriksaan lewat log, yang tidak dapat dipercaya: tugas Gradle yang dilayani `FROM-CACHE` tidak
+  mencetak keluaran kompilator sama sekali, jadi log CI yang bersih dari `w:` tidak membuktikan apa pun.
 
 Secrets (hanya untuk rilis bertanda tangan): `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 

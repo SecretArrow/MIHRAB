@@ -74,6 +74,13 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+        // Peringatan kompilator = galat. Tanpa ini peringatan menumpuk tanpa ada yang membacanya:
+        // setiap pemanggilan Gradle memakai `--build-cache`, dan tugas yang dilayani `FROM-CACHE`
+        // tidak mencetak satu pun keluaran kompilator — sehingga log CI yang "bersih dari `w:`"
+        // tidak membuktikan apa pun. Berlaku untuk SEMUA kompilasi modul ini (main, uji unit, uji
+        // instrumentasi); `assembleDebugAndroidTest` di `ci.yml` karena itu ikut menjaga kelas
+        // peringatan di `src/androidTest`, yang dulu baru terbaca setelah merge.
+        allWarningsAsErrors.set(true)
     }
 }
 
@@ -101,7 +108,7 @@ dependencies {
     // DI
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.work)
 
     // Persistensi

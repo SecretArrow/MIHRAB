@@ -7,7 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.FormatWaktu
@@ -37,8 +37,10 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
     // untuk id asing) sementara kartu info harian memakai zona perangkat — dua waktu, satu hari.
     val tz = remember(s.tzId) { JadwalHariIni.zona(s.tzId) }
     val now = remember(s.nowMillis, tz) { Calendar.getInstance(tz).apply { timeInMillis = s.nowMillis } }
-    val jam = SimpleDateFormat("HH:mm", Locale("id")).format(now.time)
-    val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id")).format(now.time)
+    // `Locale.forLanguageTag` — bukan `Locale("id")` yang usang: konstruktor itu tidak membedakan
+    // kode bahasa dari kode negara, sedangkan tag "id" di sini memang bahasa Indonesia.
+    val jam = SimpleDateFormat("HH:mm", Locale.forLanguageTag("id")).format(now.time)
+    val masehi = SimpleDateFormat("EEEE, d MMMM yyyy", Locale.forLanguageTag("id")).format(now.time)
     val times = remember(s.lat, s.lon, s.asarHanafi, s.method, tz, s.corr, now.get(Calendar.DAY_OF_YEAR)) {
         // Parameter disusun lewat `JadwalHariIni` yang sama dengan penjadwal pengingat & menu
         // Adzan, sehingga hitung mundur di beranda tidak dapat berbeda dari jam yang benar-benar

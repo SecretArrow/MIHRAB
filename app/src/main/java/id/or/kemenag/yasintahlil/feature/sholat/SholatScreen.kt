@@ -70,7 +70,10 @@ fun SholatScreen(go: (String) -> Unit) {
         if (panduan.isNotBlank()) {
             Text("Sumber panduan: $panduan", style = MaterialTheme.typography.labelSmall)
         }
-        TabRow(tab) {
+        // `PrimaryTabRow` (bukan `TabRow` yang usang): indikatornya kini batang membulat 24 dp di
+        // bawah label, sesuai varian tab M3 terbaru. Perilaku tab — tiga pilihan tetap, tanpa
+        // gulir — tidak berubah.
+        PrimaryTabRow(tab) {
             Tab(tab == 0, { tab = 0 }, text = { Text("Wajib") })
             Tab(tab == 1, { tab = 1 }, text = { Text("Sunnah") })
             Tab(tab == 2, { tab = 2 }, text = { Text("Bacaan") })

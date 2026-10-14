@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
@@ -43,7 +43,10 @@ fun DzikirScreen(vm: DzikirViewModel = hiltViewModel()) {
             OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
-        ScrollableTabRow(tab) {
+        // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini batang
+        // membulat 24 dp di bawah label, sesuai varian tab M3 terbaru. Tetap dapat digulir karena
+        // kelompok dzikir lebih banyak daripada lebar layar.
+        PrimaryScrollableTabRow(tab) {
             groups.forEachIndexed { i, g -> Tab(tab == i, { tab = i }, text = { Text(g.judul) }) }
         }
         val group = groups[tab.coerceIn(0, groups.size - 1)]
