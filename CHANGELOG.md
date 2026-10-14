@@ -5,6 +5,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+- **Rilis otomatis di setiap akhir pipeline.** Setiap push ke `main` yang lulus seluruh
+  pipeline-nya (CI lint+unit+build, E2E emulator API 36, workflow-lint) kini berujung rilis
+  terbit tanpa ada yang memotong tag manual: `auto-release.yml` menunggu semua run `event=push`
+  untuk SHA itu hijau, menaikkan versi (SemVer: ada subjek commit `feat` sejak tag terakhir →
+  MINOR, selain itu PATCH) beserta `versionCode` lewat `tools/naik_versi.py`, memindahkan
+  CHANGELOG `[Unreleased]` ke bagian versi, mendorong keduanya ke `main`, menandai `vX.Y.Z`, lalu
+  mem-*dispatch* `release.yml` pada tag itu — jadi build, verifikasi tanda tangan, dan penerbitan
+  tetap hidup di satu tempat yang sudah dijaga `AlurKerjaRilisDanAutofixTest`. SHA yang
+  terlampaui (main maju selagi menunggu) dilewati dengan sengaja: SHA terbarulah yang dirilis
+  oleh rangkaian pipeline-nya sendiri. Keputusan alurnya dikunci uji baru `RilisOtomatisTest`.
+
+### Diubah
+- **Antarmuka didesain ulang total — bahasa desain "Zamrud Modern".** Palet tonal Material 3
+  penuh (container mint/emas) dengan mode gelap ber-tint hijau, tipografi dan bentuk sudut khas,
+  hero beranda `primaryContainer` ber-ornamen Islami, kartu waktu sholat gradien zamrud, grid
+  aksi cepat `MenuTile`, serta menu Ibadah/Alat yang kini baris berikon. Status kosong/gagal,
+  penggeser ukuran bacaan, dan seluruh layar bacaan ikut disesuaikan; E2E instrumen
+  (NavSmokeTest, ThemeAndScreenSizeTest) tetap hijau di atas UI baru.
+
 ## [1.1.1] - 2026-10-14
 
 **Rilis pertama yang memenuhi syarat pengajuan Google Play.** v1.1.0 dipotong dari basis kode yang

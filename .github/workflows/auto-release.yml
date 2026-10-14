@@ -1,0 +1,296 @@
+# Rilis otomatis di setiap akhir pipeline: setiap push ke `main` yang lulus SELURUH pipeline-nya
+# (CI lint+unit+build, E2E emulator, workflow-lint) berujung rilis terbit tanpa ada yang memotong
+# tag manual — permintaan `plan.txt` ("auto release").
+#
+# Kenapa memicu `workflow_run` atas ALUR E2E yang selesai: alur ini baru boleh bekerja SETELAH
+# semua verifikasi selesai, dan E2E (emulator) lazimnya paling lambat. Menunggangi selesainya E2E
+# memberi titik mulai paling akhir; pipeline yang mungkin belum selesai (CI, workflow-lint)
+# ditunggu lewat polling di dalam job. Pemicu `push` langsung tidak bisa dipakai: saat alur ini
+# mulai, E2E belum tentu selesai, dan tidak ada `needs` lintas workflow.
+#
+# Kenapa hanya E2E yang dipicu `push`: E2E juga berjalan terjadwal tiap malam dan lewat dispatch
+# sebagai uji ulang. Malam tanpa commit baru tak ada yang bisa dirilis, dan dispatch E2E adalah
+# uji, bukan persetujuan merilis.
+#
+# Kenapa orkestrator tipis yang mem-dispatch `release.yml`, bukan membangun sendiri: seluruh
+# logika build rilis, dekode keystore, verifikasi tanda tangan, pembanding versionName-vs-tag,
+# dan penerbitan GitHub Release hidup di `release.yml` dan dijaga uji `AlurKerjaRilisDanAutofixTest`.
+# Menggandakannya di sini berarti dua salinan yang bisa diam-diam menyimpang. Alur ini hanya
+# memutuskan KAPAN dan VERSI BERAPA; CARA membangun dan menerbitkan tetap satu tempat.
+#
+# Kenapa push commit/tag di sini memakai GITHUB_TOKEN (kredensial yang ditinggalkan checkout):
+# peristiwa `push` dari GITHUB_TOKEN tidak memicu workflow baru (aturan anti-rekursi GitHub),
+# jadi commit kenaikan versi tidak menjalankan CI sendiri. Diterima karena ia hanya mengganti dua
+# angka + changelog, dan kompilasi pohon hasilnya tetap dibuktikan oleh build rilis yang
+# dilaunchkan alur ini seketika. Pengecualian yang dimanfaatkan langkah dispatch di bawah:
+# `workflow_dispatch` TIDAK ditekan — dispatch tetap menjalankan `release.yml` meski dipanggil
+# dengan GITHUB_TOKEN.
+#
+# Prinsip warna status: MERAH berarti rantai rilis sendiri yang rusak (API hilang, dorongan
+# ditolak, build rilis gagal); NETRAL/skip berarti konten tidak lulus gate — kegagalannya sudah
+# dilaporkan merah oleh workflow-nya masing-masing, tak perlu diduplikasi di sini.
+#
+# Uji penjaga keputusan-keputusan ini: `RilisOtomatisTest`.
+
+name: Rilis Otomatis (main lulus CI + E2E)
+
+on:
+  workflow_run:
+    workflows: ['E2E (mahal — hanya main/nightly)']
+    types: [completed]
+  # Jalan manual untuk mencoba lagi bila rangkaian pernah gagal di tengah (mis. build rilis merah
+  # sesaat): SHA target adalah HEAD `main` saat itu, dan gerbangnya tetap sama — hanya SHA yang
+  # benar-benar lulus seluruh pipeline yang akan dirilis.
+  workflow_dispatch:
+
+permissions:
+  contents: write   # dorong commit kenaikan versi + tag rilis ke main
+  actions: write    # dispatch release.yml lewat API
+
+concurrency:
+  # Satu antrean global (alur ini hanya bekerja untuk main) tanpa pembatalan: dua push berdekatan
+  # menghasilkan dua rangkaian rilis yang keduanya harus selesai — yang terbaru menunggu gilirannya.
+  # Membatalkan yang sedang berjalan justru meninggalkan kenaikan versi setengah jadi.
+  group: rilis-otomatis
+  cancel-in-progress: false
+
+jobs:
+  rilis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event == 'push')
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # SHA yang diuji pipeline — bukan sekadar HEAD default branch, karena main bisa saja
+          # sudah maju sejak pipeline itu selesai. Jalur dispatch (tanpa workflow_run) memakai main.
+          ref: ${{ github.event.workflow_run.head_sha || 'main' }}
+          # Histori penuh: pembanding leluhur `git merge-base --is-ancestor` dan daftar tag
+          # membutuhkannya; tanpa itu gerbang idempoten di bawah berbohong.
+          fetch-depth: 0
+
+      - name: Segarkan posisi main dan tag
+        run: git fetch origin main --tags --force
+
+      - name: Tentukan SHA yang akan dirilis
+        id: target
+        env:
+          SHA_E2E: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          SHA="$SHA_E2E"
+          if [ -z "$SHA" ]; then
+            # Jalur dispatch: HEAD main terkini setelah penyegaran di atas.
+            SHA=$(git rev-parse origin/main)
+          fi
+          git checkout --detach "$SHA"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "SHA target: $SHA"
+
+      # GERBANG 1 — idempoten: SHA yang sudah pernah dirilis (atau tercakup rilis yang lebih
+      # baru) tidak dirilis dua kali. Menjaga dispatch ulang dan dorong-balik agar tak membuat
+      # rilis ganda.
+      - name: Gerbang idempoten — SHA ini belum dirilis
+        id: cek_rilis
+        run: |
+          SHA="${{ steps.target.outputs.sha }}"
+          if [ -n "$(git tag --points-at "$SHA" --list 'v*')" ]; then
+            echo "SHA $SHA sudah bertanda rilis — tidak ada yang perlu diterbitkan lagi."
+            exit 0
+          fi
+          TAG_TERBARU=$(git for-each-ref --sort=-version:refname --count=1 \
+            --format='%(refname:short)' 'refs/tags/v*')
+          if [ -n "$TAG_TERBARU" ] && git merge-base --is-ancestor "$SHA" "$TAG_TERBARU^{commit}"; then
+            echo "SHA $SHA sudah tercakup rilis $TAG_TERBARU — tidak ada yang perlu diterbitkan lagi."
+            exit 0
+          fi
+          echo "lanjut=true" >> "$GITHUB_OUTPUT"
+
+      # GERBANG 2 — semua pipeline untuk SHA INI hijau. Filter `event=push` memangkas run malam,
+      # dispatch, dan run alur ini sendiri: yang dihitung hanyalah rangkaian yang dipicu dorongan
+      # yang sama. E2E hijau sudah tersirat oleh pemicu alur ini, tetapi ikut diperiksa ulang di
+      # sini supaya syaratnya satu kalimat: SEMUA run push untuk SHA itu lulus.
+      - name: Tunggu seluruh pipeline push SHA ini hijau
+        id: pipeline
+        if: steps.cek_rilis.outputs.lanjut == 'true'
+        env:
+          SHA: ${{ steps.target.outputs.sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          api="repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=$SHA&event=push&per_page=100"
+          for i in $(seq 1 50); do
+            belum=$(gh api "$api" --jq '[.workflow_runs[] | select(.status != "completed")] | length')
+            if [ "$belum" = "0" ]; then
+              total=$(gh api "$api" --jq '.total_count')
+              if [ "$total" = "0" ]; then
+                echo "::error::tidak ada run pipeline (event=push) untuk SHA $SHA — tidak ada yang bisa dibuktikan lulus"
+                exit 1
+              fi
+              merah=$(gh api "$api" --jq '[.workflow_runs[] | select(.conclusion != "success") | .name + " (" + .conclusion + ")"] | join(", ")')
+              if [ -n "$merah" ]; then
+                echo "Pipeline tidak hijau untuk SHA $SHA: $merah — rilis dilewati (kegagalan dilaporkan workflow-nya sendiri)."
+                exit 0
+              fi
+              echo "Seluruh pipeline push $SHA hijau."
+              echo "lanjut=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Menunggu pipeline lain untuk $SHA: $(gh api "$api" --jq '[.workflow_runs[] | select(.status != "completed") | .name] | join(", ")')"
+            sleep 30
+          done
+          echo "::error::menunggu pipeline lain kehabisan waktu (25 menit) untuk SHA $SHA — jalankan ulang alur ini (dispatch) setelah semuanya selesai"
+          exit 1
+
+      # GERBANG 3 — yang dirilis adalah yang teruji, dan yang teruji harus masih jadi main saat
+      # rilis dibuat. Bila main maju selagi menunggu, SHA ini dilewati dengan sadar: SHA terbaru
+      # akan dirilis oleh rangkaian pipeline-nya sendiri.
+      - name: Gerbang main — masih di SHA yang teruji
+        id: cek_main
+        if: steps.pipeline.outputs.lanjut == 'true'
+        env:
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          git fetch origin main
+          KINI=$(git rev-parse origin/main)
+          if [ "$KINI" != "$SHA" ]; then
+            echo "main sudah maju ke $KINI saat menunggu — rilis SHA $SHA dilewati; SHA terbaru akan dirilis oleh rangkaian pipeline-nya sendiri."
+            exit 0
+          fi
+          echo "lanjut=true" >> "$GITHUB_OUTPUT"
+
+      # Jenis kenaikan dibaca dari subjek commit sejak tag terakhir: ada "feat" → MINOR, selain
+      # itu PATCH (SemVer untuk aplikasi: kemampuan baru = MINOR, perbaikan = PATCH). Versi
+      # diturunkan oleh alat, bukan diketik di sini — angka yang disalin pasti menyimpang.
+      - name: Naikkan versi (semver + versionCode) dan tulis changelog
+        id: versi
+        if: steps.cek_main.outputs.lanjut == 'true'
+        env:
+          SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          TAG_TERBARU=$(git for-each-ref --sort=-version:refname --count=1 \
+            --format='%(refname:short)' 'refs/tags/v*')
+          JENIS=patch
+          if [ -n "$TAG_TERBARU" ] && git log --format='%s' "$TAG_TERBARU..HEAD" | grep -qE '^feat(\(|: )'; then
+            JENIS=minor
+          fi
+          HASIL=$(python3 tools/naik_versi.py --jenis "$JENIS" --commit-sha "$SHA")
+          VERSI=$(printf '%s\n' "$HASIL" | sed -n 's/^versi=//p')
+          KODE=$(printf '%s\n' "$HASIL" | sed -n 's/^kode=//p')
+          if [ -z "$VERSI" ] || [ -z "$KODE" ]; then
+            echo "::error::tools/naik_versi.py tidak mengembalikan versi/kode dengan format yang diharapkan"
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/v$VERSI" >/dev/null; then
+            echo "::error::tag v$VERSI sudah ada — kenaikan versi bertabrakan dengan riwayat tag"
+            exit 1
+          fi
+          {
+            echo "versi=$VERSI"
+            echo "kode=$KODE"
+            echo "tag=v$VERSI"
+          } >> "$GITHUB_OUTPUT"
+          echo "Versi berikutnya: v$VERSI (versionCode $KODE, kenaikan $JENIS)"
+
+      # Dorongan ini memakai GITHUB_TOKEN sehingga TIDAK memicu CI baru (aturan anti-rekursi
+      # GitHub — lihat komentar kepala berkas). Bila dorongan ditolak (main maju di sela gerbang
+      # 3 dan dorongan ini), langkah ini merah dengan sengaja: SHA terbaru-lah yang merilis.
+      - name: Commit dan dorong kenaikan versi ke main
+        id: dorong
+        if: steps.cek_main.outputs.lanjut == 'true'
+        env:
+          VERSI: ${{ steps.versi.outputs.versi }}
+          KODE: ${{ steps.versi.outputs.kode }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/build.gradle.kts CHANGELOG.md
+          git commit -m "chore(rilis): versi $VERSI (versionCode $KODE) — rilis otomatis
+
+          Diturunkan oleh .github/workflows/auto-release.yml setelah seluruh pipeline
+          push main lulus (CI lint+unit+build, E2E emulator, workflow-lint)."
+          git push origin HEAD:main
+          echo "sha_dorongan=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Tag beranotasi (bukan ringan) mengikuti konvensi v1.1.0/v1.1.1. Tag ini didorong dengan
+      # GITHUB_TOKEN sehingga TIDAK memicu `release.yml` (peristiwa `push` dari GITHUB_TOKEN
+      # ditekan) — justru karena itu penerbitan dilaunchkan eksplisit lewat dispatch pada
+      # langkah berikutnya; `workflow_dispatch` termasuk yang TIDAK ditekan.
+      - name: Tandai commit kenaikan versi dengan tag rilis
+        id: tag
+        if: steps.cek_main.outputs.lanjut == 'true'
+        env:
+          VERSI: ${{ steps.versi.outputs.versi }}
+          KODE: ${{ steps.versi.outputs.kode }}
+        run: |
+          git tag -a "v$VERSI" -m "Rilis $VERSI (versionCode $KODE)"
+          git push origin "v$VERSI"
+
+      # Ref yang dikirim adalah TAG yang barusan didorong, bukan 'main': `release.yml` akan
+      # checkout persis commit kenaikan versi ini dengan `github.ref_type == 'tag'`, sehingga
+      # seluruh pembatasnya yang dijaga `AlurKerjaRilisDanAutofixTest` berlaku penuh — termasuk
+      # pembanding versionName-vs-tag dan penerbitan GitHub Release pada tag yang sama.
+      - name: Launchkan release.yml pada tag — build, tanda tangan, terbit
+        id: dispatch
+        if: steps.cek_main.outputs.lanjut == 'true'
+        env:
+          VERSI: ${{ steps.versi.outputs.versi }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/release.yml/dispatches" \
+            -f "ref=v$VERSI"
+          echo "release.yml di-dispatch pada ref v$VERSI — run-nya akan membangun dan menerbitkan rilis."
+
+      # Status run rilis DISALIN ke sini, bukan dianggap pasti: bila build rilis gagal, alur ini
+      # ikut merah supaya tanda hijau di daftar Actions benar-benar berarti "rilis terbit".
+      - name: Tunggu rilis benar-benar terbit — status run disalin
+        id: tunggu_rilis
+        if: steps.cek_main.outputs.lanjut == 'true'
+        env:
+          TAG: ${{ steps.versi.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA_DORONGAN="${{ steps.dorong.outputs.sha_dorongan }}"
+          api="repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=$SHA_DORONGAN&event=workflow_dispatch&per_page=100"
+          RUN_ID=""
+          for i in $(seq 1 12); do
+            RUN_ID=$(gh api "$api" \
+              --jq '[.workflow_runs[] | select(.path == ".github/workflows/release.yml")] | max_by(.id) | .id' \
+              2>/dev/null || echo "")
+            if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+              break
+            fi
+            sleep 10
+          done
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "::error::run release.yml untuk commit $SHA_DORONGAN tidak tampak diciptakan dalam 2 menit"
+            exit 1
+          fi
+          echo "Menunggu run release.yml #$RUN_ID ..."
+          for i in $(seq 1 70); do
+            KESIMPULAN=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$RUN_ID" --jq '.conclusion')
+            if [ -n "$KESIMPULAN" ] && [ "$KESIMPULAN" != "null" ]; then
+              if [ "$KESIMPULAN" != "success" ]; then
+                echo "::error::release.yml berakhir $KESIMPULAN — rilis $TAG tidak terbit; periksa run #$RUN_ID"
+                exit 1
+              fi
+              echo "Rilis $TAG terbit (run release.yml #$RUN_ID sukses)."
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::release.yml belum selesai setelah 35 menit (run #$RUN_ID) — periksa statusnya manual"
+          exit 1
+
+      - name: Ringkasan rilis
+        if: steps.cek_main.outputs.lanjut == 'true'
+        run: |
+          TAG="${{ steps.versi.outputs.tag }}"
+          {
+            echo "### Rilis otomatis $TAG terbit"
+            echo ""
+            echo "APK/AAB bertanda tangan + catatan rilis otomatis:"
+            echo "https://github.com/${GITHUB_REPOSITORY}/releases/tag/$TAG"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -12,21 +12,31 @@ Jangan commit token/API key. Pakai GitHub Secrets.
 - `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
 - `app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
 - `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*),
-  autofix (higiene teks: `workflow_dispatch` + sapuan mingguan), workflow-lint (memastikan berkas
-  workflow sendiri dapat dibaca — lihat `tools/check_workflows.py`)
+  auto-release (rilis otomatis: push main yang lulus seluruh pipeline → naik versi + tag +
+  dispatch `release.yml`), autofix (higiene teks: `workflow_dispatch` + sapuan mingguan),
+  workflow-lint (memastikan berkas workflow sendiri dapat dibaca — lihat
+  `tools/check_workflows.py`)
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
 - `tools/` gate konten & gate cepat: `validate_content.py` (konten wajib bersumber resmi),
   `validate_bundle.py` (bundel pembaruan), `check_workflows.py` (workflow dapat dibaca),
   `check_kotlin_lex.py` (higiene komentar Kotlin; `--uji-diri` memeriksa pemindai literalnya
   sendiri), `format_teks.py` (higiene teks: akhir baris LF,
-  spasi ekor, tepat satu baris baru di akhir; `--fix` merapikan di tempat). Semuanya Python murni
-  dan dapat dijalankan lokal tanpa membangun proyek.
+  spasi ekor, tepat satu baris baru di akhir; `--fix` merapikan di tempat), `naik_versi.py`
+  (kenaikan versi rilis otomatis: `versionName`/`versionCode` + CHANGELOG; dipanggil
+  `auto-release.yml`). Semuanya Python murni dan dapat dijalankan lokal tanpa membangun proyek.
 
 ## Build (via GitHub Actions, bukan lokal)
 - PR: validasi konten + lint + unit test + build debug/release (R8) (3-6 mnt).
 - main: sama seperti PR.
 - tag `v*.*.*`: release AAB/APK + GitHub Release otomatis. **Signed** bila Secrets keystore tersedia; bila tidak, APK release bersifat *unsigned* (hanya untuk memvalidasi build R8).
 - `workflow_dispatch` pada release: menguji build rilis **tanpa menerbitkan apa pun**; isi masukan `tag` untuk menerbitkan rilis bagi tag yang sudah ada.
+- push `main` yang lulus SEMUA pipeline (CI, E2E, workflow-lint): **rilis otomatis** —
+  `auto-release.yml` menaikkan versi (SemVer: ada subjek commit `feat` sejak tag terakhir →
+  MINOR, selain itu PATCH) beserta `versionCode`, memindahkan CHANGELOG `[Unreleased]` ke bagian
+  versi, mendorong keduanya ke `main`, menandai `vX.Y.Z`, lalu mem-*dispatch* `release.yml` pada
+  tag itu — jadi build, verifikasi tanda tangan, dan penerbitan tetap satu tempat. SHA yang
+  terlampaui (main maju selagi menunggu) dilewati dengan sengaja: SHA terbarulah yang dirilis
+  oleh rangkaian pipeline-nya sendiri.
 - **Peringatan kompilator Kotlin = galat** (`allWarningsAsErrors`), berlaku untuk seluruh kompilasi
   modul: main, uji unit, dan uji instrumentasi (`assembleDebugAndroidTest`). Ini menggantikan
   pemeriksaan lewat log, yang tidak dapat dipercaya: tugas Gradle yang dilayani `FROM-CACHE` tidak
