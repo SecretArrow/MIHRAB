@@ -74,6 +74,13 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+        // Peringatan kompilasi diperlakukan sebagai galat, untuk seluruh kompilasi Kotlin: utama,
+        // uji unit, dan uji instrumented. Sebabnya bukan kerapian — peringatan yang dibiarkan
+        // menumpuk berhenti dibaca, sehingga kenaikan berikutnya tidak lagi terlihat. Yang
+        // menegakkannya harus kompilatornya sendiri, bukan pemindaian log Gradle: begitu tugas
+        // kompilasinya diambil dari cache, log-nya kosong dan pemeriksaannya hijau tanpa memeriksa
+        // apa pun.
+        allWarningsAsErrors.set(true)
     }
 }
 
