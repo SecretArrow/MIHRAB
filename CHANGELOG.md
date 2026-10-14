@@ -52,6 +52,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `:app:assembleDebugAndroidTest`: sebelumnya tak satu pun tugas di gerbang PR menyentuh
   `app/src/androidTest`, sehingga kesalahan kompilasi di sana baru terbaca setelah digabung — saat
   `e2e.yml` (yang sengaja hanya jalan di `main`/nightly) menjalankannya.
+- **Peringatan API Compose-test yang usang dihapus.** Compose 1.11 (BOM 2026.06.01) menandai
+  `androidx.compose.ui.test.junit4.createComposeRule` dan `createAndroidComposeRule` sebagai
+  `@Deprecated`, sehingga `assembleDebugAndroidTest` mengeluarkan peringatan untuk keduanya
+  (`NavSmokeTest`, `ThemeAndScreenSizeTest`). Keduanya kini diimpor dari paket penggantinya,
+  `…junit4.v2` — tipe yang dikembalikan sama persis dan tak ada `@OptIn` yang dibutuhkan (diperiksa
+  dari bytecode `ui-test-junit4-android:1.11.4`, bukan dari dokumentasi), sehingga yang berubah
+  hanyalah dispatcher internalnya (`StandardTestDispatcher` menggantikan `UnconfinedTestDispatcher`);
+  kedua uji itu hanya `setContent` lalu memeriksa simpul, jadi tidak bergantung pada eksekusi segera.
+  `UjiInstrumentedTanpaApiUsangTest` menutupnya: impor maupun pemanggilan berpaket penuh ke jalur
+  lama ditolak, sedangkan prosa yang menyebutnya (komentar dan isi string) sengaja tidak dihitung.
 
 ## [1.1.0] - 2026-10-13
 
