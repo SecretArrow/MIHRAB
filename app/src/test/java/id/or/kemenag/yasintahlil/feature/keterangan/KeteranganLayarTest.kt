@@ -81,12 +81,12 @@ class KeteranganLayarTest {
     @Test
     fun rincianSholatMenyertakanIdPadaAsalnya() {
         assertTrue("SholatDetailScreen tidak menyertakan id sholat pada asal keterangannya",
-            layar("sholat/SholatDetailScreen.kt").contains("Routes.keterangan(\"sholat:\$id)\""))
+            layar("sholat/SholatDetailScreen.kt").contains("Routes.keterangan(\"sholat:\$id\")"))
     }
 
     @Test
     fun layarKeteranganMembacaUlangDariSumberYangSama() {
-        val k = kode("keterangan/KeteranganScreen.kt")
+        val k = layar("keterangan/KeteranganScreen.kt")
         assertTrue("KeteranganScreen tidak memakai ContentRepo lewat rememberRepo()",
             k.contains("rememberRepo()"))
         // Parameternya hanya asal dan kembali — teks keterangan yang dikirim dari layar pembuka
@@ -103,7 +103,7 @@ class KeteranganLayarTest {
      */
     @Test
     fun judulKeteranganMemakaiNamaLayarBersama() {
-        val k = kode("keterangan/KeteranganScreen.kt")
+        val k = layar("keterangan/KeteranganScreen.kt")
         assertTrue("judul layar keterangan tidak memakai NamaAntarmuka.KETERANGAN",
             k.contains("NamaAntarmuka.KETERANGAN"))
         listOf(
@@ -136,7 +136,7 @@ class KeteranganLayarTest {
     /** Ikon panah kembali mengikuti arah baca — bukan `Icons.Filled.ArrowBack` yang usang. */
     @Test
     fun ikonKembaliMengikutiArahBaca() {
-        val k = kode("keterangan/KeteranganScreen.kt")
+        val k = layar("keterangan/KeteranganScreen.kt")
         assertTrue("tombol kembali tidak memakai varian AutoMirrored",
             k.contains("AutoMirrored.Filled.ArrowBack"))
         assertFalse("tombol kembali memakai ikon panah usang yang tak terbalik pada tata letak RTL",
