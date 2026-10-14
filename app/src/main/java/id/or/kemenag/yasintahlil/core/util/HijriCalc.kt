@@ -28,7 +28,7 @@ object HijriCalc {
         l = l - ((30 - j) / 15) * ((17719 * j) / 50) - (j / 16) * ((15238 * j) / 43) + 29
         val hm = (24 * l) / 709
         val hd = l - (709 * hm) / 24
-        val hy = (30 * n + j - 30).toInt()
+        val hy = 30 * n + j - 30
         return Triple(hd, hm, hy)
     }
 

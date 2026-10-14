@@ -67,7 +67,10 @@ data class KiblatUiState(
 @HiltViewModel
 class KiblatViewModel @Inject constructor(
     private val store: Store,
-    @ApplicationContext private val ctx: Context,
+    // `@param:` menegaskan penanda DI ini berlaku pada parameter konstruktor saja — persis
+    // perilaku yang berlaku sekarang. Tanpa itu Kotlin 2.3 memperingatkan bahwa kelak
+    // anotasi yang sama juga dipasang ke field (KT-73255).
+    @param:ApplicationContext private val ctx: Context,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(KiblatUiState())

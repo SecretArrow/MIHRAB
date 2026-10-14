@@ -40,7 +40,9 @@ class PemakaianIzinTest {
      * dibutuhkan satu layanan latar yang sama, yang tipe-nya dinyatakan lewat
      * `ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK` di `ReminderWorker`. `RECEIVE_BOOT_COMPLETED`
      * dipakai lewat aksi siarannya (`Intent.ACTION_BOOT_COMPLETED` di `BootReceiver`), bukan lewat
-     * nama izinnya.
+     * nama izinnya. `VIBRATE` dipakai lewat pengambilan getarnya lewat kelas
+     * (`getSystemService(Vibrator::class.java)`), bukan lewat konstanta `VIBRATOR_SERVICE` yang
+     * usang sejak API 31 — penandanya karena itu kelasnya, bukan nama konstanta itu.
      */
     private val penanda: Map<String, List<String>> = mapOf(
         "ACCESS_FINE_LOCATION" to listOf("ACCESS_FINE_LOCATION"),
@@ -49,7 +51,7 @@ class PemakaianIzinTest {
         "RECEIVE_BOOT_COMPLETED" to listOf("ACTION_BOOT_COMPLETED"),
         "FOREGROUND_SERVICE" to listOf("FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK"),
         "FOREGROUND_SERVICE_MEDIA_PLAYBACK" to listOf("FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK"),
-        "VIBRATE" to listOf("VIBRATOR_SERVICE"),
+        "VIBRATE" to listOf("Vibrator::class.java"),
         "ACCESS_NOTIFICATION_POLICY" to listOf("NOTIFICATION_POLICY_ACCESS_SETTINGS"),
     )
 

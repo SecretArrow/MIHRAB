@@ -3,9 +3,9 @@ package id.or.kemenag.yasintahlil.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -62,9 +62,12 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
             onRouteConsumed()
         }
     }
+    // `Icons.AutoMirrored.Filled.MenuBook`, bukan `Icons.Filled.MenuBook` yang usang: ikon buku
+    // dibalik mendatar pada tata letak kanan-ke-kiri. Ikon lain di sini tidak punya arah baca,
+    // jadi tetap versi biasa.
     val tabs = listOf(
         Triple(Routes.HOME, NamaLayar.BERANDA, Icons.Filled.Home),
-        Triple(Routes.IBADAH, NamaLayar.IBADAH, Icons.Filled.MenuBook),
+        Triple(Routes.IBADAH, NamaLayar.IBADAH, Icons.AutoMirrored.Filled.MenuBook),
         Triple(Routes.ALAT, NamaLayar.ALAT, Icons.Filled.Explore),
         Triple(Routes.SETTINGS, NamaLayar.PENGATURAN, Icons.Filled.Settings),
     )

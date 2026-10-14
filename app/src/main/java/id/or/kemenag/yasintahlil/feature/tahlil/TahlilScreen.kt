@@ -10,7 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TeksBacaan
@@ -70,7 +70,9 @@ fun TahlilScreen(vm: TahlilViewModel = hiltViewModel()) {
         }
 
         if (s.susunan.size > 1) {
-            ScrollableTabRow(s.susunan.indexOfFirst { it.id == s.susunanId }.coerceAtLeast(0)) {
+            // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini
+            // batang membulat 24 dp di bawah label, sesuai varian tab M3 terbaru.
+            PrimaryScrollableTabRow(s.susunan.indexOfFirst { it.id == s.susunanId }.coerceAtLeast(0)) {
                 s.susunan.forEachIndexed { i, su ->
                     Tab(s.susunanId == su.id, { vm.setSusunan(su.id) }, text = { Text(su.nama) })
                 }

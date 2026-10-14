@@ -34,6 +34,13 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   yang API-nya juga >= 35. Plafon Dependabot (`.github/dependabot.yml`), baris patokan toolchain di
   `README.md`, dan penjaga yang membandingkan keduanya (`ReadmeToolchainTest`, `DependabotConfigTest`)
   ikut disesuaikan, sehingga dokumen tak bisa diam-diam menua lagi.
+- **Peringatan kompilator Kotlin diperlakukan sebagai galat (`allWarningsAsErrors`).** Log CI tidak
+  dapat dijadikan penjaga: setiap pemanggilan Gradle memakai `--build-cache`, dan tugas yang dilayani
+  `FROM-CACHE` tidak mencetak keluaran kompilator sama sekali — sehingga "nol baris `w:` di log" hanya
+  berarti tugasnya tak berjalan, bukan bahwa kodenya bersih. Gate ini berlaku untuk seluruh kompilasi
+  modul (main, uji unit, dan uji instrumentasi lewat `assembleDebugAndroidTest` di `ci.yml`), jadi
+  peringatan baru menggagalkan PR alih-alih menumpuk tanpa ada yang membacanya. Konsekuensinya kode
+  harus benar-benar nol peringatan lebih dulu — lihat butir terakhir `### Diperbaiki`.
 
 ### Diperbaiki
 - **Uji instrumented kembali hijau di emulator API 36.** Setelah emulator E2E dinaikkan ke API 36,
@@ -75,6 +82,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   lewat `?: error(…)`, sebab `opt` bernilai `null` hanya bila kuncinya tidak ada dan direktori induk
   berkas berjalur relatif selalu ada — dua invarian yang lebih berguna gagal terbaca daripada lolos
   diam-diam sebagai `"null" == "null"`.
+- **Dua puluh peringatan kompilator di sumber utama dihapus.** Jumlahnya tak pernah terbaca: setiap
+  pemanggilan Gradle memakai `--build-cache`, dan tugas yang dilayani `FROM-CACHE` tidak mencetak
+  satu pun keluaran kompilator — sehingga log job `build` yang "bersih dari `w:`" hanya berarti
+  `compileDebugKotlin` tak pernah benar-benar berjalan. Ketika `allWarningsAsErrors` dicoba
+  dinyalakan, kompilasi gagal dengan 20 peringatan di 15 berkas: `hiltViewModel()` pindah paket ke
+  `androidx.hilt.lifecycle.viewmodel.compose` (8 layar), `TabRow`/`ScrollableTabRow` digantikan
+  varian `Primary…` (3 layar; indikatornya kini batang membulat 24 dp, sesuai varian tab M3
+  terbaru), `Divider` → `HorizontalDivider`, `Locale("id")` → `Locale.forLanguageTag("id")`,
+  `Icons.Filled.MenuBook` → `Icons.AutoMirrored.Filled.MenuBook` (ikon buku memang dibalik pada tata
+  letak kanan-ke-kiri), `Context.VIBRATOR_SERVICE` yang usang sejak API 31 →
+  `getSystemService(Vibrator::class.java)` (mengembalikan getar bawaan yang sama — pada API 31+
+  `SystemServiceRegistry` sendiri yang mengarahkannya ke `VibratorManager` — jadi bekerja sejak
+  `minSdk` 26 tanpa cabang versi), satu `.toInt()` berlebih di `HijriCalc`, dan tiga peringatan
+  KT-73255 pada `@ApplicationContext` di konstruktor ViewModel yang kini bertarget eksplisit
+  `@param:`. Tak satu pun dibungkam dengan `@Suppress`. Karena kelas yang diimpor langsung kini juga
+  dideklarasikan langsung, `androidx.hilt:hilt-navigation-compose` diganti
+  `androidx.hilt:hilt-lifecycle-viewmodel-compose` — artefak yang benar-benar memuat `hiltViewModel`
+  yang dipakai, sedangkan artefak lamanya kini hanya berisi shim usang yang tak lagi disinggung satu
+  berkas pun (sebelumnya kelas itu memang sudah ada di classpath lewat dependensi transitif, tetapi
+  ketergantungan yang tak terlihat akan gagal tanpa sebab yang terbaca di katalog begitu
+  `hilt-navigation-compose` berhenti menariknya).
 
 ## [1.1.0] - 2026-10-13
 

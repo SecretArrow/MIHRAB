@@ -27,8 +27,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Getar penanda waktu iqomah habis.
+ *
+ * Diambil lewat `getSystemService(Vibrator::class.java)`, bukan `Context.VIBRATOR_SERVICE` yang
+ * usang sejak API 31 (penggantinya `VibratorManager`). Bentuk berbasis kelas ini mengembalikan
+ * getar bawaan yang sama — pada API 31+ `SystemServiceRegistry` sendiri yang mengarahkannya ke
+ * `VibratorManager.getDefaultVibrator()` — jadi ia bekerja sejak `minSdk` 26 tanpa cabang versi
+ * dan tanpa perlu membungkam peringatan usang.
+ */
 private fun vibrate(ctx: Context) {
-    val v = ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator ?: return
+    val v = ctx.getSystemService(Vibrator::class.java) ?: return
     runCatching { v.vibrate(VibrationEffect.createOneShot(900, VibrationEffect.DEFAULT_AMPLITUDE)) }
 }
 
