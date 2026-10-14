@@ -22,3 +22,7 @@ google-services.json
 # Python (skrip validasi konten)
 __pycache__/
 *.pyc
+# Keluaran kompilator Kotlin lepas (mis. gerbang sintaks lokal): kelas hasil
+# pemeriksaan sintaks bukan sumber dan tak boleh ikut terlacak.
+*.class
+META-INF/
