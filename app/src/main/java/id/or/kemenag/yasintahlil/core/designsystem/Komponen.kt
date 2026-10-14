@@ -171,7 +171,7 @@ fun MenuBaris(
  * berebut perhatian dengan judul layar di sebelahnya.
  */
 @Composable
-fun TombolInfo(onInfo: () -> Unit, modifier: Modifier = Modifier) {
+fun TombolInfo(modifier: Modifier = Modifier, onInfo: () -> Unit) {
     Surface(
         onClick = onInfo,
         shape = CircleShape,
@@ -213,7 +213,7 @@ fun KartuKeterangan(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Column(Modifier.weight(1f).padding(top = 4.dp), content = ringkas)
-            if (onInfo != null) TombolInfo(onInfo)
+            if (onInfo != null) TombolInfo(onInfo = onInfo)
         }
     }
 }

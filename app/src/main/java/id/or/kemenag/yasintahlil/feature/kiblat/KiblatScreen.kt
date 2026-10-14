@@ -26,10 +26,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.designsystem.BarisChip
 import id.or.kemenag.yasintahlil.core.designsystem.ErrorState
+import id.or.kemenag.yasintahlil.core.designsystem.KartuKeterangan
 import id.or.kemenag.yasintahlil.core.designsystem.LoadingState
 import id.or.kemenag.yasintahlil.core.designsystem.NamaAntarmuka
 import id.or.kemenag.yasintahlil.core.designsystem.TampilanKompas
+import id.or.kemenag.yasintahlil.core.designsystem.TombolInfo
 import id.or.kemenag.yasintahlil.core.location.LocationProvider
 import id.or.kemenag.yasintahlil.core.sensor.KalibrasiKompas
 import id.or.kemenag.yasintahlil.core.sensor.StatusKompas

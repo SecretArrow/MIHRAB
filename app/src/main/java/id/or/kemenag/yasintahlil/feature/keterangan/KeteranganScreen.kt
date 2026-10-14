@@ -118,7 +118,7 @@ private const val PREFIX_SHOLAT = "sholat:"
  * Asal yang tak dikenal menghasilkan daftar kosong dan ditangani sebagai keadaan kosong.
  */
 private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = when (asal) {
-    "yasin" {
+    "yasin" -> {
         val surah = repo.yasin
         val atribusi = AtribusiTeks.surah(surah)
         buildList {
@@ -135,7 +135,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "tahlil" {
+    "tahlil" -> {
         buildList {
             val tradisi = repo.tahlilCatatanTradisi()
             if (tradisi.isNotBlank()) add(BagianKeterangan("Catatan tradisi", tradisi))
@@ -153,7 +153,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "dzikir" {
+    "dzikir" -> {
         val kelompok = repo.dzikir()
         buildList {
             if (kelompok.isNotEmpty()) add(
@@ -176,7 +176,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "sholat" {
+    "sholat" -> {
         buildList {
             val panduan = repo.sholatPanduan()
             if (panduan.isNotBlank()) add(BagianKeterangan("Sumber panduan", panduan))
@@ -194,7 +194,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "wudhu" {
+    "wudhu" -> {
         val panduan = repo.panduanBersuci()
         buildList {
             if (panduan.edisi.isNotBlank()) add(BagianKeterangan("Edisi panduan", panduan.edisi))
@@ -212,7 +212,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         if (asal == "ghaib") BerkasKonten.SHOLAT_GHAIB else BerkasKonten.SHOLAT_JENAZAH,
     )
 
-    "adzan" {
+    "adzan" -> {
         buildList {
             add(
                 BagianKeterangan(
@@ -237,7 +237,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "doa_adzan" {
+    "doa_adzan" -> {
         buildList {
             add(
                 BagianKeterangan(
@@ -257,7 +257,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "iqomah" {
+    "iqomah" -> {
         buildList {
             add(
                 BagianKeterangan(
@@ -274,7 +274,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "kiblat" {
+    "kiblat" -> {
         buildList {
             add(
                 BagianKeterangan(
@@ -305,7 +305,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "jadwal" {
+    "jadwal" -> {
         buildList {
             add(
                 BagianKeterangan(

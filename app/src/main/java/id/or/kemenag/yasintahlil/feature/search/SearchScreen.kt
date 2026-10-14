@@ -133,11 +133,12 @@ private fun KartuHasil(h: Hit, buka: () -> Unit) {
     KartuEntri(
         judul = h.judul,
         modifier = Modifier.padding(vertical = 2.dp),
+        aksi = {
+            FilledTonalButton(onClick = buka) { Text(NamaAntarmuka.BUKA) }
+        },
     ) {
         Text(h.cuplikan, style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
-    } aksi {
-        FilledTonalButton(onClick = buka) { Text(NamaAntarmuka.BUKA) }
     }
 }
 

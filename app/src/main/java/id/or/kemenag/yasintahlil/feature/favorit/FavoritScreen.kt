@@ -109,11 +109,12 @@ private fun BarisTersimpan(
     KartuEntri(
         judul = judul,
         modifier = Modifier.padding(vertical = 2.dp),
+        aksi = {
+            AksiBuka(tujuan, NamaAntarmuka.BUKA, go)
+            TextButton(onClick = onHapus) { Text(NamaAntarmuka.HAPUS) }
+        },
     ) {
         tujuan?.let { Text(it.nama, style = MaterialTheme.typography.labelSmall) }
-    } aksi {
-        AksiBuka(tujuan, NamaAntarmuka.BUKA, go)
-        TextButton(onClick = onHapus) { Text(NamaAntarmuka.HAPUS) }
     }
 }
 

@@ -125,6 +125,13 @@ fun SholatScreen(go: (String) -> Unit) {
                 KartuEntri(
                     judul = s.nama,
                     lencana = listOf(s.rakaat, s.waktu),
+                    aksi = {
+                        if (modul != null) {
+                            FilledTonalButton(onClick = { go(modul.rute) }) { Text("Buka ${modul.nama}") }
+                        } else {
+                            Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
+                        }
+                    },
                 ) {
                     // Ringkasan tiga baris: uraian lengkapnya tinggal di rincian tata cara dan di
                     // layar keterangan, sehingga daftar tetap terbaca sebagai deretan ringkas.
@@ -135,12 +142,6 @@ fun SholatScreen(go: (String) -> Unit) {
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                     )
-                } aksi {
-                    if (modul != null) {
-                        FilledTonalButton(onClick = { go(modul.rute) }) { Text("Buka ${modul.nama}") }
-                    } else {
-                        Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
-                    }
                 }
             }
             if (tab == 1) {
@@ -170,6 +171,9 @@ fun SholatScreen(go: (String) -> Unit) {
                             // tujuan sholat itu, bukan catatan lain.
                             lencana = if (s.tujuan.isBlank()) listOf(s.rakaat, s.waktu)
                             else listOf(s.rakaat, s.waktu, "Tujuan: ${s.tujuan}"),
+                            aksi = {
+                                Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
+                            },
                         ) {
                             Text(
                                 s.deskripsi,
@@ -178,8 +182,6 @@ fun SholatScreen(go: (String) -> Unit) {
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                        } aksi {
-                            Button(onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") }) { Text("Tata cara") }
                         }
                     }
                 }
