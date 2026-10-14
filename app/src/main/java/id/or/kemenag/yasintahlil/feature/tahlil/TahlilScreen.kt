@@ -31,7 +31,6 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
     // saat layar diputar ulang.
     var jamaah by rememberSaveable { mutableStateOf(false) }
     var fullscreen by rememberSaveable { mutableStateOf(false) }
-    var settings by remember { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
     var daftar by remember { mutableStateOf(false) }
     FullscreenEffect(fullscreen)
@@ -108,7 +107,6 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
             Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
             FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             OutlinedButton(onClick = { susun = true }) { Text("Sesuaikan susunan") }
             OutlinedButton(onClick = { daftar = true }) { Text("Semua bagian") }
         }
@@ -160,16 +158,6 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 }
             }
         }
-    }
-
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
-            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
-            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
-            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
-        )
     }
 
     if (susun) {

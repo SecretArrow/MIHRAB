@@ -47,12 +47,21 @@ class KeadaanLayarSaatDiputarTest {
         Triple("feature/tahlil/TahlilScreen.kt", "susun", "panel susunan tahlil"),
         Triple("feature/kiblat/KiblatScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/yasin/YasinScreen.kt", "focus", "mode baca fokus"),
-        Triple("feature/yasin/YasinScreen.kt", "keepOn", "layar tetap menyala"),
         Triple("feature/yasin/YasinScreen.kt", "jump", "nomor ayat yang sedang diketik"),
-        Triple("feature/yasin/YasinScreen.kt", "query", "kata kunci pencarian ayat"),
-        Triple("feature/yasin/YasinScreen.kt", "showBookmarks", "daftar bookmark yang dibuka"),
         Triple("feature/search/SearchScreen.kt", "q", "kata kunci yang sedang diketik"),
     )
+
+    /**
+         * Keadaan Yasin yang dahulu dijaga di sini dan kini hidup di tempat lain — lebih awet
+         * daripada `rememberSaveable`:
+         *
+         * - `keepOn` ("tetap menyala") kini preferensi global `Store.KEEP_ON` yang diatur di tab
+         *   Pengaturan dan dibaca reaktif oleh layar Yasin — ia bertahan bahkan saat proses mati;
+         * - `query` (pencarian ayat di layar Yasin) sudah dipindahkan ke layar Pencarian terpadu
+         *   (kata kuncinya dijaga sebagai `q` di berkas itu); dan
+         * - `showBookmarks` (panel daftar bookmark) sudah tidak ada — daftarnya tinggal di layar
+         *   Favorit, dan aksi bookmarknya ada pada lembar aksi tekan-lama kartu ayat.
+         */
 
     @Test
     fun keadaanPilihanPenggunaBertahanSaatDiputar() {

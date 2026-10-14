@@ -99,12 +99,20 @@ class UkuranBacaanGlobalTest {
     }
 
     @Test
-    fun sheetMenulisUkuranGlobalTanpaDioperLayar() {
-        val badan = badanFungsi(uiKit(), "BacaanSettingsSheet")
-        assertTrue("Sheet tidak menyediakan slider ukuran Latin", badan.contains("UkuranBacaan.LATIN"))
-        assertTrue("Sheet tidak menyediakan slider jarak antarbaris", badan.contains("UkuranBacaan.JARAK"))
-        assertTrue("Sheet tidak menulis Store.LATIN_SIZE sendiri", badan.contains("store.set(Store.LATIN_SIZE"))
-        assertTrue("Sheet tidak menulis Store.LINE_HEIGHT sendiri", badan.contains("store.set(Store.LINE_HEIGHT"))
+    fun pengaturanMenulisUkuranGlobal() {
+        // Satu-satunya penulis preferensi ini kini layar Pengaturan (dahulu bottom sheet per
+        // layar bacaan). Ia harus tetap menulis kedua kunci global itu sendiri.
+        val pengaturan = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
+        ).readText()
+        assertTrue("Pengaturan tidak menyediakan slider ukuran Latin",
+            pengaturan.contains("UkuranBacaan.LATIN"))
+        assertTrue("Pengaturan tidak menyediakan slider jarak antarbaris",
+            pengaturan.contains("UkuranBacaan.JARAK"))
+        assertTrue("Pengaturan tidak menulis Store.LATIN_SIZE",
+            pengaturan.contains("store.set(Store.LATIN_SIZE"))
+        assertTrue("Pengaturan tidak menulis Store.LINE_HEIGHT",
+            pengaturan.contains("store.set(Store.LINE_HEIGHT"))
     }
 
     /** Angka tetap pada panggilan `BacaanCard` berarti layar itu mengabaikan pilihan pengguna. */

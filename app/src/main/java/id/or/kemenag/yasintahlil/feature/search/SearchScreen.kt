@@ -5,6 +5,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,13 +27,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Pencarian terpadu atas seluruh konten (`plan.txt`: nama surat, nomor ayat, nama doa, bacaan
- * sholat, kata dalam terjemahan, bagian Tahlil, dan panduan ibadah).
+ * Pencarian terpadu atas **seluruh** konten (`plan.txt`: nama surat, nomor ayat, nama doa, bacaan
+ * sholat, kata dalam terjemahan, bagian Tahlil, dan panduan ibadah) — bukan hanya Surat Yasin.
  *
  * Indeks dibangun **sekali** dari `ContentRepo` lalu disaring di memori oleh [Pencarian], sehingga
  * mengetik tidak membaca berkas berulang kali. Pembacaan dan penguraian JSON dijalankan di luar
- * thread UI; kegagalannya tidak lagi ditelan diam-diam melainkan tampil sebagai [ErrorState]
- * dengan tombol mencoba kembali.
+ * thread UI; kegagalannya tidak ditelan diam-diam melainkan tampil sebagai [ErrorState] dengan
+ * tombol mencoba kembali.
+ *
+ * Kotak carinya lebar dengan ikon kaca pembesar di kiri dan tombol kosongkan di kanan; saat kosong
+ * tampil saran cepat dan pencarian terbaru sebagai chip — satu ketukan mengisi kotaknya, bukan
+ * mengetik dari nol.
  */
 @Composable
 fun SearchScreen(go: (String) -> Unit, q0: String = "") {
@@ -69,40 +76,68 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
         if (kata.isNotBlank()) scope.launch { userData.pushHistory(JenisBacaan.SEARCH, kata, kata) }
     }
 
-    Column(Modifier.fillMaxSize().padding(12.dp)) {
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text(NamaLayar.SEARCH, style = MaterialTheme.typography.titleLarge)
         OutlinedTextField(
             value = q,
             onValueChange = { q = it },
-            label = { Text("surat, ayat, doa, bacaan, panduan") },
             singleLine = true,
+            placeholder = { Text("Surat, ayat, doa, bacaan, panduan…") },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            trailingIcon = {
+                if (q.isNotEmpty()) {
+                    IconButton(onClick = { q = "" }) {
+                        Icon(Icons.Filled.Close, contentDescription = NamaAntarmuka.KOSONGKAN)
+                    }
+                }
+            },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { catat() }),
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
 
         when {
             galat != null -> ErrorState(galat!!, onRetry = { ulang++ })
             indeks == null -> LoadingState("Menyiapkan indeks pencarian…")
             else -> {
-                if (q.isNotBlank()) {
-                    Text("${hits.size} hasil", style = MaterialTheme.typography.labelMedium)
-                }
                 if (q.isBlank()) {
+                    Text("Coba cari", style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 16.dp))
+                    BarisChip {
+                        listOf("Yasin", "tahlil", "ayat kursi", "wudhu", "qunut").forEach { saran ->
+                            AssistChip(onClick = { q = saran; catat() }, label = { Text(saran) })
+                        }
+                    }
                     if (recent.isNotEmpty()) {
-                        Text("Pencarian terbaru:", style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(top = 8.dp))
+                        Text("Pencarian terbaru", style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(top = 16.dp))
                         // Jatah tampil "pencarian terbaru" memakai batas bersama yang sama dengan
-                        // daftar riwayat lain; sebelumnya layar ini memotongnya sendiri di angka 10
-                        // sehingga jumlah yang benar-benar tampil berbeda dari yang dijanjikan
-                        // `BatasRiwayat.DITAMPILKAN`.
-                        recent.take(BatasRiwayat.DITAMPILKAN).forEach { r -> TextButton(onClick = { q = r }) { Text(r) } }
+                        // daftar riwayat lain (`BatasRiwayat.DITAMPILKAN`), bukan potongan sendiri.
+                        BarisChip {
+                            recent.take(BatasRiwayat.DITAMPILKAN).forEach { r ->
+                                AssistChip(onClick = { q = r }, label = { Text(r) })
+                            }
+                        }
                     } else {
                         EmptyState(
                             judul = "Cari di seluruh konten",
-                            pesan = "Ketik nama surat (mis. Yasin), nomor ayat, nama doa, lafaz bacaan " +
-                                "sholat, kata dalam terjemahan, bagian Tahlil, atau panduan ibadah " +
-                                "seperti wudhu dan tayamum.",
+                            pesan = "Ketik nama surat (mis. Yasin), nomor ayat, nama doa, lafaz " +
+                                "bacaan sholat, kata dalam terjemahan, bagian Tahlil, atau panduan " +
+                                "ibadah seperti wudhu dan tayamum.",
+                        )
+                    }
+                } else {
+                    Text(
+                        if (hits.isEmpty()) "Tidak ada hasil untuk \"${q.trim()}\""
+                        else "${hits.size} hasil untuk \"${q.trim()}\"",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                    )
+                    if (hits.isEmpty()) {
+                        EmptyState(
+                            judul = "Coba kata lain",
+                            pesan = "Periksa ejaan, atau cari dengan nomor ayat (mis. 1).",
                         )
                     }
                 }
@@ -111,14 +146,6 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
                         KartuHasil(h) {
                             scope.launch { userData.pushHistory(JenisBacaan.SEARCH, h.id, q.trim()) }
                             go(h.rute)
-                        }
-                    }
-                    if (q.isNotBlank() && hits.isEmpty()) {
-                        item {
-                            EmptyState(
-                                judul = "Tidak ada hasil untuk \"${q.trim()}\"",
-                                pesan = "Coba kata lain, periksa ejaan, atau cari dengan nomor ayat.",
-                            )
                         }
                     }
                 }

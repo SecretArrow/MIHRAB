@@ -71,7 +71,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IQOMAH) }
     LaunchedEffect(Unit) {
         mins = PengingatAdzan.iqomahMenit(
@@ -165,9 +164,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
                 "berjalan walau layar ini tertutup. ${PengingatAdzan.IQOMAH_PERKIRAAN}"
         }, style = MaterialTheme.typography.labelSmall)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
-        }
         if (repo.iqomahCatatan().isNotBlank()) {
             Text(repo.iqomahCatatan(), style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 4.dp))
@@ -188,15 +184,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
         }
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }
 
 @Composable
@@ -212,7 +199,6 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var settings by remember { mutableStateOf(false) }
     var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
@@ -231,9 +217,6 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("doa_adzan")) }
-        }
-        BarisChip(Modifier.padding(vertical = 4.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat
         // membaca doa setelah adzan."* Saklar yang sama juga ada di menu Adzan; keduanya menulis
@@ -271,15 +254,6 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }
 
 /**

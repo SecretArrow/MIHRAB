@@ -6,17 +6,18 @@ package id.or.kemenag.yasintahlil.core.designsystem
  *
  * Sembilan belas di antaranya sudah terlanjur ditulis berulang:
  *
- * - *"Pengaturan bacaan"* adalah judul sheet [BacaanSettingsSheet] **dan** label tombol yang
- *   membukanya di sepuluh tempat. Nama yang sama untuk hal yang sama, ditulis sebelas kali:
- *   mengganti nama sheet-nya meninggalkan sepuluh tombol yang menyebut nama lama — tombol tidak
- *   lagi menyebut apa yang dibukanya.
- * - *"Layar penuh"* adalah label chip di enam layar bacaan, dengan satu varian yang memang berbeda
- *   ([LAYAR_PENUH_IMAM] — pada Sholat Ghaib layar penuh berarti mode imam).
+ * - *"Pengaturan bacaan"* adalah judul bagian pengaturan bacaan di layar Pengaturan —
+ *   satu-satunya tempatnya. Dahulu ia judul bottom sheet pengaturan bacaan **sekaligus** label
+ *   tombol yang membukanya di sepuluh layar: nama yang sama untuk hal yang sama, ditulis sebelas
+ *   kali, dan mengganti namanya meninggalkan sepuluh tombol yang menyebut nama lama.
+ * - *"Layar penuh"* adalah label kendali di beberapa layar bacaan, dengan satu varian yang memang
+ *   berbeda ([LAYAR_PENUH_IMAM] — pada Sholat Ghaib layar penuh berarti mode imam).
  * - *"Coba lagi"* ditulis dua kali **di dalam berkas yang sama**: sebagai bawaan `labelTombol` pada
  *   [EmptyState] dan sebagai literal tombol pada [ErrorState].
  * - Enam **preferensi tampilan bacaan** — tiga sakelar ([TAMPIL_ARAB], [TAMPIL_LATIN],
  *   [TAMPIL_TERJEMAHAN]) dan tiga pengukur ([UKURAN_ARAB], [UKURAN_LATIN], [JARAK_ANTARBARIS]) —
- *   ada di dua tempat: sheet [BacaanSettingsSheet] dan layar Pengaturan. Keduanya menulis kunci
+ *   kini dijual di satu tempat: layar Pengaturan. Dahulu dijual di dua tempat (bottom sheet
+ *   per layar bacaan + layar Pengaturan) yang sama-sama menulis kunci
  *   `Store` yang **sama** (`SHOW_ARAB`, `SHOW_LATIN`, `SHOW_TRANS`, `ARAB_SIZE`, `LATIN_SIZE`,
  *   `LINE_HEIGHT`), jadi keduanya memang mengatur satu preferensi yang sama — dan sebelum ini
  *   masing-masing mengeja namanya sendiri. Akibatnya sunyi: mengganti nama satu sakelar di sheet
@@ -46,8 +47,8 @@ package id.or.kemenag.yasintahlil.core.designsystem
 object NamaAntarmuka {
 
     /**
-     * Judul sheet pengaturan bacaan dan label tombol yang membukanya. Satu nama, karena keduanya
-     * menunjuk hal yang sama: tombol harus menyebut apa yang akan terbuka.
+     * Judul bagian pengaturan bacaan di layar Pengaturan — satu-satunya tempatnya. Dahulu ia
+     * sekaligus label tombol pembuka sheet-nya; namanya tetap satu sejak itu.
      */
     const val PENGATURAN_BACAAN = "Pengaturan bacaan"
 
@@ -65,8 +66,8 @@ object NamaAntarmuka {
 
     // ---- Preferensi tampilan bacaan ------------------------------------------------------------
     //
-    // Enam nama di bawah ini adalah label untuk kunci `Store` yang sama di dua tempat: sheet
-    // [BacaanSettingsSheet] dan layar Pengaturan. Nama kuncinya dicatat di komentar tiap
+    // Enam nama di bawah ini adalah label untuk kunci `Store` yang sama — kini dijual di satu
+    // tempat: layar Pengaturan. Nama kuncinya dicatat di komentar tiap
     // konstanta supaya hubungan "satu preferensi, satu nama" tetap terlihat dari sini.
 
     /** Sakelar menampilkan teks Arab (`Store.SHOW_ARAB`). */

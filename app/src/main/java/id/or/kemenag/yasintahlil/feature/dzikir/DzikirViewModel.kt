@@ -58,13 +58,7 @@ class DzikirViewModel @Inject constructor(
         }
     }
 
-    fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; save { store.set(Store.ARAB_SIZE, v) } }
-
-    fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; save { store.set(Store.SHOW_LATIN, v) } }
-
-    fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) } }
-
-    fun setShowArab(v: Boolean) { _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) } }
+    // Pengaturan tampilan bacaan terpusat di tab Pengaturan; layar ini hanya membacanya.
 
     fun setCount(key: String, value: Int) {
         val v = value.coerceAtLeast(0)

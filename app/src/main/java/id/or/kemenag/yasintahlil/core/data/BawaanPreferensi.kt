@@ -29,6 +29,13 @@ object BawaanPreferensi {
     const val TAMPIL_LATIN = true
     const val TAMPIL_TERJEMAHAN = true
 
+    /**
+     * Layar tidak dipaksa tetap menyala selama membaca (`Store.KEEP_ON`): bawaannya mati karena
+     * memaksa layar menyala menghabiskan baterai tanpa diminta. Pengaturannya terpusat di tab
+     * Pengaturan; dulu ia chip lokal di layar Yasin.
+     */
+    const val TETAP_MENYALA = false
+
     // --- Pengingat ----------------------------------------------------------------------
 
     /** Pengingat waktu sholat aktif selama pengguna belum mematikannya. */

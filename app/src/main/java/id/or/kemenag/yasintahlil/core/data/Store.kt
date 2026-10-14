@@ -28,6 +28,12 @@ class Store(private val ctx: Context) {
         val SHOW_LATIN = booleanPreferencesKey("show_latin")
         val SHOW_TRANS = booleanPreferencesKey("show_trans")
         val SHOW_ARAB = booleanPreferencesKey("show_arab")
+        /**
+         * Layar tetap menyala saat membaca. Dahulu chip lokal di layar Yasin; kini pengaturan
+         * terpusat di tab Pengaturan (baca `BawaanPreferensi.TETAP_MENYALA`) dan tetap diterapkan
+         * layar Yasin yang memakainya.
+         */
+        val KEEP_ON = booleanPreferencesKey("keep_on")
         /** Tema halaman bacaan: `ikut`|`krem`|`gelap` (lihat `TemaHalaman` di paket designsystem). */
         val PAGE_THEME = stringPreferencesKey("page_theme")
         val ASAR = stringPreferencesKey("asar") // syafii|hanafi
@@ -126,7 +132,7 @@ class Store(private val ctx: Context) {
             flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
-            bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON)
+            bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON); bool(KEEP_ON)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)

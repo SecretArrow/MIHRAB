@@ -60,13 +60,9 @@ class YasinViewModel @Inject constructor(
         }
     }
 
-    fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; save { store.set(Store.ARAB_SIZE, v) } }
-
-    fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; save { store.set(Store.SHOW_LATIN, v) } }
-
-    fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; save { store.set(Store.SHOW_TRANS, v) } }
-
-    fun setShowArab(v: Boolean) { _state.update { it.copy(showArab = v) }; save { store.set(Store.SHOW_ARAB, v) } }
+    // Catatan: pengaturan tampilan bacaan (Arab/Latin/terjemahan, ukuran Arab) tidak lagi punya
+    // pengubahnya di layar ini — semuanya terpusat di tab Pengaturan dan layar membacanya lewat
+    // keadaan di bawah, jadi perubahan di Pengaturan tetap diterapkan saat layar dibuka.
 
     fun markRead(n: Int) {
         _state.update { it.copy(mark = n) }

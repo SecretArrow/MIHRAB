@@ -168,10 +168,7 @@ class TahlilViewModel @Inject constructor(
         persist()
     }
 
-    fun setArabSize(v: Float) { _state.update { it.copy(arabSize = v) }; viewModelScope.launch { store.set(Store.ARAB_SIZE, v) } }
-    fun setShowLatin(v: Boolean) { _state.update { it.copy(showLatin = v) }; viewModelScope.launch { store.set(Store.SHOW_LATIN, v) } }
-    fun setShowTrans(v: Boolean) { _state.update { it.copy(showTrans = v) }; viewModelScope.launch { store.set(Store.SHOW_TRANS, v) } }
-    fun setShowArab(v: Boolean) { _state.update { it.copy(showArab = v) }; viewModelScope.launch { store.set(Store.SHOW_ARAB, v) } }
+    // Pengaturan tampilan bacaan terpusat di tab Pengaturan; layar ini hanya membacanya.
 
     private fun persist() {
         val s = _state.value

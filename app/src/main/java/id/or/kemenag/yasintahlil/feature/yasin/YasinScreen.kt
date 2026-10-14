@@ -6,6 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkAdded
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -23,22 +31,33 @@ import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Surat Yā-Sīn.
+ *
+ * Kepala layarnya kini minimalis: judul berikut ikon Info, satu baris penanda terakhir dibaca
+ * yang sekaligus menjadi tombol lompat, dan baris "Ayat … / Ke ayat" yang diakhiri tombol layar
+ * penuh berikon. Aksi per-ayat (salin, bagikan, favorit, tandai terakhir dibaca, bookmark)
+ * dibuka dengan **menekan lama** kartu ayatnya; nomor ayat di luar kartu dihapus karena judul
+ * kartu sudah menyebutnya.
+ *
+ * Mencari ayat bukan lagi tugas layar ini — kotak carinya yang lama menyaring daftar dan membuat
+ * tombol "Ke ayat"/bookmark mendarat di ayat yang salah sebelum diperbaiki. Pencarian kini
+ * terpusat di layar Pencarian yang menelusuri seluruh konten aplikasi.
+ */
 @Composable
 fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val surah = vm.surah
     val ctx = LocalContext.current
-    // rememberSaveable: mode baca, kata kunci, dan daftar bookmark tidak hilang saat diputar ulang.
-    // `jump` khususnya: angka yang sudah diketik pengguna untuk melompat ke ayat tertentu lenyap
-    // begitu perangkat diputar, dan ia harus mengetiknya lagi.
+    val store = rememberStore()
+    // rememberSaveable: mode baca dan nomor yang sedang diketik tidak hilang saat diputar ulang.
+    // "Tetap menyala" kini preferensi global (Store.KEEP_ON, diatur di tab Pengaturan) — ia bertahan
+    // bahkan saat proses aplikasi mati, bukan sekadar selama rotasi.
     var focus by rememberSaveable { mutableStateOf(false) }
-    var keepOn by rememberSaveable { mutableStateOf(false) }
     var jump by rememberSaveable { mutableStateOf("") }
-    var query by rememberSaveable { mutableStateOf("") }
-    var showBookmarks by rememberSaveable { mutableStateOf(false) }
-    var settings by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val keepOn by store.flow(Store.KEEP_ON, BawaanPreferensi.TETAP_MENYALA)
+        .collectAsStateWithLifecycle(BawaanPreferensi.TETAP_MENYALA)
 
     FullscreenEffect(focus)
     DisposableEffect(keepOn) {
@@ -47,35 +66,19 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
         onDispose { w?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
 
-    val shown = remember(query, surah) {
-        if (query.isBlank()) surah.verses
-        else surah.verses.filter {
-            it.terjemahan.contains(query, true) || it.latin.contains(query, true) ||
-                it.nomor.toString() == query.trim()
-        }
-    }
-
-    // Ayat yang sedang dituju tombol "Ke ayat" / daftar bookmark. Diselesaikan di efek ini, bukan
-    // langsung, karena indeksnya bergantung pada daftar yang sedang tampil.
+    // Ayat yang sedang dituju tombol "Ke ayat" / baris penanda terakhir dibaca. Diselesaikan di
+    // efek ini, bukan langsung, agar gulirannya berjalan setelah daftar tersusun.
     var targetAyat by remember { mutableStateOf<Int?>(null) }
-    LaunchedEffect(targetAyat, shown) {
+    LaunchedEffect(targetAyat) {
         val n = targetAyat ?: return@LaunchedEffect
-        val idx = shown.indexOfFirst { it.nomor == n }
-        when {
-            idx >= 0 -> { listState.animateScrollToItem(idx); targetAyat = null }
-            // Ayatnya tersaring oleh pencarian: buang penyaringnya, lalu ulangi.
-            query.isNotBlank() -> query = ""
-            // Ayat di luar surat ini (mis. bookmark dari bundel lain) — jangan menebak.
-            else -> targetAyat = null
-        }
+        val idx = surah.verses.indexOfFirst { it.nomor == n }
+        if (idx >= 0) listState.animateScrollToItem(idx)
+        targetAyat = null
     }
 
     /**
-     * Lompat ke ayat [n] pada daftar yang **sedang tampil**.
-     *
-     * Sebelumnya indeksnya langsung `n - 1`, yang hanya benar bila tak ada pencarian aktif: dengan
-     * penyaring pencarian, ayat ke-n bukan lagi item ke-(n-1), sehingga tombol "Ke ayat" dan daftar
-     * bookmark mendarat di ayat yang salah tanpa memberi tahu pengguna.
+     * Lompat ke ayat [n]. Indeksnya dicari dari daftar yang sedang tampil lewat nomor ayatnya —
+     * bukan `n - 1` — sehingga tetap benar berapa pun susunan daftarnya.
      */
     fun lompatKe(n: Int, tandai: Boolean = false) {
         if (n !in 1..surah.ayatCount) return
@@ -104,9 +107,22 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
                     TombolInfo { go(Routes.keterangan("yasin")) }
                 }
             }
-            Text("${NamaAntarmuka.TERAKHIR_DIBACA}: ${if (s.mark in 1..surah.ayatCount) "ayat ${s.mark}" else "belum ada"}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            // Baris penanda terakhir dibaca sekaligus menjadi tombol lompat: satu baris, satu
+            // maksud — tanpa chip "Lanjut ayat N" tambahan yang mengulang informasi yang sama.
+            if (s.mark in 1..surah.ayatCount) {
+                TextButton(onClick = { lompatKe(s.mark) }) {
+                    Text(
+                        "${NamaAntarmuka.TERAKHIR_DIBACA}: ayat ${s.mark}",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            } else {
+                Text(
+                    "${NamaAntarmuka.TERAKHIR_DIBACA}: belum ada",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Row(
                 Modifier.fillMaxWidth().padding(top = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -116,84 +132,42 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
                     label = { Text("Ayat") }, singleLine = true,
                     modifier = Modifier.weight(1f))
                 Button(onClick = { jump.toIntOrNull()?.let { lompatKe(it, tandai = true) } }) { Text("Ke ayat") }
-            }
-            OutlinedTextField(query, { query = it }, label = { Text("Cari dalam Yasin (teks/ayat)") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp))
-            if (query.isNotBlank()) Text("${shown.size} ayat cocok", style = MaterialTheme.typography.labelSmall)
-            // Deretan kendali dipindah ke baris yang dapat digulir: empat chip + tombol pengaturan
-            // tidak pernah meluber keluar layar sempit, ia digulir.
-            BarisChip(Modifier.padding(vertical = 4.dp)) {
-                OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
-                FilterChip(focus, { focus = !focus }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-                FilterChip(keepOn, { keepOn = !keepOn }, { Text("Tetap menyala") })
-                FilterChip(showBookmarks, { showBookmarks = !showBookmarks }, { Text("Bookmark ${s.bookmarks.size}") })
-                if (s.mark in 1..surah.ayatCount) {
-                    FilterChip(false, { lompatKe(s.mark) }, { Text("Lanjut ayat ${s.mark}") })
+                // Tombol layar penuh berikon, menempel di kanan tombol "Ke ayat": kendali baca
+                // yang paling sering dipakai berada satu baris dengan lompatan ayat.
+                IconButton(onClick = { focus = true }) {
+                    Icon(Icons.Filled.Fullscreen, contentDescription = NamaAntarmuka.LAYAR_PENUH)
                 }
             }
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { focus = false }) { Text("Keluar mode fokus") }
+                IconButton(onClick = { focus = false }) {
+                    Icon(Icons.Filled.FullscreenExit, contentDescription = "Keluar layar penuh")
+                }
             }
         }
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-            items(shown) { v ->
+            items(surah.verses) { v ->
                 val marked = s.bookmarks.any { it.refId == v.nomor.toString() }
-                Row {
-                    Text("${v.nomor}", style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 8.dp, top = 12.dp))
-                    Column(Modifier.weight(1f)) {
-                        // Mode fokus menyembunyikan bilah bawah dan berarti bacaan dibaca dari
-                        // jauh, jadi ukuran Arabnya dinaikkan lewat aturan bersama yang sama
-                        // dengan layar Ghaib, Jenazah, Iqomah, dan Tahlil.
-                        BacaanCard(JenisBacaan.id(JenisBacaan.YASIN, v.nomor.toString()),
-                            "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
-                            s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, focus),
-                            showArab = s.showArab, kategori = surah.kategori)
-                        Row {
-                            TextButton(onClick = { vm.markRead(v.nomor) }) {
-                                Text(if (s.mark == v.nomor) "✓ Penanda terakhir" else "Tandai terakhir dibaca")
-                            }
-                            TextButton(onClick = { vm.toggleBookmark(v.nomor) }) {
-                                Text(if (marked) "★ Bookmark" else "☆ Bookmark")
-                            }
-                        }
-                    }
-                }
+                // Mode fokus menyembunyikan bilah bawah dan berarti bacaan dibaca dari
+                // jauh, jadi ukuran Arabnya dinaikkan lewat aturan bersama yang sama
+                // dengan layar Ghaib, Jenazah, Iqomah, dan Tahlil.
+                BacaanCard(
+                    JenisBacaan.id(JenisBacaan.YASIN, v.nomor.toString()),
+                    "Ayat ${v.nomor}", v.arab, v.latin, v.terjemahan,
+                    s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, focus),
+                    showArab = s.showArab, kategori = surah.kategori,
+                    aksiEkstra = listOf(
+                        AksiBacaan(
+                            if (s.mark == v.nomor) "✓ Penanda terakhir dibaca" else "Tandai terakhir dibaca",
+                            Icons.Filled.BookmarkAdded,
+                        ) { vm.markRead(v.nomor) },
+                        AksiBacaan(
+                            if (marked) "Hapus bookmark" else "Bookmark",
+                            if (marked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        ) { vm.toggleBookmark(v.nomor) },
+                    ),
+                )
             }
         }
-    }
-
-    // Daftar bookmark menjadi panel tersendiri: dahulu ia menumpuk di badan layar dan mendorong
-    // ayat-ayat di bawahnya keluar tampakan setiap kali dibuka.
-    if (showBookmarks) {
-        ModalBottomSheet(onDismissRequest = { showBookmarks = false },
-            sheetState = rememberModalBottomSheetState()) {
-            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
-                Text("Bookmark", style = MaterialTheme.typography.titleLarge)
-                if (s.bookmarks.isEmpty()) {
-                    Text("Belum ada bookmark. Tandai ayat untuk menyimpan.",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(top = 4.dp))
-                }
-                s.bookmarks.forEach { b ->
-                    TextButton(onClick = {
-                        b.refId.toIntOrNull()?.let { n -> lompatKe(n); showBookmarks = false }
-                    }) { Text(b.label.ifBlank { "Ayat ${b.refId}" }) }
-                }
-            }
-        }
-    }
-
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
-            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
-            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
-            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
-        )
     }
 }

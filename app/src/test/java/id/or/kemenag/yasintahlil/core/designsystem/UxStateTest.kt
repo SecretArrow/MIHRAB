@@ -5,13 +5,13 @@ import org.junit.Test
 import java.io.File
 
 /**
- * `plan.txt` meminta: *"Gunakan bottom sheet untuk pengaturan singkat"*, *"Berikan skeleton loading
- * atau indikator proses saat memuat data"*, *"Sediakan tampilan kosong, pesan kesalahan, dan tombol
- * mencoba kembali"*, serta *"Hindari tombol dekoratif yang tidak bekerja"*.
+ * `plan.txt` meminta: *"Berikan skeleton loading atau indikator proses saat memuat data"*,
+ * *"Sediakan tampilan kosong, pesan kesalahan, dan tombol mencoba kembali"*, serta *"Hindari
+ * tombol dekoratif yang tidak bekerja"*.
  *
- * Uji ini menjaga agar keempat komponen keadaan tetap ada **dan** benar-benar dipakai, agar
- * pengaturan tampilan bacaan benar-benar dibuka lewat bottom sheet (bukan chip yang berserakan di
- * badan layar), dan agar tak ada tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
+ * Uji ini menjaga agar komponen keadaan tetap ada **dan** benar-benar dipakai, agar pengaturan
+ * tampilan bacaan terpusat di tab Pengaturan (bukan kembali bertebaran sebagai sheet/chip di tiap
+ * layar bacaan), dan agar tak ada tombol yang tampak bisa ditekan tetapi tak melakukan apa pun.
  */
 class UxStateTest {
 
@@ -28,45 +28,10 @@ class UxStateTest {
         File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/designsystem")
             .walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
 
-    /** Badan (di dalam `{ … }`) sebuah deklarasi fungsi, dicari dengan kurung yang seimbang. */
-    private fun badanFungsi(src: String, nama: String): String {
-        val deklarasi = src.indexOf("fun $nama(")
-        if (deklarasi < 0) return ""
-        var depth = 0
-        var i = deklarasi + "fun $nama".length
-        // Lewati daftar parameter.
-        while (i < src.length) {
-            when (src[i]) {
-                '(' -> depth++
-                ')' -> {
-                    depth--
-                    if (depth == 0) { i++; break }
-                }
-            }
-            i++
-        }
-        // Lewati tipe kembalian sampai kurung kurawal badan fungsi.
-        while (i < src.length && src[i] != '{') i++
-        if (i >= src.length) return ""
-        val mulai = i
-        depth = 0
-        while (i < src.length) {
-            when (src[i]) {
-                '{' -> depth++
-                '}' -> {
-                    depth--
-                    if (depth == 0) { i++; break }
-                }
-            }
-            i++
-        }
-        return src.substring(mulai, minOf(i, src.length))
-    }
-
     @Test
     fun komponen_keadaan_dideklarasikan() {
         val ui = uiKit()
-        listOf("EmptyState", "ErrorState", "LoadingState", "SkeletonCard", "BacaanSettingsSheet")
+        listOf("EmptyState", "ErrorState", "LoadingState", "SkeletonCard")
             .forEach { nama ->
                 assertTrue("UiKit.kt tidak mendeklarasikan $nama",
                     Regex("""fun\s+$nama\s*\(""").containsMatchIn(ui))
@@ -83,22 +48,23 @@ class UxStateTest {
     }
 
     /**
-     * Layar yang menampilkan bacaan harus mengatur tampilannya lewat bottom sheet: setiap berkas
-     * yang memanggil `BacaanCard` juga harus memanggil `BacaanSettingsSheet` **dan** menyediakan
-     * tombol pembukanya — supaya sheet-nya bukan kode mati yang tak bisa dibuka pengguna.
-     *
-     * Label tombolnya datang dari kosakata bersama `NamaAntarmuka`, bukan literal yang dieja di
-     * layar: tombol harus menyebut apa yang akan terbuka, sama dengan judul sheet-nya.
+     * Layar yang menampilkan bacaan tidak lagi membawa pengaturannya sendiri — semuanya terpusat
+     * di layar Pengaturan. Penjaga ini memastikan pengaturan bacaan memang tersedia di sana
+     * (sakelar + pengukur + kuncinya), supaya pemusatan tidak berubah menjadi penghilangan.
      */
     @Test
-    fun pengaturan_bacaan_lewat_bottom_sheet() {
-        val pelanggar = featureSources().filter { it.readText().contains("BacaanCard(") }
-            .filterNot { f ->
-                val t = f.readText()
-                t.contains("BacaanSettingsSheet(") && t.contains("NamaAntarmuka.PENGATURAN_BACAAN")
-            }
-            .map { it.name }
-        assertTrue("Layar bacaan tanpa bottom sheet pengaturan: $pelanggar", pelanggar.isEmpty())
+    fun pengaturan_bacaan_terpusat_di_pengaturan() {
+        val layar = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
+        ).readText()
+        listOf(
+            "Store.SHOW_ARAB", "Store.SHOW_LATIN", "Store.SHOW_TRANS",
+            "Store.ARAB_SIZE", "Store.LATIN_SIZE", "Store.LINE_HEIGHT",
+        ).forEach { kunci ->
+            assertTrue("layar Pengaturan tidak mengatur $kunci", layar.contains(kunci))
+        }
+        assertTrue("judul bagian pengaturan bacaan bukan nama bersama",
+            layar.contains("BagianJudul(NamaAntarmuka.PENGATURAN_BACAAN)"))
     }
 
     /** Rentang ukuran yang sah hanya ditulis sekali, di `UkuranBacaan` — bukan angka lepas per layar. */
@@ -110,9 +76,11 @@ class UxStateTest {
         listOf("16f..40f", "12f..24f", "1.4f..2.6f").forEach { r ->
             assertTrue("Rentang $r tidak ada di aturan bersama UkuranBacaan", aturan.contains(r))
         }
-        val sheet = badanFungsi(uiKit(), "BacaanSettingsSheet")
+        val pengaturan = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
+        ).readText()
         listOf("UkuranBacaan.ARAB", "UkuranBacaan.LATIN", "UkuranBacaan.JARAK").forEach { r ->
-            assertTrue("$r tidak dipakai sheet pengaturan bacaan", sheet.contains(r))
+            assertTrue("$r tidak dipakai layar Pengaturan — pengaturannya bisa berbeda dari aturannya", r in pengaturan)
         }
         val lepas = featureSources().filter { f ->
             val t = f.readText()
@@ -124,7 +92,10 @@ class UxStateTest {
 
     /**
      * Tidak ada tombol dekoratif: `onClick = {}` hanya boleh dipakai pada kontrol yang memang
-     * dimatikan (`enabled = false`) sebagai penanda status, bukan pada tombol yang tampak aktif.
+     * dimatikan (`enabled = false`) sebagai penanda status, atau pada kontrol yang bekerja lewat
+     * gestur lain — kartu bacaan membuka lembar aksinya dengan **menekan lama**
+     * (`onLongClick`), jadi ketukan biasanya memang tak melakukan apa pun dan itu bukan tombol
+     * mati: pengguna tetap punya jalan mengoperasikannya.
      */
     @Test
     fun tidak_ada_tombol_dekoratif() {
@@ -133,7 +104,9 @@ class UxStateTest {
             val t = f.readText()
             Regex("""onClick\s*=\s*\{\s*\}""").findAll(t).forEach { m ->
                 val jendela = t.substring(maxOf(0, m.range.first - 240), minOf(t.length, m.range.last + 240))
-                if (!jendela.contains("enabled = false")) {
+                val dimatikan = jendela.contains("enabled = false")
+                val bekerjaLewatGesturLain = jendela.contains("onLongClick")
+                if (!dimatikan && !bekerjaLewatGesturLain) {
                     val baris = t.take(m.range.first).count { it == '\n' } + 1
                     pelanggar += "${f.name}:$baris"
                 }

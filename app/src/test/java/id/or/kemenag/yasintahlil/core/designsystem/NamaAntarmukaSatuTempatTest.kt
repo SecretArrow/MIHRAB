@@ -13,10 +13,9 @@ import java.io.File
  *
  * Sembilan belas nama sudah terlanjur ditulis berulang sebelum berkas itu ada:
  *
- *  - *"Pengaturan bacaan"* adalah judul sheet `BacaanSettingsSheet` **dan** label tombol yang
- *    membukanya di sepuluh layar. Sebelas tulisan untuk satu nama: mengganti nama sheet-nya
- *    meninggalkan sepuluh tombol yang menyebut nama lama, sehingga tombol tidak lagi menyebut apa
- *    yang dibukanya — pengguna menekan "Pengaturan bacaan" lalu mendapat sheet berjudul lain.
+ * - *"Pengaturan bacaan"* adalah judul bagian di layar Pengaturan. Dahulu ia judul bottom sheet
+ *   **dan** label tombol yang membukanya di sepuluh layar — sebelas tulisan untuk satu nama.
+ *   Pengaturan itu kini terpusat, dan namanya tetap satu di tempat tunggalnya.
  *  - *"Layar penuh"* adalah label chip di enam layar bacaan. Satu varian memang berbeda
  *    (`LAYAR_PENUH_IMAM` — pada Sholat Ghaib layar penuh sekaligus mode imam), dan perbedaan itu
  *    **disengaja**: yang dijanjikan tombolnya memang berbeda. Yang tidak boleh adalah salinan yang
@@ -225,19 +224,17 @@ class NamaAntarmukaSatuTempatTest {
     }
 
     /**
-     * Perbaikan preferensi bacaan harus terlihat **di kedua tempat**: sheet dan layar Pengaturan
-     * sama-sama memakai nama bersama. Tanpa ini, penjaga di atas dapat dipuaskan dengan menghapus
-     * salah satu tempat, padahal yang salah adalah salinannya, bukan kendalinya.
+     * Perbaikan preferensi bacaan harus terlihat di satu-satunya tempatnya: layar Pengaturan
+     * memakai keenam nama bersama itu. Dahulu ada dua tempat (sheet per layar + Pengaturan) yang
+     * masing-masing mengeja sendiri — dua ejaan untuk satu preferensi membuat pengguna mengira
+     * ada dua pengaturan.
      */    @Test
-    fun keduaTempatPreferensiBacaanMemakaiNamaBersama() {
-        val sheet = kode(uiKit())
+    fun layarPengaturanMemakaiNamaBersamaUntukPreferensiBacaan() {
         val pengaturan = layar("feature/settings/SettingsScreen.kt")
         listOf(
             "TAMPIL_ARAB", "TAMPIL_LATIN", "TAMPIL_TERJEMAHAN",
             "UKURAN_ARAB", "UKURAN_LATIN", "JARAK_ANTARBARIS",
         ).forEach { kunci ->
-            assertTrue("sheet pengaturan bacaan tidak memakai NamaAntarmuka.$kunci",
-                sheet.contains("NamaAntarmuka.$kunci"))
             assertTrue("layar Pengaturan tidak memakai NamaAntarmuka.$kunci",
                 pengaturan.contains("NamaAntarmuka.$kunci"))
         }
@@ -260,15 +257,15 @@ class NamaAntarmukaSatuTempatTest {
             kode(search).contains(NamaAntarmuka.COBA_LAGI))
     }
 
-    // ---- Judul sheet = label tombol ------------------------------------------------------------
+    // ---- Judul bagian pengaturan bacaan ---------------------------------------------------------
 
     /**
-     * Judul sheet pengaturan bacaan dan label tombol yang membukanya adalah **satu** nama, bukan dua
-     * yang kebetulan sama. Karena itu `NamaAntarmuka` hanya boleh memuat satu nama untuknya: dua
-     * konstanta berbeda akan dapat menyimpang, dan tombol kembali menyebut hal yang tidak dibukanya.
+     * Judul bagian pengaturan bacaan di layar Pengaturan memakai nama bersama yang sama dengan
+     * yang dijanjikan seluruh layar bacaan. Karena itu `NamaAntarmuka` hanya boleh memuat satu
+     * nama untuknya: dua konstanta berbeda akan dapat menyimpang.
      */
     @Test
-    fun judulSheetDanLabelTombolAdalahSatuNama() {
+    fun judulBagianPengaturanBacaanSatuNama() {
         val berkas = KodeSumber.sumber(
             "src/main/java/id/or/kemenag/yasintahlil/core/designsystem/NamaAntarmuka.kt",
         )
@@ -276,44 +273,50 @@ class NamaAntarmukaSatuTempatTest {
             .findAll(KodeSumber.kodeTanpaKomentar(berkas)).count()
         assertEquals("nama pengaturan bacaan dideklarasikan lebih dari sekali", 1, deklarasi)
 
-        assertTrue("judul sheet pengaturan bacaan bukan dari kosakata bersama",
-            kode(uiKit()).contains("Text(NamaAntarmuka.PENGATURAN_BACAAN"))
+        assertTrue("judul bagian pengaturan bacaan di Pengaturan bukan dari kosakata bersama",
+            layar("feature/settings/SettingsScreen.kt")
+                .contains("BagianJudul(NamaAntarmuka.PENGATURAN_BACAAN)"))
     }
 
-    /** Tombol yang membuka sheet harus menyebut namanya dari kosakata yang sama. */
+    /**
+     * Pengaturan bacaan tidak lagi punya pintu per layar: tidak ada berkas lain yang membuka sheet
+     * atau menamai kendalinya sendiri. Penjaga ini memastikan sisa-sisa pintu itu tidak kembali.
+     */
     @Test
-    fun tombolPembukaSheetMemakaiNamaYangSama() {
-        val pembuka = berkasMain().filter { kode(it).contains("BacaanSettingsSheet(") }
-        assertTrue("tak ada layar yang membuka sheet pengaturan bacaan", pembuka.isNotEmpty())
-        val pelanggar = pembuka
-            .filterNot { kode(it).contains("NamaAntarmuka.PENGATURAN_BACAAN") }
+    fun pengaturanBacaanTidakPunyaPintuKedua() {
+        val pelanggar = berkasMain()
+            .filter { it.name != "SettingsScreen.kt" }
+            .filter { kode(it).contains("NamaAntarmuka.PENGATURAN_BACAAN") }
             .map { it.name }
-        assertTrue("layar membuka sheet pengaturan bacaan tanpa menyebut namanya: $pelanggar",
+        assertTrue("layar selain Pengaturan masih menyebut pengaturan bacaan: $pelanggar",
             pelanggar.isEmpty())
     }
 
     // ---- Chip "Layar penuh" --------------------------------------------------------------------
 
     /**
-     * Tiap layar yang punya chip layar penuh memakai salah satu dari dua nama bersama — dan yang
+     * Tiap layar yang punya kendali layar penuh memakai salah satu dari dua nama bersama — dan yang
      * benar untuk layar itu. Nama yang tertukar di sini bukan sekadar beda kata: pada Sholat Ghaib
-     * chip itu sekaligus menyalakan panduan mode imam, sehingga chip "Layar penuh" biasa di sana
-     * menjanjikan hal yang tidak terjadi.
+     * kendali itu sekaligus menyalakan panduan mode imam, sehingga nama "Layar penuh" biasa di sana
+     * menjanjikan hal yang tidak terjadi. Pada layar Yasin kendali itu kini tombol **berikon** di
+     * samping tombol "Ke ayat" — namanya tetap dibaca pembaca layar lewat `contentDescription`.
      */
     @Test
-    fun tiapLayarChipMemakaiNamaLayarPenuhYangBenar() {
-        val biasa = listOf(
-            "feature/yasin/YasinScreen.kt",
+    fun tiapLayarKendaliLayarPenuhMemakaiNamaYangBenar() {
+        val berchip = listOf(
             "feature/tahlil/TahlilScreen.kt",
             "feature/dzikir/DzikirScreen.kt",
             "feature/adzan/IqomahDoaScreen.kt",
             "feature/kiblat/KiblatScreen.kt",
             "feature/sholat/JenazahScreen.kt",
         )
-        biasa.forEach { berkas ->
+        berchip.forEach { berkas ->
             assertTrue("$berkas tidak memakai nama chip layar penuh bersama",
                 layar(berkas).contains("Text(NamaAntarmuka.LAYAR_PENUH)"))
         }
+        val yasin = layar("feature/yasin/YasinScreen.kt")
+        assertTrue("kendali layar penuh di Yasin tidak memakai nama bersama",
+            yasin.contains("NamaAntarmuka.LAYAR_PENUH"))
         val ghaib = layar("feature/sholat/GhaibScreen.kt")
         assertTrue("Sholat Ghaib tidak memakai varian chip mode imam",
             ghaib.contains("Text(NamaAntarmuka.LAYAR_PENUH_IMAM)"))

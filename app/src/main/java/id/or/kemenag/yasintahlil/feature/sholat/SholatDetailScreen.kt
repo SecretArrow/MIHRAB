@@ -60,7 +60,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var selesai by rememberSaveable { mutableStateOf(false) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
-    var settings by remember { mutableStateOf(false) }
     var syaratTerbuka by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
@@ -184,7 +183,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
         BarisChip(Modifier.padding(top = 4.dp)) {
             FilterChip(!ringkas, { ringkas = false }, { Text("Pemula") })
             FilterChip(ringkas, { ringkas = true }, { Text("Ringkas") })
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         Text("Mazhab panduan: $mazhabLabel", style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp))
@@ -277,15 +275,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             modifier = Modifier.padding(top = 8.dp))
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }
 
 // Jenis progres panduan sholat per-sholat (rujukannya id sholat) — dari kosakata bersama

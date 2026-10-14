@@ -126,10 +126,21 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Cara membaca",
-                    "Ketuk \"Ke ayat\" untuk melompat ke nomor ayat, atau ketik kata pada kotak " +
-                        "pencarian untuk menyaring ayat yang memuat kata itu. Mode \"Layar penuh\" " +
-                        "menyembunyikan bilah bawah dan memperbesar teks Arab agar nyaman dibaca " +
-                        "dari jauh; \"Tetap menyala\" menjaga layar tetap menyala selama dibaca.",
+                    "Ketuk \"Ke ayat\" untuk melompat ke nomor ayat; tombol berikon di sebelahnya " +
+                        "membuka mode layar penuh yang menyembunyikan bilah bawah dan memperbesar " +
+                        "teks Arab agar nyaman dibaca dari jauh. Tekan lama kartu ayat untuk salin, " +
+                        "bagikan, memfavoritkan, menandai terakhir dibaca, atau mem-bookmarknya. " +
+                        "Baris \"Terakhir dibaca\" di atas daftar sekaligus menjadi tombol lompat " +
+                        "ke ayat penanda Anda.",
+                ),
+            )
+            add(
+                BagianKeterangan(
+                    "Mencari ayat",
+                    "Mencari ayat atau bacaan lain dilakukan di layar Pencarian (menu Beranda/Ibadah " +
+                        "→ Cari), yang menelusuri seluruh konten — nomor ayat, terjemahan, transliterasi, " +
+                        "nama doa, hingga panduan ibadah. Pengaturan tampilan bacaan (Arab/Latin/" +
+                        "terjemahan, ukuran, tema halaman, tetap menyala) terpusat di tab Pengaturan.",
                 ),
             )
         }

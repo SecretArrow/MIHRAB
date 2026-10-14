@@ -87,13 +87,17 @@ class TemaHalamanTest {
     }
 
     @Test
-    fun pemilihTemaDitawarkanDiPengaturanBacaan() {
-        val ui = uiKit()
-        val sheet = ui.substringAfter("fun BacaanSettingsSheet(").substringBefore("\nprivate fun TemaHalamanChips")
-        assertTrue("bottom sheet pengaturan bacaan tidak menawarkan pemilih tema halaman",
-            sheet.contains("TemaHalamanChips()"))
-        val pemilih = ui.substringAfter("private fun TemaHalamanChips()")
-        assertTrue("pemilih tidak menawarkan seluruh pilihan", pemilih.contains("TemaHalaman.SEMUA.forEach"))
-        assertTrue("pemilih tidak menyimpan pilihannya", pemilih.contains("Store.PAGE_THEME"))
+    fun pemilihTemaDitawarkanDiPengaturan() {
+        // Pengaturan bacaan terpusat di layar Pengaturan; pemilih tema halaman ikut ke sana
+        // (dahulu ia tinggal di bottom sheet per layar bacaan yang sudah dihapus).
+        val pengaturan = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
+        ).readText()
+        assertTrue("layar Pengaturan tidak menawarkan seluruh pilihan tema halaman",
+            pengaturan.contains("TemaHalaman.SEMUA.forEach"))
+        assertTrue("pemilih tidak menyimpan pilihannya",
+            pengaturan.contains("Store.PAGE_THEME"))
+        assertTrue("pemilih tidak memakai label tema halaman bersama",
+            pengaturan.contains("TemaHalaman.label("))
     }
 }

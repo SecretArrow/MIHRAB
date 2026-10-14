@@ -7,27 +7,25 @@ import java.io.File
 
 /**
  * Preferensi tampilan bacaan ("Arab / Latin / Terjemahan") harus benar-benar berpengaruh di
- * **setiap** layar bacaan.
+ * **setiap** layar bacaan, dan pengaturannya kini terpusat di **satu** tempat: tab Pengaturan.
  *
  * Awalnya kunci `SHOW_ARAB` hanya tersimpan tanpa mengubah layar mana pun; penjaga `showArab`
  * ditulis untuk itu. Ternyata dua kuncinya yang lain — `SHOW_LATIN` dan `SHOW_TRANS` — mengulang
- * riwayat yang sama, dan lebih sunyi: tujuh layar menuliskan `true` langsung di setiap pemanggilan
- * `BacaanCard`, sementara Yasin, Tahlil, dan Dzikir membacanya dari preferensi. Akibatnya pengguna
- * yang mematikan "Tampil terjemahan" di Pengaturan masih membaca terjemahan di layar Sholat, Ghaib,
- * Jenazah, Adzan, dan Iqomah — dan di layar itu tombolnya pun tak pernah muncul di "Pengaturan
- * bacaan", sebab `BacaanSettingsSheet` menerima keduanya sebagai parameter **opsional** dengan
- * alasan "layar yang tak punya bacaan Latin/terjemahan". Alasan itu keliru: ketujuh layar itu
- * memang menampilkan Latin dan terjemahan.
+ * riwayat yang sama: tujuh layar menuliskan `true` langsung di setiap pemanggilan `BacaanCard`.
+ * Setelahnya pengaturan pernah pula dijual per layar lewat bottom sheet `BacaanSettingsSheet`
+ * di sepuluh layar — pengaturan yang sama, pintunya bertebaran. Kini semuanya tinggal di layar
+ * Pengaturan, dan uji ini memaku dua sisinya sekaligus:
  *
- * Jadi uji ini memaku aturan yang sama untuk ketiga kunci: setiap `BacaanCard` menyebut ketiganya,
- * dan setiap `BacaanSettingsSheet` menyediakan ketiganya — bentuk opsionalnya sudah dihapus, jadi
- * ketiadaan salah satunya adalah galat kompilasi di layar, bukan chip yang menghilang diam-diam.
+ * - setiap `BacaanCard` tetap menyebut ketiga sakelarnya (bentuk opsionalnya pernah membuat chip
+ *   di Pengaturan mati di sebagian layar), dan
+ * - pengaturan bacaan tidak boleh punya pintu kedua di layar mana pun — komponen sheet-nya
+ *   memang sudah dihapus dari `UiKit`, dan menghidupkannya kembali tanpa sengaja akan tertangkap
+ *   [sheetPengaturanBacaanSudahTidakAda].
  *
- * Satu jalur pelanggaran tidak tertangkap oleh pencarian pemanggilan: **fungsi pembantu**. Layar
+ * Satu jalur pelanggaran yang tak tertangkap pencarian pemanggilan: **fungsi pembantu**. Layar
  * Doa Setelah Adzan merender kartunya lewat `KartuDoa`, dan `KartuDoa` dahulu hanya menerima
- * `showArab` — sehingga `showLatin`/`showTrans` di badannya menunjuk ke luar jangkauan. Pemanggilan
- * `BacaanCard` di dalamnya tetap memuat kedua nama itu, jadi penjaga pemanggilan hijau; yang gagal
- * adalah kompilator, di runner CI, bukan di sini. Karena itu parameter fungsi pembantu ikut dipaku
+ * `showArab` — sehingga `showLatin`/`showTrans` di badannya menunjuk ke luar jangkauan. Karena itu
+ * parameter fungsi pembantu ikut dipaku
  * ([fungsiPembantuYangMeneruskanShowArabIkutMenerimaKeduanya]).
  */
 class ReadingDisplayPrefsTest {
@@ -40,9 +38,6 @@ class ReadingDisplayPrefsTest {
 
     private fun storeSource(): String =
         File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/data/Store.kt").readText()
-
-    private fun uiKitSource(): String =
-        File(root(), "src/main/java/id/or/kemenag/yasintahlil/core/designsystem/UiKit.kt").readText()
 
     /**
      * Potongan sumber tiap pemanggilan `nama(` dengan tanda kurung yang seimbang, diawali
@@ -136,20 +131,27 @@ class ReadingDisplayPrefsTest {
         )
     }
 
-    /** Sheet pengaturan bacaan harus menyediakan **ketiga** sakelar, bukan hanya Arab. */
+    /**
+     * Pengaturan bacaan terpusat: layar Pengaturan menyediakan ketiga sakelarnya dan menulis kunci
+     * yang sama. Tanpa sisi ini, penjaga pemanggilan di atas bisa dipuaskan dengan menghapus
+     * pintu pengaturannya di mana pun — pengguna kehilangan kendali tanpa satu pun galat.
+     */
     @Test
-    fun setiap_BacaanSettingsSheet_menyediakan_ketiga_sakelar() {
-        val offenders = semuaPemanggilan("BacaanSettingsSheet")
-            .filterNot { (_, t) ->
-                t.contains("showLatin") && t.contains("onShowLatin") &&
-                    t.contains("showTrans") && t.contains("onShowTrans")
-            }
-            .map { (n, t) -> "$n: ${rapikan(t)}" }
-        assertTrue(
-            "Ada BacaanSettingsSheet yang tidak menyediakan sakelar Latin/terjemahan, sehingga " +
-                "pengguna tak dapat mengubahnya dari layar itu:\n" + offenders.joinToString("\n"),
-            offenders.isEmpty(),
-        )
+    fun pengaturanBacaanTerpusatDiLayarPengaturan() {
+        val layar = File(
+            root(), "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
+        ).readText()
+        listOf(
+            "Store.SHOW_ARAB" to "showA",
+            "Store.SHOW_LATIN" to "showL",
+            "Store.SHOW_TRANS" to "showT",
+        ).forEach { (kunci, saklar) ->
+            assertTrue("layar Pengaturan tidak menyediakan sakelar $kunci", layar.contains(kunci))
+            assertTrue("sakelar $kunci di Pengaturan tidak terhubung ke nilainya ($saklar)",
+                layar.contains(saklar))
+        }
+        assertTrue("Pengaturan tidak memakai nama bersama untuk sakelar tampilannya",
+            layar.contains("NamaAntarmuka.TAMPIL_ARAB"))
     }
 
     /**
@@ -159,9 +161,12 @@ class ReadingDisplayPrefsTest {
     @Test
     fun penjagaMenemukanPemanggilanYangDiharapkan() {
         val kartu = semuaPemanggilan("BacaanCard").size
-        val sheet = semuaPemanggilan("BacaanSettingsSheet").size
         assertTrue("penjaga tidak lagi menemukan pemanggilan BacaanCard — polanya salah", kartu >= 13)
-        assertTrue("penjaga tidak lagi menemukan BacaanSettingsSheet — polanya salah", sheet >= 10)
+        // Pintu pengaturan kedua tidak boleh muncul lagi di layar mana pun: nama komponennya
+        // sendiri sudah tidak boleh tersisa di seluruh kode utama.
+        val sisa = featureSources().filter { it.readText().contains("BacaanSettingsSheet(") }
+        assertTrue("sheet pengaturan bacaan masih dibuka di layar: ${sisa.map { it.name }}",
+            sisa.isEmpty())
     }
 
     @Test
@@ -178,27 +183,19 @@ class ReadingDisplayPrefsTest {
     }
 
     /**
-     * Bentuk **opsional** itulah yang dahulu membuat tujuh layar dapat menghilangkan sakelar
-     * Latin/terjemahan tanpa jejak apa pun: tidak ada galat, tidak ada chip, dan nilainya tetap
-     * `true` di dalam kartunya. Karena itu parameternya dipaku sebagai **wajib** — layar yang
-     * memakai sheet ini tak punya cara lagi untuk diam-diam melewatinya.
+     * Komponen `BacaanSettingsSheet` dihapus saat pengaturan dipusatkan ke tab Pengaturan.
+     * Identifier ini tidak boleh kembali muncul di mana pun — kehadirannya berarti ada lagi
+     * pintu pengaturan kedua di luar tab Pengaturan. Yang diperiksa kode tanpa komentar:
+     * KDoc yang menjelaskan sejarahnya memang menyebut nama itu sebagai penjelasan, bukan kode.
      */
     @Test
-    fun sheetTidakLagiMenjadikanSakelarLatinTerjemahanOpsional() {
-        val deklarasi = uiKitSource()
-            .substringAfter("fun BacaanSettingsSheet(").substringBefore(") {")
-        listOf(
-            "showLatin: Boolean",
-            "onShowLatin: (Boolean) -> Unit",
-            "showTrans: Boolean",
-            "onShowTrans: (Boolean) -> Unit",
-        ).forEach { tanda ->
-            assertTrue(
-                "BacaanSettingsSheet kehilangan parameter wajib `$tanda` — sakelar Latin/terjemahan " +
-                    "dapat dihilangkan layar tanpa jejak lagi",
-                deklarasi.contains(tanda),
-            )
-        }
+    fun sheetPengaturanBacaanSudahTidakAda() {
+        val pelanggar = File(root(), "src/main/java")
+            .walkTopDown().filter { it.isFile && it.extension == "kt" }
+            .filter { KodeSumber.kodeTanpaKomentar(it.readText()).contains("BacaanSettingsSheet") }
+            .map { it.name }
+            .toList()
+        assertTrue("BacaanSettingsSheet masih ada di kode utama: $pelanggar", pelanggar.isEmpty())
     }
 
     /**

@@ -26,7 +26,6 @@ fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel(
     // rememberSaveable: tab dan mode layar penuh pilihan pengguna tidak hilang saat diputar ulang.
     var tab by rememberSaveable { mutableStateOf(0) }
     var fullscreen by rememberSaveable { mutableStateOf(false) }
-    var settings by remember { mutableStateOf(false) }
     // Kata kunci penyaring di layar ini (`plan.txt`: "pencarian dan akses cepat pada halaman yang
     // memiliki banyak konten"). Pustaka dzikir memuat puluhan entri dalam lima kelompok; sebelum
     // ada kotak ini satu-satunya cara menemukan satu doa adalah menggulir tiap tab.
@@ -48,7 +47,6 @@ fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel(
             TombolInfo { go(Routes.keterangan("dzikir")) }
         }
         BarisChip(Modifier.padding(vertical = 4.dp)) {
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
         // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini batang
@@ -104,15 +102,5 @@ fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel(
                     onReset = { vm.reset(key) })
             }
         }
-    }
-
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = s.showArab, onShowArab = { vm.setShowArab(it) },
-            showLatin = s.showLatin, onShowLatin = { vm.setShowLatin(it) },
-            showTrans = s.showTrans, onShowTrans = { vm.setShowTrans(it) },
-            arabSize = s.arabSize, onArabSize = { vm.setArabSize(it) },
-        )
     }
 }

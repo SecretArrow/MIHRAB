@@ -34,6 +34,19 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
+/**
+ * Tab Pengaturan — **satu-satunya** tempat mengubah pengaturan aplikasi.
+ *
+ * Dahulu pengaturan bercerai-berai: tiap layar bacaan membawa tombol "Pengaturan bacaan" yang
+ * membuka bottom sheet-nya sendiri, chip "Tetap menyala" hidup hanya di layar Yasin, dan layar
+ * ini sendiri berupa daftar panjang tanpa kelompok. Kini semuanya tinggal di sini, dikelompokkan
+ * menurut maksudnya: Tampilan, [NamaAntarmuka.PENGATURAN_BACAAN], Ibadah, Jadwal & lokasi,
+ * Kompas kiblat, Data lokal, lalu Tentang.
+ *
+ * Kendali yang memang milik layar lainnya tetap di layarnya (mis. pemilih metode hisab di menu
+ * Jadwal, saklar per-waktu adzan di menu Adzan): keduanya bagian dari cara kerja layar itu,
+ * bukan preferensi aplikasi.
+ */
 @Composable
 fun SettingsScreen(go: (String) -> Unit = {}) {
     val store = rememberStore()
@@ -50,6 +63,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var showL by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showT by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var showA by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    // "Tetap menyala" dahulu chip lokal di layar Yasin; kini preferensi global yang dibaca layar
+    // itu, sehingga nilainya juga berlaku setelah aplikasi ditutup.
+    var tetapMenyala by remember { mutableStateOf(BawaanPreferensi.TETAP_MENYALA) }
     var infoCard by remember { mutableStateOf(BawaanPreferensi.KARTU_INFO) }
     var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
@@ -79,6 +95,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         showL = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
         showT = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         showA = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        tetapMenyala = store.get(Store.KEEP_ON, BawaanPreferensi.TETAP_MENYALA)
         infoCard = store.get(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO)
         asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
         city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
@@ -99,34 +116,19 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     }
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
-    Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
+
+    Column(Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.PENGATURAN, style = MaterialTheme.typography.titleLarge)
-        Text("Tema:", style = MaterialTheme.typography.titleMedium)
+
+        // ---- Tampilan ------------------------------------------------------------------------
+        BagianJudul("Tampilan")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TemaAplikasi.SEMUA.forEach { t ->
                 FilterChip(theme == t, { theme = t; scope.launch { store.set(Store.DARK, t) } }, { Text(t) })
             }
         }
-        Text("Bahasa aplikasi", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
-        Text("Indonesia — satu-satunya bahasa antarmuka. Teks Arab tetap Arab, dan terjemahan yang " +
-                "disajikan adalah terjemahan resmi Kemenag 2019 berbahasa Indonesia. Belum ada " +
-                "terjemahan antarmuka lain, jadi tidak ada tombol bahasa yang tidak berfungsi.",
-            style = MaterialTheme.typography.labelSmall)
-
-        // Rentang dan bawaannya dipakai bersama bottom sheet pengaturan bacaan (satu sumber
-        // kebenaran: `UkuranBacaan`), dan **namanya** pun dari kosakata bersama `NamaAntarmuka` —
-        // keduanya mengatur kunci `Store` yang sama, jadi dua ejaan berarti dua pengaturan di mata
-        // pengguna.
-        Text("${NamaAntarmuka.UKURAN_ARAB}: ${arab.toInt()}"); Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = UkuranBacaan.ARAB)
-        Text("${NamaAntarmuka.UKURAN_LATIN}: ${latin.toInt()}"); Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = UkuranBacaan.LATIN)
-        // "Jarak antarbaris" dan "tema halaman" juga preferensi bacaan global (`plan.txt`
-        // §"Fitur Surat Yasin": *"Pengaturan jarak antarbaris dan tema halaman"*). Keduanya sudah
-        // ada di sheet pengaturan bacaan, tetapi sebelumnya tidak ada di layar Pengaturan — padahal
-        // "Ukuran Arab" dan "Ukuran Latin" ada di sini. Menaruhnya di sini membuat keempat
-        // preferensi bacaan dapat ditemukan di satu tempat, menulis kunci yang sama.
-        Text("${NamaAntarmuka.JARAK_ANTARBARIS}: ${"%.1f".format(lineHeight)}")
-        Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = UkuranBacaan.JARAK)
-        Text("Tema halaman bacaan:", style = MaterialTheme.typography.titleMedium)
+        Text("Tema halaman: ${TemaHalaman.label(pageTheme)} — warna kertas bacaan, tanpa menyentuh teksnya.",
+            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TemaHalaman.SEMUA.forEach { t ->
                 FilterChip(pageTheme == t,
@@ -134,25 +136,43 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     { Text(TemaHalaman.label(t)) })
             }
         }
-        Text("Tema halaman hanya mengubah warna kertas bacaan (krem/gelap), tanpa menyentuh teks " +
-                "atau sumbernya. Berlaku juga di sheet pengaturan bacaan.",
-            style = MaterialTheme.typography.labelSmall)
+        BarisSaklar(
+            "Kartu info di beranda",
+            "Kartu \"Info Islami harian\" di beranda dapat dimatikan.",
+            infoCard,
+        ) { infoCard = it; scope.launch { store.set(Store.INFO_CARD, infoCard) } }
+
+        // ---- Pengaturan bacaan ---------------------------------------------------------------
+        // Judul bagian memakai nama bersama yang sama dengan yang dijanjikan seluruh layar bacaan:
+        // pengaturan ini berlaku untuk semua bacaan, dan namanya satu.
+        BagianJudul(NamaAntarmuka.PENGATURAN_BACAAN)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(showA, { showA = !showA; scope.launch { store.set(Store.SHOW_ARAB, showA) } }, { Text(NamaAntarmuka.TAMPIL_ARAB) })
             FilterChip(showL, { showL = !showL; scope.launch { store.set(Store.SHOW_LATIN, showL) } }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
             FilterChip(showT, { showT = !showT; scope.launch { store.set(Store.SHOW_TRANS, showT) } }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
         }
-        Text("Berlaku di semua layar bacaan (Yasin, Tahlil, Dzikir, Adzan, panduan sholat). " +
-                "Menyembunyikan Arab berguna saat ingin membaca Latin/terjemahan saja.",
-            style = MaterialTheme.typography.labelSmall)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Kartu info di beranda")
-            Switch(infoCard, {
-                infoCard = it
-                scope.launch { store.set(Store.INFO_CARD, infoCard) }
-            })
-        }
-        Text("Mazhab Asar:", style = MaterialTheme.typography.titleMedium)
+        Text("Berlaku di semua layar bacaan (Yasin, Tahlil, Dzikir, Adzan, panduan sholat).",
+            style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 2.dp))
+        // Rentang dan bawaannya dari aturan bersama (`UkuranBacaan`), dan **namanya** pun dari
+        // kosakata bersama `NamaAntarmuka` — keduanya mengatur kunci `Store` yang sama, jadi dua
+        // ejaan berarti dua pengaturan di mata pengguna.
+        Text("${NamaAntarmuka.UKURAN_ARAB}: ${arab.toInt()}", style = MaterialTheme.typography.labelLarge)
+        Slider(arab, { arab = it; scope.launch { store.set(Store.ARAB_SIZE, arab) } }, valueRange = UkuranBacaan.ARAB)
+        Text("${NamaAntarmuka.UKURAN_LATIN}: ${latin.toInt()}", style = MaterialTheme.typography.labelLarge)
+        Slider(latin, { latin = it; scope.launch { store.set(Store.LATIN_SIZE, latin) } }, valueRange = UkuranBacaan.LATIN)
+        // "Jarak antarbaris" juga preferensi bacaan global (`plan.txt` §"Fitur Surat Yasin":
+        // *"Pengaturan jarak antarbaris dan tema halaman"*); labelnya satu angka di belakang koma.
+        Text("${NamaAntarmuka.JARAK_ANTARBARIS}: ${"%.1f".format(lineHeight)}", style = MaterialTheme.typography.labelLarge)
+        Slider(lineHeight, { lineHeight = it; scope.launch { store.set(Store.LINE_HEIGHT, lineHeight) } }, valueRange = UkuranBacaan.JARAK)
+        BarisSaklar(
+            "Tetap menyala saat membaca",
+            "Layar tidak padam selama membaca di layar Yasin.",
+            tetapMenyala,
+        ) { tetapMenyala = it; scope.launch { store.set(Store.KEEP_ON, tetapMenyala) } }
+
+        // ---- Ibadah ---------------------------------------------------------------------------
+        BagianJudul("Ibadah")
+        Text("Mazhab Asar", style = MaterialTheme.typography.labelLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Nama mazhabnya dari aturan bersama (`JadwalHariIni.ASAR_SEMUA`), sama dengan chip di
             // menu Jadwal: dua nama untuk satu nilai membuat pengguna mengira ada dua pengaturan.
@@ -161,65 +181,113 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     asar = kunci
                     scope.launch {
                         store.set(Store.ASAR, kunci)
-                        // Mazhab Asar menggeser jam Asar, jadi pengingat yang sudah terjadwal harus
-                        // disusun ulang — menu Jadwal melakukannya, layar ini dahulu hanya menyimpan
-                        // nilainya, sehingga jam yang diingatkan tetap memakai mazhab lama sampai
-                        // ada hal lain yang memicu penjadwalan ulang.
+                        // Mazhab Asar menggeser jam Asar, jadi pengingat yang sudah terjadwal
+                        // harus disusun ulang — menyimpan nilainya saja meninggalkan jam yang
+                        // diingatkan memakai mazhab lama.
                         PrayerScheduler.scheduleAll(ctx.applicationContext)
                     }
                 }, { Text(label) })
             }
         }
-
-        Text("Mazhab panduan ibadah", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
+        Text("Mazhab panduan ibadah", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
             Mazhab.SEMUA.forEach { (key, label) ->
                 FilterChip(mazhab == key, { mazhab = key; scope.launch { store.set(Store.MADHAB, key) } }, { Text(label) })
             }
         }
-        Text("Menentukan bacaan yang ditampilkan di panduan sholat — mis. doa qunut hanya muncul untuk mazhab Syafi'i. Perbedaan mazhab dicatat, tidak dicampuradukkan.",
+        Text("Menentukan bacaan di panduan sholat — mis. doa qunut hanya untuk mazhab Syafi'i.",
             style = MaterialTheme.typography.labelSmall)
-
-        Text("Sumber jadwal sholat", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = true, onClick = {}, enabled = false, label = { Text("Hitung lokal (offline)") })
-            FilterChip(selected = false, onClick = {}, enabled = false, label = { Text("SIHAT online (belum tersedia)") })
+        Text("Susunan Tahlil", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 8.dp))
+        if (susunanTersedia.isEmpty()) {
+            Text(PesanKonten.berkasTidakAda("susunan tahlil"),
+                style = MaterialTheme.typography.labelSmall)
+        } else {
+            // Pemilih hanya muncul bila memang ada yang bisa dipilih; satu chip tunggal hanyalah hiasan.
+            if (susunanTersedia.size > 1) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                    susunanTersedia.forEach { s ->
+                        FilterChip(susunanAktif == s.id, {
+                            susunanAktif = s.id
+                            scope.launch {
+                                store.set(Store.TAHLIL_SUSUNAN, s.id)
+                                // Urutan bagiannya berbeda, jadi posisi baca yang lama tidak lagi
+                                // menunjuk bagian yang sama — dikosongkan supaya penandanya tidak
+                                // berbohong. Sama seperti saat mengganti susunan di modul Tahlil.
+                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_POSISI, 0)
+                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_HITUNGAN, 0)
+                            }
+                        }, { Text(s.nama) })
+                    }
+                }
+            }
+            Text("Susunan aktif: ${PreferensiSusunan.namaAktif(susunanAktif, susunanTersedia)}. " +
+                    // Catatan tradisi dibaca dari bundel, sama seperti di modul Tahlil — bukan
+                    // diketik ulang di sini.
+                    repo.tahlilCatatanTradisi().ifBlank { "Susunan dapat berbeda menurut tradisi." },
+                style = MaterialTheme.typography.labelSmall)
+            // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan *"berdasarkan sumber atau tradisi
+            // yang jelas"*; sumbernya harus terlihat di sini juga, bukan hanya di modul Tahlil.
+            val sumberAktif = PreferensiSusunan.sumberAktif(susunanAktif, susunanTersedia)
+            Text(if (sumberAktif.isNotBlank()) "Sumber susunan aktif: $sumberAktif"
+                    else "Sumber susunan aktif: tidak diklaim — susunan ini disusun sendiri oleh Anda.",
+                style = MaterialTheme.typography.labelSmall)
         }
-        Text("Perhitungan dilakukan di perangkat (algoritma Meeus, metode ${metode.label} — " +
-                "${JadwalHariIni.metodeRingkas(metode)}) sehingga tetap akurat tanpa internet. " +
-                "Metode dan zona waktunya diubah di menu Jadwal. Sumber online resmi belum " +
-                "diaktifkan karena SIHAT Bimas Islam tidak menyediakan API publik untuk aplikasi " +
-                "pihak ketiga.",
-            style = MaterialTheme.typography.labelSmall)
 
+        // ---- Jadwal & lokasi ------------------------------------------------------------------
+        BagianJudul("Jadwal & lokasi")
+        BarisSaklar(
+            PengingatAdzan.NAMA_PENGINGAT_WAKTU,
+            "Pengingat memakai lokasi & metode hisab dari menu Jadwal.",
+            notif,
+        ) { notif = it; scope.launch { store.set(Store.NOTIF, notif); PrayerScheduler.scheduleAll(ctx.applicationContext) } }
+        Text("Sumber jadwal sholat: hitung lokal (offline, algoritma Meeus, metode ${metode.label} — " +
+                "${JadwalHariIni.metodeRingkas(metode)}). Metode, kota, dan zona waktunya diubah di " +
+                "menu Jadwal; sumber online resmi belum tersedia karena SIHAT Bimas Islam tidak " +
+                "menyediakan API publik.",
+            style = MaterialTheme.typography.labelSmall)
+        Text("Kota saat ini: $city (ubah di menu Jadwal).", style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(top = 4.dp))
         Text("Koreksi kalender Hijriah: ${if (hijriCorr > 0) "+" else ""}$hijriCorr hari",
-            style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
+            style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Batas koreksi dari aturan bersama (`BawaanPreferensi`), bukan angka yang diingat
             // masing-masing tombol: tombol dan nilai bawaan tidak dapat berbeda pendapat lagi.
             OutlinedButton(onClick = { hijriCorr = BawaanPreferensi.koreksiHijriah(hijriCorr - 1); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("−") }
             OutlinedButton(onClick = { hijriCorr = BawaanPreferensi.koreksiHijriah(hijriCorr + 1); scope.launch { store.set(Store.HIJRI_CORR, hijriCorr) } }) { Text("+") }
         }
-        Text("Tanggal Hijriah dihitung tabular (perkiraan) dan dapat berselisih dengan isbat Kemenag; samakan dengan hasil sidang isbat lewat koreksi ini.",
+        Text("Tanggal Hijriah dihitung tabular (perkiraan); samakan dengan hasil sidang isbat lewat koreksi ini.",
             style = MaterialTheme.typography.labelSmall)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            Text(PengingatAdzan.NAMA_PENGINGAT_WAKTU); Switch(notif, {
-                notif = it
-                scope.launch {
-                    store.set(Store.NOTIF, notif)
-                    PrayerScheduler.scheduleAll(ctx.applicationContext)
-                }
-            })
+        // ---- Kompas kiblat --------------------------------------------------------------------
+        BagianJudul("Kompas kiblat")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TampilanKompas.SATUAN.forEach { u ->
+                FilterChip(compassUnit == u,
+                    { compassUnit = u; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
+                    { Text(TampilanKompas.labelSatuan(u)) })
+            }
         }
-        Text("Manajemen data offline", style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
+            TampilanKompas.SEMUA.forEach { t ->
+                FilterChip(compassView == t,
+                    { compassView = t; scope.launch { store.set(Store.COMPASS_VIEW, compassView) } },
+                    { Text(TampilanKompas.label(t)) })
+            }
+        }
+        Text("Mengubah satuan azimut dan gambar jarum kompas di layar Kiblat. Perhitungan tetap memakai derajat.",
+            style = MaterialTheme.typography.labelSmall)
+
+        // ---- Data lokal -----------------------------------------------------------------------
+        BagianJudul("Data lokal")
         val r = ringkasan
         if (r == null) {
             Text("Menghitung isi data yang tersimpan…", style = MaterialTheme.typography.labelSmall)
         } else {
             Text("Tersimpan di perangkat ini: ${r.favorit} favorit, ${r.bookmark} bookmark, " +
-                    "${r.riwayat} riwayat, ${r.progres} progres. Tidak ada data ini yang dikirim ke server.",
+                    "${r.riwayat} riwayat, ${r.progres} progres. Tidak ada yang dikirim ke server.",
                 style = MaterialTheme.typography.labelSmall)
             BagianData.entries.forEach { bagian ->
                 val n = bagian.jumlah(r)
@@ -230,9 +298,6 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     OutlinedButton(onClick = { hapusTarget = bagian }, enabled = n > 0) { Text(NamaAntarmuka.HAPUS) }
                 }
             }
-            Text("Menghapus satu bagian tidak menyentuh bagian lain, jadi riwayat saja dapat dibuang " +
-                    "tanpa kehilangan favorit dan bookmark.",
-                style = MaterialTheme.typography.labelSmall)
         }
         hapusTarget?.let { bagian ->
             val n = bagian.jumlah(ringkasan ?: RingkasanData())
@@ -255,8 +320,8 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 dismissButton = { TextButton(onClick = { hapusTarget = null }) { Text(NamaAntarmuka.BATAL) } },
             )
         }
-
-        Text("Backup / pulihkan data lokal:", style = MaterialTheme.typography.titleMedium)
+        Text("Backup / pulihkan data lokal", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
                 scope.launch {
@@ -284,9 +349,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                             ?.let { userData.restoreJson(it.toString()) }
                     } else {
                         // Kompatibel dengan backup lama (hanya preferensi). Berkas cadangan v1.0.0
-                        // masih memuat kunci warisan — favorit, riwayat, dan posisi Tahlil — jadi
-                        // pemindahnya dijalankan lagi; tanpa itu ketiganya kembali masuk ke
-                        // DataStore dan tak ada yang membacanya.
+                        // masih memuat kunci warisan, jadi pemindahnya dijalankan lagi.
                         store.importJson(backup)
                     }
                     migrasi.jalankan()
@@ -297,104 +360,46 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         Text("Backup memuat pengaturan, favorit, bookmark, riwayat, dan progres. Simpan berkasnya di tempat aman.",
             style = MaterialTheme.typography.labelSmall)
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
-        Text("Kota: $city (ubah di menu Jadwal).", style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(vertical = 8.dp))
 
-        Text("Susunan Tahlil", style = MaterialTheme.typography.titleMedium)
-        if (susunanTersedia.isEmpty()) {
-            Text(PesanKonten.berkasTidakAda("susunan tahlil"),
-                style = MaterialTheme.typography.labelSmall)
-        } else {
-            // Pemilih hanya muncul bila memang ada yang bisa dipilih; satu chip tunggal hanyalah hiasan.
-            if (susunanTersedia.size > 1) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                    susunanTersedia.forEach { s ->
-                        FilterChip(susunanAktif == s.id, {
-                            susunanAktif = s.id
-                            scope.launch {
-                                store.set(Store.TAHLIL_SUSUNAN, s.id)
-                                // Urutan bagiannya berbeda, jadi posisi baca yang lama tidak lagi
-                                // menunjuk bagian yang sama — dikosongkan supaya penandanya tidak
-                                // berbohong. Sama seperti saat mengganti susunan di modul Tahlil.
-                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_POSISI, 0)
-                                userData.setProgress(JenisBacaan.TAHLIL, KunciProgres.TAHLIL_HITUNGAN, 0)
-                            }
-                        }, { Text(s.nama) })
-                    }
-                }
-            }
-            Text("Susunan aktif: ${PreferensiSusunan.namaAktif(susunanAktif, susunanTersedia)}. " +
-                    (if (susunanTersedia.size > 1)
-                        "Pilihan ini sama dengan pemilih di modul Tahlil (satu kunci preferensi); " +
-                            "menggantinya mengosongkan penanda posisi baca karena urutan bagiannya berbeda."
-                     else
-                        "Baru satu susunan tersedia di bundel konten; susunan lain menunggu rujukan " +
-                            "tradisi yang jelas dan tidak disusun sendiri di sini.") +
-                    // Catatan tradisi dibaca dari bundel, sama seperti di modul Tahlil — bukan
-                    // diketik ulang di sini. Salinan lama berbunyi "Susunan dapat berbeda menurut
-                    // tradisi dan rujukan — tidak ada susunan yang diklaim paling benar", padahal
-                    // berkas yang dibaca (`tahlil.json`) berbunyi "…; bukan satu-satunya versi yang
-                    // benar"; dua layar karena itu menyatakan hal yang sama dengan dua cara.
-                    " " + repo.tahlilCatatanTradisi()
-                        .ifBlank { "Susunan dapat berbeda menurut tradisi." },
-                style = MaterialTheme.typography.labelSmall)
-            // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan *"berdasarkan sumber atau tradisi
-            // yang jelas"*; sumbernya harus terlihat di sini juga, bukan hanya di modul Tahlil.
-            val sumberAktif = PreferensiSusunan.sumberAktif(susunanAktif, susunanTersedia)
-            Text(if (sumberAktif.isNotBlank()) "Sumber susunan aktif: $sumberAktif"
-                    else "Sumber susunan aktif: tidak diklaim — susunan ini disusun sendiri oleh Anda.",
-                style = MaterialTheme.typography.labelSmall)
-        }
-
-        Text("Kompas kiblat", style = MaterialTheme.typography.titleMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TampilanKompas.SATUAN.forEach { u ->
-                FilterChip(compassUnit == u,
-                    { compassUnit = u; scope.launch { store.set(Store.COMPASS_UNIT, compassUnit) } },
-                    { Text(TampilanKompas.labelSatuan(u)) })
-            }
-        }
-        Text("Mengubah satuan tampilan azimut di layar Kiblat. Perhitungan tetap memakai derajat.",
-            style = MaterialTheme.typography.labelSmall)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
-            TampilanKompas.SEMUA.forEach { t ->
-                FilterChip(compassView == t,
-                    { compassView = t; scope.launch { store.set(Store.COMPASS_VIEW, t) } },
-                    { Text(TampilanKompas.label(t)) })
-            }
-        }
-        Text("Menentukan apakah jarum kompas digambar di layar Kiblat. Pada perangkat tanpa " +
-                "magnetometer jarum tidak pernah digambar, karena tanpa sensor arahnya hanya " +
-                "dugaan yang tampak meyakinkan.",
-            style = MaterialTheme.typography.labelSmall)
-
+        // ---- Pembaruan konten & tentang -------------------------------------------------------
         // Judul bagian dan label tombolnya menyebut layar tujuan dengan nama bersama, bukan
-        // mengejanya sendiri: dulu bagian ini menulis "Pembaruan konten" sementara tombolnya
-        // "Buka pembaruan konten" dengan huruf kecil, dan bagian Tentang menulis tiga nama
-        // sekaligus untuk satu layar.
-        Text(NamaLayar.PEMBARUAN_KONTEN, style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
+        // mengejanya sendiri: satu layar satu nama di seluruh aplikasi.
+        BagianJudul(NamaLayar.PEMBARUAN_KONTEN)
         OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka ${NamaLayar.PEMBARUAN_KONTEN}") }
-        Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya (domain resmi, " +
-                "kategori, harakat). Tidak ada unduhan otomatis dan tidak ada izin jaringan.",
+        Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya. Tanpa unduhan otomatis dan tanpa izin jaringan.",
             style = MaterialTheme.typography.labelSmall)
 
-        Text(NamaLayar.TENTANG, style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
+        BagianJudul(NamaLayar.TENTANG)
         Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
-        // Ringkasannya tetap di sini supaya terlihat tanpa membuka apa pun; dokumen lengkapnya
-        // (kebijakan privasi, daftar izin beserta alasannya, dan lisensi) ada di layar Tentang —
-        // sebelumnya hanya ada di berkas `docs/` yang tak dapat dibaca pengguna aplikasi.
         OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka ${NamaLayar.TENTANG}") }
-        Text("Lisensi kode: Apache License 2.0 (lihat berkas LICENSE). Konten keagamaan tidak tercakup lisensi kode dan tetap tunduk pada sumber resminya.",
+        Text("Lisensi kode: Apache License 2.0. Konten keagamaan tetap tunduk pada sumber resminya " +
+                "(${ContentValidator.allowedHosts.joinToString()}). Izin: lokasi (kiblat/jadwal), " +
+                "notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; tidak ada yang " +
+                "dikirim ke server.",
             style = MaterialTheme.typography.labelSmall)
-        Text("Konten keagamaan hanya berasal dari domain resmi " +
-                "(${ContentValidator.allowedHosts.joinToString()}) — keterangan pemilik tiap domain " +
-                "ada di ${NamaLayar.TENTANG}. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), " +
-                "getar (timer iqomah). Data tersimpan lokal; lokasi tidak dikirim ke server mana pun.",
-            style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+/** Baris pengaturan bersaklar: nama, satu baris catatan, dan saklarnya di kanan. */
+@Composable
+private fun BarisSaklar(
+    judul: String,
+    catatan: String,
+    nilai: Boolean,
+    ubah: (Boolean) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth().padding(top = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(judul, style = MaterialTheme.typography.titleSmall)
+            Text(catatan, style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(nilai, ubah)
     }
 }
 

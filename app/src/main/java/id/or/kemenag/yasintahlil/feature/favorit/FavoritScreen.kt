@@ -48,7 +48,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
                 modifier = Modifier.padding(top = 8.dp))
         }
         if (s.favorites.isEmpty()) item {
-            Text("Belum ada favorit. Tandai dengan tombol ☆ di tiap bacaan.",
+            Text("Belum ada favorit. Tekan lama kartu bacaan, lalu pilih Favorit.",
                 style = MaterialTheme.typography.labelSmall)
         }
         items(s.favorites, key = { "f:${it.kind}:${it.refId}" }) { f ->
@@ -61,7 +61,7 @@ fun FavoritScreen(go: (String) -> Unit, vm: FavoritViewModel = hiltViewModel()) 
                 modifier = Modifier.padding(top = 8.dp))
         }
         if (s.bookmarks.isEmpty()) item {
-            Text("Belum ada bookmark. Tandai ayat dengan tombol ☆ Bookmark di layar bacaan.",
+            Text("Belum ada bookmark. Tekan lama kartu ayat di layar Yasin, lalu pilih Bookmark.",
                 style = MaterialTheme.typography.labelSmall)
         }
         items(s.bookmarks, key = { "b:${it.kind}:${it.refId}" }) { b ->

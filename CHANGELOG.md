@@ -5,6 +5,24 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Layar Surat Yasin diringkas jadi minimalis.** Kotak cari dalam Yasin dihapus — mencari ayat
+  kini tugas layar Pencarian yang menelusuri seluruh konten, bukan hanya Yasin. Tombol layar
+  penuh pindah ke kanan tombol "Ke ayat" dan jadi ikon saja; baris "Terakhir dibaca" menjadi
+  tombol lompat; nomor ayat di luar kartu dihapus karena judul kartu sudah menyebutnya; chip
+  "Tetap menyala" digantikan preferensi global di tab Pengaturan.
+- **Aksi bacaan kini muncul hanya saat kartunya ditekan lama.** Salin, bagikan, favorit, dan
+  (pada kartu ayat Yasin) tandai terakhir dibaca serta bookmark, dibuka lewat lembar aksi
+  tekan-lama — menggantikan deretan tombol yang menempel di setiap kartu di seluruh layar
+  bacaan. Daftar bookmark tersimpan di layar Favorit.
+- **Segala pengaturan terpusat di tab Pengaturan**, dikelompokkan rapi: Tampilan, Pengaturan
+  bacaan, Ibadah, Jadwal & lokasi, Kompas kiblat, Data lokal, lalu Pembaruan konten & Tentang.
+  Tombol "Pengaturan bacaan" beserta bottom sheet-nya dihapus dari sepuluh layar bacaan;
+  preferensi "Tetap menyala saat membaca" ditambahkan ke bagian Pengaturan bacaan.
+- **Layar Pencarian didesain ulang** agar luas dan ramah: kotak cari lebar dengan ikon kaca
+  pembesar dan tombol kosongkan, saran cepat serta pencarian terbaru berbentuk chip, dan jumlah
+  hasil yang jelas. Keterangan "Cara membaca" Yasin ikut diperbarui mengikuti kendali barunya.
+
 ## [1.3.1] - 2026-10-14
 
 **Rilis otomatis** dari commit `3166846cd63c66ef3b45878f7ba682afebbd4041`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.3.1`.

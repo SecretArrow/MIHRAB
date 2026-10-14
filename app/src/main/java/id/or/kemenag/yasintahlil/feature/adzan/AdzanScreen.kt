@@ -62,7 +62,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var settings by remember { mutableStateOf(false) }
     // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
     // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
     // memilih metode lain di menu Jadwal. Nilai awalnya pun dahulu masih `Method.KEMENAG`: sisa
@@ -321,9 +320,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
         }
 
         BagianJudul("Lafaz adzan")
-        BarisChip {
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
-        }
         if (lafaz.isEmpty()) {
             EmptyState("Lafaz adzan tidak tersedia",
                 PesanKonten.berkasTidakAda("lafaz adzan"))
@@ -369,15 +365,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
         )
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }
 
 private fun openNotificationSettings(ctx: android.content.Context) {

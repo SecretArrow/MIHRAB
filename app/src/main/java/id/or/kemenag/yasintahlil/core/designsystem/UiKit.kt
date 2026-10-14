@@ -7,15 +7,15 @@ import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +32,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,10 +39,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -56,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
@@ -120,16 +118,29 @@ fun SumberKategoriLabel(kategori: String, modifier: Modifier = Modifier) {
 }
 
 /**
- * Satu bacaan: judul, Arab, transliterasi, terjemahan, sumber, penanda favorit, dan tombol
- * salin/bagikan.
+ * Satu aksi tambahan pada lembar aksi kartu bacaan — mis. "Tandai terakhir dibaca" dan "Bookmark"
+ * pada kartu ayat Yasin. Aksi inti (salin, bagikan, favorit) sudah disediakan kartunya sendiri;
+ * daftar ini milik layar yang tahu apa lagi yang bisa dilakukan pada bacaannya.
+ */
+data class AksiBacaan(
+    val label: String,
+    val ikon: ImageVector? = null,
+    val onAksi: () -> Unit,
+)
+
+/**
+ * Satu bacaan: judul, Arab, transliterasi, terjemahan, dan sumber.
+ *
+ * Aksi bacaan (salin, bagikan, favorit, serta [aksiEkstra] milik layarnya) dibuka dengan
+ * **menekan lama** kartunya — tidak lagi deretan tombol yang menempel di setiap kartu, sehingga
+ * daftar bacaan yang panjang terbaca sebagai bacaan, bukan deretan panel alat.
  *
  * [latinSize] dan [lineHeightFactor] boleh dibiarkan `null`: keduanya adalah preferensi bacaan
- * **global** (Pengaturan → "Ukuran Latin" dan "Jarak antarbaris", juga disediakan tiap sheet
- * pengaturan bacaan) yang dibaca langsung dari preferensi di sini. Layar yang tidak mengoper
- * nilainya karena itu tetap menghormati pilihan pengguna, bukan angka tetap — sebelumnya hanya
- * layar Yasin yang menyediakannya, sehingga mengubah ukuran Latin tidak berpengaruh di layar
- * bacaan lain meski pengaturannya mengatakan "berlaku untuk semua bacaan".
+ * **global** (Pengaturan → "Ukuran Latin" dan "Jarak antarbaris") yang dibaca langsung dari
+ * preferensi di sini. Layar yang tidak mengoper nilainya karena itu tetap menghormati pilihan
+ * pengguna, bukan angka tetap.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BacaanCard(
     id: String, judul: String,
@@ -141,6 +152,7 @@ fun BacaanCard(
     onOpen: (() -> Unit)? = null,
     showArab: Boolean = true,
     kategori: String = "",
+    aksiEkstra: List<AksiBacaan> = emptyList(),
 ) {
     val ctx = LocalContext.current
     val userData = rememberUserData()
@@ -162,14 +174,20 @@ fun BacaanCard(
     // "Tema halaman" (plan.txt): kartu bacaan digambar di atas kertas pilihan pengguna. Skema
     // warna hanya diganti bila halaman memang bukan "ikut tema", sehingga tak ada biaya saat mati.
     val skema = skemaHalaman(LocalTemaHalaman.current)
+    // Tekan lama kartu membuka lembar aksinya (salin, bagikan, favorit, plus aksi layarnya).
+    // Ketukan biasa sengaja tak melakukan apa pun: membuka lembar lewat ketukan biasa akan
+    // membuatnya terbuka setiap kali pengguna menggulir dengan jari yang menempel layar.
+    var lembarAksi by remember { mutableStateOf(false) }
     val isi: @Composable () -> Unit = {
         // Kartu bacaan dibatasi lebih sempit dari isi layar (`lebarBaca`): baris Arab dan
         // terjemahan adalah teks terpanjang di aplikasi, dan baris yang terlalu panjang melelahkan
         // mata. `animateContentSize` membuat tinggi kartu berubah halus saat chip "Arab"/"Latin"/
-        // "Terjemahan" di Pengaturan bacaan dinyalakan atau dimatikan, bukan melompat seketika.
+        // "Terjemahan" di Pengaturan dinyalakan atau dimatikan, bukan melompat seketika.
         Card(
             Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).lebarBaca()
-                .animateContentSize().padding(vertical = 4.dp),
+                .animateContentSize().padding(vertical = 4.dp)
+                .clip(MaterialTheme.shapes.large)
+                .combinedClickable(onClick = {}, onLongClick = { lembarAksi = true }),
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -217,42 +235,63 @@ fun BacaanCard(
                     modifier = Modifier.padding(top = 10.dp),
                 )
                 SumberKategoriLabel(kategori, Modifier.padding(top = 2.dp))
-                Row(
-                    Modifier.padding(top = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    TextButton(onClick = {
-                        ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
-                        scope.launch { userData.pushHistory(favKind, favRef, judul) }
-                    }) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = null,
-                            modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Salin")
-                    }
-                    TextButton(onClick = { ctx.shareText("$judul\n$arab\n$latin\n$terjemahan") }) {
-                        Icon(Icons.Filled.Share, contentDescription = null,
-                            modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Bagikan")
-                    }
-                    TextButton(onClick = {
-                        scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
-                    }) {
-                        Icon(
-                            if (fav) Icons.Filled.Star else Icons.Filled.StarBorder,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text("Favorit")
-                    }
-                    if (onOpen != null) TextButton(onClick = onOpen) { Text(NamaAntarmuka.BUKA) }
-                }
             }
         }
     }
     if (skema == null) isi() else MaterialTheme(colorScheme = skema) { isi() }
+
+    // Lembar aksi dibuka dengan menekan lama kartunya. Judul bacaannya ditulis di kepala lembar
+    // supaya jelas kartu mana yang sedang ditindak — bukan sekadar daftar kata kerja tanpa objek.
+    if (lembarAksi) {
+        ModalBottomSheet(onDismissRequest = { lembarAksi = false },
+            sheetState = rememberModalBottomSheetState()) {
+            Column(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 28.dp)) {
+                Text(judul, style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(horizontal = 12.dp))
+                BarisAksi(Icons.Filled.ContentCopy, "Salin") {
+                    ctx.copyText(judul, "$judul\n$arab\n$latin\n$terjemahan")
+                    scope.launch { userData.pushHistory(favKind, favRef, judul) }
+                    lembarAksi = false
+                }
+                BarisAksi(Icons.Filled.Share, "Bagikan") {
+                    ctx.shareText("$judul\n$arab\n$latin\n$terjemahan")
+                    lembarAksi = false
+                }
+                BarisAksi(
+                    if (fav) Icons.Filled.Star else Icons.Filled.StarBorder,
+                    if (fav) "Hapus favorit" else "Favorit",
+                ) {
+                    scope.launch { userData.toggleFavorite(favKind, favRef, judul) }
+                    lembarAksi = false
+                }
+                if (onOpen != null) {
+                    BarisAksi(null, NamaAntarmuka.BUKA) { onOpen(); lembarAksi = false }
+                }
+                aksiEkstra.forEach { aksi ->
+                    BarisAksi(aksi.ikon, aksi.label) { aksi.onAksi(); lembarAksi = false }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Satu baris aksi pada lembar aksi kartu bacaan: ikon di kiri, label di sampingnya. Ikon boleh
+ * kosong — aksi seperti "Buka" sudah jelas tanpa gambar, dan ikon karangan justru menambah derau.
+ */
+@Composable
+private fun BarisAksi(ikon: ImageVector?, label: String, onKlik: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium).clickable(onClick = onKlik)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        if (ikon != null) {
+            Icon(ikon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        }
+        Text(label, style = MaterialTheme.typography.bodyLarge)
+    }
 }
 
 @Composable
@@ -394,119 +433,5 @@ fun SkeletonCard(baris: Int = 3, modifier: Modifier = Modifier) {
                 ) {}
             }
         }
-    }
-}
-
-// --- Bottom sheet pengaturan bacaan ------------------------------------------------------
-
-/**
- * Bottom sheet pengaturan bacaan singkat (`plan.txt`: *"Gunakan bottom sheet untuk pengaturan
- * singkat"*). Sebelumnya tiap layar bacaan menaruh chip dan slider-nya sendiri di badan layar;
- * kini kontrol tampilan yang sama tinggal dibuka dari satu tombol, sehingga badan layar tetap
- * bersih dan istilahnya seragam.
- *
- * Ketiga sakelar ("Arab", "Latin", "Terjemahan") **wajib** dioper layar. Dua di antaranya dahulu
- * opsional, dengan alasan "layar yang tak punya bacaan Latin/terjemahan tidak menampilkan chip yang
- * tak berefek" — dan alasan itu keliru untuk tujuh layar: semuanya **memang** menampilkan Latin dan
- * terjemahan, nilainya ditulis `true` langsung di tiap `BacaanCard`, sehingga chip yang "tak
- * berefek" itu justru **tidak ada**. Akibatnya pengguna yang mematikan "Tampil terjemahan" di
- * Pengaturan masih membaca terjemahan di layar Sholat, Ghaib, Jenazah, Adzan, dan Iqomah, sementara
- * di Yasin, Tahlil, dan Dzikir terjemahannya hilang — satu pengaturan, dua perilaku. Bentuk
- * opsionalnya kini dihapus: layar yang memakai sheet ini pasti menyediakan ketiganya, dan
- * `BacaanCard` di layar yang sama menerima nilainya dari keadaan itu juga. Dijaga
- * `ReadingDisplayPrefsTest`.
- *
- * "Ukuran Latin" dan "jarak antarbaris" tidak dioper dari layar: keduanya preferensi bacaan global
- * yang ditulis sheet ini sendiri, sama seperti "tema halaman". "Ukuran Arab" tetap dioper karena
- * layar penuh menaikkannya sendiri ([UkuranBacaan.arabBacaJauh]) — bawaannya pun satu, di
- * [UkuranBacaan].
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BacaanSettingsSheet(
-    onDismiss: () -> Unit,
-    showArab: Boolean, onShowArab: (Boolean) -> Unit,
-    showLatin: Boolean, onShowLatin: (Boolean) -> Unit,
-    showTrans: Boolean, onShowTrans: (Boolean) -> Unit,
-    arabSize: Float, onArabSize: (Float) -> Unit,
-) {
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState()) {
-        Column(
-            Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(NamaAntarmuka.PENGATURAN_BACAAN, style = MaterialTheme.typography.titleLarge)
-            Text("Berlaku untuk semua bacaan dan tersimpan otomatis.",
-                style = MaterialTheme.typography.labelSmall)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(top = 4.dp),
-            ) {
-                FilterChip(showArab, { onShowArab(!showArab) }, { Text(NamaAntarmuka.TAMPIL_ARAB) })
-                FilterChip(showLatin, { onShowLatin(!showLatin) }, { Text(NamaAntarmuka.TAMPIL_LATIN) })
-                FilterChip(showTrans, { onShowTrans(!showTrans) }, { Text(NamaAntarmuka.TAMPIL_TERJEMAHAN) })
-            }
-            UkuranSlider(NamaAntarmuka.UKURAN_ARAB, arabSize, UkuranBacaan.ARAB, onArabSize)
-            // "Ukuran Latin" dan "jarak antarbaris" adalah preferensi bacaan **global**: satu nilai
-            // dipakai semua layar bacaan dan [BacaanCard] membacanya sendiri. Ditulis langsung ke
-            // preferensi di sini — bukan dioper dari tiap layar — karena sebelumnya hanya layar Yasin
-            // yang menampilkannya, sehingga mengubahnya tak berpengaruh di layar bacaan lain meski
-            // labelnya berbunyi "berlaku untuk semua bacaan".
-            val store = rememberStore()
-            val scope = rememberCoroutineScope()
-            val latin by store.flow(Store.LATIN_SIZE, UkuranBacaan.LATIN_DEFAULT)
-                .collectAsStateWithLifecycle(UkuranBacaan.LATIN_DEFAULT)
-            val tinggi by store.flow(Store.LINE_HEIGHT, UkuranBacaan.JARAK_DEFAULT)
-                .collectAsStateWithLifecycle(UkuranBacaan.JARAK_DEFAULT)
-            UkuranSlider(NamaAntarmuka.UKURAN_LATIN, latin, UkuranBacaan.LATIN, onUbah = { v ->
-                scope.launch { store.set(Store.LATIN_SIZE, v) }
-            })
-            UkuranSlider(NamaAntarmuka.JARAK_ANTARBARIS, tinggi, UkuranBacaan.JARAK, onUbah = { v ->
-                scope.launch { store.set(Store.LINE_HEIGHT, v) }
-            }, desimal = 1)
-            TemaHalamanChips()
-        }
-    }
-}
-
-/**
- * Pemilih "tema halaman" (`plan.txt`: *"Pengaturan jarak antarbaris dan tema halaman"*).
- *
- * Menulis sendiri ke preferensi — seperti tombol favorit di [BacaanCard] — supaya tak perlu
- * dioper dari tiap layar. Efeknya langsung terlihat karena akar aplikasi ([ProvideTemaHalaman])
- * membaca preferensi yang sama secara reaktif, dan setiap [BacaanCard] menghormatinya.
- */
-@Composable
-private fun TemaHalamanChips() {
-    val store = rememberStore()
-    val scope = rememberCoroutineScope()
-    val aktif by store.flow(Store.PAGE_THEME, TemaHalaman.IKUT)
-        .collectAsStateWithLifecycle(TemaHalaman.IKUT)
-    Column(Modifier.fillMaxWidth()) {
-        Text("Tema halaman: ${TemaHalaman.label(aktif)}", style = MaterialTheme.typography.labelLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TemaHalaman.SEMUA.forEach { t ->
-                FilterChip(
-                    aktif == t,
-                    { scope.launch { store.set(Store.PAGE_THEME, t) } },
-                    { Text(TemaHalaman.label(t)) },
-                )
-            }
-        }
-    }
-}
-
-/** Slider ukuran dengan label dan nilai yang terbaca, dipakai seluruh pengaturan bacaan. */
-@Composable
-private fun UkuranSlider(
-    label: String,
-    nilai: Float,
-    rentang: ClosedFloatingPointRange<Float>,
-    onUbah: (Float) -> Unit,
-    desimal: Int = 0,
-) {
-    Column(Modifier.fillMaxWidth()) {
-        Text("$label: ${"%.${desimal}f".format(nilai)}", style = MaterialTheme.typography.labelLarge)
-        Slider(nilai, onUbah, valueRange = rentang)
     }
 }

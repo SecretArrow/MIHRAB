@@ -23,7 +23,6 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
-import kotlinx.coroutines.launch
 
 /**
  * Judul langkah takbir yang khas layar ini — sholat jenazah hadir tidak membaca ta'awudz dan
@@ -53,14 +52,12 @@ private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangka
 fun JenazahScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
-    val scope = rememberCoroutineScope()
     // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var settings by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
@@ -116,7 +113,6 @@ fun JenazahScreen(go: (String) -> Unit = {}) {
         }
         BarisChip(Modifier.padding(vertical = 4.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-            OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
         }
         info.niat.forEach { n ->
             // Varian niat diberi rujukan `niat:<id varian>` supaya tidak bertabrakan dengan id
@@ -138,13 +134,4 @@ fun JenazahScreen(go: (String) -> Unit = {}) {
         }
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }

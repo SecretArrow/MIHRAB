@@ -6,13 +6,15 @@ import org.junit.Test
 import java.io.File
 
 /**
- * `plan.txt` §"Yasin": *"Bookmark ayat."* — tombol "Ke ayat", tombol "Lanjut ayat N", dan daftar
- * bookmark semuanya mengarahkan daftar ke sebuah ayat.
+ * `plan.txt` §"Yasin": *"Bookmark ayat."* — tombol "Ke ayat" dan baris "Terakhir dibaca" sama-sama
+ * mengarahkan daftar ke sebuah ayat.
  *
- * Sebelumnya ketiganya memakai indeks `n - 1`, yang hanya benar bila tak ada pencarian aktif:
- * daftar yang digulir adalah hasil penyaringan, sehingga dengan pencarian aktif ayat ke-n bukan lagi
+ * Sebelumnya ketiganya (termasuk daftar bookmark yang kini tinggal di layar Favorit) memakai indeks
+ * `n - 1`, yang hanya benar bila tak ada penyaringan: dengan penyaringan aktif, ayat ke-n bukan lagi
  * item ke-(n-1) dan pengguna mendarat di ayat yang salah tanpa diberi tahu. Sekarang nomor ayat
- * dicari pada daftar yang **sedang tampil**.
+ * dicari pada daftar yang **sedang tampil** — dan karena kotak pencarian di layar Yasin sudah
+ * dipindahkan ke layar Pencarian terpadu (mencari ayat bukan lagi tugas layar ini), daftar itu
+ * memang seluruhnya milik Surat Yasin.
  */
 class LompatKeAyatTest {
 
@@ -34,7 +36,7 @@ class LompatKeAyatTest {
             gulir.all { it.contains("(idx)") })
     }
 
-    /** Indeks `n - 1` yang lama tidak boleh kembali: ia mengabaikan penyaring pencarian. */
+    /** Indeks `n - 1` yang lama tidak boleh kembali: ia mengabaikan susunan daftar yang tampil. */
     @Test
     fun tidakAdaLagiIndeksMentah() {
         val baris = sumber().lines().filter { it.contains("animateScrollToItem(") }
@@ -42,20 +44,22 @@ class LompatKeAyatTest {
             baris.any { it.contains("- 1") || it.contains("n - 1") })
     }
 
+    /**
+     * Kedua jalur lompat — tombol "Ke ayat" dan baris "Terakhir dibaca" — lewat satu fungsi
+     * bersama. Daftar bookmark tidak lagi dibuka dari layar ini (tinggal di layar Favorit,
+     * dijaga `BookmarkTerlihatTest`), dan aksi bookmarknya ada pada lembar aksi tekan-lama kartu.
+     */
     @Test
-    fun ketigaJalurLompatLewatSatuFungsi() {
+    fun keduaJalurLompatLewatSatuFungsi() {
         val s = sumber()
         assertTrue("tidak ada fungsi lompat bersama", s.contains("fun lompatKe("))
         assertTrue("tombol \"Ke ayat\" tidak lewat fungsi lompat", s.contains("lompatKe(it, tandai = true)"))
-        assertTrue("tombol lanjut tidak lewat fungsi lompat", s.contains("lompatKe(s.mark)"))
-        assertTrue("daftar bookmark tidak lewat fungsi lompat", s.contains("lompatKe(n)"))
+        assertTrue("baris terakhir dibaca tidak lewat fungsi lompat", s.contains("lompatKe(s.mark)"))
     }
 
     @Test
     fun nomorDiLuarSuratTidakDitebak() {
         val s = sumber()
         assertTrue("tidak ada batas nomor ayat", s.contains("if (n !in 1..surah.ayatCount) return"))
-        assertTrue("ayat tersaring pencarian tidak membuka penyaringnya",
-            s.contains("query.isNotBlank() -> query = \"\""))
     }
 }

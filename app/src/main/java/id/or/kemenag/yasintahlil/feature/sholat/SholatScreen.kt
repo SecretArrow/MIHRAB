@@ -22,13 +22,11 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.Saring
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
-import kotlinx.coroutines.launch
 
 @Composable
 fun SholatScreen(go: (String) -> Unit) {
     val repo = rememberRepo()
     val store = rememberStore()
-    val scope = rememberCoroutineScope()
     val wajib = remember { repo.sholatWajib() }
     val sunnah = remember { repo.sholatSunnah() }
     // rememberSaveable: tab dan cara pengelompokan pilihan pengguna tidak hilang saat diputar ulang.
@@ -38,7 +36,6 @@ fun SholatScreen(go: (String) -> Unit) {
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var settings by remember { mutableStateOf(false) }
     // Penyaring di layar (`plan.txt`: "pencarian dan akses cepat pada halaman yang memiliki banyak
     // konten"). Panduan sholat memuat puluhan entri dalam tiga tab; kotak ini menyaring tab yang
     // sedang dibuka tanpa berpindah ke layar Pencarian.
@@ -191,11 +188,6 @@ fun SholatScreen(go: (String) -> Unit) {
                 }
             }
             if (tab == 2) {
-                item {
-                    BarisChip(Modifier.padding(vertical = 4.dp)) {
-                        OutlinedButton(onClick = { settings = true }) { Text(NamaAntarmuka.PENGATURAN_BACAAN) }
-                    }
-                }
                 items(bacaanTampil) { b ->
                     // Teks dari rujukan bersama, dengan cadangan medan entri sendiri — aturannya
                     // satu tempat (`TeksBacaan`), sama dengan layar sholat mayit, rincian langkah,
@@ -213,13 +205,4 @@ fun SholatScreen(go: (String) -> Unit) {
         }
     }
 
-    if (settings) {
-        BacaanSettingsSheet(
-            onDismiss = { settings = false },
-            showArab = showArab, onShowArab = { showArab = it; scope.launch { store.set(Store.SHOW_ARAB, it) } },
-            showLatin = showLatin, onShowLatin = { showLatin = it; scope.launch { store.set(Store.SHOW_LATIN, it) } },
-            showTrans = showTrans, onShowTrans = { showTrans = it; scope.launch { store.set(Store.SHOW_TRANS, it) } },
-            arabSize = arabSize, onArabSize = { arabSize = it; scope.launch { store.set(Store.ARAB_SIZE, it) } },
-        )
-    }
 }
