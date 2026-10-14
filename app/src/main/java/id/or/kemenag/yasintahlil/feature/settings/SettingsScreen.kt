@@ -170,8 +170,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             tetapMenyala,
         ) { tetapMenyala = it; scope.launch { store.set(Store.KEEP_ON, tetapMenyala) } }
 
-        // ---- Ibadah ---------------------------------------------------------------------------
-        BagianJudul("Ibadah")
+        // ---- Ibadah & mazhab -------------------------------------------------------------------
+        // Nama bagian ini bukan "Ibadah" polos: itu nama tab/layar bersama (`NamaLayar.IBADAH`),
+        // dan mengejanya sendiri di sini membuat dua nama untuk satu hal.
+        BagianJudul("Ibadah & mazhab")
         Text("Mazhab Asar", style = MaterialTheme.typography.labelLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Nama mazhabnya dari aturan bersama (`JadwalHariIni.ASAR_SEMUA`), sama dengan chip di
@@ -361,22 +363,25 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
         OutlinedTextField(backup, { backup = it }, label = { Text("Data backup") }, modifier = Modifier.fillMaxWidth())
 
-        // ---- Pembaruan konten & tentang -------------------------------------------------------
-        // Judul bagian dan label tombolnya menyebut layar tujuan dengan nama bersama, bukan
-        // mengejanya sendiri: satu layar satu nama di seluruh aplikasi.
-        BagianJudul(NamaLayar.PEMBARUAN_KONTEN)
+        // ---- Pembaruan konten & tentang ----------------------------------------------------------
+        // Judul bagian dan label tombolnya menyebut layar tujuan dengan nama bersama, dan judulnya
+        // ditulis `Text(NamaLayar.…)` — bukan `BagianJudul` — karena NavSmokeTest mencari teks
+        // judul ini persis namanya saat menggulir layar Pengaturan.
+        Text(NamaLayar.PEMBARUAN_KONTEN, style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
         OutlinedButton(onClick = { go(Routes.KONTEN_UPDATE) }) { Text("Buka ${NamaLayar.PEMBARUAN_KONTEN}") }
         Text("Memasang bundel konten pilihan Anda setelah diperiksa sumbernya. Tanpa unduhan otomatis dan tanpa izin jaringan.",
             style = MaterialTheme.typography.labelSmall)
 
-        BagianJudul(NamaLayar.TENTANG)
+        Text(NamaLayar.TENTANG, style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 20.dp, bottom = 10.dp))
         Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             style = MaterialTheme.typography.labelMedium)
         OutlinedButton(onClick = { go(Routes.TENTANG) }) { Text("Buka ${NamaLayar.TENTANG}") }
         Text("Lisensi kode: Apache License 2.0. Konten keagamaan tetap tunduk pada sumber resminya " +
-                "(${ContentValidator.allowedHosts.joinToString()}). Izin: lokasi (kiblat/jadwal), " +
-                "notifikasi (pengingat), getar (timer iqomah). Data tersimpan lokal; tidak ada yang " +
-                "dikirim ke server.",
+                "(${ContentValidator.allowedHosts.joinToString()}); keterangan pemilik tiap domain " +
+                "ada di ${NamaLayar.TENTANG}. Izin: lokasi (kiblat/jadwal), notifikasi (pengingat), " +
+                "getar (timer iqomah). Data tersimpan lokal; tidak ada yang dikirim ke server.",
             style = MaterialTheme.typography.labelSmall)
     }
 }

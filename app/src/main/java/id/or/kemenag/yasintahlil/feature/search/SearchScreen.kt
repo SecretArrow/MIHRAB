@@ -103,8 +103,11 @@ fun SearchScreen(go: (String) -> Unit, q0: String = "") {
                 if (q.isBlank()) {
                     Text("Coba cari", style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(top = 16.dp))
+                    // Saran katanya bukan id bacaan mana pun (mis. "qunut" adalah id pada
+                    // `BacaanSholat` — kata yang diketik ulang di luar kosakatanya akan
+                    // menyimpang dari id yang benar-benar dipakai bundelnya).
                     BarisChip {
-                        listOf("Yasin", "tahlil", "ayat kursi", "wudhu", "qunut").forEach { saran ->
+                        listOf("Yasin", "tahlil", "ayat kursi", "wudhu", "rakaat").forEach { saran ->
                             AssistChip(onClick = { q = saran; catat() }, label = { Text(saran) })
                         }
                     }
