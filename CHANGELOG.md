@@ -62,6 +62,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   kedua uji itu hanya `setContent` lalu memeriksa simpul, jadi tidak bergantung pada eksekusi segera.
   `UjiInstrumentedTanpaApiUsangTest` menutupnya: impor maupun pemanggilan berpaket penuh ke jalur
   lama ditolak, sedangkan prosa yang menyebutnya (komentar dan isi string) sengaja tidak dihitung.
+- **Tiga peringatan *nullable receiver* di uji unit dihapus.** `compileSdk` 36 membuat `android.jar`
+  menandai `org.json.JSONObject.opt` sebagai `@RecentlyNullable`, dan Kotlin membacanya sebagai
+  `Any?` — sehingga `FixtureGateKontenTest` memperingatkan dua kali pada `eSah.opt(k).toString()`.
+  Yang menyebabkan itu **bukan** versi `org.json`: `json-20260814` maupun `json-20240303` tidak
+  membawa satu pun anotasi (diperiksa dari bytecode), sedangkan `android.jar` 36 membawa
+  `@RecentlyNullable` pada `opt` — dan Kotlin 2.0.20, kompilator sebelum migrasi, pun sudah
+  memperingatkannya bila dihadapkan pada jar 36 itu, jadi yang berubah memang SDK-nya, bukan
+  kompilatornya. Peringatan ketiga — `berkas.parentFile.listFiles` di `AturanMetodeSatuTempatTest` —
+  berasal dari anotasi JDK (`File.getParentFile()` bertipe `File?`) dan sudah ada sebelum migrasi.
+  Ketiganya **tidak** dibungkam dengan `@Suppress` maupun `?.` yang menyamarkan: nilainya dibaca
+  lewat `?: error(…)`, sebab `opt` bernilai `null` hanya bila kuncinya tidak ada dan direktori induk
+  berkas berjalur relatif selalu ada — dua invarian yang lebih berguna gagal terbaca daripada lolos
+  diam-diam sebagai `"null" == "null"`.
 
 ## [1.1.0] - 2026-10-13
 
