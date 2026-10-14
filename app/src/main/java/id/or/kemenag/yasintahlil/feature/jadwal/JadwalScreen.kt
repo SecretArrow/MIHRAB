@@ -138,23 +138,9 @@ fun JadwalScreen(go: (String) -> Unit = {}, vm: JadwalViewModel = hiltViewModel(
                 { Text("Asar ${JadwalHariIni.asarLabel(true)}") })
         }
 
-        Text("Koreksi menit per waktu", style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = 8.dp))
-        // Nama dari aturan bersama: indeksnya harus sama dengan CSV `Store.CORR` yang diurai
-        // `JadwalHariIni.parseCorr`, karena `s.corr[i]` di bawah dipasangkan ke waktu ke-i.
-        val names = JadwalHariIni.ENAM_WAKTU
-        names.forEachIndexed { i, n ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Text(n)
-                Row {
-                    OutlinedButton(onClick = { vm.setCorrection(i, -1) }) { Text("−") }
-                    Text("  ${if (s.corr[i] > 0) "+" else ""}${s.corr[i]}  ",
-                        style = MaterialTheme.typography.titleMedium)
-                    OutlinedButton(onClick = { vm.setCorrection(i, +1) }) { Text("+") }
-                }
-            }
-        }
+        // Koreksi menit per waktu dahulu menempel di sini sebagai deretan tombol − / +. Kendali itu
+        // kini terpusat di tab Pengaturan (bagian "Jadwal & lokasi") — layar ini cukup membaca dan
+        // menampilkan hasilnya: jam yang tercetak di bawah tetap memakai koreksi yang dipilih.
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
         when {

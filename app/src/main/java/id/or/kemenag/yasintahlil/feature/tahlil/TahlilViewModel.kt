@@ -38,15 +38,10 @@ data class TahlilUiState(
     val showTrans: Boolean = BawaanPreferensi.TAMPIL_TERJEMAHAN,
     val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
 ) {
-    /** Nama susunan yang sedang aktif — dipakai layar agar tidak menyebut susunan yang keliru. */
-    val namaSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.nama.orEmpty()
-
-    /**
-     * Sumber susunan yang sedang aktif (`plan.txt` §"Fitur Tahlil Lengkap": *"berdasarkan sumber
-     * atau tradisi yang jelas"*). Kosong untuk "Susunan saya" — susunan buatan pengguna tidak
-     * mengklaim rujukan apa pun, dan layar harus mengatakannya alih-alih mengarang sumber.
-     */
-    val sumberSusunan: String get() = susunan.firstOrNull { it.id == susunanId }?.sumber.orEmpty()
+    // Nama dan sumber susunan aktif tidak lagi dioper ke layar: keterangan susunan (termasuk
+    // sumbernya, hingga sunnah.com) tinggal di layar keterangan yang dibuka lewat ikon Info —
+    // dibaca ulang dari bundel yang sama, sehingga memperbarui bundelnya memperbarui keterangan
+    // itu tanpa menyentuh ViewModel ini.
 
     val adaSusunanSaya: Boolean get() = susunanId == SusunanSaya.ID
 }

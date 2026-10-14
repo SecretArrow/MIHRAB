@@ -101,23 +101,33 @@ class AtribusiModulTest {
 
     // ---- Layar ----
 
+    /**
+     * Sumber bacaan tingkat modul kini tampil di layar keterangan Tahlil — kartu teksnya di atas
+     * layar Tahlil dihapus agar badan layar murni bacaan, dan keterangannya dibaca ulang dari
+     * bundel yang sama di sana.
+     */
     @Test
-    fun layarTahlilMenampilkanSumberBacaanTingkatModul() {
+    fun keteranganTahlilMenampilkanSumberBacaanTingkatModul() {
+        val keterangan = sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/keterangan/KeteranganScreen.kt")
+        assertTrue("keterangan Tahlil tidak memakai repo.tahlilSumberBacaan()",
+            keterangan.contains("repo.tahlilSumberBacaan()"))
+        assertTrue("keterangan Tahlil tidak menampilkan bagian sumber bacaan",
+            keterangan.contains("BagianKeterangan(\"Sumber bacaan\""))
         val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
-        assertTrue("layar Tahlil tidak memakai repo.tahlilSumberBacaan()",
-            layar.contains("repo.tahlilSumberBacaan()"))
-        assertTrue("layar Tahlil tidak menampilkan sumber bacaan tingkat modul",
-            layar.contains("Sumber bacaan: "))
+        assertTrue("layar Tahlil tidak lagi menyediakan pintu keterangannya",
+            layar.contains("Routes.keterangan(\"tahlil\")"))
     }
 
     @Test
-    fun layarTahlilMembacaCatatanTradisiDariBundel() {
-        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
-        assertTrue("layar Tahlil tidak membaca catatan tradisi dari bundel",
-            layar.contains("repo.tahlilCatatanTradisi()"))
-        // Kalimat cadangan tetap ada supaya layar tidak kosong bila berkasnya kehilangan kuncinya.
-        assertTrue("layar Tahlil kehilangan kalimat cadangan catatan tradisi",
-            layar.contains("Susunan dapat berbeda menurut tradisi."))
+    fun keteranganTahlilMembacaCatatanTradisiDariBundel() {
+        val keterangan = sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/keterangan/KeteranganScreen.kt")
+        assertTrue("keterangan Tahlil tidak membaca catatan tradisi dari bundel",
+            keterangan.contains("repo.tahlilCatatanTradisi()"))
+        // Kalimat cadangan tetap ada supaya bagiannya tidak kosong bila berkasnya kehilangan kuncinya.
+        assertTrue("keterangan Tahlil kehilangan kalimat cadangan catatan tradisi",
+            keterangan.contains("Susunan dapat berbeda menurut tradisi."))
     }
 
     /**

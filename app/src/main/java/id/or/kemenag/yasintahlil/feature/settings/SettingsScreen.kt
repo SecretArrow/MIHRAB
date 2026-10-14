@@ -66,6 +66,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     // "Tetap menyala" dahulu chip lokal di layar Yasin; kini preferensi global yang dibaca layar
     // itu, sehingga nilainya juga berlaku setelah aplikasi ditutup.
     var tetapMenyala by remember { mutableStateOf(BawaanPreferensi.TETAP_MENYALA) }
+    // Penghitung ulangan (+ / − hitungan) di layar Tahlil dan Dzikir: opt-in dari sini.
+    var tampilPenghitung by remember { mutableStateOf(BawaanPreferensi.TAMPIL_PENGHITUNG) }
+    // Panjang timer iqomah: dahulu tombol − / + di layar Iqomah, kini di sini bersama kendali lain.
+    var durasiIqomah by remember { mutableStateOf(PengingatAdzan.IQOMAH_DEFAULT_MENIT) }
+    // Koreksi menit per waktu sholat: dahulu deretan − / + di layar Jadwal, kini di sini.
+    var corr by remember { mutableStateOf(JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT)) }
     var infoCard by remember { mutableStateOf(BawaanPreferensi.KARTU_INFO) }
     var asar by remember { mutableStateOf(JadwalHariIni.ASAR_DEFAULT) }
     var mazhab by remember { mutableStateOf(Mazhab.DEFAULT) }
@@ -96,6 +102,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         showT = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         showA = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         tetapMenyala = store.get(Store.KEEP_ON, BawaanPreferensi.TETAP_MENYALA)
+        tampilPenghitung = store.get(Store.SHOW_COUNTER, BawaanPreferensi.TAMPIL_PENGHITUNG)
+        durasiIqomah = PengingatAdzan.iqomahMenit(
+            store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
+        corr = JadwalHariIni.parseCorr(store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT))
         infoCard = store.get(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO)
         asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
         city = store.get(Store.CITY, JadwalHariIni.KOTA_DEFAULT)
@@ -116,6 +126,20 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     }
     // Dimuat ulang setiap kali satu bagian data dihapus, agar angkanya tidak berbohong.
     LaunchedEffect(ringkasanUlang) { ringkasan = userData.ringkasan() }
+
+    /** Ubah koreksi satu waktu sholat, simpan, lalu susun ulang pengingatnya. */
+    fun ubahKoreksi(i: Int, delta: Int) {
+        // Rentangnya dari aturan bersama, sama dengan yang dipakai `parseCorr` saat membaca —
+        // batas tombol dan batas jalur baca tidak boleh berbeda.
+        corr = corr.toMutableList().also {
+            it[i] = (it[i] + delta).coerceIn(
+                JadwalHariIni.KOREKSI_MIN_MENIT, JadwalHariIni.KOREKSI_MAKS_MENIT)
+        }
+        scope.launch {
+            store.set(Store.CORR, corr.joinToString(","))
+            PrayerScheduler.scheduleAll(ctx.applicationContext)
+        }
+    }
 
     Column(Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text(NamaLayar.PENGATURAN, style = MaterialTheme.typography.titleLarge)
@@ -169,6 +193,12 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             "Layar tidak padam selama membaca di layar Yasin.",
             tetapMenyala,
         ) { tetapMenyala = it; scope.launch { store.set(Store.KEEP_ON, tetapMenyala) } }
+        BarisSaklar(
+            "Penghitung ulangan",
+            "Tombol + dan − hitungan di layar Tahlil dan Dzikir; mati secara bawaan agar " +
+                "layar bacaan tetap bersih — hitungan yang pernah tersimpan tidak hilang.",
+            tampilPenghitung,
+        ) { tampilPenghitung = it; scope.launch { store.set(Store.SHOW_COUNTER, tampilPenghitung) } }
 
         // ---- Ibadah & mazhab -------------------------------------------------------------------
         // Nama bagian ini bukan "Ibadah" polos: itu nama tab/layar bersama (`NamaLayar.IBADAH`),
@@ -245,6 +275,31 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             "Pengingat memakai lokasi & metode hisab dari menu Jadwal.",
             notif,
         ) { notif = it; scope.launch { store.set(Store.NOTIF, notif); PrayerScheduler.scheduleAll(ctx.applicationContext) } }
+        // Durasi iqomah: − / + -nya dipindah dari layar Iqomah ke sini — satu rumah bagi seluruh
+        // pengaturan. Layar itu tetap membaca dan menampilkan angkanya, sama seperti notifikasi latar.
+        Text("Durasi iqomah", style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Batasnya dari aturan bersama, sama dengan yang menjepit nilai tersimpan di penjadwal
+            // dan pekerja latar — kalau tidak, angka di sini bisa tak pernah dipakai pengingatnya.
+            OutlinedButton(onClick = {
+                durasiIqomah = PengingatAdzan.iqomahMenit(durasiIqomah - 1)
+                scope.launch {
+                    store.set(Store.IQOMAH_MIN, durasiIqomah)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            }) { Text("−") }
+            Text("$durasiIqomah mnt", style = MaterialTheme.typography.titleMedium)
+            OutlinedButton(onClick = {
+                durasiIqomah = PengingatAdzan.iqomahMenit(durasiIqomah + 1)
+                scope.launch {
+                    store.set(Store.IQOMAH_MIN, durasiIqomah)
+                    PrayerScheduler.scheduleAll(ctx.applicationContext)
+                }
+            }) { Text("+") }
+        }
+        Text("Panjang hitung mundur di layar Iqomah dan jeda pengingat iqomahnya. ${PengingatAdzan.IQOMAH_PERKIRAAN}",
+            style = MaterialTheme.typography.labelSmall)
         Text("Sumber jadwal sholat: hitung lokal (offline, algoritma Meeus, metode ${metode.label} — " +
                 "${JadwalHariIni.metodeRingkas(metode)}). Metode, kota, dan zona waktunya diubah di " +
                 "menu Jadwal; sumber online resmi belum tersedia karena SIHAT Bimas Islam tidak " +
@@ -252,6 +307,28 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
             style = MaterialTheme.typography.labelSmall)
         Text("Kota saat ini: $city (ubah di menu Jadwal).", style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 4.dp))
+        // Koreksi menit per waktu: deretan − / + -nya dipindah dari layar Jadwal ke sini. Jadwal di
+        // layar itu dan pengingatnya sama-sama membaca `Store.CORR`, jadi keduanya tetap ikut.
+        Text("Koreksi menit per waktu", style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(top = 8.dp))
+        // Nama waktunya dari aturan bersama — indeksnya adalah arti CSV `Store.CORR` yang diurai
+        // `JadwalHariIni.parseCorr`, jadi nama dan angkanya tak dapat tertukar.
+        JadwalHariIni.ENAM_WAKTU.forEachIndexed { i, n ->
+            Row(Modifier.fillMaxWidth().padding(top = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(n, style = MaterialTheme.typography.bodyLarge)
+                Row {
+                    OutlinedButton(onClick = { ubahKoreksi(i, -1) }) { Text("−") }
+                    Text("  ${if (corr[i] > 0) "+" else ""}${corr[i]}  ",
+                        style = MaterialTheme.typography.titleMedium)
+                    OutlinedButton(onClick = { ubahKoreksi(i, +1) }) { Text("+") }
+                }
+            }
+        }
+        Text("Menambah atau mengurangi menit pada satu waktu sholat — berlaku untuk jadwal di menu " +
+                "Jadwal sekaligus pengingatnya. Metode hisab, kota, dan zona waktunya tetap di menu Jadwal.",
+            style = MaterialTheme.typography.labelSmall)
         Text("Koreksi kalender Hijriah: ${if (hijriCorr > 0) "+" else ""}$hijriCorr hari",
             style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

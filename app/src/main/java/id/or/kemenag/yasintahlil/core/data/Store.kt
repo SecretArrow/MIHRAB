@@ -34,6 +34,12 @@ class Store(private val ctx: Context) {
          * layar Yasin yang memakainya.
          */
         val KEEP_ON = booleanPreferencesKey("keep_on")
+        /**
+         * Penghitung ulangan (tombol + dan − hitungan) ditampilkan di layar Tahlil dan Dzikir.
+         * Dahulu ia menempel pada setiap layar; kini opt-in dan pengaturannya — seperti segala
+         * pengaturan lain — terpusat di tab Pengaturan (baca `BawaanPreferensi.TAMPIL_PENGHITUNG`).
+         */
+        val SHOW_COUNTER = booleanPreferencesKey("show_counter")
         /** Tema halaman bacaan: `ikut`|`krem`|`gelap` (lihat `TemaHalaman` di paket designsystem). */
         val PAGE_THEME = stringPreferencesKey("page_theme")
         val ASAR = stringPreferencesKey("asar") // syafii|hanafi
@@ -133,6 +139,7 @@ class Store(private val ctx: Context) {
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
             bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON); bool(KEEP_ON)
+            bool(SHOW_COUNTER)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)

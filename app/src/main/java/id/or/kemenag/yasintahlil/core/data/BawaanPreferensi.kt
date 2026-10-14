@@ -36,6 +36,15 @@ object BawaanPreferensi {
      */
     const val TETAP_MENYALA = false
 
+    /**
+     * Penghitung ulangan (tombol + dan − hitungan) di layar Tahlil dan Dzikir (`Store.SHOW_COUNTER`).
+     * Bawaannya mati — opt-in, bukan dimatikan paksa: penghitung memang berguna saat menghitung
+     * tasbih, tetapi ia mengisi layar dengan deretan tombol pada bacaan yang mayoritas dibaca
+     * sekali. Yang menginginkannya menyalakannya sekali di tab Pengaturan; hitungan yang sudah
+     * tersimpan tidak hilang saat penghitungnya disembunyikan.
+     */
+    const val TAMPIL_PENGHITUNG = false
+
     // --- Pengingat ----------------------------------------------------------------------
 
     /** Pengingat waktu sholat aktif selama pengguna belum mematikannya. */

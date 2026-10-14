@@ -33,6 +33,10 @@ class BawaanPreferensiTest {
         assertTrue("Arab tidak tampil secara bawaan", BawaanPreferensi.TAMPIL_ARAB)
         assertTrue("Latin tidak tampil secara bawaan", BawaanPreferensi.TAMPIL_LATIN)
         assertTrue("terjemahan tidak tampil secara bawaan", BawaanPreferensi.TAMPIL_TERJEMAHAN)
+        // Penghitung ulangan bersifat opt-in: deretan tombol + dan − di layar Tahlil/Dzikir
+        // disembunyikan sampai penggunanya menyalakannya di Pengaturan.
+        assertFalse("penghitung ulangan tampil tanpa diminta",
+            BawaanPreferensi.TAMPIL_PENGHITUNG)
     }
 
     @Test

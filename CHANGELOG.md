@@ -5,6 +5,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Keterangan susunan Tahlil tidak lagi menumpuk di layar Tahlil.** Kartu teksnya (nama susunan,
+  catatan tradisi, sumber hingga sunnah.com) dihapus dari badan layar — seluruhnya tinggal di
+  layar keterangan yang dibuka lewat ikon Info, dibaca ulang dari bundel yang sama, kini lengkap
+  dengan penegasan bahwa "Susunan saya" tidak mengklaim rujukan apa pun.
+- **Seluruh tombol − dan + terpusat di tab Pengaturan.** Koreksi menit per waktu dipindah dari
+  layar Jadwal dan durasi iqomah dari layar Iqomah ke bagian "Jadwal & lokasi" — kedua layar itu
+  kini cukup membaca dan menampilkan hasilnya. Penghitung ulangan di Tahlil dan Dzikir jadi
+  opt-in lewat saklar "Penghitung ulangan" di bagian Pengaturan bacaan: mati secara bawaan agar
+  layar bacaan bersih, dan hitungan yang pernah tersimpan tidak hilang.
+
 ## [1.4.0] - 2026-10-14
 
 ### Diubah

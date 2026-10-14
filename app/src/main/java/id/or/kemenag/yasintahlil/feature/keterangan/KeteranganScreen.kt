@@ -148,8 +148,12 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
 
     "tahlil" -> {
         buildList {
+            // Keterangan susunan (nama, catatan tradisi, sumber hingga sunnah.com) tinggal di sini —
+            // dibuka lewat ikon Info pada layar Tahlil — bukan lagi menumpuk sebagai kartu teks
+            // di atas layar itu. Semuanya dibaca ulang dari bundel yang sama.
             val tradisi = repo.tahlilCatatanTradisi()
-            if (tradisi.isNotBlank()) add(BagianKeterangan("Catatan tradisi", tradisi))
+            add(BagianKeterangan("Catatan tradisi",
+                tradisi.ifBlank { "Susunan dapat berbeda menurut tradisi." }))
             val sumberBacaan = repo.tahlilSumberBacaan()
             if (sumberBacaan.isNotBlank()) add(BagianKeterangan("Sumber bacaan", sumberBacaan))
             val susunan = repo.tahlilSusunan()
@@ -159,6 +163,14 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                     susunan.joinToString("\n") { s ->
                         "• ${s.nama}" + if (s.sumber.isNotBlank()) " — ${s.sumber}" else ""
                     },
+                ),
+            )
+            add(
+                BagianKeterangan(
+                    "Susunan saya",
+                    "Susunan buatan sendiri tidak mengklaim rujukan atau tradisi tertentu — sumbernya " +
+                        "memang Anda sendiri. Susunannya diatur dari tombol \"Sesuaikan susunan\" di layar " +
+                        "Tahlil; penghitung ulangannya (bila dipakai) dinyalakan dari tab Pengaturan.",
                 ),
             )
         }
@@ -178,10 +190,10 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Penghitung",
-                    "Tiap bacaan menyimpan hitungannya sendiri di perangkat — tombol tambah/kurang " +
-                        "mengisinya dan progresnya tetap ada setelah layar ditutup. Penghitung " +
-                        "ditampilkan untuk semua bacaan, bukan hanya yang diulang, sehingga bacaan " +
-                        "sekali baca pun dapat ditandai selesai.",
+                    "Tiap bacaan menyimpan hitungannya sendiri di perangkat dan progresnya tetap ada " +
+                        "setelah layar ditutup. Tombol tambah/kurangnya disembunyikan dari layar demi " +
+                        "tampilan yang bersih — nyalakan \"Penghitung ulangan\" di tab Pengaturan untuk " +
+                        "memunculkannya kembali; hitungan yang sudah tersimpan tidak ikut hilang.",
                 ),
             )
         }
@@ -280,6 +292,14 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                         "layar tertutup.",
                 ),
             )
+            add(
+                BagianKeterangan(
+                    "Durasi",
+                    "Panjang hitung mundurnya (menit) diubah di tab Pengaturan, bagian Jadwal & lokasi " +
+                        "→ \"Durasi iqomah\" — bersama seluruh pengaturan lain. Nilai yang sama dipakai " +
+                        "timer di layar ini dan pengingat yang berjalan di latar.",
+                ),
+            )
             val catatan = repo.iqomahCatatan()
             if (catatan.isNotBlank()) add(BagianKeterangan("Catatan", catatan))
         }
@@ -329,10 +349,11 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Lokasi & metode",
-                    "Jadwal mengikuti kota pilihan, lokasi GPS, metode hisab, mazhab Asar, " +
-                        "koreksi menit per waktu, dan zona waktu yang dipilih di layar ini. " +
-                        "Saklar \"Ikuti perubahan lokasi\" menghitung ulang jadwal otomatis saat " +
-                        "Anda berpindah tempat.",
+                    "Jadwal mengikuti kota pilihan, lokasi GPS, metode hisab, mazhab Asar, dan zona " +
+                        "waktu yang dipilih di layar ini. Koreksi menit per waktunya terpusat di tab " +
+                        "Pengaturan (bagian Jadwal & lokasi) bersama seluruh pengaturan lain. Saklar " +
+                        "\"Ikuti perubahan lokasi\" menghitung ulang jadwal otomatis saat Anda " +
+                        "berpindah tempat.",
                 ),
             )
         }

@@ -114,9 +114,10 @@ class AdzanJadwalTest {
 
     /**
      * `Store.ADZAN_ON` dan `Store.IQOMAH_MIN` diurai dan dijepit di lebih dari satu tempat: layar
-     * Adzan menulis CSV-nya, penjadwal membacanya, pekerja latar memakai panjang iqomahnya, dan
-     * layar Iqomah menampilkan angkanya. Salinan aturan di tempat-tempat itu berarti layar dapat
-     * menampilkan angka yang tidak pernah dipakai notifikasi.
+     * Adzan menulis CSV-nya, penjadwal membacanya, pekerja latar memakai panjang iqomahnya, layar
+     * Iqomah menampilkan angkanya, dan layar Pengaturan (rumah baru tombol − / + durasi iqomah)
+     * menulisnya. Salinan aturan di tempat-tempat itu berarti layar dapat menampilkan angka yang
+     * tidak pernah dipakai notifikasi.
      */
     @Test
     fun tidakAdaSalinanAturanPengingatLagi() {
@@ -125,6 +126,7 @@ class AdzanJadwalTest {
             "src/main/java/id/or/kemenag/yasintahlil/core/data/ReminderWorker.kt",
             "src/main/java/id/or/kemenag/yasintahlil/feature/adzan/AdzanScreen.kt",
             "src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt",
+            "src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt",
         ).forEach { rel ->
             val isi = sumber(rel)
             // Baris yang memuat kunci ADZAN_ON sekaligus split(",") berarti CSV-nya diurai di situ,

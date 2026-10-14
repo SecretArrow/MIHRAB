@@ -127,15 +127,38 @@ class AtribusiSusunanTahlilTest {
 
     // ---- Layar ----
 
+    /**
+     * Sumber susunan tetap sampai ke pengguna, kini lewat layar keterangan: layar Tahlil
+     * menyediakan pintunya (ikon Info), dan keterangan Tahlil mencantumkan sumber **tiap**
+     * susunan yang tersedia — nama saja tidak cukup, nama bukan sumber.
+     *
+     * Dahulu sumber susunan aktif menumpuk sebagai kartu teks di atas layar Tahlil; kartu itu
+     * dihapus agar badan layar murni bacaan, dan seluruh keterangannya pindah ke layar keterangan
+     * yang membacanya ulang dari bundel yang sama.
+     */
     @Test
-    fun modulTahlilMenampilkanSumberSusunanAktif() {
-        val vm = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilViewModel.kt")
-        assertTrue("keadaan Tahlil tidak meneruskan sumber susunan aktif",
-            vm.contains("val sumberSusunan"))
+    fun modulTahlilMembukaSumberSusunanMelaluiKeterangan() {
         val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
-        assertTrue("layar Tahlil tidak menampilkan sumber susunan", layar.contains("s.sumberSusunan"))
-        assertTrue("layar Tahlil tidak menyatakan susunan tanpa sumber secara terus terang",
-            layar.contains("disusun sendiri oleh Anda"))
+        assertTrue("layar Tahlil tidak lagi membuka keterangan susunannya lewat ikon Info",
+            layar.contains("Routes.keterangan(\"tahlil\")"))
+        val keterangan = sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/keterangan/KeteranganScreen.kt")
+        assertTrue("keterangan Tahlil tidak mencantumkan sumber tiap susunan",
+            keterangan.contains("s.sumber"))
+        assertTrue("keterangan Tahlil tidak membaca daftar susunan dari bundel",
+            keterangan.contains("repo.tahlilSusunan()"))
+        // Susunan tanpa sumber tidak boleh mengklaim rujukan apa pun — di daftar itu ia tampil
+        // sebagai nama telanjang, tanpa " — sumber" karangan.
+        assertFalse("keterangan Tahlil mengarang rujukan untuk susunan tanpa sumber",
+            keterangan.contains("Sumber: rujukan"))
+    }
+
+    /** Susunan aktif tetap terlihat dari tab susunannya; sumbernya di keterangan per susunan. */
+    @Test
+    fun susunanAktifTetapTergantiDariLayarTahlil() {
+        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
+        assertTrue("layar Tahlil tidak lagi mengganti susunan",
+            layar.contains("vm.setSusunan("))
     }
 
     @Test
@@ -150,10 +173,16 @@ class AtribusiSusunanTahlilTest {
     /** Nama susunan saja tidak boleh kembali menjadi satu-satunya atribusi yang terlihat. */
     @Test
     fun namaSusunanBukanSatuSatunyaAtribusi() {
-        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
-        assertTrue("layar Tahlil tidak lagi menyebut sumber susunan sama sekali",
-            layar.contains("Sumber:"))
-        assertFalse("layar Tahlil mengarang rujukan untuk susunan buatan pengguna",
-            layar.contains("Sumber: rujukan"))
+        // Atribusi susunan kini tinggal di layar keterangan Tahlil: bagian "Susunan yang tersedia"
+        // menyebut sumber tiap susunan dari bundel, dan "Susunan saya" dinyatakan terus terang
+        // sebagai buatan sendiri — bukan diisi rujukan karangan.
+        val keterangan = sumber(
+            "src/main/java/id/or/kemenag/yasintahlil/feature/keterangan/KeteranganScreen.kt")
+        assertTrue("keterangan Tahlil tidak lagi menyebut sumber susunan sama sekali",
+            keterangan.contains("s.sumber"))
+        assertTrue("keterangan Tahlil tidak menyatakan susunan tanpa sumber secara terus terang",
+            keterangan.contains("tidak mengklaim rujukan"))
+        assertFalse("keterangan Tahlil mengarang rujukan untuk susunan buatan pengguna",
+            keterangan.contains("Sumber: rujukan"))
     }
 }

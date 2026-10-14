@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -23,6 +25,7 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val groups = vm.groups
+    val store = rememberStore()
     // rememberSaveable: tab dan mode layar penuh pilihan pengguna tidak hilang saat diputar ulang.
     var tab by rememberSaveable { mutableStateOf(0) }
     var fullscreen by rememberSaveable { mutableStateOf(false) }
@@ -30,6 +33,11 @@ fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel(
     // memiliki banyak konten"). Pustaka dzikir memuat puluhan entri dalam lima kelompok; sebelum
     // ada kotak ini satu-satunya cara menemukan satu doa adalah menggulir tiap tab.
     var q by rememberSaveable { mutableStateOf("") }
+    // Penghitung ulangan disembunyikan dari layar demi tampilan bersih — pengaturannya terpusat
+    // di tab Pengaturan ("Penghitung ulangan"), dan dibaca reaktif di sini sehingga menyalakannya
+    // langsung memunculkannya tanpa membuka ulang layar.
+    val tampilPenghitung by store.flow(Store.SHOW_COUNTER, BawaanPreferensi.TAMPIL_PENGHITUNG)
+        .collectAsStateWithLifecycle(BawaanPreferensi.TAMPIL_PENGHITUNG)
     FullscreenEffect(fullscreen)
 
     if (groups.isEmpty()) {
@@ -94,9 +102,10 @@ fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel(
                     s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, fullscreen),
                     ulangi = it.ulangi, sumber = it.sumber,
                     showArab = s.showArab, kategori = it.kategori)
-                // Hitungan ditampilkan untuk semua bacaan, bukan hanya yang ulangi > 1: progresnya
-                // tersimpan di Room, jadi pengguna bisa melihat/mengulang meski targetnya satu kali.
-                CounterRow(c, it.ulangi,
+                // Hitungan tiap bacaan tetap tersimpan di Room untuk semua entri, bukan hanya yang
+                // ulangi > 1 — penghitungnya sendiri hanya tampil bila dinyalakan di Pengaturan,
+                // sehingga layar berpuluhan bacaan ini tidak dipenuhi deretan tombol tambah/kurang.
+                if (tampilPenghitung) CounterRow(c, it.ulangi,
                     onPlus = { vm.setCount(key, c + 1) },
                     onMinus = { vm.setCount(key, c - 1) },
                     onReset = { vm.reset(key) })

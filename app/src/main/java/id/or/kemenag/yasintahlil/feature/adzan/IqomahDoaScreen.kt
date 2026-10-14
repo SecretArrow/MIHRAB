@@ -25,7 +25,6 @@ import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -43,18 +42,10 @@ private fun vibrate(ctx: Context) {
     runCatching { v.vibrate(VibrationEffect.createOneShot(900, VibrationEffect.DEFAULT_AMPLITUDE)) }
 }
 
-/**
- * Simpan panjang timer, lalu susun ulang pengingat.
- *
- * Tanpa penjadwalan ulang, mengubah menit hanya memengaruhi timer di layar sementara notifikasi
- * latar tetap memakai jeda lama — dua angka berbeda untuk hal yang sama.
- */
-private fun simpanMins(store: Store, scope: CoroutineScope, mins: Int, ctx: Context) {
-    scope.launch {
-        store.set(Store.IQOMAH_MIN, mins)
-        PrayerScheduler.scheduleAll(ctx.applicationContext)
-    }
-}
+// Panjang timer (menit) tidak lagi diubah dari layar ini: tombol − / + -nya dipindah ke tab
+// Pengaturan (bagian "Jadwal & lokasi" → "Durasi iqomah") yang menulis `Store.IQOMAH_MIN` dan
+// menjadwalkan ulang pengingatnya. Layar ini cukup membaca nilainya lalu menjalankan hitung
+// mundurnya — sama dengan notifikasi latar yang membaca kunci yang sama.
 
 @Composable
 fun IqomahScreen(go: (String) -> Unit = {}) {
@@ -105,7 +96,8 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("iqomah")) }
         }
-        Text("Timer opsional setelah masuk waktu (± $mins mnt). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
+        Text("Timer opsional setelah masuk waktu (± $mins mnt) — durasinya diubah di tab " +
+                "Pengaturan (\"Durasi iqomah\"). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
             style = MaterialTheme.typography.labelMedium)
 
         // Durasi, bukan jam: ejaannya dari aturan bersama, tetapi namanya sengaja beda —
@@ -129,17 +121,8 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
         Text("Timer berjalan selama layar ini terbuka; getar menandai waktu habis.",
             style = MaterialTheme.typography.labelSmall)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
-            // Batasnya dari aturan bersama, sama dengan yang menjepit nilai tersimpan di penjadwal
-            // dan pekerja latar — kalau tidak, layar bisa menampilkan angka yang tak pernah dipakai.
-            OutlinedButton(onClick = {
-                mins = PengingatAdzan.iqomahMenit(mins - 1); remaining = -1; simpanMins(store, scope, mins, ctx)
-            }) { Text("−") }
-            Text("$mins mnt", style = MaterialTheme.typography.titleMedium)
-            OutlinedButton(onClick = {
-                mins = PengingatAdzan.iqomahMenit(mins + 1); remaining = -1; simpanMins(store, scope, mins, ctx)
-            }) { Text("+") }
-        }
+        // Panjang timer tidak lagi punya tombol − / + di sini — pengaturannya terpusat di tab
+        // Pengaturan bersama seluruh pengaturan lain, sesuai permintaan agar layar tetap bersih.
 
         // `plan.txt` §"Fitur Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat
         // masuk waktu sholat."* Timer di atas hanya hidup selama layar terbuka; saklar inilah yang

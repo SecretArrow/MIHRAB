@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TeksBacaan
 import id.or.kemenag.yasintahlil.core.designsystem.*
@@ -22,17 +24,31 @@ import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
 
+/**
+ * Tahlil lengkap, satu bagian per layar.
+ *
+ * Badan layarnya kini murni bacaan: keterangan susunan (nama susunan, catatan tradisi, sumber
+ * sampai sunnah.com) yang dahulu menumpuk sebagai kartu teks di atasnya tinggal di layar
+ * keterangan — dibuka lewat ikon Info pada baris judulnya. Penghitung ulangannya pun disembunyikan
+ * dari layar; ia opt-in lewat "Penghitung ulangan" di tab Pengaturan, sehingga tampilan tetap
+ * bersih bagi yang membaca tanpa menghitung.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
+    val store = rememberStore()
     // rememberSaveable: pilihan tampilan (mode jamaah, layar penuh, panel susunan) tidak hilang
     // saat layar diputar ulang.
     var jamaah by rememberSaveable { mutableStateOf(false) }
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
     var daftar by remember { mutableStateOf(false) }
+    // Penghitung ulangan dibaca reaktif dari preferensi terpusat: menyalakannya di tab Pengaturan
+    // langsung memunculkannya di sini tanpa membuka ulang layar.
+    val tampilPenghitung by store.flow(Store.SHOW_COUNTER, BawaanPreferensi.TAMPIL_PENGHITUNG)
+        .collectAsStateWithLifecycle(BawaanPreferensi.TAMPIL_PENGHITUNG)
     FullscreenEffect(fullscreen)
 
     if (s.items.isEmpty()) {
@@ -60,34 +76,10 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("tahlil")) }
         }
-        // Keterangan susunan dipadatkan ke satu kartu: catatan tradisi, sumber susunan aktif, dan
-        // sumber bacaan tingkat modul tetap terbaca sekilas (dari bundel, dengan cadangannya),
-        // sementara penjelas yang lebih panjang — daftar susunan beserta sumbernya — dibuka lewat
-        // ikon Info. Dahulu ketiganya menumpuk sebagai tiga baris teks lepas di atas layar.
-        KartuKeterangan(
-            onInfo = { go(Routes.keterangan("tahlil")) },
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            // Catatan tradisi dibaca dari bundel (`tahlil.json` → `catatan_tradisi`) dengan kalimat
-            // cadangan bila berkasnya kosong: sebelumnya kalimat ini ditulis di kode, jadi ia tidak
-            // ikut berubah bila bundelnya diperbarui — dan bundelnya memuat versi yang lebih lengkap.
-            Text("${s.namaSusunan.ifBlank { "Susunan tahlil" }}. " +
-                    repo.tahlilCatatanTradisi().ifBlank { "Susunan dapat berbeda menurut tradisi." },
-                style = MaterialTheme.typography.labelMedium)
-            // `plan.txt` §"Fitur Tahlil Lengkap" meminta susunan yang *"berdasarkan sumber atau tradisi
-            // yang jelas"*. Menampilkan nama susunan saja tidak cukup: nama bukan sumber. Bila susunan
-            // itu tidak mengklaim sumber apa pun (mis. "Susunan saya"), hal itu dikatakan terus terang —
-            // bukan diisi rujukan karangan.
-            Text(if (s.sumberSusunan.isNotBlank()) "Sumber: ${s.sumberSusunan}"
-                    else "Sumber: susunan ini disusun sendiri oleh Anda, bukan rangkaian dari rujukan atau tradisi tertentu.",
-                style = MaterialTheme.typography.labelMedium)
-            // Sumber bacaan tingkat modul: sebagian besar bagian tahlil tidak menyebut sumbernya
-            // sendiri, dan berkasnya sudah menyediakan keterangan yang berlaku untuk semuanya.
-            val sumberBacaan = remember { repo.tahlilSumberBacaan() }
-            if (sumberBacaan.isNotBlank()) {
-                Text("Sumber bacaan: $sumberBacaan", style = MaterialTheme.typography.labelMedium)
-            }
-        }
+        // Keterangan susunan — nama susunan, catatan tradisi, sumber hingga sunnah.com — tidak lagi
+        // menumpuk di sini: seluruhnya tinggal di layar keterangan yang dibuka ikon Info di atas,
+        // dibaca ulang dari bundel yang sama. Susunan yang sedang aktif tetap terlihat dari tab
+        // susunannya di bawah, dan sumbernya di sana disebut per susunan.
 
         if (s.susunan.size > 1) {
             // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini
@@ -110,7 +102,10 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
             OutlinedButton(onClick = { susun = true }) { Text("Sesuaikan susunan") }
             OutlinedButton(onClick = { daftar = true }) { Text("Semua bagian") }
         }
-        CounterRow(s.count, cur.ulangi,
+        // Penghitung hanya tampil bila penggunanya menyalakannya di Pengaturan. Tanpa penghitung,
+        // alur bacannya cukup "Berikutnya" setelah selesai — hitungan yang lama tetap tersimpan
+        // dan tombol "Tandai selesai" di bawah tetap mengikuti hitungan itu.
+        if (tampilPenghitung) CounterRow(s.count, cur.ulangi,
             onPlus = { vm.setCount(s.count + 1) },
             onMinus = { vm.setCount(s.count - 1) },
             onReset = { vm.setCount(0) })

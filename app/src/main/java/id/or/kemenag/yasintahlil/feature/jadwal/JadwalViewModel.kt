@@ -314,16 +314,9 @@ class JadwalViewModel @Inject constructor(
         viewModelScope.launch { store.set(Store.TZ, tzId); PrayerScheduler.scheduleAll(ctx) }
     }
 
-    fun setCorrection(index: Int, delta: Int) {
-        val corr = _state.value.corr.toMutableList()
-        // Rentangnya dari aturan bersama, sama dengan yang dipakai `parseCorr` saat membaca:
-        // batas slider dan batas jalur baca tidak boleh berbeda.
-        corr[index] = (corr[index] + delta).coerceIn(
-            JadwalHariIni.KOREKSI_MIN_MENIT, JadwalHariIni.KOREKSI_MAKS_MENIT,
-        )
-        _state.value = _state.value.copy(corr = corr); recompute()
-        viewModelScope.launch { store.set(Store.CORR, corr.joinToString(",")); PrayerScheduler.scheduleAll(ctx) }
-    }
+    // Koreksi menit per waktu dahulu diubah dari layar ini lewat setCorrection(); kendalinya kini
+    // terpusat di tab Pengaturan — layar ini hanya membaca `Store.CORR` di `muatUlang()` dan
+    // memakai hasilnya lewat `JadwalHariIni.params(corr = …)`, sama seperti penjadwal pengingat.
 
     companion object {
         // Sebab "belum ada perbaikan GPS" dan sarannya kini tinggal di `PesanLokasi`, bersama
