@@ -395,9 +395,11 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
                             // permukaan bacaan — ukuran pilihan pengguna berlaku di pustaka dzikirnya.
                             // Namun chip "Arab" di Pengaturan tetap dihormati: bila dimatikan, teks Arab
                             // disembunyikan di sini juga, agar preferensi itu tak menjadi kontrol mati.
-                            if (s.showArab && b.arab.isNotBlank()) {
-                                ArabText(b.arab, sizeSp = 20f, modifier = Modifier.padding(top = 6.dp))
-                            }
+                            // Penjaga dan pemanggilnya sengaja satu baris: pemindai penjaga
+                            // `ReadingDisplayPrefsTest` membaca dari awal baris pemanggilan.
+                            if (s.showArab && b.arab.isNotBlank()) ArabText(
+                                b.arab, sizeSp = 20f, modifier = Modifier.padding(top = 6.dp)
+                            )
                             if (b.teks.isNotBlank()) {
                                 Text(b.teks, modifier = Modifier.padding(top = 6.dp))
                             }
