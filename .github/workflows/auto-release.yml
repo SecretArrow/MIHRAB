@@ -226,7 +226,18 @@ jobs:
           KODE: ${{ steps.versi.outputs.kode }}
         run: |
           git tag -a "v$VERSI" -m "Rilis $VERSI (versionCode $KODE)"
-          git push origin "v$VERSI"
+          # Penolakan sesaat pernah terjadi tanpa pesan apa pun ("remote rejected ... (failed)")
+          # saat menerbitkan v1.3.0, padahal langkah yang sama sukses untuk v1.2.0 dan penolakan
+          # itu tak dijelaskan aturan mana pun — dorongan ulang sesaat kemudian diterima. Tag
+          # yang ternyata sudah lolos membuat percobaan berikutnya "everything up-to-date"
+          # (keluar 0), jadi percobaan ulang tak pernah merusak keadaan.
+          ok=0
+          for i in 1 2 3 4 5; do
+            if git push origin "v$VERSI"; then ok=1; break; fi
+            echo "dorongan tag percobaan ke-$i ditolak — tunggu 20 detik lalu coba lagi"
+            sleep 20
+          done
+          [ "$ok" = 1 ]
 
       # Ref yang dikirim adalah TAG yang barusan didorong, bukan 'main': `release.yml` akan
       # checkout persis commit kenaikan versi ini dengan `github.ref_type == 'tag'`, sehingga
