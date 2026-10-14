@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-14
+
 ### Diubah
 - **Keterangan susunan Tahlil tidak lagi menumpuk di layar Tahlil.** Kartu teksnya (nama susunan,
   catatan tradisi, sumber hingga sunnah.com) dihapus dari badan layar — seluruhnya tinggal di
@@ -15,6 +17,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   kini cukup membaca dan menampilkan hasilnya. Penghitung ulangan di Tahlil dan Dzikir jadi
   opt-in lewat saklar "Penghitung ulangan" di bagian Pengaturan bacaan: mati secara bawaan agar
   layar bacaan bersih, dan hitungan yang pernah tersimpan tidak hilang.
+
+**Rilis otomatis** dari commit `48147d73866b50cda5a90ed1d13ede89a3507724`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.5.0`.
 
 ## [1.4.0] - 2026-10-14
 
