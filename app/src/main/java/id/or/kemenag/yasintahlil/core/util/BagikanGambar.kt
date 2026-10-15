@@ -114,7 +114,7 @@ object BagikanGambar {
         if (sumber.isNotBlank()) {
             blok += 28 to tata("Sumber: $sumber", catTeks(denganAlpha(teks, 153), 26f), lebarTeks)
         }
-        val tanggal = SimpleDateFormat("d MMMM yyyy", Locale("id", "ID")).format(Date())
+        val tanggal = SimpleDateFormat("d MMMM yyyy", Locale.forLanguageTag("id-ID")).format(Date())
         blok += 64 to tata(susunFooter(tanggal), catTeks(denganAlpha(teks, 153), 26f), lebarTeks)
 
         val tinggi = TEPI + blok.sumOf { (jarak, tata) -> jarak + tata.height } + TEPI

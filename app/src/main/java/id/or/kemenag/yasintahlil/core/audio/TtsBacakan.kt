@@ -132,10 +132,10 @@ object TtsBacakan {
             matikanMesin()
             return
         }
-        var hasil = siapkan.setLanguage(Locale("id", "ID"))
+        var hasil = siapkan.setLanguage(Locale.forLanguageTag("id-ID"))
         if (hasil == TextToSpeech.LANG_MISSING_DATA || hasil == TextToSpeech.LANG_NOT_SUPPORTED) {
             // Beberapa mesin hanya mengenal bahasanya tanpa pasangan negaranya.
-            hasil = siapkan.setLanguage(Locale("id"))
+            hasil = siapkan.setLanguage(Locale.forLanguageTag("id"))
         }
         if (hasil == TextToSpeech.LANG_MISSING_DATA || hasil == TextToSpeech.LANG_NOT_SUPPORTED) {
             galatTts = true
@@ -177,11 +177,9 @@ object TtsBacakan {
                 sedangBaca = false
             }
 
-            @Suppress("DEPRECATION") // anggota abstrak lawas; galat sesungguhnya ditangani onError(String, Int)
-            override fun onError(utteranceId: String?) {
-                sedangBaca = false
-            }
-
+            // onError(String) yang usang sengaja tidak ditimpa: SDK modern memberinya
+            // implementasi bawaan yang berujung ke onError(String, Int) di bawah — menimbanya
+            // sendiri justru memunculkan peringatan override-usang pada kompilasi -Werror.
             override fun onError(utteranceId: String?, kodeGalat: Int) {
                 sedangBaca = false
                 galatTts = true
