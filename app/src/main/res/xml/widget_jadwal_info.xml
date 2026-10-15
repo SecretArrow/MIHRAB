@@ -16,4 +16,4 @@
     android:initialLayout="@layout/widget_jadwal"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:description="Jadwal sholat lima waktu, dihitung di perangkat." />
+    android:description="@string/widget_jadwal_deskripsi" />
