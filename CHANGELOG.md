@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-10-15
+
 ### Ditambahkan
 - **Tasbih Digital** — penghitung ketuk dengan getar, pilihan target harian (33/99/100/`Lainnya`),
   dan riwayat tujuh hari yang tersimpan di perangkat (tabel Room `tasbih`); hitungan tidak pernah
@@ -58,6 +60,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Daftar dzikir, doa, dan pencarian** tidak berubah letak; seluruh fitur baru masuk lewat menu
   Ibadah (bagian "Amalan & referensi") dan menu Alat (Kalender), satu keluarga bentuk menu yang
   sama dengan yang sudah ada.
+
+**Rilis otomatis** dari commit `2494341b35165d997e9042edb24c16e4878c9c2a`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.10.0`.
 
 ## [1.9.0] - 2026-10-15
 
