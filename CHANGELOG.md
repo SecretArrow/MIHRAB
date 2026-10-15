@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-10-15
+
 ### Diubah
 - **Pengaturan dirapikan ke dalam delapan kelompok berkartu.** Tampilan, Pengaturan bacaan,
   Ibadah & mazhab, Jadwal & pengingat, Kompas kiblat, Data lokal, Pembaruan konten, dan Tentang —
@@ -23,6 +25,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   mengubah koreksi menit di menu Jadwal padahal kendalinya sudah ada di Pengaturan; kini tiap
   pengaturan diarahkan ke rumahnya yang sebenarnya, termasuk pada layar keterangan Jadwal, Iqomah,
   dan Doa Adzan.
+
+**Rilis otomatis** dari commit `4c018bec341781e3da1c9ee163274f0ed0671bf4`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.9.0`.
 
 ## [1.8.0] - 2026-10-15
 
