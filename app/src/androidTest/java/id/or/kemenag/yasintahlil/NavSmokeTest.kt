@@ -94,12 +94,19 @@ class NavSmokeTest {
      * diam saja.
      */
     private fun lewatiPengantar() {
-        // Tunggu salah satu penanda selesai dirender: tombol "Mulai" (pengantar tampil) atau
-        // tab Ibadah (bilah bawah sudah ada — pengantar sudah pernah diselesaikan). Menunggu
-        // salah satunya menjaga uji ini dari balapan peluncuran pertama.
+        // Pengantarnya berhalaman: tombolnya "Lanjut" di dua halaman pertama, "Mulai" di halaman
+        // terakhir — menunggu salah satu muncul dulu menjaga uji ini dari balapan peluncuran,
+        // lalu seluruh halamannya dituntaskan sampai bilah bawah kembali. Pada pemasangan lama
+        // (penanda `Store.ONBOARDING_SELESAI` sudah terpasang) ketiganya tak ada dan bilah bawah
+        // langsung tampil — lewatannya diam saja.
         rule.waitUntil(timeoutMillis = 5_000) {
-            rule.onAllNodesWithText("Mulai").fetchSemanticsNodes().isNotEmpty() ||
+            rule.onAllNodesWithText("Lanjut").fetchSemanticsNodes().isNotEmpty() ||
+                rule.onAllNodesWithText("Mulai").fetchSemanticsNodes().isNotEmpty() ||
                 rule.onAllNodesWithText(NamaLayar.IBADAH).fetchSemanticsNodes().isNotEmpty()
+        }
+        repeat(2) {
+            val lanjut = rule.onAllNodesWithText("Lanjut")
+            if (lanjut.fetchSemanticsNodes().isNotEmpty()) lanjut[0].performClick()
         }
         val mulai = rule.onAllNodesWithText("Mulai")
         if (mulai.fetchSemanticsNodes().isNotEmpty()) mulai[0].performClick()
