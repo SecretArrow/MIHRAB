@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-15
+
 ### Diubah
 - **Beranda diringkas jadi dasbor yang lega.** Kisi aksi cepat dipangkas dari sebelas ubin
   (empat baris) menjadi enam tujuan terbanyak (dua baris); Pencarian mendapat ikonnya sendiri di
@@ -20,6 +22,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Layar Jadwal lebih bersih.** Baris label metode yang mengulangi isi tombol dan chip di
   bawahnya dihapus; sudut Fajr/Isya tiap metode kini tampil sebagai keterangan kecil tepat di
   pilihannya saat daftar metode dibuka, dan keterangan saklar ikuti-lokasi dipadatkan satu baris.
+
+**Rilis otomatis** dari commit `dd08505a7731ad9cd62cda51643d081a505749aa`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.6.0`.
 
 ## [1.5.0] - 2026-10-14
 
