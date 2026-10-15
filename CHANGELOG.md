@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-10-15
+
 ### Diubah
 - **Ilustrasi gerakan sholat dibuat ulang sebagai kartun empat tampak.** Tujuh skema garis
   bergaya diagram (`posisi_berdiri` … `posisi_salam`) diganti 44 kartun figuratif
@@ -16,6 +18,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   awal menampilkan telunjuk yang diacungkan, dan salam menampilkan dua varian — menoleh ke
   kanan lalu ke kiri. Rincian tata cara tiap langkah kini menampilkan deret empat tampak
   di atas label dan deskripsi posisinya.
+
+**Rilis otomatis** dari commit `986ac6e43b7f4b3606320b75b0d8a173279b4a07`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.7.0`.
 
 ## [1.6.0] - 2026-10-15
 
