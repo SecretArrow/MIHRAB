@@ -32,9 +32,11 @@
          Pemberian akses dilakukan pengguna di Pengaturan sistem, bukan oleh aplikasi. -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <!-- Tanpa izin INTERNET: aplikasi 100% offline (perhitungan & konten di perangkat).
-         Tambahkan INTERNET/ACCESS_NETWORK_STATE hanya bila sumber jadwal/kalender online
-         benar-benar diaktifkan, agar deklarasi izin tetap jujur. -->
+    <!-- INTERNET: hanya untuk murottal Surat Yasin — streaming per ayat yang dimulai pengguna
+         sendiri dari layar Yasin (pemakaiannya terkunci di paket core/audio, lihat OfflineManifestTest).
+         Seluruh perhitungan dan konten tetap offline; aplikasi tidak pernah memeriksa status jaringan
+         sehingga ACCESS_NETWORK_STATE tetap tidak dideklarasikan. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
@@ -86,5 +88,33 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <!-- Widget jadwal sholat 4x3 di layar utama: RemoteViews klasik (tanpa dependensi baru),
+             seluruh hisab dihitung offline di perangkat, tanpa izin tambahan apa pun.
+             exported="false" sesuai templat dokumentasi Android modern untuk APPWIDGET_UPDATE:
+             sistem tetap dapat mengirim siaran ke receiver yang tidak diekspor. -->
+        <receiver
+            android:name="id.or.kemenag.yasintahlil.widget.WidgetJadwalProvider"
+            android:exported="false"
+            android:label="Jadwal sholat">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_jadwal_info" />
+        </receiver>
+
+        <!-- Kartu bacaan yang dibagikan sebagai gambar: PNG di cache diteruskan lewat FileProvider
+             (content:// URI) — berkas di cache sendiri tidak dapat dibagikan langsung sejak API 24. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

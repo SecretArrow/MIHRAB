@@ -1,8 +1,9 @@
 # Izin Aplikasi (Permissions)
 
 Semua izin dideklarasikan di `app/src/main/AndroidManifest.xml`. Aplikasi bersifat
-**offline-first**: tidak ada data yang dikirim ke server mana pun, dan izin yang tidak
-diperlukan tidak diminta saat pemasangan.
+**offline-first**: seluruh perhitungan dan konten berada di perangkat — satu-satunya akses
+jaringan adalah murottal yang Anda putar sendiri (baris `INTERNET` di bawah), dan izin yang
+tidak diperlukan tidak diminta saat pemasangan.
 
 | Izin | Kapan diminta | Alasan | Bila ditolak |
 |------|----------------|--------|--------------|
@@ -12,12 +13,17 @@ diperlukan tidak diminta saat pemasangan.
 | `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` | Saat memutar audio adzan pilihan pengguna | Memutar adzan di latar belakang | Adzan hanya berupa notifikasi |
 | `VIBRATE` | Saat timer iqomah berakhir | Getar singkat sebagai penanda | Tidak ada getar |
 | `ACCESS_NOTIFICATION_POLICY` | Saat pengguna membuka "Atur akses DND" di menu Adzan | Memungkinkan pengingat dikecualikan dari mode Jangan Ganggu | Pengingat mengikuti aturan mode senyap/DND |
+| `INTERNET` | Tanpa dialog (izin biasa) — aktif hanya saat pengguna menekan putar murottal di layar Yasin | Mengalirkan audio murottal Surat Yasin per ayat dari penyedia audio publik (everyayah.com) — satu-satunya lalu lintas jaringan aplikasi | Murottal tidak dapat diputar; seluruh fitur lain tetap berjalan offline |
 
 ## Catatan
 
-- **Tidak ada izin** untuk kamera, mikrofon, kontak, SMS, penyimpanan eksternal, atau
-  **Internet** — aplikasi sepenuhnya offline. Izin Internet hanya akan ditambahkan bila
-  sumber jadwal/kalender resmi *online* benar-benar diaktifkan.
+- **Internet hanya untuk murottal Yasin.** Audio murottal Surat Yasin dialirkan per ayat
+  dari `everyayah.com` ketika pengguna sendiri menekan tombol putar — itulah satu-satunya
+  lalu lintas jaringan aplikasi. Aplikasi tidak pernah memeriksa status jaringan
+  (`ACCESS_NETWORK_STATE` tidak dideklarasikan); seluruh hisab, jadwal, dan konten tetap
+  dihitung di perangkat. Pemakaiannya terkunci di paket `core/audio` — dijaga
+  `OfflineManifestTest.internet_hanya_untuk_murottal_di_paket_audio`.
+- **Tidak ada izin** untuk kamera, mikrofon, kontak, SMS, atau penyimpanan eksternal.
 - **Tidak ada `SCHEDULE_EXACT_ALARM`/`USE_EXACT_ALARM`**: pengingat memakai WorkManager,
   bukan `AlarmManager`. Izin itu hanya muncul bila kode benar-benar memakai `AlarmManager`
   (dijaga `OfflineManifestTest.izin_alarm_tepat_waktu_sejalan_dengan_pemakaian`).

@@ -123,4 +123,24 @@ object NamaLayar {
 
     /** Layar memasang bundel konten pilihan pengguna, dari berkas yang ia pilih sendiri. */
     const val PEMBARUAN_KONTEN = "Pembaruan konten"
+
+    // ---- Amalan & referensi ---------------------------------------------------------------------
+
+    /** Layar penghitung tasbih digital: target harian, getar tiap ketukan, riwayat 7 hari. */
+    const val TASBIH = "Tasbih Digital"
+
+    /** Layar 99 nama Allah beserta artinya, dapat dicari. */
+    const val ASMAUL = "Asmaul Husna"
+
+    /** Kalkulator zakat: fitrah, mal/penghasilan, dan tabungan dengan hitungan nisab. */
+    const val ZAKAT = "Kalkulator Zakat"
+
+    /** Kalender Masehi, Hijriah, dan Jawa: pasaran & weton, puasa sunnah, hari besar Islam. */
+    const val KALENDER = "Kalender Hijriah & Jawa"
+
+    /** Catatan khataman Yasin beserta rangkaian hari baca (streak) yang sedang berjalan. */
+    const val KHATAMAN = "Khataman & Streak"
+
+    /** Layar peringatan tahlil untuk almarhum: hari ke-7, 40, 100, 1000, dan haul tahunan. */
+    const val ALMARHUM = "Tahlil Almarhum"
 }

@@ -78,6 +78,19 @@ object PengingatAdzan {
         "Waktu iqomah tiap masjid berbeda, jadi ini perkiraan pribadi — bukan ketentuan syariat."
 
     /**
+     * Batas tanggung jawab aplikasi atas pengingat imsak — **satu** kalimat untuk semua tempat yang
+     * menyebutnya: catatan pengaturan menitnya di Pengaturan dan notifikasi yang berbunyi menjelang
+     * Subuh.
+     *
+     * Alasannya sejenis dengan [IQOMAH_PERKIRAAN]: imsak di sini diturunkan dari jadwal Subuh yang
+     * dihitung **di perangkat** (metode hisab pilihan pengguna), bukan dari imsakiyah resmi
+     * pemerintah, sehingga kalimatnya harus mengaku sebagai perkiraan — bukan mendeklarasikan batas
+     * puasa orang banyak. Tanpa satu rumah kalimat ini, notifikasi dan Pengaturan mudah menulis
+     * versinya masing-masing dan pengguna membaca dua janji yang berbeda untuk pengingat yang sama.
+     */
+    const val IMSAK_PERKIRAAN = "Perkiraan imsak dihitung dari jadwal Subuh di perangkat."
+
+    /**
      * Batas jeda pengingat sebelum adzan, dalam menit. 0 berarti **tanpa** pengingat tambahan —
      * nilai itu sah dan memang bawaannya.
      */

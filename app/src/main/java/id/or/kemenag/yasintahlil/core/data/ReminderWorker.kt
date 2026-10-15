@@ -26,9 +26,10 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * menghormati saklar per-waktu, memutar audio adzan pilihan pengguna di latar (foreground service media),
  * lalu menjadwalkan kemunculan berikutnya lewat [PrayerScheduler].
  *
- * Empat jenis pekerjaan: [PrayerScheduler.JENIS_ADZAN] (waktu masuk), [PrayerScheduler.JENIS_PRA]
- * (pengingat sebelum waktu), [PrayerScheduler.JENIS_DOA] (pengingat membaca doa setelah adzan), dan
- * [PrayerScheduler.JENIS_IQOMAH] (perkiraan waktu iqomah telah lewat).
+ * Lima jenis pekerjaan: [PrayerScheduler.JENIS_ADZAN] (waktu masuk), [PrayerScheduler.JENIS_PRA]
+ * (pengingat sebelum waktu), [PrayerScheduler.JENIS_DOA] (pengingat membaca doa setelah adzan),
+ * [PrayerScheduler.JENIS_IQOMAH] (perkiraan waktu iqomah telah lewat), dan
+ * [PrayerScheduler.JENIS_IMSAK] (pengingat imsak beberapa menit sebelum Subuh).
  */
 class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(app, params) {
 
@@ -68,6 +69,18 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
                 notifyIqomah(nama, PengingatAdzan.iqomahMenit(
                     store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)))
             }
+            return Result.success()
+        }
+        if (jenis == PrayerScheduler.JENIS_IMSAK) {
+            // Sama seperti doa dan iqomah: saklar dapat dimatikan (dan menitnya diubah) setelah
+            // penjadwalan tetapi sebelum pekerja berjalan, jadi keduanya dibaca ulang di sini —
+            // menitnya lewat penjepit bersama agar angkanya sama dengan yang dijanjikan Pengaturan.
+            if (store.get(Store.IMSAK_ON, BawaanPreferensi.PENGINGAT_IMSAK)) {
+                notifyImsak(BawaanPreferensi.menitImsak(
+                    store.get(Store.IMSAK_MIN, BawaanPreferensi.MENIT_IMSAK)))
+            }
+            // Imsak tidak menjadwalkan ulang apa pun: rantai hariannya dijaga pekerja adzan Subuh —
+            // begitu adzan Subuh berbunyi, penjadwalan ulangnya ikut mengantrekan imsak esok hari.
             return Result.success()
         }
 
@@ -190,6 +203,30 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
             .setAutoCancel(true)
             .build()
         post(nama.hashCode() + 4000, notif)
+    }
+
+    /**
+     * Pengingat imsak beberapa menit sebelum Subuh. Ketukannya membuka menu Jadwal: di sanalah jam
+     * Subuh — dasar perkiraan imsak ini — ditampilkan, sehingga pengguna dapat memeriksa sendiri
+     * angkanya.
+     *
+     * Judulnya menyebut "sekitar" dan isinya memakai keterangan bersama
+     * [PengingatAdzan.IMSAK_PERKIRAAN]: imsak dihitung mundur dari jadwal Subuh yang dihitung di
+     * perangkat, bukan dari imsakiyah resmi pemerintah, jadi kalimatnya tidak boleh terdengar
+     * seperti ketetapan takwin.
+     */
+    private fun notifyImsak(menit: Int) {
+        val notif = NotificationCompat.Builder(applicationContext, NotifChannels.PRE)
+            .setContentTitle("Imsak sekitar $menit menit lagi")
+            .setContentText("Akhiri makan sahur — persiapkan diri menjelang Subuh. " +
+                PengingatAdzan.IMSAK_PERKIRAAN)
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentIntent(contentIntent(Routes.JADWAL))
+            .setAutoCancel(true)
+            .build()
+        // Id dengan offset sendiri (pola 1000/2000/… per jenis) agar tidak menabrak notifikasi
+        // jenis lain; namanya "Subuh" karena imsak memang hanya pernah dijadwalkan untuk waktu itu.
+        post(5000 + "Subuh".hashCode(), notif)
     }
 
     // Notifikasi hanya relevan bila izin notifikasi diberikan; kegagalan diabaikan agar pengingat lain tetap jalan.

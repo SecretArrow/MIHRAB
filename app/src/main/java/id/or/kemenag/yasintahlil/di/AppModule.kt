@@ -9,11 +9,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
+import id.or.kemenag.yasintahlil.core.data.local.AlmarhumDao
 import id.or.kemenag.yasintahlil.core.data.local.AppDatabase
 import id.or.kemenag.yasintahlil.core.data.local.BookmarkDao
 import id.or.kemenag.yasintahlil.core.data.local.FavoriteDao
 import id.or.kemenag.yasintahlil.core.data.local.HistoryDao
+import id.or.kemenag.yasintahlil.core.data.local.KegiatanDao
 import id.or.kemenag.yasintahlil.core.data.local.ProgressDao
+import id.or.kemenag.yasintahlil.core.data.local.TasbihDao
 import javax.inject.Singleton
 
 @Module
@@ -31,7 +34,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
-        Room.databaseBuilder(ctx, AppDatabase::class.java, AppDatabase.NAME).build()
+        Room.databaseBuilder(ctx, AppDatabase::class.java, AppDatabase.NAME)
+            .addMigrations(AppDatabase.MIGRASI_1_2)
+            .build()
 
     @Provides
     fun provideFavoriteDao(db: AppDatabase): FavoriteDao = db.favoriteDao()
@@ -44,4 +49,13 @@ object AppModule {
 
     @Provides
     fun provideProgressDao(db: AppDatabase): ProgressDao = db.progressDao()
+
+    @Provides
+    fun provideTasbihDao(db: AppDatabase): TasbihDao = db.tasbihDao()
+
+    @Provides
+    fun provideAlmarhumDao(db: AppDatabase): AlmarhumDao = db.almarhumDao()
+
+    @Provides
+    fun provideKegiatanDao(db: AppDatabase): KegiatanDao = db.kegiatanDao()
 }

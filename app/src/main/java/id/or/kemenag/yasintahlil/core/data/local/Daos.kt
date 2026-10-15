@@ -121,3 +121,67 @@ interface ProgressDao {
     @Query("DELETE FROM progress")
     suspend fun clear()
 }
+
+@Dao
+interface TasbihDao {
+    /** Baris hari ini — layar tasbih berlangganan aliran ini agar hitungan hidup reaktif. */
+    @Query("SELECT * FROM tasbih WHERE tanggal = :tanggal LIMIT 1")
+    fun observe(tanggal: String): Flow<List<TasbihEntity>>
+
+    /** Riwayat N hari terakhir, termasuk hari ini — dasar daftar riwayat 7 hari. */
+    @Query("SELECT * FROM tasbih ORDER BY tanggal DESC LIMIT :batas")
+    fun observeTerbaru(batas: Int): Flow<List<TasbihEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(item: TasbihEntity)
+
+    @Query("DELETE FROM tasbih")
+    suspend fun clear()
+}
+
+@Dao
+interface AlmarhumDao {
+    @Query("SELECT * FROM almarhum ORDER BY createdAt DESC")
+    fun observeAll(): Flow<List<AlmarhumEntity>>
+
+    @Query("SELECT * FROM almarhum ORDER BY createdAt DESC")
+    suspend fun getAll(): List<AlmarhumEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(item: AlmarhumEntity)
+
+    @Query("DELETE FROM almarhum WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("DELETE FROM almarhum")
+    suspend fun clear()
+}
+
+@Dao
+interface KegiatanDao {
+    @Query("SELECT * FROM kegiatan ORDER BY tanggal DESC")
+    fun observeAll(): Flow<List<KegiatanEntity>>
+
+    @Query("SELECT * FROM kegiatan WHERE jenis = :jenis ORDER BY tanggal DESC")
+    fun observeByJenis(jenis: String): Flow<List<KegiatanEntity>>
+
+    /** Jumlah kegiatan satu jenis sebagai aliran — total khataman ikut bertambah saat tercatat. */
+    @Query("SELECT COUNT(*) FROM kegiatan WHERE jenis = :jenis")
+    fun observeJumlah(jenis: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM kegiatan WHERE jenis = :jenis")
+    suspend fun jumlah(jenis: String): Int
+
+    /**
+     * Jumlah satu jenis pada satu tanggal — penjaga "sekali per hari": membuka layar Yasin/Tahlil
+     * atau menekan tombol khataman tidak menambah baris kedua untuk hari yang sama.
+     */
+    @Query("SELECT COUNT(*) FROM kegiatan WHERE tanggal = :tanggal AND jenis = :jenis")
+    suspend fun jumlahHariIni(tanggal: String, jenis: String): Int
+
+    @Insert
+    suspend fun insert(item: KegiatanEntity)
+
+    @Query("DELETE FROM kegiatan")
+    suspend fun clear()
+}

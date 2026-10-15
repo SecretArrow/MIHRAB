@@ -1,6 +1,6 @@
 # Kebijakan Privasi (Privacy Policy)
 
-Terakhir diperbarui: 2026-10-11
+Terakhir diperbarui: 2026-10-15
 
 ## Ringkasan
 
@@ -26,13 +26,16 @@ Rincian lengkap ada di [`PERMISSIONS.md`](PERMISSIONS.md). Intinya:
 - **Lokasi** (opsional) hanya dipakai di perangkat untuk menghitung arah kiblat dan jadwal
   sholat. Koordinat **tidak pernah** dikirim ke server mana pun.
 - **Notifikasi** dipakai untuk pengingat waktu sholat.
-- Aplikasi **tidak meminta izin Internet**: seluruh perhitungan dan konten berada di
-  perangkat. Izin Internet hanya akan ditambahkan bila sumber data resmi *online*
-  benar-benar diaktifkan.
+- **Internet** hanya untuk murottal Surat Yasin: audio dialirkan per ayat dari penyedia
+  audio publik (everyayah.com) saat Anda sendiri menekan tombol putar. Penyedia itu dapat
+  melihat alamat IP dan permintaan berkasnya — itulah satu-satunya lalu lintas jaringan
+  aplikasi. Selain itu, seluruh perhitungan dan konten berada di perangkat.
 
 ## Pihak ketiga
 
-Aplikasi tidak menyertakan SDK iklan, analitik, atau pelacak apa pun.
+Aplikasi tidak menyertakan SDK iklan, analitik, atau pelacak apa pun. Saat murottal
+Surat Yasin diputar, satu-satunya pihak ketiga yang dihubungi adalah penyedia audionya
+(everyayah.com) — tanpa identitas, cookie, atau data pribadi lain yang dikirim.
 
 ## Konten keagamaan
 

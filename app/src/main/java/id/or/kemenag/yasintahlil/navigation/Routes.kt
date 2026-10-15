@@ -23,6 +23,18 @@ object Routes {
     const val KONTEN_UPDATE = "settings/konten"
     const val TENTANG = "settings/tentang"
 
+    // ---- Fitur amalan & referensi (v1.10.0) ------------------------------------------------------
+
+    const val TASBIH = "tasbih"
+    const val ASMAUL = "asmaul"
+    const val ZAKAT = "zakat"
+    const val KALENDER = "kalender"
+    const val KHATAMAN = "khataman"
+    const val ALMARHUM = "almarhum"
+
+    /** Layar pengantar sekali di awal; sengaja bukan anggota [LANGSUNG] — tidak pernah dituju notifikasi. */
+    const val ONBOARDING = "onboarding"
+
     /**
      * Layar keterangan (activity terpisah) — keterangan panjang yang dahulu menumpuk di badan
      * layar konten kini tinggal di sini, dibuka lewat ikon Info kecil.
@@ -55,6 +67,6 @@ object Routes {
     val LANGSUNG: Set<String> = setOf(
         HOME, IBADAH, ALAT, SETTINGS, YASIN, TAHLIL, SHOLAT, WUDHU, GHAIB, JENAZAH,
         ADZAN, DOA_ADZAN, IQOMAH, KIBLAT, JADWAL, DZIKIR, SEARCH, FAVORIT, KONTEN_UPDATE,
-        TENTANG,
+        TENTANG, TASBIH, ASMAUL, ZAKAT, KALENDER, KHATAMAN, ALMARHUM,
     )
 }

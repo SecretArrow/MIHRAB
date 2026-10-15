@@ -36,11 +36,31 @@ object PrayerScheduler {
      */
     private val NAMES = JadwalHariIni.LIMA_WAKTU
 
-    /** Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa & iqomah (sesudah). */
+    /**
+     * Nama waktu Subuh — satu-satunya waktu yang pengingat imsaknya bermakna, karena imsak menandai
+     * berakhirnya waktu sahur sesaat sebelum Subuh. Diturunkan dari [NAMES] (yang berurutan
+     * Subuh..Isya sesuai [JadwalHariIni.LIMA_WAKTU]), bukan diketik `"Subuh"` sendiri: string
+     * terpisah dapat berbeda diam-diam dari daftar yang mengindeks saklar `Store.ADZAN_ON`, dan
+     * imsak yang menempel pada waktu lain akan berbunyi pada menit yang salah tanpa satu pun galat.
+     */
+    private val NAMA_SUBUH = NAMES.first()
+
+    /**
+     * Jenis pekerjaan: adzan (waktu masuk), pra-adzan (pengingat sebelum), doa & iqomah (sesudah),
+     * imsak (sebelum Subuh saja).
+     */
     const val JENIS_ADZAN = "adzan"
     const val JENIS_PRA = "pra"
     const val JENIS_DOA = "doa"
     const val JENIS_IQOMAH = "iqomah"
+
+    /**
+     * Pengingat imsak beberapa menit sebelum Subuh. Berbeda dari [JENIS_PRA] yang mengikuti satu
+     * jeda bersama untuk seluruh waktu: imsak hanya untuk Subuh, sifatnya pilihan (opt-in via
+     * `Store.IMSAK_ON`) dan menitnya punya pengaturan sendiri (`Store.IMSAK_MIN`) — tidak semua
+     * pengguna sedang berpuasa, jadi ia tidak boleh menyala sendiri.
+     */
+    const val JENIS_IMSAK = "imsak"
 
     private data class Cfg(
         /**
@@ -54,6 +74,7 @@ object PrayerScheduler {
         val params: PrayerCalc.Params,
         val on: List<Boolean>, val preMin: Int, val doaReminder: Boolean,
         val iqomahOn: Boolean, val iqomahMin: Int,
+        val imsakOn: Boolean, val imsakMin: Int,
     )
 
     private suspend fun loadCfg(ctx: Context): Cfg {
@@ -75,6 +96,9 @@ object PrayerScheduler {
             iqomahOn = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH),
             iqomahMin = PengingatAdzan.iqomahMenit(
                 store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT)),
+            imsakOn = store.get(Store.IMSAK_ON, BawaanPreferensi.PENGINGAT_IMSAK),
+            imsakMin = BawaanPreferensi.menitImsak(
+                store.get(Store.IMSAK_MIN, BawaanPreferensi.MENIT_IMSAK)),
         )
     }
 
@@ -136,6 +160,21 @@ object PrayerScheduler {
         }
         if (cfg.iqomahOn) {
             enqueue(ctx, "iqomah_${nama}_$hari", nama, (delta + cfg.iqomahMin).toLong(), JENIS_IQOMAH)
+        }
+        // Pengingat imsak mengikuti Subuh — satu-satunya waktu yang batas sahurnya ditandai — dan
+        // otomatis ikut saklar per waktu Subuh karena [enqueueNext] hanya dipanggil untuk waktu
+        // yang menyala. Jam imsaknya digeser dari jadwal Subuh dengan aturan yang sama dengan
+        // pra-adzan dan dengan jam yang ditampilkan menu Adzan; bila jam imsak hari ini sudah
+        // lewat, [JadwalHariIni.sisaMenit] memutarnya ke kemunculan besok — pekerja imsak tidak
+        // menjadwalkan ulang apa pun, rantai hariannya dijaga pekerja adzan Subuh.
+        if (cfg.imsakOn && nama == NAMA_SUBUH) {
+            val deltaImsak = JadwalHariIni.sisaMenit(
+                JadwalHariIni.geser(jam, -cfg.imsakMin), nowMin).toLong()
+            // Kuncinya bertanggal seperti doa/iqomah, tetapi tanggalnya tanggal kemunculan imsak
+            // sendiri: imsak terjadi SEBELUM adzan Subuh, dan menjelang tengah malam (Subuh 00:05)
+            // keduanya jatuh pada hari berbeda — kunci yang memakai tanggal adzan akan menamai
+            // pekerjaan dengan hari yang bukan hari berbunyinya.
+            enqueue(ctx, "imsak_${nama}_${kunciHari(now, deltaImsak)}", nama, deltaImsak, JENIS_IMSAK)
         }
     }
 

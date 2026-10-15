@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Inbox
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -61,11 +63,15 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.audio.TtsBacakan
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
+import id.or.kemenag.yasintahlil.core.util.BagikanGambar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun rememberRepo(): ContentRepo {
@@ -174,6 +180,14 @@ fun BacaanCard(
     // "Tema halaman" (plan.txt): kartu bacaan digambar di atas kertas pilihan pengguna. Skema
     // warna hanya diganti bila halaman memang bukan "ikut tema", sehingga tak ada biaya saat mati.
     val skema = skemaHalaman(LocalTemaHalaman.current)
+    // Warna PNG "Bagikan sebagai gambar" mengikuti kertas yang sedang dipakai kartu ini: tema
+    // halaman (krem/gelap) bila dipilih pengguna, atau tema aplikasi (terang/gelap). Wajib
+    // diambil SEKARANG, saat komposisi — lambda klik di bawah berjalan di luar komposisi sehingga
+    // tidak boleh lagi membaca MaterialTheme di dalamnya.
+    val skemaKartu = skema ?: MaterialTheme.colorScheme
+    val latarKartu = skemaKartu.surface.toArgb()
+    val teksKartu = skemaKartu.onSurface.toArgb()
+    val aksenKartu = skemaKartu.primary.toArgb()
     // Tekan lama kartu membuka lembar aksinya (salin, bagikan, favorit, plus aksi layarnya).
     // Ketukan biasa sengaja tak melakukan apa pun: membuka lembar lewat ketukan biasa akan
     // membuatnya terbuka setiap kali pengguna menggulir dengan jari yang menempel layar.
@@ -255,6 +269,38 @@ fun BacaanCard(
                 }
                 BarisAksi(Icons.Filled.Share, "Bagikan") {
                     ctx.shareText("$judul\n$arab\n$latin\n$terjemahan")
+                    lembarAksi = false
+                }
+                // Kartu dirender jadi PNG (Bitmap + StaticLayout) di benang IO — merender bitmap
+                // di benang utama menjegal animasi lembar yang sedang menutup. PNG lama
+                // dibersihkan SETELAH render: berkas yang barusan dibuat adalah yang termuda,
+                // jadi tidak ikut terbuang (lihat BagikanGambar.bersihkan). Ikonnya sengaja
+                // kosong: belum ada ikon gambar dalam himpunan ikon yang terverifikasi tersedia
+                // untuk repo ini, dan BarisAksi memang menerima ikon kosong (preseden aksi Buka
+                // pada baris di bawah).
+                BarisAksi(null, "Bagikan sebagai gambar") {
+                    lembarAksi = false
+                    scope.launch {
+                        val berkas = withContext(Dispatchers.IO) {
+                            BagikanGambar.buat(
+                                ctx, judul, arab, latin, terjemahan, sumber,
+                                latarKartu, teksKartu, aksenKartu,
+                            )
+                        }
+                        BagikanGambar.bersihkan(ctx)
+                        BagikanGambar.bagikan(ctx, berkas)
+                    }
+                }
+                // Mode Bacakan: dibacakan suara TTS bahasa Indonesia — aksesibilitas lansia/
+                // penglihatan terbatas; menekannya lagi menghentikan. Teks Arab sengaja tidak
+                // dibacakan — mesin TTS umum tidak bisa membaca teks Arab berharakat dengan
+                // benar (lihat TtsBacakan.susunTeksBacaan).
+                BarisAksi(
+                    Icons.Filled.Campaign,
+                    if (TtsBacakan.sedangBaca) "Hentikan bacaan" else "Bacakan",
+                ) {
+                    if (TtsBacakan.sedangBaca) TtsBacakan.berhenti()
+                    else TtsBacakan.bacakan(ctx, TtsBacakan.susunTeksBacaan(judul, latin, terjemahan))
                     lembarAksi = false
                 }
                 BarisAksi(

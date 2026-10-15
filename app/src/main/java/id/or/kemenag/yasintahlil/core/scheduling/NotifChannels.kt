@@ -12,6 +12,8 @@ import androidx.core.content.getSystemService
  *   (mencegah suara ganda).
  * - [PRE]: pengingat di sekitar waktu sholat yang tidak perlu bersuara keras — sebelum adzan,
  *   ajakan membaca doa setelah adzan, dan perkiraan waktu iqomah habis.
+ * - [ALMARHUM]: pengingat peringatan tahlil almarhum (hari ke-7/40/100/1000 dan haul) — diperiksa
+ *   sekali sehari, tanpa suara keras.
  *
  * Catatan DND: penembusan mode Jangan Ganggu (DND) TIDAK dapat diatur aplikasi lewat API publik
  * (`setBypassDnd` adalah API sistem). Aplikasi hanya dapat meminta akses kebijakan notifikasi
@@ -23,6 +25,7 @@ object NotifChannels {
     const val ADZAN = "adzan"
     const val ADZAN_SILENT = "adzan_silent"
     const val PRE = "preadzan"
+    const val ALMARHUM = "almarhum"
 
     fun ensure(ctx: Context) {
         val mgr = ctx.getSystemService<NotificationManager>() ?: return
@@ -39,7 +42,10 @@ object NotifChannels {
             description = "Pengingat beberapa menit sebelum waktu sholat, pengingat membaca doa " +
                 "setelah adzan, dan perkiraan waktu iqomah habis"
         }
-        mgr.createNotificationChannels(listOf(adzan, silent, pre))
+        val almarhum = NotificationChannel(ALMARHUM, "Tahlil almarhum", NotificationManager.IMPORTANCE_DEFAULT).apply {
+            description = "Pengingat hari ke-7, 40, 100, 1000, dan haul sejak wafat"
+        }
+        mgr.createNotificationChannels(listOf(adzan, silent, pre, almarhum))
     }
 
     /** Apakah pengguna telah memberi aplikasi akses kebijakan notifikasi (dapat dikecualikan dari DND). */

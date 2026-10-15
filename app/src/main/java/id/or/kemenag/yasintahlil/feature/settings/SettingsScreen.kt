@@ -81,6 +81,13 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     // Saklar pengingat iqomah juga pindah ke sini dari layar Iqomah: ia preferensi notifikasi,
     // bukan cara kerja timer — layar itu kini cukup membaca dan menjalankan hitung mundurnya.
     var ingatkanIqomah by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IQOMAH) }
+    // Saklar pengingat imsak: satu keluarga dengan pengingat iqomah — sama-sama pengingat tambahan
+    // yang bermakna hanya bagi sebagian pengguna (imsak: yang berpuasa), maka opt-in dan
+    // rumahnya di sini bersama kendali pengingat lainnya.
+    var ingatkanImsak by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IMSAK) }
+    // Menit imsak sebelum Subuh; nilai awalnya bawaan bersama, dan pemuatannya lewat penjepit yang
+    // sama dengan penjadwal serta pekerja latar agar angkanya tak dapat berbeda.
+    var menitImsak by remember { mutableStateOf(BawaanPreferensi.MENIT_IMSAK) }
     // Koreksi menit per waktu sholat: dahulu deretan − / + di layar Jadwal, kini di sini.
     var corr by remember { mutableStateOf(JadwalHariIni.parseCorr(JadwalHariIni.CORR_DEFAULT)) }
     var infoCard by remember { mutableStateOf(BawaanPreferensi.KARTU_INFO) }
@@ -117,6 +124,9 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         durasiIqomah = PengingatAdzan.iqomahMenit(
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
         ingatkanIqomah = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH)
+        ingatkanImsak = store.get(Store.IMSAK_ON, BawaanPreferensi.PENGINGAT_IMSAK)
+        menitImsak = BawaanPreferensi.menitImsak(
+            store.get(Store.IMSAK_MIN, BawaanPreferensi.MENIT_IMSAK))
         corr = JadwalHariIni.parseCorr(store.get(Store.CORR, JadwalHariIni.CORR_DEFAULT))
         infoCard = store.get(Store.INFO_CARD, BawaanPreferensi.KARTU_INFO)
         asar = store.get(Store.ASAR, JadwalHariIni.ASAR_DEFAULT)
@@ -353,6 +363,43 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                     "Ketukannya membuka layar Iqomah.",
                 ingatkanIqomah,
             ) { ingatkanIqomah = it; scope.launch { store.set(Store.IQOMAH_ON, ingatkanIqomah); PrayerScheduler.scheduleAll(ctx.applicationContext) } }
+            // Pengingat imsak: satu keluarga dengan pengingat iqomah di atas — sama-sama opt-in
+            // karena hanya bermakna bagi yang berpuasa (nada yang sama dengan BawaanPreferensi),
+            // dan mengikuti saklar per waktu Subuh di menu Adzan seperti pengingat lainnya.
+            BarisSaklar(
+                "Ingatkan imsak sebelum Subuh",
+                "Bila aktif: notifikasi $menitImsak menit sebelum jadwal Subuh, tetap berjalan " +
+                    "walau aplikasi ditutup, dan mengikuti saklar Subuh di menu Adzan. Ketukannya " +
+                    "membuka menu Jadwal.",
+                ingatkanImsak,
+            ) { ingatkanImsak = it; scope.launch { store.set(Store.IMSAK_ON, ingatkanImsak); PrayerScheduler.scheduleAll(ctx.applicationContext) } }
+            KolomPreferensi(
+                "Menit imsak sebelum Subuh",
+                "Berapa menit sebelum jadwal Subuh pengingat imsak berbunyi. " +
+                    PengingatAdzan.IMSAK_PERKIRAAN,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // Batasnya dari aturan bersama, sama dengan yang menjepit nilai tersimpan di
+                    // penjadwal dan pekerja latar — kalau tidak, angka di sini bisa tak pernah
+                    // dipakai pengingatnya.
+                    OutlinedButton(onClick = {
+                        menitImsak = BawaanPreferensi.menitImsak(menitImsak - 1)
+                        scope.launch {
+                            store.set(Store.IMSAK_MIN, menitImsak)
+                            PrayerScheduler.scheduleAll(ctx.applicationContext)
+                        }
+                    }) { Text("−") }
+                    Text("$menitImsak mnt", style = MaterialTheme.typography.titleMedium)
+                    OutlinedButton(onClick = {
+                        menitImsak = BawaanPreferensi.menitImsak(menitImsak + 1)
+                        scope.launch {
+                            store.set(Store.IMSAK_MIN, menitImsak)
+                            PrayerScheduler.scheduleAll(ctx.applicationContext)
+                        }
+                    }) { Text("+") }
+                }
+            }
             // Koreksi menit per waktu: deretan − / + -nya dipindah dari layar Jadwal ke sini. Jadwal di
             // layar itu dan pengingatnya sama-sama membaca `Store.CORR`, jadi keduanya tetap ikut.
             KolomPreferensi(

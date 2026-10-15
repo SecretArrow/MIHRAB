@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,20 +26,28 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.KolomKonten
+import id.or.kemenag.yasintahlil.core.designsystem.rememberStore
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.feature.adzan.AdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.DoaAdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.IqomahScreen
 import id.or.kemenag.yasintahlil.feature.alat.AlatScreen
+import id.or.kemenag.yasintahlil.feature.almarhum.AlmarhumScreen
+import id.or.kemenag.yasintahlil.feature.asmaul.AsmaulHusnaScreen
 import id.or.kemenag.yasintahlil.feature.dzikir.DzikirGroupScreen
 import id.or.kemenag.yasintahlil.feature.dzikir.DzikirScreen
 import id.or.kemenag.yasintahlil.feature.favorit.FavoritScreen
 import id.or.kemenag.yasintahlil.feature.home.HomeScreen
 import id.or.kemenag.yasintahlil.feature.ibadah.IbadahScreen
 import id.or.kemenag.yasintahlil.feature.jadwal.JadwalScreen
+import id.or.kemenag.yasintahlil.feature.kalender.KalenderScreen
 import id.or.kemenag.yasintahlil.feature.keterangan.KeteranganScreen
+import id.or.kemenag.yasintahlil.feature.khataman.KhatamanScreen
 import id.or.kemenag.yasintahlil.feature.kiblat.KiblatScreen
+import id.or.kemenag.yasintahlil.feature.onboarding.OnboardingScreen
 import id.or.kemenag.yasintahlil.feature.search.SearchScreen
 import id.or.kemenag.yasintahlil.feature.settings.ContentUpdateScreen
 import id.or.kemenag.yasintahlil.feature.settings.SettingsScreen
@@ -48,13 +57,26 @@ import id.or.kemenag.yasintahlil.feature.sholat.SholatDetailScreen
 import id.or.kemenag.yasintahlil.feature.sholat.SholatScreen
 import id.or.kemenag.yasintahlil.feature.sholat.WudhuScreen
 import id.or.kemenag.yasintahlil.feature.tahlil.TahlilScreen
+import id.or.kemenag.yasintahlil.feature.tasbih.TasbihScreen
 import id.or.kemenag.yasintahlil.feature.tentang.TentangScreen
 import id.or.kemenag.yasintahlil.feature.yasin.YasinScreen
+import id.or.kemenag.yasintahlil.feature.zakat.ZakatScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
     val nav = rememberNavController()
     val bottomBarVisible = remember { mutableStateOf(true) }
+    // Onboarding sekali di awal: selama penandanya belum tersimpan, pengguna baru disambut
+    // layar pengantar sebelum dapat berkeliling. "Mulai" menuliskan penandanya lalu kembali
+    // ke beranda; pengguna lama (penanda sudah `true`) tidak pernah melihatnya lagi.
+    val store = rememberStore()
+    val scope = rememberCoroutineScope()
+    var onboardingSelesai by remember { mutableStateOf(BawaanPreferensi.ONBOARDING_SELESAI) }
+    LaunchedEffect(Unit) {
+        onboardingSelesai = store.get(Store.ONBOARDING_SELESAI, BawaanPreferensi.ONBOARDING_SELESAI)
+        if (!onboardingSelesai) nav.navigate(Routes.ONBOARDING)
+    }
     // Ketukan notifikasi membawa rute; hanya rute yang dikenal yang dibuka, sisanya diabaikan
     // supaya permintaan dari luar tak pernah membuat aplikasi berhenti.
     LaunchedEffect(pendingRoute) {
@@ -132,6 +154,22 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
                 composable(Routes.TENTANG) { TentangScreen() }
+                // ---- Amalan & referensi --------------------------------------------------------------
+                composable(Routes.TASBIH) { TasbihScreen(go = { nav.navigate(it) }) }
+                composable(Routes.ASMAUL) { AsmaulHusnaScreen(go = { nav.navigate(it) }) }
+                composable(Routes.ZAKAT) { ZakatScreen(go = { nav.navigate(it) }) }
+                composable(Routes.KALENDER) { KalenderScreen(go = { nav.navigate(it) }) }
+                composable(Routes.KHATAMAN) { KhatamanScreen(go = { nav.navigate(it) }) }
+                composable(Routes.ALMARHUM) { AlmarhumScreen(go = { nav.navigate(it) }) }
+                // Layar pengantar sekali di awal: "Mulai" menyimpan penandanya lalu kembali ke
+                // beranda dengan tumpukan dibersihkan — tombol kembali dari beranda keluar aplikasi,
+                // bukan kembali ke pengantar yang sudah selesai.
+                composable(Routes.ONBOARDING) {
+                    OnboardingScreen(selesai = {
+                        scope.launch { store.set(Store.ONBOARDING_SELESAI, true) }
+                        nav.navigate(Routes.HOME) { popUpTo(Routes.HOME) { inclusive = true } }
+                    })
+                }
                 // Layar keterangan: keterangan panjang tinggal di sini, dibuka lewat ikon Info
                 // kecil pada layar konten. Asalnya menjadi argumen supaya keterangannya dibaca
                 // ulang dari sumber yang sama — bukan disalin dari layar pembukanya.

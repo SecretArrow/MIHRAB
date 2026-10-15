@@ -70,6 +70,14 @@ class NamaLayarSatuTempatTest {
         // itu sudah menyimpang: Tentang ditulis tiga cara, Pembaruan konten dua ejaan.
         "TENTANG" to ("feature/tentang/TentangScreen.kt" to "TENTANG"),
         "KONTEN_UPDATE" to ("feature/settings/ContentUpdateScreen.kt" to "PEMBARUAN_KONTEN"),
+        // Amalan & referensi: tasbih, Asmaul Husna, zakat, kalender, khataman, tahlil almarhum.
+        // Onboarding tidak termasuk: namanya hanya muncul sekali (layar pengantar sekali di awal).
+        "TASBIH" to ("feature/tasbih/TasbihScreen.kt" to "TASBIH"),
+        "ASMAUL" to ("feature/asmaul/AsmaulHusnaScreen.kt" to "ASMAUL"),
+        "ZAKAT" to ("feature/zakat/ZakatScreen.kt" to "ZAKAT"),
+        "KALENDER" to ("feature/kalender/KalenderScreen.kt" to "KALENDER"),
+        "KHATAMAN" to ("feature/khataman/KhatamanScreen.kt" to "KHATAMAN"),
+        "ALMARHUM" to ("feature/almarhum/AlmarhumScreen.kt" to "ALMARHUM"),
     )
 
     /**
@@ -104,6 +112,12 @@ class NamaLayarSatuTempatTest {
         assertEquals("Favorit & Riwayat", NamaLayar.FAVORIT)
         assertEquals("Tentang aplikasi", NamaLayar.TENTANG)
         assertEquals("Pembaruan konten", NamaLayar.PEMBARUAN_KONTEN)
+        assertEquals("Tasbih Digital", NamaLayar.TASBIH)
+        assertEquals("Asmaul Husna", NamaLayar.ASMAUL)
+        assertEquals("Kalkulator Zakat", NamaLayar.ZAKAT)
+        assertEquals("Kalender Hijriah & Jawa", NamaLayar.KALENDER)
+        assertEquals("Khataman & Streak", NamaLayar.KHATAMAN)
+        assertEquals("Tahlil Almarhum", NamaLayar.ALMARHUM)
     }
 
     /**
@@ -118,6 +132,8 @@ class NamaLayarSatuTempatTest {
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
             NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
             NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
+            NamaLayar.TASBIH, NamaLayar.ASMAUL, NamaLayar.ZAKAT, NamaLayar.KALENDER,
+            NamaLayar.KHATAMAN, NamaLayar.ALMARHUM,
         )
         nama.forEach { assertTrue("nama layar kosong", it.isNotBlank()) }
         assertEquals("ada nama layar yang kembar", nama.size, nama.toSet().size)
@@ -136,6 +152,8 @@ class NamaLayarSatuTempatTest {
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
             NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
             NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
+            NamaLayar.TASBIH, NamaLayar.ASMAUL, NamaLayar.ZAKAT, NamaLayar.KALENDER,
+            NamaLayar.KHATAMAN, NamaLayar.ALMARHUM,
         )
         val penyalin = mutableListOf<String>()
         berkasMain().filter { it.name != "NamaLayar.kt" }.forEach { f ->
@@ -250,7 +268,8 @@ class NamaLayarSatuTempatTest {
             pasangan("feature/ibadah/IbadahScreen.kt",
                 """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
             setOf("YASIN", "TAHLIL", "SHOLAT", "WUDHU", "GHAIB", "JENAZAH", "DZIKIR",
-                "DOA_ADZAN", "SEARCH", "FAVORIT"),
+                "DOA_ADZAN", "SEARCH", "FAVORIT",
+                "TASBIH", "ASMAUL", "ZAKAT", "KHATAMAN", "ALMARHUM"),
         )
         periksa(
             "AlatScreen.kt",
@@ -259,7 +278,7 @@ class NamaLayarSatuTempatTest {
             // Pencarian tidak lagi diulang di sini: bagian "Temuan" yang hanya memuat satu
             // baris sudah dibubarkan — pintunya tetap ada di menu Ibadah (bagian Simpanan)
             // dan di ikon Pencarian pada kepala beranda.
-            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH"),
+            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH", "KALENDER"),
         )
         periksa(
             "SholatDetailScreen.kt",

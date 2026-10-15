@@ -15,7 +15,10 @@ import java.io.File
  * apa-apa: `settings` adalah panel modal yang memang wajar tertutup, dan `indeks`/`galat`/`ulang`
  * dibangun ulang oleh efek. Yang **tidak** boleh lenyap adalah keadaan yang dipilih pengguna dan
  * tak dapat dipulihkan sendiri: mode layar penuh dan mode baca, cara pengelompokan yang dipilih,
- * kata kunci yang sedang diketik. (Tab dan langkah panduan tidak lagi punya keadaan tersimpan —
+ * kata kunci yang sedang diketik, isian angka Kalkulator Zakat, dialog target tasbih yang
+ * sedang terbuka beserta angkanya, dialog tambah catatan almarhum beserta seluruh isiannya,
+ * serta halaman pengantar yang sedang terbuka. (Tab dan langkah panduan tidak lagi punya
+ * keadaan tersimpan —
  * layar Tahlil, kelompok dzikir, dan langkah sholat kini bersambung, tanpa tombol next/prev.)
  * Kehilangan `q` berarti pengguna mengetik ulang kata kuncinya; kehilangan `ringkas` berarti
  * ia terlempar kembali ke tampilan pemula hanya karena memutar perangkat.
@@ -47,7 +50,32 @@ class KeadaanLayarSaatDiputarTest {
         Triple("feature/kiblat/KiblatScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/yasin/YasinScreen.kt", "focus", "mode baca fokus"),
         Triple("feature/yasin/YasinScreen.kt", "jump", "nomor ayat yang sedang diketik"),
+        // Kalkulator Zakat: jenis yang dipilih dan seluruh isian angkanya — mengetik ulang
+        // harga emas hanya karena memutar layar adalah kehilangan yang tak dipulihkan sendiri.
+        Triple("feature/zakat/ZakatScreen.kt", "jenis", "jenis zakat yang dipilih"),
+        Triple("feature/zakat/ZakatScreen.kt", "inputJiwa", "jumlah jiwa yang sedang diketik"),
+        Triple("feature/zakat/ZakatScreen.kt", "inputBeras", "harga beras yang sedang diketik"),
+        Triple("feature/zakat/ZakatScreen.kt", "inputHarta", "harta terzakati yang sedang diketik"),
+        Triple("feature/zakat/ZakatScreen.kt", "inputEmas", "harga emas yang sedang diketik"),
+        Triple("feature/zakat/ZakatScreen.kt", "inputGaji", "penghasilan yang sedang diketik"),
         Triple("feature/search/SearchScreen.kt", "q", "kata kunci yang sedang diketik"),
+        Triple("feature/tasbih/TasbihScreen.kt", "targetKustom", "angka target yang sedang diketik"),
+        Triple("feature/tasbih/TasbihScreen.kt", "dialogTerbuka", "dialog target lainnya sedang terbuka"),
+        // Tahlil Almarhum: dialog tambah catatan beserta seluruh isiannya — nama dan tanggal
+        // wafat diketik manual, kehilangannya hanya karena memutar layar tak dapat dipulihkan.
+        Triple("feature/almarhum/AlmarhumScreen.kt", "dialogTerbuka", "dialog tambah catatan almarhum sedang terbuka"),
+        Triple("feature/almarhum/AlmarhumScreen.kt", "namaBaru", "nama almarhum yang sedang diketik"),
+        Triple("feature/almarhum/AlmarhumScreen.kt", "tanggalBaru", "tanggal wafat yang sedang diketik"),
+        Triple("feature/almarhum/AlmarhumScreen.kt", "catatanBaru", "catatan almarhum yang sedang diketik"),
+        // Onboarding: halaman pengantar yang sedang terbuka — pengguna baru yang memutar
+        // perangkat di tengah pengantar tidak dilempar ke halaman pertama.
+        Triple("feature/onboarding/OnboardingScreen.kt", "halaman", "halaman pengantar yang sedang terbuka"),
+        // Asmaul Husna: isian nomor "Ke nama" — mengetik ulang nomornya hanya karena memutar
+        // perangkat adalah kehilangan yang tak dipulihkan sendiri.
+        Triple("feature/asmaul/AsmaulHusnaScreen.kt", "lompat", "nomor nama yang sedang diketik"),
+        // Kalender: bulan yang sedang dilihat + hari yang dipilih pengguna.
+        Triple("feature/kalender/KalenderScreen.kt", "bulanGeser", "bulan kalender yang sedang dilihat"),
+        Triple("feature/kalender/KalenderScreen.kt", "hariPilih", "tanggal yang dipilih pengguna di kisi"),
     )
 
     /**

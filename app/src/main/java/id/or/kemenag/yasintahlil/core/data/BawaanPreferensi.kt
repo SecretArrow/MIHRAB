@@ -57,6 +57,27 @@ object BawaanPreferensi {
     const val PENGINGAT_DOA_ADZAN = false
     const val PENGINGAT_IQOMAH = false
 
+    /**
+     * Pengingat imsak juga opt-in: imsak hanya bermakna bagi yang berpuasa, dan menitnya
+     * (sebelum Subuh) disimpan terpisah di [MENIT_IMSAK].
+     */
+    const val PENGINGAT_IMSAK = false
+
+    /** Menit sebelum Subuh yang dianggap imsak; rentang sahnya dijaga [RENTANG_MENIT_IMSAK]. */
+    const val MENIT_IMSAK = 10
+
+    /** Rentang menit imsak yang masuk akal, dipakai tombol − / + di Pengaturan. */
+    val RENTANG_MENIT_IMSAK = 5..30
+
+    /**
+     * Menit imsak yang sah: nilai tersimpan di luar [RENTANG_MENIT_IMSAK] ditarik ke batas
+     * terdekat, sehingga pengaturannya tidak pernah menuliskan angka yang tak masuk akal.
+     */
+    fun menitImsak(menit: Int): Int = menit.coerceIn(RENTANG_MENIT_IMSAK)
+
+    /** Onboarding belum selesai bagi pengguna baru; "Mulai" menandainya sekali untuk selamanya. */
+    const val ONBOARDING_SELESAI = false
+
     // --- Beranda ------------------------------------------------------------------------
 
     /** Kartu "Info Islami harian" tampil selama pengguna belum mematikannya. */

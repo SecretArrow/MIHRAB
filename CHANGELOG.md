@@ -5,6 +5,60 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+- **Tasbih Digital** — penghitung ketuk dengan getar, pilihan target harian (33/99/100/`Lainnya`),
+  dan riwayat tujuh hari yang tersimpan di perangkat (tabel Room `tasbih`); hitungan tidak pernah
+  hilang oleh rotasi layar maupun proses yang dimatikan sistem.
+- **Kalkulator Zakat** — perkiraan zakat fitrah, mal & tabungan, dan penghasilan lengkap hitungan
+  nisab emas; hasil mengikuti ketikan tanpa tombol "Hitung", seluruh isian tahan putar layar, dan
+  kepastian hukumnya (haul, utang) diarahkan pada amil atau ulama setempat.
+- **Asmaul Husna** — 99 nama Allah berharakat penuh beserta artinya, dengan lompat `Ke nama ke-`
+  (pola `Ke ayat` milik Yasin); ukuran Arabnya tetap karena leksikon, bukan bacaan ritual yang
+  tunduk pada preferensi ukuran bacaan.
+- **Kalender Hijriah & Jawa** — kisi bulan Masehi bergaya kalender dinding dengan anotasi tanggal
+  Hijriah per sel, penanda puasa sunnah & hari besar Islam, kartu hari ini (Hijriah, weton &
+  neptu, bulan & tahun Jawa), dan kartu hari yang diketuk; koreksi Hijriahnya mengikuti pilihan di
+  Pengaturan sehingga selalu sama dengan beranda. Pasaran/weton/neptu ditampilkan sebagai
+  pengetahuan budaya Jawa, bukan anjuran ibadah.
+- **Khataman & Streak** — rangkaian hari baca yang tercatat otomatis begitu layar Yasin/Tahlil
+  dibuka (sekunci per hari), tombol catat khataman Yasin yang idempoten, total khatam, dan rekor
+  rangkaian terpanjang.
+- **Tahlil Almarhum** — catatan nama & tanggal wafat dengan hitungan hari ke-7, 40, 100, 1000, dan
+  haul tahunan plus pemeriksa harian lewat notifikasi (pekerja WorkManager periodik). Hitungan
+  tujuh-empat puluh-seratus-seribu adalah tradisi masyarakat Indonesia untuk mendoakan yang wafat,
+  bukan ketentuan syariat.
+- **Murottal Surat Yasin** — tiap ayat dapat diputar/dihentikan dari lembar aksi tekan-lama
+  kartunya, dengan mini-player sebagai umpan balik. Audio dialirkan per ayat dari everyayah.com
+  (qari Mishary Alafasy) supaya APK tetap ±2,6 MB — inilah satu-satunya pemakai izin `INTERNET`,
+  dan penjaganya memastikan jaringan tak pernah dipakai untuk hal lain.
+- **Bagikan sebagai gambar** — kartu bacaan dapat dirender menjadi PNG bergaya tema aplikasi (atau
+  kertas bacaan pilihan pengguna) lalu dibagikan lewat berkas cache aman (FileProvider); berkas
+  lamanya dibersihkan otomatis.
+- **Mode Bacakan (TTS)** — teks bacaan (judul, latin, terjemahan) dibacakan suara bahasa Indonesia
+  dari lembar aksi kartu — aksesibilitas bagi lansia dan penglihatan terbatas; teks Arab sengaja
+  tidak dibacakan karena mesin TTS umum tidak dapat membinakannya dengan benar.
+- **Pengingat imsak** — opsional (bawaan mati), berbunuh beberapa menit sebelum Subuh (5–30 menit,
+  bawaan 10), diatur dari Pengaturan berdampingan pengingat iqomah; notifikasinya menjelaskan
+  dirinya sebagai perkiraan dari jadwal Subuh di perangkat.
+- **Widget jadwal sholat** — widget homescreen 4×3 dengan RemoteViews klasik (tanpa dependensi
+  baru): lima waktu sholat, tanggal Masehi & Hijriah, dan kota — dihitung ulang sepenuhnya di
+  perangkat pada tiap pembaruan (±30 menit).
+- **Pengantar sekali di awal** — tiga halaman sambutan (Assalamu'alaikum, amalan harian, waktu
+  sholat & pengaturan) yang hanya tampil sekali seumur pemasangan; posisi halamannya tahan putar
+  layar dan bilah navigasinya disembunyikan sampai "Mulai" ditekan.
+
+### Diubah
+- **Izin jaringan kini dinyatakan jujur.** `INTERNET` dideklarasikan untuk murottal Yasin saja;
+  dokumen izin & privasi (repositori maupun aset legal yang ditampilkan di layar Tentang)
+  diperbarui seiring bersama penjaganya; `ACCESS_NETWORK_STATE` tetap tidak diminta karena
+  aplikasi tidak pernah memeriksa status jaringan.
+- **Basis data Room naik ke skema v2** dengan migrasi otomatis dari v1 — tiga tabel baru
+  (`tasbih`, `almarhum`, `kegiatan`) dibuat tanpa menyentuh tabel lama, sehingga data pengguna
+  yang sudah terpasang tetap utuh.
+- **Daftar dzikir, doa, dan pencarian** tidak berubah letak; seluruh fitur baru masuk lewat menu
+  Ibadah (bagian "Amalan & referensi") dan menu Alat (Kalender), satu keluarga bentuk menu yang
+  sama dengan yang sudah ada.
+
 ## [1.9.0] - 2026-10-15
 
 ### Diubah

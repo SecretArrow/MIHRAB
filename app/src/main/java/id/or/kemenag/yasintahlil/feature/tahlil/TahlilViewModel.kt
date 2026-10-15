@@ -9,16 +9,20 @@ import id.or.kemenag.yasintahlil.core.data.PreferensiSusunan
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.TahlilItem
 import id.or.kemenag.yasintahlil.core.data.TahlilSusunan
+import id.or.kemenag.yasintahlil.core.data.local.KegiatanDao
+import id.or.kemenag.yasintahlil.core.data.local.KegiatanEntity
 import id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.KunciProgres
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
+import id.or.kemenag.yasintahlil.feature.khataman.RangkaianHari
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 data class TahlilUiState(
@@ -51,12 +55,32 @@ class TahlilViewModel @Inject constructor(
     private val store: Store,
     private val repo: ContentRepo,
     private val userData: UserDataRepository,
+    private val kegiatanDao: KegiatanDao,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TahlilUiState())
     val state: StateFlow<TahlilUiState> = _state.asStateFlow()
 
-    init { load() }
+    init {
+        load()
+        // Kegiatan harian "tahlil_buka" untuk Khataman & Streak. Dicatat otomatis begitu layar ini
+        // dibuka — rangkaian hari baca tidak boleh putus hanya karena pengguna lupa menekan
+        // tombol "catat"; membuka layar bacaan memang sudah berarti membaca. Sekali per hari
+        // (`jumlahHariIni`): membuka ulang layar ini di hari yang sama tidak menambah baris baru,
+        // sebab rangkaian menghitung HARI, bukan jumlah kali membuka.
+        viewModelScope.launch {
+            val hariIni = RangkaianHari.iso(LocalDate.now())
+            if (kegiatanDao.jumlahHariIni(hariIni, RangkaianHari.TAHIL_BUKA) == 0) {
+                kegiatanDao.insert(
+                    KegiatanEntity(
+                        tanggal = hariIni,
+                        jenis = RangkaianHari.TAHIL_BUKA,
+                        keterangan = "",
+                    ),
+                )
+            }
+        }
+    }
 
     private fun load() {
         viewModelScope.launch {

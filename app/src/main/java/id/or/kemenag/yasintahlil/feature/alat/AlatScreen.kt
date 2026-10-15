@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Schedule
@@ -49,6 +50,7 @@ fun AlatScreen(go: (String) -> Unit) {
             Triple(Routes.ADZAN, NamaLayar.ADZAN, Icons.Filled.NotificationsActive),
             Triple(Routes.IQOMAH, NamaLayar.IQOMAH, Icons.Filled.Timer),
             Triple(Routes.KIBLAT, NamaLayar.KIBLAT, Icons.Filled.Explore),
+            Triple(Routes.KALENDER, NamaLayar.KALENDER, Icons.Filled.DateRange),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
     }
 }

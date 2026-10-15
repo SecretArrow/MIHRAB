@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.audio.MurottalPlayer
 import id.or.kemenag.yasintahlil.core.data.AtribusiTeks
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
@@ -36,9 +37,10 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  *
  * Kepala layarnya kini minimalis: judul berikut ikon Info, satu baris penanda terakhir dibaca
  * yang sekaligus menjadi tombol lompat, dan baris "Ayat … / Ke ayat" yang diakhiri tombol layar
- * penuh berikon. Aksi per-ayat (salin, bagikan, favorit, tandai terakhir dibaca, bookmark)
- * dibuka dengan **menekan lama** kartu ayatnya; nomor ayat di luar kartu dihapus karena judul
- * kartu sudah menyebutnya.
+ * penuh berikon. Aksi per-ayat (salin, bagikan, favorit, tandai terakhir dibaca, bookmark,
+ * putar/hentikan murottal) dibuka dengan **menekan lama** kartu ayatnya; nomor ayat di luar kartu
+ * dihapus karena judul kartu sudah menyebutnya. Selama murottal mengalir, satu baris mini-player
+ * menempel di bawah daftar sebagai umpan balik dan tombol hentinya.
  *
  * Mencari ayat bukan lagi tugas layar ini — kotak carinya yang lama menyaring daftar dan membuat
  * tombol "Ke ayat"/bookmark mendarat di ayat yang salah sebelum diperbaiki. Pencarian kini
@@ -65,6 +67,14 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
         if (keepOn) w?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         onDispose { w?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
+
+    // Murottal per ayat diputar dengan streaming — tanpa membundel audio di APK. Pemutaran
+    // dipegang lapisan core.audio (plan.txt §"Teknologi dan Arsitektur": lapisan audio berdiri
+    // sendiri; dijaga LapisanAudioTest) — layar hanya memanggil putar/berhenti/lepas. Pemutar
+    // dibuat sekali untuk seumur layar dan dilepas saat layar pergi: ExoPlayer tidak membongkar
+    // utasnya sendiri hanya karena tidak lagi dirujuk.
+    val murottal = remember { MurottalPlayer(ctx) }
+    DisposableEffect(murottal) { onDispose { murottal.lepas() } }
 
     // Ayat yang sedang dituju tombol "Ke ayat" / baris penanda terakhir dibaca. Diselesaikan di
     // efek ini, bukan langsung, agar gulirannya berjalan setelah daftar tersusun.
@@ -145,7 +155,9 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
                 }
             }
         }
-        LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+        // weight(1f): daftar mengisi sisa ruang sehingga mini-player murottal dapat menempel
+        // di bawahnya tanpa menggeser kartu yang sedang dibaca.
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             items(surah.verses) { v ->
                 val marked = s.bookmarks.any { it.refId == v.nomor.toString() }
                 // Mode fokus menyembunyikan bilah bawah dan berarti bacaan dibaca dari
@@ -165,8 +177,61 @@ fun YasinScreen(go: (String) -> Unit = {}, vm: YasinViewModel = hiltViewModel())
                             if (marked) "Hapus bookmark" else "Bookmark",
                             if (marked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                         ) { vm.toggleBookmark(v.nomor) },
+                        // Murottal: lewat lembar tekan-lama seperti aksi kartu lainnya — satu pola
+                        // interaksi aplikasi, tanpa deretan tombol baru yang menempel di kartu.
+                        // Tanpa ikon: verifikasi ketersediaan ikon putar/henti di pustaka ikon
+                        // gagal (jaringan sandbox), dan AksiBacaan.ikon memang boleh kosong —
+                        // label "Putar murottal ayat N" sudah jelas tanpa gambar.
+                        AksiBacaan(
+                            if (murottal.ayahDiputar == v.nomor) "Hentikan murottal"
+                            else "Putar murottal ayat ${v.nomor}",
+                        ) { murottal.putar(v.nomor) },
                     ),
                 )
+            }
+        }
+
+        // Mini-player murottal: umpan balik satu baris selama pemutaran berlangsung — pengguna
+        // tahu ayat mana yang sedang berbunyi dan punya tombol henti tanpa membuka lagi lembar
+        // aksi kartunya. Baris ini juga tempat pesan galat streaming tampil sebagai teks kecil;
+        // setelah gagal, ayat aktif sudah direset oleh pemutarnya sehingga barisnya menunggu
+        // ditutup lewat tombol yang sama.
+        val diputar = murottal.ayahDiputar
+        if (diputar != null || murottal.galat != null) {
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            ) {
+                Column(
+                    Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+                ) {
+                    if (diputar != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                if (murottal.memuat) "Menyiapkan ayat $diputar…" else "Memutar ayat $diputar…",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            TextButton(onClick = { murottal.berhenti() }) { Text("Hentikan") }
+                        }
+                    }
+                    murottal.galat?.let { teksGalat ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                teksGalat,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.weight(1f),
+                            )
+                            // Setelah galat tidak ada ayat aktif; tombol yang sama menutup
+                            // barisnya — tanpa ini pesannya tak pernah bisa ditutup.
+                            if (diputar == null) {
+                                TextButton(onClick = { murottal.berhenti() }) { Text("Hentikan") }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

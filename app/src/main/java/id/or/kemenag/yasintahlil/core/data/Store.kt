@@ -95,6 +95,17 @@ class Store(private val ctx: Context) {
         val YASIN_MARK = intPreferencesKey("yasin_mark") // warisan
         val TAHLIL_PROG = stringPreferencesKey("tahlil_prog") // warisan posisi:hitungan — migrasi ke Room
         val NOTIF = booleanPreferencesKey("notif")
+        /**
+         * Onboarding sekali di awal sudah selesai. `false` berarti pengguna baru (atau yang belum
+         * menekan "Mulai") masih disambut layar pengantar sebelum tiba di beranda.
+         */
+        val ONBOARDING_SELESAI = booleanPreferencesKey("onboarding_selesai")
+        /**
+         * Pengingat imsak: beberapa menit sebelum Subuh (bawaan [BawaanPreferensi.MENIT_IMSAK]).
+         * Opt-in seperti pengingat doa/iqomah, karena tidak semua pengguna sedang berpuasa.
+         */
+        val IMSAK_ON = booleanPreferencesKey("imsak_on")
+        val IMSAK_MIN = intPreferencesKey("imsak_min")
     }
 
     suspend fun <T> get(key: Preferences.Key<T>, def: T): T =
@@ -139,8 +150,8 @@ class Store(private val ctx: Context) {
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
             bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON); bool(KEEP_ON)
-            bool(SHOW_COUNTER)
-            int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR)
+            bool(SHOW_COUNTER); bool(ONBOARDING_SELESAI); bool(IMSAK_ON)
+            int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR); int(IMSAK_MIN)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)
                 if (arr != null) {

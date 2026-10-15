@@ -9,12 +9,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +65,18 @@ fun IbadahScreen(go: (String) -> Unit) {
             Triple(Routes.GHAIB, NamaLayar.GHAIB, Icons.Filled.PersonOff),
             Triple(Routes.JENAZAH, NamaLayar.JENAZAH, Icons.Filled.Groups),
             Triple(Routes.DOA_ADZAN, NamaLayar.DOA_ADZAN, Icons.Filled.Campaign),
+        ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
+
+        // Amalan harian dan referensi ringan: tasbih, Asmaul Husna, zakat, khataman, hingga
+        // peringatan tahlil untuk almarhum. Sama bentuknya dengan bagian lain — satu keluarga
+        // `MenuBaris` — supaya menu tetap satu bentuk, bukan menumpuk gaya baru.
+        BagianJudul("Amalan & referensi")
+        listOf(
+            Triple(Routes.TASBIH, NamaLayar.TASBIH, Icons.Filled.TouchApp),
+            Triple(Routes.ASMAUL, NamaLayar.ASMAUL, Icons.Filled.AutoStories),
+            Triple(Routes.ZAKAT, NamaLayar.ZAKAT, Icons.Filled.Calculate),
+            Triple(Routes.KHATAMAN, NamaLayar.KHATAMAN, Icons.Filled.Flag),
+            Triple(Routes.ALMARHUM, NamaLayar.ALMARHUM, Icons.Filled.Event),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
 
         BagianJudul("Simpanan")

@@ -103,10 +103,12 @@ class MarkdownRingkasTest {
         val b = MarkdownRingkas.blok(berkas("docs/PERMISSIONS.md"))
         val t = b.filterIsInstance<Blok.Tabel>().single()
         assertEquals(listOf("Izin", "Kapan diminta", "Alasan", "Bila ditolak"), t.judul)
-        // Enam baris: lokasi, notifikasi, boot, foreground service, getar, akses DND.
+        // Tujuh baris: lokasi, notifikasi, boot, foreground service, getar, akses DND, dan
+        // Internet (murottal Yasin — satu-satunya lalu lintas jaringan, dijuga pula oleh
+        // `OfflineManifestTest.internet_hanya_untuk_murottal_di_paket_audio`).
         // `WAKE_LOCK` dulu ada di sini padahal tak pernah dipakai kode aplikasi sendiri —
         // lihat `PemakaianIzinTest` dan `docs/PERMISSIONS.md`.
-        assertEquals(6, t.baris.size)
+        assertEquals(7, t.baris.size)
         assertTrue("ada baris tabel yang tidak sepanjang kepalanya",
             t.baris.all { it.size == t.judul.size })
         assertTrue("izin lokasi tidak menyebut kiblat pada alasannya",

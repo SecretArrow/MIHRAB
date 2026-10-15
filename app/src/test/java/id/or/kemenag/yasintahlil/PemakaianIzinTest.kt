@@ -53,6 +53,9 @@ class PemakaianIzinTest {
         "FOREGROUND_SERVICE_MEDIA_PLAYBACK" to listOf("FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK"),
         "VIBRATE" to listOf("Vibrator::class.java"),
         "ACCESS_NOTIFICATION_POLICY" to listOf("NOTIFICATION_POLICY_ACCESS_SETTINGS"),
+        // INTERNET dipakai murottal Yasin (streaming per ayat); penandanya domain sumber audionya
+        // yang hanya muncul di core/audio — dijaga pula oleh OfflineManifestTest.
+        "INTERNET" to listOf("everyayah.com"),
     )
 
     private fun dideklarasikan(): Set<String> =

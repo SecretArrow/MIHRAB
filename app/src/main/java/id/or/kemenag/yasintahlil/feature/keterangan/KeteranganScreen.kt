@@ -356,8 +356,10 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                         "dipilih di layar ini — keempatnya masukan perhitungan jadwalnya. Mazhab " +
                         "Asar dan koreksi menit per waktunya terpusat di tab Pengaturan (bagian " +
                         "\"Jadwal & pengingat\") bersama seluruh pengaturan lain: satu pengaturan, " +
-                        "satu rumah. Saklar \"Ikuti perubahan lokasi\" menghitung ulang jadwal " +
-                        "otomatis saat Anda berpindah tempat.",
+                        "satu rumah. Pengingat imsak — beberapa menit sebelum Subuh — juga " +
+                        "dinyalakan dari sana; menitnya dihitung mundur dari jadwal Subuh. Saklar " +
+                        "\"Ikuti perubahan lokasi\" menghitung ulang jadwal otomatis saat Anda " +
+                        "berpindah tempat.",
                 ),
             )
         }
