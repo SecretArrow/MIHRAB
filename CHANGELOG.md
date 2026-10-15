@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-10-15
+
 ### Diubah
 - **Tahlil kini bersambung seperti Surat Yasin.** Seluruh bagian mengalir dalam satu daftar gulir
   panjang — tombol "Sebelumnya/Berikutnya", bilah kemajuan, dan panel "Semua bagian" dibubarkan.
@@ -24,6 +26,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Tata cara sholat bersambung.** Langkah-langkahnya tersusun berurutan pada satu halaman —
   tombol "Sebelumnya/Berikutnya/Ulangi" dan bilah kemajuannya dibubarkan; penanda "Langkah N",
   ilustrasi empat tampak, dan tanda "sudah dipraktikkan" tetap utuh.
+
+**Rilis otomatis** dari commit `cce0b2a0af21bbf2274787b29b319cec3b922a0f`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.8.0`.
 
 ## [1.7.0] - 2026-10-15
 
