@@ -120,7 +120,13 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                     "${Routes.DZIKIR}/{id}",
                     arguments = listOf(navArgument("id") { type = NavType.StringType }),
                 ) {
-                    DzikirGroupScreen(it.arguments?.getString("id").orEmpty()) { r -> nav.navigate(r) }
+                    // `go` diberi nama: parameternya didahului `vm` bawaan, sehingga lambda ekor
+                    // tanpa nama justru menempel pada `vm` — berbeda dari SholatDetailScreen yang
+                    // memang berakhir pada `go`.
+                    DzikirGroupScreen(
+                        id = it.arguments?.getString("id").orEmpty(),
+                        go = { r -> nav.navigate(r) },
+                    )
                 }
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }

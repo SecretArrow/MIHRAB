@@ -18,6 +18,7 @@ import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
