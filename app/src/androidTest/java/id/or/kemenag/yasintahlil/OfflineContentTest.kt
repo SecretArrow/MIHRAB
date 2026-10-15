@@ -7,7 +7,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,8 +14,10 @@ import org.junit.runner.RunWith
 /**
  * plan.txt: "Pengujian mode offline."
  *
- * Seluruh konten inti harus terbaca dari assets perangkat — tanpa jaringan sama sekali —
- * dan aplikasi tidak boleh mendeklarasikan izin INTERNET (janji 100% offline).
+ * Seluruh konten inti harus terbaca dari assets perangkat — tanpa jaringan sama sekali. Izin
+ * INTERNET kini SAH dideklarasikan untuk satu hal: murottal Surat Yasin yang dialirkan per ayat
+ * saat pengguna sendiri menekan putar — janji "jaringan hanya untuk murottal, pemakaiannya
+ * terkunci di paket core/audio" dijaga di sisi sumber oleh `OfflineManifestTest`.
  */
 @RunWith(AndroidJUnit4::class)
 class OfflineContentTest {
@@ -137,14 +138,20 @@ class OfflineContentTest {
     }
 
     @Test
-    fun aplikasiTidakMemintaIzinInternet() {
+    fun internetDideklarasikanUntukMurottal() {
         @Suppress("DEPRECATION")
         val info = ctx.packageManager.getPackageInfo(ctx.packageName, PackageManager.GET_PERMISSIONS)
         val perms = info.requestedPermissions?.toList().orEmpty()
-        assertFalse("INTERNET diminta padahal aplikasi offline", perms.contains(Manifest.permission.INTERNET))
+        // INTERNET memang harus ada di manifes gabungan yang terpasang: tanpanya streaming
+        // murottal Yasin gagal senyap di perangkat sungguhan. Batasnya — jaringan HANYA untuk
+        // itu, pemakaiannya terkunci di paket core/audio — tidak dapat dibuktikan dari manifes
+        // gabungan; itu dijaga uji sumber `OfflineManifestTest.internet_hanya_untuk_murottal_di_paket_audio`.
+        assertTrue(
+            "INTERNET tidak dideklarasikan — murottal Yasin tidak akan dapat dialirkan",
+            perms.contains(Manifest.permission.INTERNET),
+        )
         // ACCESS_NETWORK_STATE sengaja tidak diuji di sini: izin itu disuntikkan manifes
         // pustaka androidx.work (bukan dideklarasikan aplikasi), sehingga manifes gabungan
-        // selalu memuatnya walau aplikasi sendiri tak pernah menyentuh jaringan. Yang penting
-        // adalah tidak adanya INTERNET — dan itu diperiksa di atas serta di OfflineManifestTest.
+        // selalu memuatnya walau aplikasi sendiri tak pernah memeriksa status jaringan.
     }
 }

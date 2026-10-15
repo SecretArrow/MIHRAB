@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -84,8 +85,29 @@ class NavSmokeTest {
     @get:Rule
     val rantai: RuleChain = RuleChain.outerRule(izinNotifikasi).around(rule)
 
+    /**
+     * Lewati layar pengantar bila ia tampil. Pengantar muncul SEKALI pada pemasangan baru —
+     * dan emulator CI selalu memasang ulang dari nol — lalu menyembunyikan bilah bawah sampai
+     * tombol "Mulai" ditekan. Uji navigasi ini bukan tempat menguji pengantarnya; ia hanya
+     * perlu memastikan pengantar tidak menghalangi navigasi. Pada pemasangan lama (penanda
+     * `Store.ONBOARDING_SELESAI` sudah terpasang) tombol "Mulai" tidak ada dan lewatannya
+     * diam saja.
+     */
+    private fun lewatiPengantar() {
+        // Tunggu salah satu penanda selesai dirender: tombol "Mulai" (pengantar tampil) atau
+        // tab Ibadah (bilah bawah sudah ada — pengantar sudah pernah diselesaikan). Menunggu
+        // salah satunya menjaga uji ini dari balapan peluncuran pertama.
+        rule.waitUntil(timeoutMillis = 5_000) {
+            rule.onAllNodesWithText("Mulai").fetchSemanticsNodes().isNotEmpty() ||
+                rule.onAllNodesWithText(NamaLayar.IBADAH).fetchSemanticsNodes().isNotEmpty()
+        }
+        val mulai = rule.onAllNodesWithText("Mulai")
+        if (mulai.fetchSemanticsNodes().isNotEmpty()) mulai[0].performClick()
+    }
+
     @Test
     fun bottomNavigation_switchesBetweenMainScreens() {
+        lewatiPengantar()
         // Beranda tampil lebih dulu.
         rule.onNodeWithText("Assalamu'alaikum").assertIsDisplayed()
 
@@ -105,6 +127,7 @@ class NavSmokeTest {
 
     @Test
     fun opensYasinFromIbadahMenu() {
+        lewatiPengantar()
         rule.onNodeWithText(NamaLayar.IBADAH).performClick()
         rule.onNodeWithText(NamaLayar.YASIN).performClick()
         // Penanda khas layar Yasin.
