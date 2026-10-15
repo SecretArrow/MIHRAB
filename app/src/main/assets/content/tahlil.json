@@ -1,7 +1,7 @@
 {
  "modul": "tahlil",
  "sumber_url": "https://quran.nu.or.id/tahlil",
- "catatan_tradisi": "Susunan tahlil dapat berbeda menurut tradisi dan rujukan. Susunan utama aplikasi mengikuti NU Online; selain itu tersedia susunan ringkas lazim Indonesia. Keduanya bukan satu-satunya yang benar.",
+ "catatan_tradisi": "Susunan tahlil dapat berbeda menurut tradisi dan rujukan. Susunan utama aplikasi mengikuti NU Online; selain itu tersedia susunan ringkas yang lazim di Indonesia. Keduanya bukan satu-satunya yang benar.",
  "susunan": [
   {
    "id": "nu_online_ringkas",
