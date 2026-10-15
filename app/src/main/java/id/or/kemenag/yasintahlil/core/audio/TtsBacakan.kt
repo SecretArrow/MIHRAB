@@ -177,9 +177,16 @@ object TtsBacakan {
                 sedangBaca = false
             }
 
-            // onError(String) yang usang sengaja tidak ditimpa: SDK modern memberinya
-            // implementasi bawaan yang berujung ke onError(String, Int) di bawah — menimbanya
-            // sendiri justru memunculkan peringatan override-usang pada kompilasi -Werror.
+            // onError(String) adalah anggota abstrak yang usang — wajib ditimpa (kelas anonim
+            // ini tidak sah tanpanya), dan menimbanya justru memunculkan peringatan "menimpa
+            // anggota usang" pada kompilasi -Werror. Penawar yang dianjurkan kompiler:
+            // menandai penimbanya sebagai usang juga — galat sesungguhnya tetap ditangani
+            // onError(String, Int) di bawah.
+            @Deprecated("anggota lawas; galat sesungguhnya ditangani onError(String, Int)")
+            override fun onError(utteranceId: String?) {
+                sedangBaca = false
+            }
+
             override fun onError(utteranceId: String?, kodeGalat: Int) {
                 sedangBaca = false
                 galatTts = true
