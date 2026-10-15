@@ -106,7 +106,7 @@ class LangkahSholatTest {
         val awal = Postures.of("tasyahud_awal") ?: error("tasyahud awal tanpa posisi")
         val akhir = Postures.of("tasyahud_akhir") ?: error("tasyahud akhir tanpa posisi")
         assertTrue("kedua tasyahud memakai ilustrasi posisi yang sama",
-            awal.gambar != akhir.gambar)
+            awal.varian.single().tampak != akhir.varian.single().tampak)
         assertTrue("duduk awal bukan iftirasy: ${awal.label}", awal.label.contains("iftirasy"))
         assertTrue("duduk akhir mengklaim satu bentuk saja: ${akhir.label}",
             akhir.label == "Duduk akhir")
@@ -114,7 +114,7 @@ class LangkahSholatTest {
             akhir.deskripsi.contains("tawarruk") && akhir.deskripsi.contains("iftirasy"))
         // Sholawat Ibrahimiyah dibaca pada duduk akhir, bukan duduk iftirasy.
         assertTrue("sholawat tidak dipetakan ke duduk akhir",
-            Postures.of("sholawat_ibrahimiyah")?.gambar == akhir.gambar)
+            Postures.of("sholawat_ibrahimiyah")?.varian?.single()?.tampak == akhir.varian.single().tampak)
     }
 
     /** Mode ringkas harus tetap sah untuk sholat dua rakaat: tanpa langkah yang bersyarat rakaat. */

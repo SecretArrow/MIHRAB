@@ -5,6 +5,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Ilustrasi gerakan sholat dibuat ulang sebagai kartun empat tampak.** Tujuh skema garis
+  bergaya diagram (`posisi_berdiri` … `posisi_salam`) diganti 44 kartun figuratif
+  (`posisi_<gerakan>_<tampak>.xml`) — tiap gerakan terlihat dari depan, kanan, kiri, dan
+  belakang, dibangun dari satu kerangka 3D sehingga keempat sudut pandangnya selalu sejalan.
+  Gaya mengikuti palet tema: jubah gading, kopiah zamrud, garis luar zamrud gelap; tanpa
+  satu pun teks di dalam gambar. Cakupannya kini juga lebih lengkap: berdiri tegak, bersedekap,
+  dan i'tidal punya ilustrasinya sendiri (dahulu ketiganya berbagi skema berdiri), tasyahud
+  awal menampilkan telunjuk yang diacungkan, dan salam menampilkan dua varian — menoleh ke
+  kanan lalu ke kiri. Rincian tata cara tiap langkah kini menampilkan deret empat tampak
+  di atas label dan deskripsi posisinya.
+
 ## [1.6.0] - 2026-10-15
 
 ### Diubah

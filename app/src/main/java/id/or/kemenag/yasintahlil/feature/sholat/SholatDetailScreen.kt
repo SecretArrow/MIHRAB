@@ -1,6 +1,7 @@
 package id.or.kemenag.yasintahlil.feature.sholat
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -218,20 +220,51 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
             Text(b.judul, style = MaterialTheme.typography.titleMedium)
             if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
-            // Ilustrasi skematik posisi tubuh + deskripsi (plan: tiap gerakan punya visual yang sopan).
+            // Ilustrasi kartun posisi tubuh — empat tampak (depan, kanan, kiri, belakang) per
+            // gerakan, tanpa teks di dalam gambar; salam menampilkan dua varian tolehannya.
+            // Sebelumnya satu skema garis 64dp yang di-tint; permintaan pengguna (2026-10-15):
+            // kartun lengkap, tiap gerakan dari 4 arah.
             Postures.of(b.id)?.let { p ->
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                    Icon(
-                        painter = painterResource(p.gambar),
-                        contentDescription = "Ilustrasi posisi: ${p.label}",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(64.dp),
-                    )
-                    Column(Modifier.padding(start = 8.dp)) {
-                        Text(p.label, style = MaterialTheme.typography.titleSmall)
-                        Text(p.deskripsi, style = MaterialTheme.typography.bodySmall,
-                            maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Column(Modifier.padding(top = 4.dp)) {
+                    p.varian.forEach { v ->
+                        if (p.varian.size > 1) {
+                            Text(v.label, style = MaterialTheme.typography.titleSmall)
+                        }
+                        val dasar = "Ilustrasi posisi: ${p.label}" +
+                            if (p.varian.size > 1) ", ${v.label}" else ""
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            Image(
+                                painter = painterResource(v.tampak.depan),
+                                contentDescription = "$dasar, tampak depan",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.weight(1f).aspectRatio(1f),
+                            )
+                            Image(
+                                painter = painterResource(v.tampak.kanan),
+                                contentDescription = "$dasar, tampak kanan",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.weight(1f).aspectRatio(1f),
+                            )
+                            Image(
+                                painter = painterResource(v.tampak.kiri),
+                                contentDescription = "$dasar, tampak kiri",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.weight(1f).aspectRatio(1f),
+                            )
+                            Image(
+                                painter = painterResource(v.tampak.belakang),
+                                contentDescription = "$dasar, tampak belakang",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.weight(1f).aspectRatio(1f),
+                            )
+                        }
                     }
+                    Text(p.label, style = MaterialTheme.typography.titleSmall)
+                    Text(p.deskripsi, style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
             }
             // Rujukannya `<id sholat>:<id bacaan>`: langkah yang sama (mis. rukuk) muncul di banyak
