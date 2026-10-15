@@ -164,9 +164,10 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 }
                 if (jamaah) {
                     Column(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        if (s.showArab && arab.isNotBlank()) {
-                            ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
-                        }
+                        // Satu baris dengan syaratnya — pola yang dibaca penjaga showArab
+                        // (`ReadingDisplayPrefsTest` memindai teks sebelum pemanggilan pada
+                        // baris yang sama, bukan baris-baris di atasnya).
+                        if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
                         if (s.showTrans && trans.isNotBlank()) {
                             Text(trans, style = MaterialTheme.typography.headlineSmall)
                         }

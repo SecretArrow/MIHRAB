@@ -140,7 +140,14 @@ fun SholatScreen(go: (String) -> Unit) {
                     s.nama,
                     Icons.Filled.SelfImprovement,
                     onClick = { go("${Routes.SHOLAT_DETAIL}/${s.id}") },
-                    keterangan = daftarKeterangan(s.rakaat, s.waktu),
+                    // Tujuan tetap dibawa barisnya: tanpa label, teks tujuan tak berbeda dari
+                    // keterangan bebas — pembaca tak tahu sedang membaca tujuan sholat itu,
+                    // bukan catatan lain (aturan yang sama dengan lencana KartuEntri yang lama).
+                    keterangan = listOfNotNull(
+                        s.rakaat.takeIf { it.isNotBlank() },
+                        s.waktu.takeIf { it.isNotBlank() },
+                        s.tujuan.takeIf { it.isNotBlank() }?.let { "Tujuan: $it" },
+                    ).joinToString(" • ").ifBlank { null },
                 )
             }
         }

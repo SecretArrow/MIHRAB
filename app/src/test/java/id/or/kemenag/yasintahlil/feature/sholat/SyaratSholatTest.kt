@@ -148,15 +148,17 @@ class SyaratSholatTest {
     /**
      * Syarat harus terbaca **sebelum** langkah pertama. Daftar langkah dibaca berurutan, jadi
      * syarat yang diletakkan setelah takbiratul ihram tidak lagi berguna bagi pembaca yang
-     * mengikuti tombol "Berikutnya".
+     * mengikuti urutannya.
      */
     @Test
     fun syaratTampilSebelumLangkahPertama() {
         val s = layar()
         val syarat = s.indexOf("Text(\"Sebelum sholat\"")
-        val langkah = s.indexOf("val b = steps[")
+        // Langkah kini digambar lewat perulangan bersambung (tanpa stepper next/prev) —
+        // perulangan itulah titik mulai langkah pertamanya.
+        val langkah = s.indexOf("steps.forEachIndexed {")
         assertTrue("judul 'Sebelum sholat' tidak ada di layar detail", syarat >= 0)
-        assertTrue("navigator langkah tidak ditemukan", langkah >= 0)
+        assertTrue("penggambar langkah tidak ditemukan", langkah >= 0)
         assertTrue("syarat diletakkan setelah langkah pertama", syarat < langkah)
         // Tombol pembuka syarat harus benar-benar mengubah keadaan, bukan tombol hiasan.
         assertTrue("tombol syarat tidak mengubah apa pun",
