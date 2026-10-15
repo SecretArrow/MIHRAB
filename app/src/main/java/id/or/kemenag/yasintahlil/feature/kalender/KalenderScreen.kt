@@ -195,7 +195,10 @@ private fun KisiBulan(
                     if (s == null) {
                         Spacer(Modifier.weight(1f))
                     } else {
-                        SelBulan(s, s.tanggal == hariIni, s.tanggal.toString() == terpilih, pilih)
+                        // `weight` milik RowScope sehingga hanya bisa dipanggil di sini — di dalam
+                        // SelBulan ia tak beresolusi. Ukurannya karena itu dioper sebagai modifier.
+                        SelBulan(s, s.tanggal == hariIni, s.tanggal.toString() == terpilih,
+                            Modifier.weight(1f), pilih)
                     }
                 }
                 if (baris.size < 7) repeat(7 - baris.size) { Spacer(Modifier.weight(1f)) }
@@ -217,6 +220,7 @@ private fun SelBulan(
     sel: SelKalendar,
     hariIni: Boolean,
     terpilih: Boolean,
+    modifier: Modifier,
     pilih: (LocalDate) -> Unit,
 ) {
     val latar = if (hariIni) {
@@ -225,8 +229,7 @@ private fun SelBulan(
         MaterialTheme.colorScheme.surface
     }
     Column(
-        Modifier
-            .weight(1f)
+        modifier
             .height(58.dp)
             .background(latar, MaterialTheme.shapes.small)
             .then(
