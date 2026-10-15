@@ -15,6 +15,11 @@ import java.io.File
  * ulang) dan seluruh keadaan hilang saat rotasi. Uji ini menjaga agar keadaan beranda tetap berada
  * di [HomeViewModel] sebagai aliran, bukan kembali ke `remember` di layar.
  *
+ * Beranda kini juga ringkas: kartu saklar pengingat dan ringkasan favorit/riwayat sudah pulang ke
+ * rumahnya masing-masing (saklar ke tab Pengaturan — dijaga `PengaturanTerpusatTest`; angka
+ * simpanan ke layar Favorit & Riwayat), sehingga ViewModel-nya pun tak lagi membawa keadaan yang
+ * tak dipakai layarnya sendiri.
+ *
  * `HomeViewModel` tidak dapat dijalankan di JVM (butuh `Context`/DataStore), jadi invariannya
  * diperiksa dari sumbernya — sama seperti `JadwalLokasiTest`.
  */
@@ -38,11 +43,6 @@ class BerandaViewModelTest {
         assertTrue("keadaan beranda bukan StateFlow", s.contains("StateFlow<HomeUiState>"))
         assertTrue("preferensi Store tidak dibaca sebagai aliran",
             s.contains("store.flow("))
-        // Ringkasan favorit/riwayat harus ikut aliran Room, bukan dibaca sekali. Riwayatnya
-        // dihitung lewat `jumlahRiwayat()` — `COUNT(*)`, bukan ukuran daftar yang sudah dipotong
-        // jatah bacanya; lihat `BatasRiwayatSatuTempatTest`.
-        assertTrue("favorit tidak dibaca sebagai aliran", s.contains("favorites()"))
-        assertTrue("riwayat tidak dihitung sebagai aliran", s.contains("jumlahRiwayat()"))
     }
 
     /** Hitung mundur tetap hidup dari detak di ViewModel, bukan `remember` di layar. */
@@ -53,13 +53,19 @@ class BerandaViewModelTest {
         assertTrue("ViewModel tidak menyimpan waktu berjalan", s.contains("nowMillis"))
     }
 
-    /** Saklar pengingat harus menjadwalkan ulang pekerja latar — dulu dilakukan di layar. */
+    /**
+     * Saklar pengingat sudah pulang ke tab Pengaturan: beranda tak lagi membawanya, dan
+     * ViewModel-nya tak lagi menyimpan pengaturan yang tak bisa diubah dari layarnya. Penjadwalan
+     * ulang saat saklar itu ditekan dijaga di rumah barunya (`PengaturanTerpusatTest` +
+     * `PengingatAdzanTest`).
+     */
     @Test
-    fun pengingatDijadwalkanUlangDariViewModel() {
+    fun berandaTidakLagiMembawaPengaturanPengingat() {
         val s = vm()
-        assertTrue("ViewModel tidak menulis Store.NOTIF", s.contains("store.set(Store.NOTIF"))
-        assertTrue("ViewModel tidak menjadwalkan ulang pengingat",
-            s.contains("PrayerScheduler.scheduleAll"))
+        assertFalse("ViewModel masih menulis Store.NOTIF — kendalinya milik Pengaturan",
+            s.contains("store.set(Store.NOTIF"))
+        assertFalse("ViewModel masih membawa penjadwalan pengingat",
+            s.contains("PrayerScheduler"))
     }
 
     @Test
@@ -68,7 +74,6 @@ class BerandaViewModelTest {
         assertTrue("beranda tidak mengambil ViewModel", s.contains("hiltViewModel()"))
         assertTrue("beranda tidak mengumpulkan keadaan ViewModel",
             s.contains("vm.state.collectAsStateWithLifecycle()"))
-        assertTrue("saklar pengingat tidak memanggil ViewModel", s.contains("vm.setNotif("))
     }
 
     /** Tak ada lagi keadaan Store yang disimpan di layar dengan `remember`. */

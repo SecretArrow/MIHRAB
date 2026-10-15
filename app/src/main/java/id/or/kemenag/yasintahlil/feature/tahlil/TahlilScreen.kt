@@ -31,7 +31,8 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * sampai sunnah.com) yang dahulu menumpuk sebagai kartu teks di atasnya tinggal di layar
  * keterangan — dibuka lewat ikon Info pada baris judulnya. Penghitung ulangannya pun disembunyikan
  * dari layar; ia opt-in lewat "Penghitung ulangan" di tab Pengaturan, sehingga tampilan tetap
- * bersih bagi yang membaca tanpa menghitung.
+ * bersih bagi yang membaca tanpa menghitung. Tombol penuh "Tandai selesai" yang mengulang
+ * tugas tombol "Berikutnya" juga sudah dibubarkan — cukup satu jalan menuju bagian berikutnya.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +92,7 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
             }
         }
         LinearProgressIndicator(progress = { ((s.idx + 1).toFloat() / s.items.size).coerceIn(0f, 1f) },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
+            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp))
         // Navigasi antarbagian: tombol langkah mengapit chip mode, semuanya pada baris yang dapat
         // digulir supaya tak pernah meluber di layar sempit.
         BarisChip(Modifier.padding(bottom = 4.dp)) {
@@ -104,16 +105,11 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
         }
         // Penghitung hanya tampil bila penggunanya menyalakannya di Pengaturan. Tanpa penghitung,
         // alur bacannya cukup "Berikutnya" setelah selesai — hitungan yang lama tetap tersimpan
-        // dan tombol "Tandai selesai" di bawah tetap mengikuti hitungan itu.
+        // dan penanda "✓ Selesai" di bawah kartu tetap mengikuti hitungan itu.
         if (tampilPenghitung) CounterRow(s.count, cur.ulangi,
             onPlus = { vm.setCount(s.count + 1) },
             onMinus = { vm.setCount(s.count - 1) },
             onReset = { vm.setCount(0) })
-        if (selesai) Button(
-            onClick = { vm.next() },
-            enabled = s.idx < s.items.size - 1,
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-        ) { Text("✓ Tandai selesai → ${NamaAntarmuka.BERIKUTNYA}") }
         // Dua mode berarti bacaan dibaca dari jauh — "Jamaah" (dibaca bersama) dan "Layar penuh" —
         // dan keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
         // Jenazah, Iqomah, Yasin, dan Dzikir. Sebelumnya hanya mode jamaah yang menaikkannya,

@@ -215,9 +215,9 @@ class PengingatAdzanTest {
     fun tiapTempatSaklarMemakaiNamaDanKunciYangBenar() {
         data class Harapan(val ada: List<String>, val tidakAda: List<String>)
         val harapan = mapOf(
-            "feature/home/HomeScreen.kt" to Harapan(
-                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU", "vm.setNotif"),
-                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA")),
+            // Beranda tidak lagi membawa saklar ini: seluruh pengaturan tinggal di tab Pengaturan
+            // ("segala sesuatu pengaturan tempatnya jadikan satu saja di Pengaturan") — dijaga
+            // `PengaturanTerpusatTest.saklarPengaturanTidakKembaliKeBeranda`.
             "feature/settings/SettingsScreen.kt" to Harapan(
                 listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU", "Store.NOTIF"),
                 listOf("PengingatAdzan.NAMA_PENGINGAT_DOA")),

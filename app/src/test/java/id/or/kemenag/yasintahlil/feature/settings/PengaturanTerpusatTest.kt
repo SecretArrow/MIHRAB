@@ -20,8 +20,10 @@ import java.io.File
  * - **Penghitung ulangan** (Tahlil dan Dzikir) — bukan dipindah begitu saja, sebab menghitung
  *   tasbih memang terjadi di layar bakunya; ia jadi **opt-in**: mati secara bawaan dan
  *   dinyalakan dari sini (`Store.SHOW_COUNTER`), sehingga layar bacaan bersih secara bawaan.
+ * - **Saklar pengingat waktu sholat** — dahulu kartu saklar di beranda; beranda kini murni
+ *   dasbor, dan saklarnya hidup di sini bersama kendali lainnya.
  *
- * Uji ini menjaga agar ketiganya tidak kembali berpencar, dan agar tidak ada tombol teks
+ * Uji ini menjaga agar keempatnya tidak kembali berpencar, dan agar tidak ada tombol teks
  * "−"/"+" baru yang lahir di layar lain.
  */
 class PengaturanTerpusatTest {
@@ -119,5 +121,28 @@ class PengaturanTerpusatTest {
             layar.contains("KartuKeterangan"))
         assertTrue("layar Tahlil kehilangan pintu keterangannya",
             layar.contains("Routes.keterangan(\"tahlil\")"))
+    }
+
+    /**
+     * Saklar pengingat waktu sholat tidak boleh kembali ke beranda: beranda adalah dasbor, bukan
+     * lemari pengaturan — kartu saklar di sana mengulangi tab Pengaturan dan memakan tempat yang
+     * lebih berguna. Pemusatan ini tidak boleh berubah menjadi penghilangan: saklarnya harus tetap
+     * hidup di Pengaturan beserta penjadwalan ulangnya.
+     */
+    @Test
+    fun saklarPengaturanTidakKembaliKeBeranda() {
+        val home = kode("feature/home/HomeScreen.kt")
+        assertFalse("beranda kembali membawa saklar pengingat waktu sholat",
+            home.contains("Switch(") || home.contains("setNotif"))
+        assertFalse("ViewModel beranda kembali membawa penulisan preferensi pengingat",
+            kode("feature/home/HomeViewModel.kt").contains("store.set(Store.NOTIF"))
+
+        val pengaturan = kode("feature/settings/SettingsScreen.kt")
+        assertTrue("Pengaturan kehilangan saklar pengingat waktu sholat",
+            pengaturan.contains("PengingatAdzan.NAMA_PENGINGAT_WAKTU"))
+        assertTrue("saklar pengingat di Pengaturan tidak lagi menyimpan ke Store.NOTIF",
+            pengaturan.contains("store.set(Store.NOTIF"))
+        assertTrue("saklar pengingat di Pengaturan tidak lagi menjadwalkan ulang pengingatnya",
+            pengaturan.contains("PrayerScheduler.scheduleAll"))
     }
 }

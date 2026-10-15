@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,9 +22,13 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
- * Menu Alat: perangkat waktu sholat dan penunju ibadah, dikelompokkan sebagai "waktu & arah"
- * dan "temuan". Bentuk barisnya sama dengan menu Ibadah ([MenuBaris]) — dua daftar panjang yang
- * serupa bentuknya lebih mudah dipindai daripada tumpukan tombol terisi.
+ * Menu Alat: perangkat waktu sholat dan penunju ibadah — jadwal, pengingat adzan, iqomah, dan
+ * kompas kiblat — dalam satu kelompok "Waktu & arah". Bentuk barisnya sama dengan menu Ibadah
+ * ([MenuBaris]) supaya kedua daftar itu terbaca sebagai satu keluarga bentuk.
+ *
+ * Bagian "Temuan" yang dahulu hanya memuat satu baris Pencarian sudah dibubarkan: pintu itu
+ * sudah ada di menu Ibadah (bagian Simpanan) dan di ikon Pencarian pada kepala beranda, dan
+ * bagian bersetifikat satu isi hanya memakan tempat.
  */
 @Composable
 fun AlatScreen(go: (String) -> Unit) {
@@ -46,11 +49,6 @@ fun AlatScreen(go: (String) -> Unit) {
             Triple(Routes.ADZAN, NamaLayar.ADZAN, Icons.Filled.NotificationsActive),
             Triple(Routes.IQOMAH, NamaLayar.IQOMAH, Icons.Filled.Timer),
             Triple(Routes.KIBLAT, NamaLayar.KIBLAT, Icons.Filled.Explore),
-        ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
-
-        BagianJudul("Temuan")
-        listOf(
-            Triple(Routes.SEARCH, NamaLayar.SEARCH, Icons.Filled.Search),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
     }
 }

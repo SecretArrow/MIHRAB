@@ -24,6 +24,11 @@ import org.junit.Test
  * Angka-angkanya kini tinggal di [BatasRiwayat], jumlahnya dihitung
  * [id.or.kemenag.yasintahlil.core.domain.repository.UserDataRepository.jumlahRiwayat], dan uji ini
  * menjaga keduanya: hubungan antarangka batas, dan tak ada layar yang mengejanya kembali.
+ *
+ * Beranda tidak lagi menghitung angka riwayat sama sekali — kartu ringkasan simpanannya sudah
+ * dibubarkan karena angka itu mengulangi layar Favorit & Riwayat. Penjaga beranda karena itu
+ * berbalik arah: ia kini menolak **penghitungan apa pun** di sana, bukan sekadar memilih cara
+ * menghitungnya.
  */
 class BatasRiwayatSatuTempatTest {
 
@@ -57,14 +62,21 @@ class BatasRiwayatSatuTempatTest {
 
     // ---- Jumlah riwayat bukan ukuran daftar yang dipotong ---------------------------------------
 
+    /**
+     * Beranda tidak lagi menghitung jumlah riwayat/favorit apa pun: kartu ringkasannya sudah
+     * dibubarkan — angka itu tinggal di layar Favorit & Riwayat yang memang menampilkan
+     * daftarnya. Yang dijaga di sini: bila kelak beranda kembali menampilkan angka, ia tidak
+     * boleh menoleh ke daftar yang sudah dipotong jatah bacanya.
+     */
     @Test
-    fun berandaMenghitungRiwayatDariJumlahBukanDariDaftarTerpotong() {
+    fun berandaTidakMenyimpulkanRiwayatDariDaftarTerpotong() {
         val s = layar(homeVm)
-        assertTrue("beranda tidak memakai jumlahRiwayat() — \"Riwayat: N\" kembali disimpulkan dari " +
-            "daftar yang sudah dipotong jatah bacanya", s.contains("jumlahRiwayat()"))
-        assertFalse("beranda masih membaca daftar riwayat terbaru untuk menghitung jumlahnya, " +
-            "padahal jumlahnya ada sendiri (jumlahRiwayat) dan tak terbatas jatah baca",
+        assertFalse("beranda kembali membaca daftar riwayat terbaru — batas bacanya membuat " +
+            "hitungan apa pun yang lahir dari sana berhenti di batas itu",
             s.contains("recentHistory("))
+        assertFalse("beranda kembali menghitung sendiri jumlah favorit/riwayat — angka itu " +
+            "tinggal di layar Favorit & Riwayat",
+            s.contains("jumlahRiwayat(") || s.contains("favorites()"))
     }
 
     @Test

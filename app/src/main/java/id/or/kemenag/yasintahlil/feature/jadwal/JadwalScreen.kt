@@ -52,18 +52,23 @@ fun JadwalScreen(go: (String) -> Unit = {}, vm: JadwalViewModel = hiltViewModel(
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("jadwal")) }
         }
-        Text(
-            "Metode: ${s.method.label} • ${JadwalHariIni.metodeRingkas(s.method)} • Asar ${JadwalHariIni.asarLabelFaktor(s.asarHanafi)}",
-            style = MaterialTheme.typography.labelMedium,
-        )
 
-        // Metode perhitungan
+        // Metode perhitungan. Sudut Fajr/Isya tiap pilihan ditulis sebagai keterangan kecil di
+        // bawah namanya — informasi itu justru berguna saat memilih, bukan sebagai baris label
+        // di atas yang mengulang apa yang sudah tertulis di tombol dan chip Asar di bawah.
         OutlinedButton(onClick = { methodDrop = !methodDrop; tzDrop = false; drop = false },
             modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
             Text("Metode: ${s.method.label} ▾")
         }
         if (methodDrop) PrayerCalc.Method.entries.forEach { m ->
-            TextButton(onClick = { vm.setMethod(m); methodDrop = false }) { Text(m.label) }
+            TextButton(onClick = { vm.setMethod(m); methodDrop = false }) {
+                Column(Modifier.padding(vertical = 2.dp)) {
+                    Text(m.label, style = MaterialTheme.typography.bodyLarge)
+                    Text(JadwalHariIni.metodeRingkas(m),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
 
         // Kota
@@ -103,11 +108,9 @@ fun JadwalScreen(go: (String) -> Unit = {}, vm: JadwalViewModel = hiltViewModel(
             })
         }
         Text(
-            if (s.followGps) "Aktif: jadwal dihitung ulang saat Anda berpindah tempat " +
-                "(pergeseran ≥ ${(JadwalViewModel.AMBANG_PINDAH_METER / 1000).toInt()} km), " +
-                "tanpa perlu menekan tombol."
-            else "Nonaktif: jadwal hanya diperbarui saat Anda menekan \"Pakai lokasi GPS\" " +
-                "atau memilih kota secara manual.",
+            if (s.followGps) "Jadwal dihitung ulang saat Anda berpindah ≥ " +
+                "${(JadwalViewModel.AMBANG_PINDAH_METER / 1000).toInt()} km."
+            else "Jadwal diperbarui saat tombol GPS ditekan atau kota dipilih.",
             style = MaterialTheme.typography.labelSmall,
         )
 

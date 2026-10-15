@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BagianJudul(teks: String, modifier: Modifier = Modifier) {
     Row(
-        modifier.padding(top = 20.dp, bottom = 10.dp),
+        modifier.padding(top = 16.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -86,20 +86,21 @@ fun MenuTile(
         modifier = modifier,
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 12.dp, start = 6.dp, end = 6.dp),
+            Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 10.dp, start = 6.dp, end = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                Modifier.size(44.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                Modifier.size(40.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     ikon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(21.dp),
                 )
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 label,
                 style = MaterialTheme.typography.labelMedium,
@@ -114,7 +115,8 @@ fun MenuTile(
 /**
  * Baris menu navigasi: ikon dalam wadah bulat di kiri, label, panah di kanan. Dipakai menu
  * Ibadah dan Alat supaya kedua daftar panjang itu terbaca sebagai deretan tujuan yang sama
- * bentuknya — bukan tombol terisi yang berebut perhatian satu sama lain.
+ * bentuknya — bukan tombol terisi yang berebut perhatian satu sama lain. Barisnya ringkas:
+ * lima belas tujuan di kedua menu itu harus muat digulir tanpa terasa panjang.
  */
 @Composable
 fun MenuBaris(
@@ -132,23 +134,24 @@ fun MenuBaris(
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
-            Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Box(
-                Modifier.size(42.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                Modifier.size(34.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     ikon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(19.dp),
                 )
             }
             Text(
                 label,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -276,12 +279,12 @@ fun KartuEntri(
     aksi: @Composable RowScope.() -> Unit = {},
 ) {
     Card(
-        modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier.fillMaxWidth().padding(vertical = 3.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(14.dp)) {
             Text(judul, style = MaterialTheme.typography.titleMedium)
             if (lencana.isNotEmpty()) {
                 // Digulir mendatar, bukan dipaksa mempersempit: tiga lencana bertemu teks tujuan

@@ -218,15 +218,21 @@ class NamaLayarSatuTempatTest {
         assertTrue("$nama menamai layar dengan nama yang bukan miliknya: $tertukar", tertukar.isEmpty())
     }
 
-    /** Kartu "Aksi cepat" di beranda — kisi ubin `Triple(NamaLayar, Routes, ikon)`. */
+    /**
+     * Kartu "Aksi cepat" di beranda — kisi ubin `Triple(NamaLayar, Routes, ikon)`.
+     *
+     * Kisi ini kini ringkas: enam tujuan terbanyak dalam dua baris utuh. Tujuan lain tidak hilang
+     * — Pencarian punya ikonnya di kepala beranda, jadwal dibuka dengan mengetuk kartu waktu
+     * sholat, dan sisanya tinggal di menu Ibadah/Alat — tetapi ubin yang mengisi empat baris
+     * hanya mengulangi menu itu dan memakan tempat yang lebih berguna bagi bacaan.
+     */
     @Test
     fun kartuBerandaMemakaiNamaLayarYangBenar() {
         periksa(
             "HomeScreen.kt",
             pasangan("feature/home/HomeScreen.kt", """NamaLayar\.(\w+),\s*Routes\.(\w+),""")
                 .entries.associate { (konstanta, rute) -> rute to konstanta },
-            setOf("YASIN", "TAHLIL", "SHOLAT", "GHAIB", "ADZAN", "DOA_ADZAN", "IQOMAH",
-                "KIBLAT", "DZIKIR", "SEARCH", "FAVORIT"),
+            setOf("YASIN", "TAHLIL", "DZIKIR", "SHOLAT", "KIBLAT", "FAVORIT"),
         )
     }
 
@@ -250,7 +256,10 @@ class NamaLayarSatuTempatTest {
             "AlatScreen.kt",
             pasangan("feature/alat/AlatScreen.kt",
                 """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
-            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH", "SEARCH"),
+            // Pencarian tidak lagi diulang di sini: bagian "Temuan" yang hanya memuat satu
+            // baris sudah dibubarkan — pintunya tetap ada di menu Ibadah (bagian Simpanan)
+            // dan di ikon Pencarian pada kepala beranda.
+            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH"),
         )
         periksa(
             "SholatDetailScreen.kt",

@@ -5,6 +5,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Beranda diringkas jadi dasbor yang lega.** Kisi aksi cepat dipangkas dari sebelas ubin
+  (empat baris) menjadi enam tujuan terbanyak (dua baris); Pencarian mendapat ikonnya sendiri di
+  kepala beranda, kartu waktu sholat kini dapat diketuk untuk membuka jadwal lengkap, dan baris
+  metode hisab yang mengulangi layar Jadwal dihapus. Kartu saklar pengingat dan kartu ringkasan
+  favorit/riwayat dibubarkan — keduanya mengulangi tab Pengaturan dan layar Favorit & Riwayat.
+- **Menu Ibadah dan Alat lebih ringkas.** Tinggi baris menunya dirapatkan (ikon dan teks
+  proporsional), bagian "Temuan" di menu Alat yang hanya memuat satu baris Pencarian dihapus,
+  serta judul bagian dan kartu entri menyusut jaraknya.
+- **Layar Tahlil kehilangan satu tombol yang mengulang tugas tombol lain.** Tombol penuh
+  "Tandai selesai" dibubarkan — tombol "Berikutnya" dan penanda "✓ Selesai" di bawah kartu sudah
+  menuntaskan alur yang sama.
+- **Layar Jadwal lebih bersih.** Baris label metode yang mengulangi isi tombol dan chip di
+  bawahnya dihapus; sudut Fajr/Isya tiap metode kini tampil sebagai keterangan kecil tepat di
+  pilihannya saat daftar metode dibuka, dan keterangan saklar ikuti-lokasi dipadatkan satu baris.
+
 ## [1.5.0] - 2026-10-14
 
 ### Diubah

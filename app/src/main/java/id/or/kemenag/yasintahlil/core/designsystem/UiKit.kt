@@ -192,7 +192,7 @@ fun BacaanCard(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         ) {
-            Column(Modifier.padding(16.dp)) {
+            Column(Modifier.padding(14.dp)) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
