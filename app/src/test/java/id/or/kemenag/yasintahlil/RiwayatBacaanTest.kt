@@ -74,11 +74,15 @@ class RiwayatBacaanTest {
     fun tahlilMencatatBagianYangDibaca() {
         val s = sumber(tahlilVm)
         assertTrue("Tahlil tidak punya pencatat riwayat", s.contains("private fun catat()"))
-        listOf("next", "prev", "jumpTo").forEach { f ->
-            val b = badan(s, f)
-            assertTrue("$f tidak ditemukan di TahlilViewModel", b.isNotBlank())
-            assertTrue("$f tidak mencatat riwayat", b.contains("catat()"))
-        }
+        // Layar Tahlil kini bersambung seperti Surat Yasin: satu-satunya jalan memindahkan posisi
+        // baca adalah `jumpTo` — tombol "Ke bagian", tindakan "Tandai terakhir dibaca" pada kartu,
+        // dan tombol penanda "Terakhir dibaca" semuanya bermuara ke sana.
+        val b = badan(s, "jumpTo")
+        assertTrue("jumpTo tidak ditemukan di TahlilViewModel", b.isNotBlank())
+        assertTrue("jumpTo tidak mencatat riwayat", b.contains("catat()"))
+        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
+        assertTrue("layar Tahlil tidak lagi menandai posisi bacanya lewat jumpTo",
+            layar.contains("vm.jumpTo("))
         assertTrue("pencatat riwayat Tahlil tidak menulis apa pun",
             badan(s, "catat").contains("pushHistory("))
     }

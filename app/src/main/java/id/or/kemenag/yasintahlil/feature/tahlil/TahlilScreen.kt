@@ -2,8 +2,13 @@ package id.or.kemenag.yasintahlil.feature.tahlil
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkAdded
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,27 +30,31 @@ import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
- * Tahlil lengkap, satu bagian per layar.
+ * Tahlil lengkap, seluruh bagian mengalir bersambung — sama seperti Surat Yasin.
  *
- * Badan layarnya kini murni bacaan: keterangan susunan (nama susunan, catatan tradisi, sumber
- * sampai sunnah.com) yang dahulu menumpuk sebagai kartu teks di atasnya tinggal di layar
- * keterangan — dibuka lewat ikon Info pada baris judulnya. Penghitung ulangannya pun disembunyikan
- * dari layar; ia opt-in lewat "Penghitung ulangan" di tab Pengaturan, sehingga tampilan tetap
- * bersih bagi yang membaca tanpa menghitung. Tombol penuh "Tandai selesai" yang mengulang
- * tugas tombol "Berikutnya" juga sudah dibubarkan — cukup satu jalan menuju bagian berikutnya.
+ * Dahulu satu bagian tampil per layar dengan tombol "Sebelumnya/Berikutnya" beserta tab susunan
+ * dan bilah kemajuannya. Permintaan pengguna (2026-10-15): *"tahlil tampilannya seperti yasin
+ * langsung bersambung di bawahnya, bukan next prev"* — maka seluruh bagian kini menjadi satu
+ * daftar gulir panjang; posisi baca ditandai (bukan dilingkari tombol), dan lompatannya lewat
+ * baris "Ke bagian" seperti baris "Ke ayat" di Yasin.
+ *
+ * Susunan aktif tidak lagi diganti dari tab di layar ini — pilihannya terpusat di tab Pengaturan
+ * (bagian Ibadah & mazhab); yang tinggal di sini hanyalah penyusun "Susunan saya" (ikon Tune)
+ * beserta lembar aksinya. Keterangan susunan — nama susunan, catatan tradisi, sumber sampai
+ * sunnah.com — tetap tinggal di layar keterangan lewat ikon Info.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
     val store = rememberStore()
-    // rememberSaveable: pilihan tampilan (mode jamaah, layar penuh, panel susunan) tidak hilang
-    // saat layar diputar ulang.
+    // rememberSaveable: pilihan tampilan (mode jamaah, layar penuh, panel susunan, nomor yang
+    // sedang diketik) tidak hilang saat layar diputar ulang.
     var jamaah by rememberSaveable { mutableStateOf(false) }
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
-    var daftar by remember { mutableStateOf(false) }
+    var jump by rememberSaveable { mutableStateOf("") }
+    val listState = rememberLazyListState()
     // Penghitung ulangan dibaca reaktif dari preferensi terpusat: menyalakannya di tab Pengaturan
     // langsung memunculkannya di sini tanpa membuka ulang layar.
     val tampilPenghitung by store.flow(Store.SHOW_COUNTER, BawaanPreferensi.TAMPIL_PENGHITUNG)
@@ -57,95 +66,125 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
             PesanKonten.berkasTidakAda("susunan tahlil"))
         return
     }
+    // Bagian penanda terakhir dibaca — pengganti "bagian yang sedang dibuka" pada tampilan
+    // next/prev yang lama: penghitung ulangannya mengikuti bagian yang ditandai ini.
     val cur = s.items[s.idx.coerceIn(0, s.items.size - 1)]
-    val (arab, latin, trans) = remember(cur.id) {
-        // Aturan cadangan teks dari `TeksBacaan` — sama dengan layar sholat, bukan salinan
-        // `ifBlank { cur.arab }` yang dahulu diketik di sini.
-        val (ra, rl, rt) = repo.resolveArabLatinTerjemah(cur.rujukanFile)
-        TeksBacaan.pilih(cur, ra, rl, rt)
-    }
     val selesai = s.count >= cur.ulangi
 
-    Column(Modifier.fillMaxSize().padding(12.dp)) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text("${NamaLayar.TAHLIL} — bagian ${s.idx + 1} dari ${s.items.size}",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f))
-            TombolInfo { go(Routes.keterangan("tahlil")) }
-        }
-        // Keterangan susunan — nama susunan, catatan tradisi, sumber hingga sunnah.com — tidak lagi
-        // menumpuk di sini: seluruhnya tinggal di layar keterangan yang dibuka ikon Info di atas,
-        // dibaca ulang dari bundel yang sama. Susunan yang sedang aktif tetap terlihat dari tab
-        // susunannya di bawah, dan sumbernya di sana disebut per susunan.
-
-        if (s.susunan.size > 1) {
-            // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini
-            // batang membulat 24 dp di bawah label, sesuai varian tab M3 terbaru.
-            PrimaryScrollableTabRow(s.susunan.indexOfFirst { it.id == s.susunanId }.coerceAtLeast(0)) {
-                s.susunan.forEachIndexed { i, su ->
-                    Tab(s.susunanId == su.id, { vm.setSusunan(su.id) }, text = { Text(su.nama) })
-                }
-            }
-        }
-        LinearProgressIndicator(progress = { ((s.idx + 1).toFloat() / s.items.size).coerceIn(0f, 1f) },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp))
-        // Navigasi antarbagian: tombol langkah mengapit chip mode, semuanya pada baris yang dapat
-        // digulir supaya tak pernah meluber di layar sempit.
-        BarisChip(Modifier.padding(bottom = 4.dp)) {
-            OutlinedButton(onClick = { vm.prev() }, enabled = s.idx > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
-            Button(onClick = { vm.next() }, enabled = s.idx < s.items.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
-            FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-            OutlinedButton(onClick = { susun = true }) { Text("Sesuaikan susunan") }
-            OutlinedButton(onClick = { daftar = true }) { Text("Semua bagian") }
-        }
-        // Penghitung hanya tampil bila penggunanya menyalakannya di Pengaturan. Tanpa penghitung,
-        // alur bacannya cukup "Berikutnya" setelah selesai — hitungan yang lama tetap tersimpan
-        // dan penanda "✓ Selesai" di bawah kartu tetap mengikuti hitungan itu.
-        if (tampilPenghitung) CounterRow(s.count, cur.ulangi,
-            onPlus = { vm.setCount(s.count + 1) },
-            onMinus = { vm.setCount(s.count - 1) },
-            onReset = { vm.setCount(0) })
-        // Dua mode berarti bacaan dibaca dari jauh — "Jamaah" (dibaca bersama) dan "Layar penuh" —
-        // dan keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
-        // Jenazah, Iqomah, Yasin, dan Dzikir. Sebelumnya hanya mode jamaah yang menaikkannya,
-        // sehingga layar penuh di sini justru menampilkan teks lebih kecil daripada di layar lain.
-        val bacaJauh = jamaah || fullscreen
-        LazyColumn(Modifier.fillMaxSize()) {
-            item {
-                if (jamaah) {
-                    if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
-                    if (s.showTrans && trans.isNotBlank()) Text(trans, style = MaterialTheme.typography.headlineSmall)
-                } else {
-                    BacaanCard(JenisBacaan.id(JenisBacaan.TAHLIL, cur.id), cur.judul, arab, latin, trans,
-                        s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
-                        ulangi = cur.ulangi, sumber = cur.sumber,
-                        showArab = s.showArab, kategori = cur.kategori)
-                }
-                if (selesai) Text("✓ Selesai — lanjut ke bagian berikutnya.",
-                    color = MaterialTheme.colorScheme.primary)
-            }
+    // Buka layar pada penanda terakhir dibaca — kelanjutan posisi baca yang dahulu diberikan
+    // tombol "Berikutnya". Tanpa animasi supaya pembukaan layar tidak terasa melompat sendiri,
+    // dan cukup sekali: sekali sudah, guliran pengguna tidak boleh digeser lagi.
+    var sudahKePenanda by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(s.items.size) {
+        if (!sudahKePenanda && s.items.isNotEmpty()) {
+            sudahKePenanda = true
+            listState.scrollToItem(s.idx.coerceIn(0, s.items.size - 1))
         }
     }
 
-    // Daftar seluruh bagian menjadi panel tersendiri: dahulu ia menumpuk di bawah kartu bacaan dan
-    // mendorong bagian yang sedang dibaca keluar tampakan.
-    if (daftar) {
-        ModalBottomSheet(onDismissRequest = { daftar = false },
-            sheetState = rememberModalBottomSheetState()) {
-            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
-                Text("Semua bagian", style = MaterialTheme.typography.titleLarge)
-                LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp)) {
-                    items(s.items) { it ->
-                        val i = s.items.indexOf(it)
-                        TextButton(onClick = { vm.jumpTo(i); daftar = false }) {
-                            Text("${i + 1}. ${it.judul}${if (it.ulangi > 1) " (${it.ulangi}x)" else ""}")
+    Column(Modifier.fillMaxSize().padding(12.dp)) {
+        if (!fullscreen) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text("${NamaLayar.TAHLIL} — ${s.items.size} bagian",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f))
+                TombolInfo { go(Routes.keterangan("tahlil")) }
+            }
+            // Baris penanda terakhir dibaca sekaligus menjadi tombol lompat — pola yang sama
+            // dengan baris "Terakhir dibaca" di Surat Yasin.
+            TextButton(onClick = { vm.jumpTo(s.idx) }) {
+                Text(
+                    "${NamaAntarmuka.TERAKHIR_DIBACA}: bagian ${s.idx + 1} — ${cur.judul}",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedTextField(jump, { jump = it.filter(Char::isDigit).take(2) },
+                    label = { Text("Bagian") }, singleLine = true,
+                    modifier = Modifier.weight(1f))
+                Button(onClick = { jump.toIntOrNull()?.let { vm.jumpTo(it - 1) } }) { Text("Ke bagian") }
+                // Penyusun "Susunan saya": satu-satunya pengatur susunan yang memang milik
+                // bacaan ini — memilih bagian dan menatanya, bukan memilih susunan jadi
+                // (yang terpusat di Pengaturan bersama pilihan ibadah lainnya).
+                IconButton(onClick = { susun = true }) {
+                    Icon(Icons.Filled.Tune, contentDescription = "Atur susunan")
+                }
+                // Tombol layar penuh berikon, menempel di kanan tombol "Ke bagian" — pola yang
+                // sama dengan baris "Ke ayat" di Surat Yasin.
+                IconButton(onClick = { fullscreen = true }) {
+                    Icon(Icons.Filled.Fullscreen, contentDescription = NamaAntarmuka.LAYAR_PENUH)
+                }
+            }
+            BarisChip {
+                FilterChip(jamaah, { jamaah = !jamaah }, { Text("Jamaah") })
+            }
+        } else {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                IconButton(onClick = { fullscreen = false }) {
+                    Icon(Icons.Filled.FullscreenExit, contentDescription = "Keluar layar penuh")
+                }
+            }
+        }
+        // Penghitung hanya tampil bila penggunanya menyalakannya di Pengaturan. Ia menghitung
+        // ulangan bagian yang ditandai terakhir dibaca — menandai bagian lain memindahkan
+        // hitungannya ke sana, seperti halnya penghitung lama mengikuti bagian yang dibuka.
+        if (tampilPenghitung) {
+            Text(
+                "Penghitung ulangan — bagian ${s.idx + 1}: ${cur.judul}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            CounterRow(s.count, cur.ulangi,
+                onPlus = { vm.setCount(s.count + 1) },
+                onMinus = { vm.setCount(s.count - 1) },
+                onReset = { vm.setCount(0) })
+            if (selesai) Text("✓ Bagian ini sudah dihitung lengkap.",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary)
+        }
+        // Dua mode berarti bacaan dibaca dari jauh — "Jamaah" (dibaca bersama) dan "Layar penuh" —
+        // dan keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
+        // Jenazah, Iqomah, Yasin, dan Dzikir.
+        val bacaJauh = jamaah || fullscreen
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+            itemsIndexed(s.items, key = { _, it -> it.id }) { i, it ->
+                // Aturan cadangan teks dari `TeksBacaan` — sama dengan layar sholat, bukan salinan
+                // `ifBlank { cur.arab }` yang dahulu diketik di sini.
+                val (arab, latin, trans) = remember(it.id) {
+                    val (ra, rl, rt) = repo.resolveArabLatinTerjemah(it.rujukanFile)
+                    TeksBacaan.pilih(it, ra, rl, rt)
+                }
+                if (jamaah) {
+                    Column(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                        if (s.showArab && arab.isNotBlank()) {
+                            ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
+                        }
+                        if (s.showTrans && trans.isNotBlank()) {
+                            Text(trans, style = MaterialTheme.typography.headlineSmall)
                         }
                     }
+                } else {
+                    BacaanCard(
+                        JenisBacaan.id(JenisBacaan.TAHLIL, it.id),
+                        "Bagian ${i + 1} — ${it.judul}", arab, latin, trans,
+                        s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
+                        ulangi = it.ulangi, sumber = it.sumber,
+                        showArab = s.showArab, kategori = it.kategori,
+                        aksiEkstra = listOf(
+                            AksiBacaan(
+                                if (i == s.idx) "✓ Penanda terakhir dibaca" else "Tandai terakhir dibaca",
+                                Icons.Filled.BookmarkAdded,
+                            ) { vm.jumpTo(i) },
+                        ),
+                    )
                 }
             }
         }

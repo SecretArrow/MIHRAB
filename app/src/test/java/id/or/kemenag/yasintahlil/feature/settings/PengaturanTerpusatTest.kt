@@ -100,7 +100,7 @@ class PengaturanTerpusatTest {
 
         listOf(
             "feature/tahlil/TahlilScreen.kt",
-            "feature/dzikir/DzikirScreen.kt",
+            "feature/dzikir/DzikirGroupScreen.kt",
         ).forEach { rel ->
             val layar = kode(rel)
             assertTrue("$rel tidak lagi mengikuti preferensi penghitung ulangan",

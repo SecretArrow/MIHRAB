@@ -36,6 +36,16 @@ object Routes {
     fun keterangan(asal: String): String = "$KETERANGAN/$asal"
 
     /**
+     * Rute layar satu kelompok dzikir, mis. `dzikir/pagi_petang`.
+     *
+     * Menu Dzikir & Doa ([DZIKIR]) kini berupa deretan kelompok — sama bentuknya dengan menu
+     * Ibadah — dan tiap kelompok membuka bacaannya di layar sendiri yang mengalir bersambung.
+     * Id kelompoknya selalu datang dari bundel konten; rutenya disusun di satu tempat ini
+     * supaya pemetaan "Buka" (RuteKonten) dan indeks Pencarian tidak dapat mengejanya berbeda.
+     */
+    fun dzikirGrup(id: String): String = "$DZIKIR/$id"
+
+    /**
      * Rute yang boleh dituju langsung dari luar layar (mis. ketukan notifikasi pengingat).
      *
      * [SHOLAT_DETAIL] sengaja tidak ada di sini: rutenya butuh argumen `{id}`, sehingga membuka

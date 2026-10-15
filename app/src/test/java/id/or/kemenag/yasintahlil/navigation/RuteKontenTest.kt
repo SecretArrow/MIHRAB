@@ -83,14 +83,16 @@ class RuteKontenTest {
     /**
      * Kelompok dzikir memakai id-nya sendiri sebagai `kind` (mis. `pagi_petang`). Setiap id pada
      * bundel konten harus dikenali — dan daftarnya harus berasal dari bundel, bukan ditulis tetap.
+     * Tujuannya layar kelompoknya sendiri (menu Dzikir kini berupa deretan kelompok), bukan
+     * sekadar menu induknya.
      */
     @Test
     fun kelompokDzikirPadaBundelKontenDikenali() {
         val ids = kelompokDzikir()
         assertTrue("bundel dzikir tidak punya kelompok", ids.size >= 4)
         ids.forEach { id ->
-            assertEquals("kelompok dzikir '$id' tidak menuju layar Dzikir",
-                Routes.DZIKIR, RuteKonten.rute(id, ids.toSet()))
+            assertEquals("kelompok dzikir '$id' tidak menuju layar kelompoknya",
+                Routes.dzikirGrup(id), RuteKonten.rute(id, ids.toSet()))
             assertEquals("nama tujuan '$id' tidak menyebut layar Dzikir",
                 "Dzikir & Doa", RuteKonten.namaTujuan(id, ids.toSet()))
         }
@@ -103,7 +105,7 @@ class RuteKontenTest {
     @Test
     fun idKelompokDzikirTidakDitulisTetap() {
         assertEquals("id kelompok baru tidak dikenali",
-            Routes.DZIKIR, RuteKonten.rute("kelompok_uji_9f3", setOf("kelompok_uji_9f3")))
+            Routes.dzikirGrup("kelompok_uji_9f3"), RuteKonten.rute("kelompok_uji_9f3", setOf("kelompok_uji_9f3")))
         assertNull("id kelompok dzikir tampaknya ditulis tetap di pemetaan",
             RuteKonten.rute(kelompokDzikir().first(), emptySet()))
     }
@@ -219,9 +221,10 @@ class RuteKontenTest {
     fun ruteTerakhirMengenaliKelompokDzikirBilaDaftarnyaDiberikan() {
         val id = kelompokDzikir().first()
         assertEquals("id kelompok dzikir tidak dikenali lewat ruteTerakhir",
-            Routes.DZIKIR, RuteKonten.ruteTerakhir("$id:1", setOf(id)))
+            Routes.dzikirGrup(id), RuteKonten.ruteTerakhir("$id:1", setOf(id)))
         val tujuan = RuteKonten.tujuanTerakhir("$id:1", setOf(id))
-        assertEquals("tujuan terakhir tidak menuju layar Dzikir", Routes.DZIKIR, tujuan?.rute)
+        assertEquals("tujuan terakhir tidak menuju layar kelompok dzikir",
+            Routes.dzikirGrup(id), tujuan?.rute)
         assertEquals("tujuan terakhir tidak menyebut nama layarnya", "Dzikir & Doa", tujuan?.nama)
     }
 

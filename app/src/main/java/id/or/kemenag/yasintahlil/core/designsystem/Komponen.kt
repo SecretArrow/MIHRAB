@@ -114,9 +114,14 @@ fun MenuTile(
 
 /**
  * Baris menu navigasi: ikon dalam wadah bulat di kiri, label, panah di kanan. Dipakai menu
- * Ibadah dan Alat supaya kedua daftar panjang itu terbaca sebagai deretan tujuan yang sama
- * bentuknya — bukan tombol terisi yang berebut perhatian satu sama lain. Barisnya ringkas:
- * lima belas tujuan di kedua menu itu harus muat digulir tanpa terasa panjang.
+ * Ibadah, Alat, kelompok dzikir, dan daftar sholat supaya daftar panjang itu terbaca sebagai
+ * deretan tujuan yang sama bentuknya — bukan tombol terisi yang berebut perhatian satu sama
+ * lain. Barisnya ringkas: lima belas tujuan di kedua menu itu harus muat digulir tanpa terasa
+ * panjang.
+ *
+ * [keterangan] adalah baris kecil di bawah labelnya — mis. "2 rakaat • Subuh" pada sholat atau
+ * "12 bacaan" pada kelompok dzikir. Sifatnya opsional: menu Ibadah dan Alat tidak
+ * memakainya, dan bentuknya tetap sama seperti sebelum parameter ini ada.
  */
 @Composable
 fun MenuBaris(
@@ -124,6 +129,7 @@ fun MenuBaris(
     ikon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    keterangan: String? = null,
 ) {
     Surface(
         onClick = onClick,
@@ -149,13 +155,21 @@ fun MenuBaris(
                     modifier = Modifier.size(19.dp),
                 )
             }
-            Text(
-                label,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (keterangan != null) Text(
+                    keterangan,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,

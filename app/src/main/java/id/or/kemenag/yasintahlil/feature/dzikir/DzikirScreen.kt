@@ -1,115 +1,84 @@
 package id.or.kemenag.yasintahlil.feature.dzikir
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
-import id.or.kemenag.yasintahlil.core.data.Store
-import id.or.kemenag.yasintahlil.core.designsystem.*
-import id.or.kemenag.yasintahlil.core.util.JenisBacaan
+import id.or.kemenag.yasintahlil.core.designsystem.MenuBaris
+import id.or.kemenag.yasintahlil.core.designsystem.TombolInfo
+import id.or.kemenag.yasintahlil.core.designsystem.EmptyState
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
-import id.or.kemenag.yasintahlil.core.util.Saring
-import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
-import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
 
+/**
+ * Menu Dzikir & Doa — deretan kelompoknya, bentuknya sama dengan menu Ibadah.
+ *
+ * Dahulu layar ini membuka isinya lewat deretan tab kelompok. Permintaan pengguna (2026-10-15):
+ * *"setelah klik dzikir dan doa tampilannya adalah sama seperti menu Ibadah bukan tabs"* — maka
+ * tiap kelompok kini menjadi baris menu ([MenuBaris]) yang membuka bacaannya di layar tersendiri
+ * yang mengalir bersambung ([DzikirGroupScreen]).
+ *
+ * Mencari satu doa bukan lagi tugas layar ini (kotak penyaring per-tab-nya sudah dibubarkan):
+ * layar Pencarian menelusuri seluruh entri dzikir lintas kelompok sekaligus.
+ */
 @Composable
 fun DzikirScreen(go: (String) -> Unit = {}, vm: DzikirViewModel = hiltViewModel()) {
-    val s by vm.state.collectAsStateWithLifecycle()
     val groups = vm.groups
-    val store = rememberStore()
-    // rememberSaveable: tab dan mode layar penuh pilihan pengguna tidak hilang saat diputar ulang.
-    var tab by rememberSaveable { mutableStateOf(0) }
-    var fullscreen by rememberSaveable { mutableStateOf(false) }
-    // Kata kunci penyaring di layar ini (`plan.txt`: "pencarian dan akses cepat pada halaman yang
-    // memiliki banyak konten"). Pustaka dzikir memuat puluhan entri dalam lima kelompok; sebelum
-    // ada kotak ini satu-satunya cara menemukan satu doa adalah menggulir tiap tab.
-    var q by rememberSaveable { mutableStateOf("") }
-    // Penghitung ulangan disembunyikan dari layar demi tampilan bersih — pengaturannya terpusat
-    // di tab Pengaturan ("Penghitung ulangan"), dan dibaca reaktif di sini sehingga menyalakannya
-    // langsung memunculkannya tanpa membuka ulang layar.
-    val tampilPenghitung by store.flow(Store.SHOW_COUNTER, BawaanPreferensi.TAMPIL_PENGHITUNG)
-        .collectAsStateWithLifecycle(BawaanPreferensi.TAMPIL_PENGHITUNG)
-    FullscreenEffect(fullscreen)
 
     if (groups.isEmpty()) {
         EmptyState("Konten dzikir tidak tersedia",
             PesanKonten.berkasTidakAda("kumpulan dzikir"))
         return
     }
-    Column(Modifier.fillMaxSize().padding(12.dp)) {
+
+    Column(
+        Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
         Row(
             Modifier.fillMaxWidth(),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(NamaLayar.DZIKIR, style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("dzikir")) }
         }
-        BarisChip(Modifier.padding(vertical = 4.dp)) {
-            FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-        }
-        // `PrimaryScrollableTabRow` (bukan `ScrollableTabRow` yang usang): indikatornya kini batang
-        // membulat 24 dp di bawah label, sesuai varian tab M3 terbaru. Tetap dapat digulir karena
-        // kelompok dzikir lebih banyak daripada lebar layar.
-        PrimaryScrollableTabRow(tab) {
-            groups.forEachIndexed { i, g -> Tab(tab == i, { tab = i }, text = { Text(g.judul) }) }
-        }
-        val group = groups[tab.coerceIn(0, groups.size - 1)]
-        val tersaring = Saring.tapis(q, group.items) {
-            listOf(it.judul, it.arab, it.latin, it.terjemahan)
-        }
-        OutlinedTextField(
-            q, { q = it },
-            label = { Text("Cari di kelompok \"${group.judul}\"") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        // Ikon kelompok berputar dari daftar kecil yang terverifikasi ada di pustaka ikon.
+        // Kelompoknya datang dari bundel konten, jadi ikonnya tidak dapat dipetakan per kelompok
+        // tanpa menulis daftar tetap yang akan basi begitu bundel menambah kelompok baru.
+        val ikon = listOf(
+            Icons.Filled.AutoAwesome, Icons.Filled.Favorite, Icons.Filled.Campaign,
+            Icons.Filled.Schedule, Icons.Filled.SelfImprovement, Icons.Filled.VolunteerActivism,
+            Icons.Filled.Star, Icons.Filled.Groups,
         )
-        if (tersaring.isEmpty()) {
-            if (q.isBlank()) EmptyState(
-                "Kelompok ini kosong",
-                "Belum ada bacaan pada kelompok \"${group.judul}\".",
-            ) else EmptyState(
-                "Tidak ada bacaan yang cocok",
-                "Tidak ada entri di kelompok ini yang memuat \"${q.trim()}\". Coba kata lain, " +
-                    "atau kosongkan kotak pencarian untuk melihat seluruh kelompok.",
-                labelTombol = NamaAntarmuka.KOSONGKAN,
-                onTombol = { q = "" },
+        groups.forEachIndexed { i, g ->
+            MenuBaris(
+                g.judul,
+                ikon[i % ikon.size],
+                onClick = { go(Routes.dzikirGrup(g.id)) },
+                keterangan = "${g.items.size} bacaan",
             )
-            return@Column
-        }
-        if (q.isNotBlank()) Text(
-            "${tersaring.size} dari ${group.items.size} bacaan cocok dengan \"${q.trim()}\"",
-            style = MaterialTheme.typography.labelSmall,
-        )
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(tersaring) { it ->
-                // Id kartu dzikir memakai id kelompoknya sebagai jenis — daftar kelompok datang dari
-                // bundel konten, jadi jenisnya tidak dapat ditulis tetap di sini.
-                val key = JenisBacaan.id(group.id, it.judul)
-                val c = s.counts[key] ?: 0
-                // Mode layar penuh berarti bacaan dibaca dari jauh — aturan yang sama dipakai
-                // layar Ghaib, Jenazah, Iqomah, dan Tahlil; lihat `UkuranBacaan.arabBacaJauh`.
-                BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
-                    s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, fullscreen),
-                    ulangi = it.ulangi, sumber = it.sumber,
-                    showArab = s.showArab, kategori = it.kategori)
-                // Hitungan tiap bacaan tetap tersimpan di Room untuk semua entri, bukan hanya yang
-                // ulangi > 1 — penghitungnya sendiri hanya tampil bila dinyalakan di Pengaturan,
-                // sehingga layar berpuluhan bacaan ini tidak dipenuhi deretan tombol tambah/kurang.
-                if (tampilPenghitung) CounterRow(c, it.ulangi,
-                    onPlus = { vm.setCount(key, c + 1) },
-                    onMinus = { vm.setCount(key, c - 1) },
-                    onReset = { vm.reset(key) })
-            }
         }
     }
 }

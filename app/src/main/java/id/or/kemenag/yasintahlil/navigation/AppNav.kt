@@ -31,6 +31,7 @@ import id.or.kemenag.yasintahlil.feature.adzan.AdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.DoaAdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.IqomahScreen
 import id.or.kemenag.yasintahlil.feature.alat.AlatScreen
+import id.or.kemenag.yasintahlil.feature.dzikir.DzikirGroupScreen
 import id.or.kemenag.yasintahlil.feature.dzikir.DzikirScreen
 import id.or.kemenag.yasintahlil.feature.favorit.FavoritScreen
 import id.or.kemenag.yasintahlil.feature.home.HomeScreen
@@ -112,6 +113,15 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.KIBLAT) { KiblatScreen(go = { nav.navigate(it) }) }
                 composable(Routes.JADWAL) { JadwalScreen(go = { nav.navigate(it) }) }
                 composable(Routes.DZIKIR) { DzikirScreen(go = { nav.navigate(it) }) }
+                // Satu kelompok dzikir: seluruh bacaannya mengalir bersambung di layar ini.
+                // Id-nya datang dari menu Dzikir, indeks Pencarian, atau tombol "Buka" favorit —
+                // selalu dari bundel, tidak pernah dieja di sini.
+                composable(
+                    "${Routes.DZIKIR}/{id}",
+                    arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                ) {
+                    DzikirGroupScreen(it.arguments?.getString("id").orEmpty()) { r -> nav.navigate(r) }
+                }
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }

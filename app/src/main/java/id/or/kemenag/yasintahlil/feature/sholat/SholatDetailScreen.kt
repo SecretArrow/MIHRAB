@@ -27,7 +27,13 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 
 /**
- * Mode belajar langkah-demi-langkah untuk setiap sholat.
+ * Mode belajar tata cara untuk setiap sholat — seluruh langkahnya mengalir bersambung.
+ *
+ * Dahulu satu langkah tampil per layar dengan tombol "Sebelumnya/Berikutnya". Permintaan
+ * pengguna (2026-10-15): bacaan mengalir langsung bersambung, bukan next/prev — maka seluruh
+ * langkah kini tersusun berurutan pada satu halaman yang dapat digulir; urutan dan penanda
+ * "Langkah N" tetap menjaganya mudah diikuti, dan tanda "sudah dipraktikkan" tetap tersimpan
+ * di Room.
  *
  * [go] dipakai untuk hal yang **bukan** langkah bacaan tetapi tetap bagian panduan menurut
  * `plan.txt` §"Tata Cara Sholat Langkah demi Langkah": bersuci, penentuan arah kiblat, dan dzikir
@@ -51,10 +57,10 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     val catatanMazhab = remember {
         repo.sholatCatatanMazhab().ifBlank { "Perbedaan pendapat dicatat apa adanya tanpa dicampuradukkan." }
     }
-    // rememberSaveable: posisi langkah, mode ringkas, dan tanda selesai tidak hilang saat layar
-    // diputar ulang. Kehilangan `step` berarti pengguna yang sedang di langkah ketujuh terlempar
-    // kembali ke langkah pertama hanya karena memutar perangkat.
-    var step by rememberSaveable { mutableStateOf(0) }
+    // rememberSaveable: mode ringkas dan tanda selesai tidak hilang saat layar diputar ulang —
+    // begitu pula daftar syarat yang sedang dibuka. Kehilangan `ringkas` berarti pengguna yang
+    // memilih tampilan ringkas terlempar kembali ke tampilan pemula hanya karena memutar
+    // perangkat.
     var ringkas by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
@@ -90,8 +96,6 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
     // Nama mazhab dari aturan bersama: rantai `when` di sini dahulu menyalin labelnya, sehingga
     // mengubah satu label di layar Pengaturan tidak ikut mengubah kepala layar ini.
     val mazhabLabel = Mazhab.label(mazhab)
-    // Jaga indeks langkah tetap sah bila daftar menyusut setelah ganti mazhab.
-    LaunchedEffect(steps.size) { if (step > steps.size - 1) step = (steps.size - 1).coerceAtLeast(0) }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Row(
             Modifier.fillMaxWidth(),
@@ -207,82 +211,77 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             Text("Muat ulang bundel konten di Pengaturan → Konten, atau pilih sholat lain dari daftar.",
                 style = MaterialTheme.typography.labelSmall)
         } else {
-            Text("Langkah ${step + 1} dari ${steps.size}",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp))
-            LinearProgressIndicator(progress = { ((step + 1).toFloat() / steps.size).coerceIn(0f, 1f) },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
-            val b = steps[step.coerceIn(0, steps.size - 1)]
-            // Aturan cadangan teks satu tempat (`TeksBacaan`) — bukan `ifBlank { b.arab }` yang
-            // dieja di sini, supaya layar ini tak dapat menyimpang dari layar bacaan lain.
-            val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
-            val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
-            Text(b.judul, style = MaterialTheme.typography.titleMedium)
-            if (b.kapan.isNotBlank()) Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
-            // Ilustrasi kartun posisi tubuh — empat tampak (depan, kanan, kiri, belakang) per
-            // gerakan, tanpa teks di dalam gambar; salam menampilkan dua varian tolehannya.
-            // Sebelumnya satu skema garis 64dp yang di-tint; permintaan pengguna (2026-10-15):
-            // kartun lengkap, tiap gerakan dari 4 arah.
-            Postures.of(b.id)?.let { p ->
-                Column(Modifier.padding(top = 4.dp)) {
-                    p.varian.forEach { v ->
-                        if (p.varian.size > 1) {
-                            Text(v.label, style = MaterialTheme.typography.titleSmall)
-                        }
-                        val dasar = "Ilustrasi posisi: ${p.label}" +
-                            if (p.varian.size > 1) ", ${v.label}" else ""
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        ) {
-                            Image(
-                                painter = painterResource(v.tampak.depan),
-                                contentDescription = "$dasar, tampak depan",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.weight(1f).aspectRatio(1f),
-                            )
-                            Image(
-                                painter = painterResource(v.tampak.kanan),
-                                contentDescription = "$dasar, tampak kanan",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.weight(1f).aspectRatio(1f),
-                            )
-                            Image(
-                                painter = painterResource(v.tampak.kiri),
-                                contentDescription = "$dasar, tampak kiri",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.weight(1f).aspectRatio(1f),
-                            )
-                            Image(
-                                painter = painterResource(v.tampak.belakang),
-                                contentDescription = "$dasar, tampak belakang",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.weight(1f).aspectRatio(1f),
-                            )
+            steps.forEachIndexed { i, b ->
+                Column(Modifier.padding(top = 12.dp)) {
+                    Text("Langkah ${i + 1} — ${b.judul}", style = MaterialTheme.typography.titleMedium)
+                    if (b.kapan.isNotBlank()) {
+                        Text("Kapan: ${b.kapan}", style = MaterialTheme.typography.labelMedium)
+                    }
+                    // Ilustrasi kartun posisi tubuh — empat tampak (depan, kanan, kiri, belakang) per
+                    // gerakan, tanpa teks di dalam gambar; salam menampilkan dua varian tolehannya.
+                    // Sebelumnya satu skema garis 64dp yang di-tint; permintaan pengguna (2026-10-15):
+                    // kartun lengkap, tiap gerakan dari 4 arah.
+                    Postures.of(b.id)?.let { p ->
+                        Column(Modifier.padding(top = 4.dp)) {
+                            p.varian.forEach { v ->
+                                if (p.varian.size > 1) {
+                                    Text(v.label, style = MaterialTheme.typography.titleSmall)
+                                }
+                                val dasar = "Ilustrasi posisi: ${p.label}" +
+                                    if (p.varian.size > 1) ", ${v.label}" else ""
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                ) {
+                                    Image(
+                                        painter = painterResource(v.tampak.depan),
+                                        contentDescription = "$dasar, tampak depan",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier.weight(1f).aspectRatio(1f),
+                                    )
+                                    Image(
+                                        painter = painterResource(v.tampak.kanan),
+                                        contentDescription = "$dasar, tampak kanan",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier.weight(1f).aspectRatio(1f),
+                                    )
+                                    Image(
+                                        painter = painterResource(v.tampak.kiri),
+                                        contentDescription = "$dasar, tampak kiri",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier.weight(1f).aspectRatio(1f),
+                                    )
+                                    Image(
+                                        painter = painterResource(v.tampak.belakang),
+                                        contentDescription = "$dasar, tampak belakang",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier.weight(1f).aspectRatio(1f),
+                                    )
+                                }
+                            }
+                            Text(p.label, style = MaterialTheme.typography.titleSmall)
+                            Text(p.deskripsi, style = MaterialTheme.typography.bodySmall,
+                                maxLines = 2, overflow = TextOverflow.Ellipsis)
                         }
                     }
-                    Text(p.label, style = MaterialTheme.typography.titleSmall)
-                    Text(p.deskripsi, style = MaterialTheme.typography.bodySmall,
-                        maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    // Aturan cadangan teks satu tempat (`TeksBacaan`) — bukan `ifBlank { b.arab }` yang
+                    // dieja di sini, supaya layar ini tak dapat menyimpang dari layar bacaan lain.
+                    val (a, l, t) = remember(b.id) {
+                        val (ra, rl, rt) = repo.resolveArabLatinTerjemah(b.rujukanFile)
+                        TeksBacaan.pilih(b, ra, rl, rt)
+                    }
+                    // Rujukannya `<id sholat>:<id bacaan>`: langkah yang sama (mis. rukuk) muncul di banyak
+                    // sholat, dan tanpa id sholat di depannya favorit satu langkah akan menandai langkah
+                    // yang sama di sholat lain.
+                    BacaanCard(JenisBacaan.id(JenisBacaan.LANGKAH, "$id:${b.id}"), b.judul, a, l, t,
+                        showLatin, showTrans, arabSize, sumber = b.sumber,
+                        showArab = showArab, kategori = b.kategori)
+                    if (b.catatan.isNotBlank()) {
+                        Text(b.catatan, style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 4.dp))
+                    }
                 }
             }
-            // Rujukannya `<id sholat>:<id bacaan>`: langkah yang sama (mis. rukuk) muncul di banyak
-            // sholat, dan tanpa id sholat di depannya favorit satu langkah akan menandai langkah
-            // yang sama di sholat lain.
-            BacaanCard(JenisBacaan.id(JenisBacaan.LANGKAH, "$id:${b.id}"), b.judul, a, l, t, showLatin, showTrans, arabSize, sumber = b.sumber,
-                showArab = showArab, kategori = b.kategori)
-            if (b.catatan.isNotBlank()) {
-                Text(b.catatan, style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(top = 4.dp))
-            }
-            BarisChip(Modifier.padding(top = 4.dp)) {
-                Button(onClick = { if (step > 0) step-- }, enabled = step > 0) { Text(NamaAntarmuka.SEBELUMNYA) }
-                OutlinedButton(onClick = { step = 0 }) { Text("Ulangi") }
-                Button(onClick = { if (step < steps.size - 1) step++ }, enabled = step < steps.size - 1) { Text(NamaAntarmuka.BERIKUTNYA) }
-            }
-            if (step == steps.size - 1 && !selesai) Text("Semua langkah sudah dibaca — tandai selesai bila sudah dipraktikkan.",
-                color = MaterialTheme.colorScheme.primary)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
                 Button(onClick = { scope.launch { userData.setProgress(KIND, id, 1) } }, enabled = !selesai) {
                     Text(if (selesai) "✓ Sudah ditandai selesai" else "Tandai selesai")
@@ -293,9 +292,9 @@ fun SholatDetailScreen(id: String, go: (String) -> Unit) {
             }
         }
         // --- Setelah salam ---------------------------------------------------------------------
-        // `plan.txt` menutup rangkaian langkah dengan "Dzikir dan doa setelah sholat". Layar Dzikir
-        // membuka kelompok "Dzikir setelah sholat" lebih dahulu (urutan kelompok pada bundel),
-        // sehingga tautan ini mendarat tepat di tempat yang dimaksud.
+        // `plan.txt` menutup rangkaian langkah dengan "Dzikir dan doa setelah sholat". Menu
+        // Dzikir & Doa memuat kelompoknya sebagai barisnya sendiri, sehingga tautan ini membawa
+        // pembaca ke tempat yang dimaksud dalam dua ketukan.
         OutlinedButton(onClick = { go(Routes.DZIKIR) }, modifier = Modifier.padding(top = 8.dp)) {
             Text("Dzikir & doa setelah sholat")
         }

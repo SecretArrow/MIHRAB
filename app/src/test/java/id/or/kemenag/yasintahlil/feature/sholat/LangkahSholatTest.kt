@@ -25,7 +25,7 @@ import java.io.File
  *
  * Urutan langkah pun diperiksa: daftar langkah dibaca berurutan, jadi bacaan yang diletakkan di
  * tempat yang bertentangan dengan keterangan waktunya sendiri akan menyesatkan pembaca yang
- * mengikuti tombol "Berikutnya" tanpa membaca keterangannya.
+ * mengikuti urutannya tanpa membaca keterangannya.
  */
 class LangkahSholatTest {
 
@@ -135,8 +135,8 @@ class LangkahSholatTest {
     /**
      * Qunut dibaca setelah i'tidal pada rakaat kedua, jadi ia harus berdiri sesudah i'tidal pada
      * daftar langkah. Sebelumnya entri ini terletak di antara sholawat Ibrahimiyah dan salam —
-     * bertentangan dengan keterangan waktunya sendiri, sehingga pembaca yang menekan "Berikutnya"
-     * sampai ke qunut setelah tasyahud.
+     * bertentangan dengan keterangan waktunya sendiri, sehingga pembaca yang membaca urutannya
+     * sampai ke qunut sesudah tasyahud.
      */
     @Test
     fun qunutTerletakSetelahItidal() {
@@ -162,20 +162,21 @@ class LangkahSholatTest {
      * Bundel konten dapat diperbarui pengguna (layar "Pembaruan konten"), sehingga id sholat yang
      * dahulu ada bisa hilang dari `sholat_bacaan.json` dan daftar langkahnya menjadi kosong. Dahulu
      * baris `steps[step.coerceIn(0, steps.size - 1)]` menghitung `coerceIn(0, -1)` — rentang kosong —
-     * dan aplikasi berhenti begitu layar ini dibuka. Kekosongan itu harus diberitahukan.
+     * dan aplikasi berhenti begitu layar ini dibuka. Langkah kini digambar lewat
+     * `steps.forEachIndexed` — badan perulangan tak pernah jalan pada daftar kosong, jadi tak ada
+     * indeks yang bisa salah — dan kekosongannya tetap diberitahukan sebelum perulangan itu.
      */
     @Test
     fun daftarLangkahKosongTidakMembuatAplikasiBerhenti() {
         // Tanpa komentar: penjelasan di layar menyebut pola lama itu, dan penjelasan bukan pelanggaran.
         val layar = KodeSumber.kodeTanpaKomentar(File(root(),
             "src/main/java/id/or/kemenag/yasintahlil/feature/sholat/SholatDetailScreen.kt").readText())
-        assertTrue("layar tidak lagi menampilkan langkah", layar.contains("val b = steps["))
+        assertTrue("layar tidak lagi menggambar langkahnya", layar.contains("steps.forEachIndexed {"))
         assertTrue("layar tidak menangani daftar langkah yang kosong",
             layar.contains("if (steps.isEmpty())"))
-        // Penjaganya harus berada **sebelum** indeks dihitung. Pada daftar kosong,
-        // `coerceIn(0, steps.size - 1)` menjadi `coerceIn(0, -1)` — rentang kosong — dan aplikasi
-        // berhenti begitu layar ini dibuka.
-        assertTrue("indeks langkah dihitung sebelum daftar kosong ditangani",
-            layar.substringBefore("val b = steps[").contains("if (steps.isEmpty())"))
+        // Pemberitahuan kekosongan harus berada **sebelum** perulangan menggambarnya: urutan lain
+        // berarti pengguna sempat melihat sesuatu yang tak semestinya digambar sebelum diberi tahu.
+        assertTrue("langkah digambar sebelum daftar kosong ditangani",
+            layar.substringBefore("steps.forEachIndexed {").contains("if (steps.isEmpty())"))
     }
 }

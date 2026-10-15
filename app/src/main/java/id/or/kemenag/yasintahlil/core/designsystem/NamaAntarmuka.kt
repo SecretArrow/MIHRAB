@@ -95,17 +95,16 @@ object NamaAntarmuka {
 
     // ---- Kendali langkah dan tindakan ----------------------------------------------------------
     //
-    // Enam nama di bawah ini muncul di **lebih dari satu layar** dengan arti yang sama: melangkah
-    // mundur/maju pada bacaan bertahap (panduan sholat dan susunan Tahlil), membatalkan tanda
-    // progres, mengosongkan kotak penyaring, melanjutkan bacaan terakhir, dan awalan kartu
-    // "terakhir dibaca". Mengganti kata di satu layar saja meninggalkan layar lain menyebut
-    // tindakan yang sama dengan kata lain — dan pengguna mengira keduanya tindakan yang berbeda.
-
-    /** Tombol melangkah mundur satu langkah/bagian. */
-    const val SEBELUMNYA = "← Sebelumnya"
-
-    /** Tombol melangkah maju satu langkah/bagian. */
-    const val BERIKUTNYA = "Berikutnya →"
+    // Empat nama di bawah ini muncul di **lebih dari satu layar** dengan arti yang sama:
+    // membatalkan tanda progres, mengosongkan kotak penyaring, melanjutkan bacaan terakhir, dan
+    // awalan kartu "terakhir dibaca". Mengganti kata di satu layar saja meninggalkan layar lain
+    // menyebut tindakan yang sama dengan kata lain — dan pengguna mengira keduanya tindakan yang
+    // berbeda.
+    //
+    // Dua nama langkah ("← Sebelumnya" / "Berikutnya →") dahulu juga hidup di sini untuk panduan
+    // sholat dan susunan Tahlil. Keduanya dibubarkan bersama tombolnya: seluruh langkah dan
+    // bagian kini mengalir bersambung (permintaan pengguna, 2026-10-15), sehingga tidak ada lagi
+    // tindakan "melangkah mundur/maju satu layar" yang perlu dinamai.
 
     /** Tombol membatalkan tanda progres yang sudah dibuat. */
     const val BATALKAN_TANDA = "Batalkan tanda"

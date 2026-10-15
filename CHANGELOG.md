@@ -5,6 +5,26 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Tahlil kini bersambung seperti Surat Yasin.** Seluruh bagian mengalir dalam satu daftar gulir
+  panjang — tombol "Sebelumnya/Berikutnya", bilah kemajuan, dan panel "Semua bagian" dibubarkan.
+  Posisi baca ditandai lewat tindakan "Tandai terakhir dibaca" pada kartunya (tekan lama) dan
+  lompatan lewat baris "Ke bagian"; layar terbuka pada penanda terakhir dibaca. Susunan aktif
+  tidak lagi diganti dari tab di layar ini — pilihannya terpusat di Pengaturan (Ibadah & mazhab),
+  sementara penyusun "Susunan saya" tetap ada sebagai ikon Tune. Penghitung ulangan (opt-in)
+  mengikuti bagian yang ditandai.
+- **Dzikir & Doa dibuka sebagai menu, bukan tab.** Tiap kelompok menjadi baris menu berikon —
+  bentuk yang sama dengan menu Ibadah — dan membuka bacaannya di layar kelompok sendiri yang
+  mengalir bersambung, lengkap dengan mode layar penuh dan penghitung ulangan opt-in. Tombol
+  "Buka" pada favorit/riwayat dzikir dan hasil Pencarian kini mendarat langsung di kelompoknya.
+- **Panduan Sholat dibuka sebagai menu, bukan tab.** Tab "Wajib/Sunnah/Bacaan" menjadi tiga
+  bagian pada satu halaman yang dapat digulir; tiap sholat menjadi baris menu berketerangan
+  rakaat & waktunya, dan tiap bacaan sholat terbuka sebagai lembar bawah berisi kartu
+  bacaannya utuh. Pengelompokan sunnah (waktu/rakaat/tujuan) tetap dipertahankan.
+- **Tata cara sholat bersambung.** Langkah-langkahnya tersusun berurutan pada satu halaman —
+  tombol "Sebelumnya/Berikutnya/Ulangi" dan bilah kemajuannya dibubarkan; penanda "Langkah N",
+  ilustrasi empat tampak, dan tanda "sudah dipraktikkan" tetap utuh.
+
 ## [1.7.0] - 2026-10-15
 
 ### Diubah

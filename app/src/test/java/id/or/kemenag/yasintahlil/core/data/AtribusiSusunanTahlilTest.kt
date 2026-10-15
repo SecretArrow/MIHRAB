@@ -153,12 +153,21 @@ class AtribusiSusunanTahlilTest {
             keterangan.contains("Sumber: rujukan"))
     }
 
-    /** Susunan aktif tetap terlihat dari tab susunannya; sumbernya di keterangan per susunan. */
+    /**
+     * Susunan aktif tetap bisa terganti: pilihan susunan jadi terpusat di tab Pengaturan (bagian
+     * Ibadah & mazhab), sedangkan layar Tahlil tetap memegang penyusun "Susunan saya" — memilih
+     * bagian mana yang dibaca dan menatanya — yang langsung memindahkan susunan aktif ke sana.
+     */
     @Test
     fun susunanAktifTetapTergantiDariLayarTahlil() {
         val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/tahlil/TahlilScreen.kt")
-        assertTrue("layar Tahlil tidak lagi mengganti susunan",
-            layar.contains("vm.setSusunan("))
+        assertTrue("layar Tahlil tidak lagi menyimpan susunan buatannya sendiri",
+            layar.contains("vm.simpanSusunanSaya("))
+        assertTrue("layar Tahlil tidak lagi membuang susunan buatannya",
+            layar.contains("vm.hapusSusunanSaya("))
+        val pengaturan = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt")
+        assertTrue("Pengaturan tidak lagi menawarkan pilihan susunan jadi",
+            pengaturan.contains("Store.TAHLIL_SUSUNAN"))
     }
 
     @Test

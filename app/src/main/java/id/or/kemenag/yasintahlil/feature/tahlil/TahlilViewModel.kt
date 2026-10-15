@@ -145,15 +145,6 @@ class TahlilViewModel @Inject constructor(
         }
     }
 
-    fun next() {
-        val s = _state.value
-        if (s.idx < s.items.size - 1) { _state.update { it.copy(idx = it.idx + 1, count = 0) }; persist(); catat() }
-    }
-
-    fun prev() {
-        if (_state.value.idx > 0) { _state.update { it.copy(idx = it.idx - 1, count = 0) }; persist(); catat() }
-    }
-
     fun jumpTo(i: Int) {
         if (i in _state.value.items.indices) { _state.update { it.copy(idx = i, count = 0) }; persist(); catat() }
     }
@@ -175,12 +166,15 @@ class TahlilViewModel @Inject constructor(
     }
 
     /**
-     * Catat bagian yang sedang dibaca ke riwayat (`plan.txt` §"Pencarian, Favorit, dan Riwayat":
+     * Catat bagian yang sedang ditandai ke riwayat (`plan.txt` §"Pencarian, Favorit, dan Riwayat":
      * *"riwayat terakhir dibaca"*).
      *
-     * Dipanggil hanya saat **posisi baca berpindah** ([next], [prev], [jumpTo]) — bukan pada
-     * [setCount]. Menghitung tasbih juga memanggil [persist], dan mencatat riwayat tiap ketukan
-     * penghitung akan membanjiri daftar "Riwayat terbaru" dengan satu bagian yang sama.
+     * Layar Tahlil kini bersambung seperti Surat Yasin, jadi posisi baca berpindah lewat
+     * [jumpTo] saja: tombol "Ke bagian", tindakan "Tandai terakhir dibaca" pada kartunya,
+     * maupun tombol penanda "Terakhir dibaca" — semuanya jalan yang sama menuju fungsi ini.
+     * Bukan pada [setCount]: menghitung tasbih juga memanggil [persist], dan mencatat riwayat
+     * tiap ketukan penghitung akan membanjiri daftar "Riwayat terbaru" dengan satu bagian
+     * yang sama.
      */
     private fun catat() {
         val s = _state.value

@@ -96,7 +96,7 @@ class UkuranBacaanModeBacaTest {
     fun penandaMenemukanLayarYangMemangBermode() {
         val nama = layarBermode().map { it.first }.toSet()
         listOf(
-            "YasinScreen.kt", "DzikirScreen.kt", "TahlilScreen.kt",
+            "YasinScreen.kt", "DzikirGroupScreen.kt", "TahlilScreen.kt",
             "GhaibScreen.kt", "JenazahScreen.kt", "IqomahDoaScreen.kt",
         ).forEach { assertTrue("$it tidak terbaca sebagai layar bermode baca jarak jauh", it in nama) }
         // Kompas Kiblat memang punya mode layar penuh, tetapi tidak menampilkan teks Arab: ia tidak

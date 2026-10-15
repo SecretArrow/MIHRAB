@@ -14,10 +14,11 @@ import java.io.File
  * Apa pun yang disimpan di `remember` biasa lenyap saat itu. Untuk sebagian keadaan itu tidak
  * apa-apa: `settings` adalah panel modal yang memang wajar tertutup, dan `indeks`/`galat`/`ulang`
  * dibangun ulang oleh efek. Yang **tidak** boleh lenyap adalah keadaan yang dipilih pengguna dan
- * tak dapat dipulihkan sendiri: posisi langkah panduan sholat, tab yang sedang dibuka, mode layar
- * penuh, kata kunci yang sedang diketik. Kehilangan `step` berarti pengguna yang sedang di langkah
- * ketujuh terlempar ke langkah pertama hanya karena memutar perangkat; kehilangan `q` berarti ia
- * mengetik ulang kata kuncinya.
+ * tak dapat dipulihkan sendiri: mode layar penuh dan mode baca, cara pengelompokan yang dipilih,
+ * kata kunci yang sedang diketik. (Tab dan langkah panduan tidak lagi punya keadaan tersimpan —
+ * layar Tahlil, kelompok dzikir, dan langkah sholat kini bersambung, tanpa tombol next/prev.)
+ * Kehilangan `q` berarti pengguna mengetik ulang kata kuncinya; kehilangan `ringkas` berarti
+ * ia terlempar kembali ke tampilan pemula hanya karena memutar perangkat.
  *
  * Uji ini menjaga daftar itu tetap di `rememberSaveable`. Isinya sengaja **disebut satu per satu**,
  * bukan "semua `remember` harus `rememberSaveable`" — aturan yang lebih luas itu akan memaksa
@@ -31,11 +32,8 @@ class KeadaanLayarSaatDiputarTest {
 
     /** Keadaan yang harus bertahan: berkas → nama variabel → alasan singkat. */
     private val wajibBertahan: List<Triple<String, String, String>> = listOf(
-        Triple("feature/dzikir/DzikirScreen.kt", "tab", "kelompok dzikir yang sedang dibuka"),
-        Triple("feature/dzikir/DzikirScreen.kt", "fullscreen", "mode layar penuh"),
-        Triple("feature/sholat/SholatScreen.kt", "tab", "tab panduan yang sedang dibuka"),
+        Triple("feature/dzikir/DzikirGroupScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/sholat/SholatScreen.kt", "cara", "cara pengelompokan yang dipilih"),
-        Triple("feature/sholat/SholatDetailScreen.kt", "step", "langkah panduan yang sedang dibaca"),
         Triple("feature/sholat/SholatDetailScreen.kt", "ringkas", "mode ringkas/pemula"),
         Triple("feature/sholat/SholatDetailScreen.kt", "selesai", "tanda sudah selesai"),
         Triple("feature/sholat/SholatDetailScreen.kt", "syaratTerbuka", "daftar syarat yang dibuka"),
@@ -45,6 +43,7 @@ class KeadaanLayarSaatDiputarTest {
         Triple("feature/tahlil/TahlilScreen.kt", "jamaah", "mode bacaan berjamaah"),
         Triple("feature/tahlil/TahlilScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/tahlil/TahlilScreen.kt", "susun", "panel susunan tahlil"),
+        Triple("feature/tahlil/TahlilScreen.kt", "jump", "nomor bagian yang sedang diketik"),
         Triple("feature/kiblat/KiblatScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/yasin/YasinScreen.kt", "focus", "mode baca fokus"),
         Triple("feature/yasin/YasinScreen.kt", "jump", "nomor ayat yang sedang diketik"),

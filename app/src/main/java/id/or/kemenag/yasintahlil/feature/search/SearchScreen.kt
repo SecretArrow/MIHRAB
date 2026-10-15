@@ -205,10 +205,10 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
         add(SearchDoc(JenisBacaan.id(JenisBacaan.TAHLIL, t.id), "Tahlil: ${t.judul}", listOf(t.judul, t.terjemahan, t.latin, t.arab), Routes.TAHLIL))
     }
 
-    // Pustaka doa & dzikir.
+    // Pustaka doa & dzikir — hasilnya membuka kelompoknya langsung, bukan sekadar menu induknya.
     repo.dzikir().forEach { grup ->
         grup.items.forEach { d ->
-            add(SearchDoc(JenisBacaan.id(JenisBacaan.DZIKIR, d.judul), "Doa: ${d.judul}", listOf(d.judul, d.terjemahan, d.latin, d.arab), Routes.DZIKIR))
+            add(SearchDoc(JenisBacaan.id(JenisBacaan.DZIKIR, d.judul), "Doa: ${d.judul}", listOf(d.judul, d.terjemahan, d.latin, d.arab), Routes.dzikirGrup(grup.id)))
         }
     }
 

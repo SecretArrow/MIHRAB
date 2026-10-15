@@ -39,6 +39,7 @@ class KeteranganLayarTest {
         "yasin/YasinScreen.kt",
         "tahlil/TahlilScreen.kt",
         "dzikir/DzikirScreen.kt",
+        "dzikir/DzikirGroupScreen.kt",
         "sholat/SholatScreen.kt",
         "sholat/SholatDetailScreen.kt",
         "sholat/WudhuScreen.kt",

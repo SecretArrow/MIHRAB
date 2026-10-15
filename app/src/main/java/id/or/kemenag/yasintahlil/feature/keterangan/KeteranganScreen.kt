@@ -169,7 +169,7 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                 BagianKeterangan(
                     "Susunan saya",
                     "Susunan buatan sendiri tidak mengklaim rujukan atau tradisi tertentu — sumbernya " +
-                        "memang Anda sendiri. Susunannya diatur dari tombol \"Sesuaikan susunan\" di layar " +
+                        "memang Anda sendiri. Susunannya diatur dari ikon Atur susunan di layar " +
                         "Tahlil; penghitung ulangannya (bila dipakai) dinyalakan dari tab Pengaturan.",
                 ),
             )
@@ -208,10 +208,11 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Isi panduan",
-                    "Tab Wajib memuat lima sholat wajib, tab Sunnah mengelompokkan sholat sunnah " +
-                        "menurut waktu pelaksanaan, jumlah rakaat, atau tujuannya, dan tab Bacaan " +
-                        "memuat lafaz tiap langkah beserta kapan dibacanya. Tiap entri dapat dibuka " +
-                        "ke panduan langkah demi langkahnya.",
+                    "Bagian Sholat wajib memuat lima sholat wajib, bagian Sholat sunnah " +
+                        "mengelompokkan sholat sunnah menurut waktu pelaksanaan, jumlah rakaat, " +
+                        "atau tujuannya, dan bagian Bacaan memuat lafaz tiap langkah beserta " +
+                        "kapan dibacanya. Tiap entri dapat dibuka ke panduan langkah demi " +
+                        "langkahnya.",
                 ),
             )
         }

@@ -73,7 +73,7 @@ object RuteKonten {
         JenisBacaan.SEARCH -> Routes.SEARCH
         // Jenis progres ([JenisBacaan.HANYA_PROGRES]) dan id rusak ([JenisBacaan.LAIN]) sengaja
         // tidak punya layar: keduanya bukan alamat yang dapat dituju.
-        else -> if (kind in grupDzikir) Routes.DZIKIR else null
+        else -> if (kind in grupDzikir) Routes.dzikirGrup(kind) else null
     }
 
     /**
