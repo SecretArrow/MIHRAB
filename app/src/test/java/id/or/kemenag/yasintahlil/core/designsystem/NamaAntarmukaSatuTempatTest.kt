@@ -69,7 +69,7 @@ class NamaAntarmukaSatuTempatTest {
         "LAYAR_PENUH" to NamaAntarmuka.LAYAR_PENUH,
         "LAYAR_PENUH_IMAM" to NamaAntarmuka.LAYAR_PENUH_IMAM,
         "COBA_LAGI" to NamaAntarmuka.COBA_LAGI,
-        "TAMPIL_ARAB" to NamaAntarmuku.TAMPIL_ARAB,
+        "TAMPIL_ARAB" to NamaAntarmuka.TAMPIL_ARAB,
         "TAMPIL_LATIN" to NamaAntarmuka.TAMPIL_LATIN,
         "TAMPIL_TERJEMAHAN" to NamaAntarmuka.TAMPIL_TERJEMAHAN,
         "UKURAN_ARAB" to NamaAntarmuka.UKURAN_ARAB,

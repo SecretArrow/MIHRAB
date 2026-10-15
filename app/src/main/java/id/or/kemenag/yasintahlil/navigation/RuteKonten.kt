@@ -105,9 +105,14 @@ object RuteKonten {
     /**
      * Nama layar tujuan, untuk memberi tahu pengguna ke mana tombol "Buka" akan membawanya.
      * `null` bila tidak ada tujuan.
+     *
+     * Kelompok dzikir diperiksa lebih dahulu: rutenya `dzikir/<id kelompok>` — unik per kelompok,
+     * sehingga tak mungkin dicocokkan satu per satu pada `when` di bawah — tetapi layar yang
+     * dibukanya tetap bagian dari Dzikir & Doa, dan tombolnya wajib menyebut nama itu.
      */
     fun namaTujuan(kind: String, grupDzikir: Set<String> = emptySet()): String? =
-        when (rute(kind, grupDzikir)) {
+        if (kind in grupDzikir) NamaLayar.DZIKIR
+        else when (rute(kind, grupDzikir)) {
             Routes.YASIN -> NamaLayar.YASIN
             Routes.TAHLIL -> NamaLayar.TAHLIL
             Routes.DZIKIR -> NamaLayar.DZIKIR
