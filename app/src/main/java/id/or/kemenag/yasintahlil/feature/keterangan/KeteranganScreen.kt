@@ -274,7 +274,8 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Pengingat doa setelah adzan",
-                    "${PengingatAdzan.DOA_SEBAB} ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
+                    "Saklarnya ada di menu Adzan (hub pengaturan pengingat adzan). " +
+                        "${PengingatAdzan.DOA_SEBAB} ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
                         PengingatAdzan.DOA_BUKAN_SYARIAT,
                 ),
             )
@@ -288,17 +289,18 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                     "Perkiraan iqomah",
                     "Timer iqomah bersifat perkiraan: ${PengingatAdzan.IQOMAH_PERKIRAAN} Timer di " +
                         "layar hanya berjalan selama layarnya terbuka dan bergetar sekali saat " +
-                        "waktunya habis; saklar \"Ingatkan saat perkiraan iqomah habis\" " +
-                        "menambatkannya ke pengingat masuk waktu supaya tetap mengingatkan walau " +
-                        "layar tertutup.",
+                        "waktunya habis; pengingat yang tetap berbunyi walau layar tertutup " +
+                        "dinyalakan dari tab Pengaturan bersama durasinya.",
                 ),
             )
             add(
                 BagianKeterangan(
-                    "Durasi",
-                    "Panjang hitung mundurnya (menit) diubah di tab Pengaturan, bagian Jadwal & lokasi " +
-                        "→ \"Durasi iqomah\" — bersama seluruh pengaturan lain. Nilai yang sama dipakai " +
-                        "timer di layar ini dan pengingat yang berjalan di latar.",
+                    "Durasi & pengingat",
+                    "Panjang hitung mundurnya (menit) dan saklar pengingatnya sama-sama diubah di " +
+                        "tab Pengaturan, bagian \"Jadwal & pengingat\" — bersama seluruh pengaturan " +
+                        "lain (satu pengaturan, satu rumah). Nilai yang sama dipakai timer di layar " +
+                        "ini dan pengingat yang berjalan di latar; saklar per waktunya mengikuti " +
+                        "menu Adzan.",
                 ),
             )
             val catatan = repo.iqomahCatatan()
@@ -350,11 +352,12 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
             add(
                 BagianKeterangan(
                     "Lokasi & metode",
-                    "Jadwal mengikuti kota pilihan, lokasi GPS, metode hisab, mazhab Asar, dan zona " +
-                        "waktu yang dipilih di layar ini. Koreksi menit per waktunya terpusat di tab " +
-                        "Pengaturan (bagian Jadwal & lokasi) bersama seluruh pengaturan lain. Saklar " +
-                        "\"Ikuti perubahan lokasi\" menghitung ulang jadwal otomatis saat Anda " +
-                        "berpindah tempat.",
+                    "Jadwal mengikuti kota pilihan, lokasi GPS, metode hisab, dan zona waktu yang " +
+                        "dipilih di layar ini — keempatnya masukan perhitungan jadwalnya. Mazhab " +
+                        "Asar dan koreksi menit per waktunya terpusat di tab Pengaturan (bagian " +
+                        "\"Jadwal & pengingat\") bersama seluruh pengaturan lain: satu pengaturan, " +
+                        "satu rumah. Saklar \"Ikuti perubahan lokasi\" menghitung ulang jadwal " +
+                        "otomatis saat Anda berpindah tempat.",
                 ),
             )
         }

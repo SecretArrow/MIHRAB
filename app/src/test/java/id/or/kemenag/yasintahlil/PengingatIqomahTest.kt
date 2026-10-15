@@ -31,14 +31,26 @@ class PengingatIqomahTest {
     private val pekerja: String
         get() = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ReminderWorker.kt")
 
+    /**
+     * Saklar pengingat iqomah kini hidup di tab Pengaturan, satu rumah dengan durasinya (bagian
+     * "Jadwal & pengingat") — layar Iqomah murni timer dan bacaannya. Tanpa penjaga ini saklar
+     * mudah menempel kembali di layar itu sebagai salinan kedua.
+     */
     @Test
-    fun saklarPengingatIqomahAdaDiLayarDanMenjadwalkanUlang() {
-        assertTrue("saklar pengingat iqomah tidak ada di layar Iqomah",
-            layar.contains("Store.IQOMAH_ON"))
-        assertTrue("mengubah saklar tidak menjadwalkan ulang pengingat",
-            layar.contains("PrayerScheduler.scheduleAll"))
-        assertTrue("panjang timer tidak memakai kunci yang sama dengan pengingat",
-            layar.contains("Store.IQOMAH_MIN"))
+    fun saklarPengingatIqomahDitulisDariPengaturan() {
+        val pengaturan = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt")
+        assertTrue("Pengaturan tidak menyediakan saklar pengingat iqomah",
+            pengaturan.contains("Store.IQOMAH_ON"))
+        assertTrue("mengubah saklar di Pengaturan tidak menjadwalkan ulang pengingat",
+            pengaturan.contains("store.set(Store.IQOMAH_ON"))
+
+        val iqomah = layar
+        assertTrue("layar Iqomah tidak lagi membaca panjang timer dari preferensi",
+            iqomah.contains("store.get(Store.IQOMAH_MIN"))
+        assertFalse("layar Iqomah kembali menulis preferensi pengingat — kendalinya milik Pengaturan",
+            iqomah.contains("store.set(Store.IQOMAH_ON"))
+        assertTrue("layar Iqomah tidak lagi mengarahkan ke rumah pengaturannya",
+            iqomah.contains("diatur di tab Pengaturan"))
     }
 
     @Test

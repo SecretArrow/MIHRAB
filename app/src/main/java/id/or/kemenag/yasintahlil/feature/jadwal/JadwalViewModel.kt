@@ -299,15 +299,10 @@ class JadwalViewModel @Inject constructor(
         viewModelScope.launch { store.set(Store.METHOD, m.name); PrayerScheduler.scheduleAll(ctx) }
     }
 
-    fun setAsarHanafi(hanafi: Boolean) {
-        _state.value = _state.value.copy(asarHanafi = hanafi); recompute()
-        // Kunci disimpan lewat aturan bersama: `"syafii"` yang diketik ulang di sini dahulu menjadi
-        // salinan kelima dari nilai yang sama, dan salah ketik satu huruf membuat pilihannya jatuh
-        // ke faktor jumhur tanpa pesan galat. Pasangan boolean→kunci pun kini tinggal di
-        // `JadwalHariIni.asarKey`, tempat yang sama dengan kebalikannya (`asarHanafi`).
-        val kunci = JadwalHariIni.asarKey(hanafi)
-        viewModelScope.launch { store.set(Store.ASAR, kunci); PrayerScheduler.scheduleAll(ctx) }
-    }
+    // Mazhab Asar tidak lagi punya pengendalinya di layar ini — rumahnya di tab Pengaturan
+    // (bagian "Jadwal & pengingat"), yang sekaligus menyusun ulang pengingatnya. ViewModel tetap
+    // membaca `Store.ASAR` di `muatUlang()`: jam Asar yang tercetak harus mengikuti mazhab yang
+    // dipilih, sama seperti penjadwal pengingat.
 
     fun setTimezone(tzId: String) {
         _state.value = _state.value.copy(tzId = tzId); recompute()

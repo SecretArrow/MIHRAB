@@ -6,7 +6,6 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -233,22 +232,14 @@ fun KiblatScreen(go: (String) -> Unit = {}, vm: KiblatViewModel = hiltViewModel(
                 }
             }, { Text("Pakai GPS") })
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
-            TampilanKompas.SATUAN.forEach { u ->
-                FilterChip(s.unit == u, { vm.setUnit(u) }, { Text(TampilanKompas.labelSatuan(u)) })
-            }
             OutlinedButton(onClick = { vm.refreshLocation() }, enabled = s.hasPermission) { Text("Perbarui lokasi") }
         }
-        // Pemilih tampilan hanya ditawarkan bila sensor memang ada: menawarkan "Kompas & peta"
-        // pada perangkat tanpa magnetometer berarti menawarkan pilihan yang tak bisa dipakai.
-        if (s.hasCompass) Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 4.dp).horizontalScroll(rememberScrollState()),
-        ) {
-            Text("Tampilan kompas:", style = MaterialTheme.typography.labelMedium)
-            TampilanKompas.SEMUA.forEach { t ->
-                FilterChip(s.tampilan == t, { vm.setTampilan(t) }, { Text(TampilanKompas.label(t)) })
-            }
-        }
+        // Satuan azimut dan tampilan kompas (jarum & peta, atau angka & peta) tidak lagi punya
+        // chipnya di sini — rumahnya di tab Pengaturan (bagian "Kompas kiblat") bersama seluruh
+        // pengaturan lain, dan pilihan itu langsung berlaku di layar ini. Satu pengaturan, satu rumah.
+        Text("Satuan azimut dan tampilan kompasnya diatur di tab Pengaturan (bagian \"Kompas kiblat\").",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp))
     }
 }

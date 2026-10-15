@@ -23,6 +23,18 @@ import java.io.File
  * - **Saklar pengingat waktu sholat** — dahulu kartu saklar di beranda; beranda kini murni
  *   dasbor, dan saklarnya hidup di sini bersama kendali lainnya.
  *
+ * Perbaikan lanjutan atas permintaan yang sama (*"jangan ada duplikat fitur"*): kendali untuk satu
+ * preferensi tidak boleh hidup di dua layar sekaligun. Empat yang dahulu digandakan kini
+ * berumah tunggal — dijaga `satuPengaturanSatuRumahTanpaKendaliKembar`:
+ *
+ * - **Mazhab Asar** — chip kembar di menu Jadwal dibubarkan; rumahnya Pengaturan (Ibadah & mazhab).
+ * - **Satuan & tampilan kompas** — chip kembar di layar Kiblat dibubarkan; rumahnya Pengaturan
+ *   (Kompas kiblat), dan layar Kiblat membacanya secara reaktif.
+ * - **Saklar pengingat doa setelah adzan** — salinan di layar Doa Adzan dibubarkan; rumahnya menu
+ *   Adzan, hub pengaturan pengingat adzan.
+ * - **Saklar pengingat iqomah** — pindah dari layar Iqomah ke Pengaturan, satu kelompok dengan
+ *   durasinya ("Jadwal & pengingat").
+ *
  * Uji ini menjaga agar keempatnya tidak kembali berpencar, dan agar tidak ada tombol teks
  * "−"/"+" baru yang lahir di layar lain.
  */
@@ -144,5 +156,32 @@ class PengaturanTerpusatTest {
             pengaturan.contains("store.set(Store.NOTIF"))
         assertTrue("saklar pengingat di Pengaturan tidak lagi menjadwalkan ulang pengingatnya",
             pengaturan.contains("PrayerScheduler.scheduleAll"))
+    }
+
+    /**
+     * "Jangan ada duplikat fitur": kendali untuk satu preferensi hanya boleh hidup di satu layar.
+     * Yang diperiksa bukan hanya kehadirannya di rumah yang baru, tetapi juga lenyapnya fungsi
+     * pengendali lama — fungsi tanpa pemanggil adalah pintu yang menunggu dipasang kembali.
+     */
+    @Test
+    fun satuPengaturanSatuRumahTanpaKendaliKembar() {
+        val pelanggar = berkasMain().mapNotNull { f ->
+            val k = KodeSumber.kodeTanpaKomentar(f.readText())
+            val tanda = listOf(
+                "setAsarHanafi(",   // mazhab Asar — rumahnya Pengaturan
+                "fun setUnit(",     // satuan kompas — rumahnya Pengaturan
+                "fun setTampilan(", // tampilan kompas — rumahnya Pengaturan
+            ).filter { k.contains(it) }
+            if (tanda.isEmpty()) null else "${f.name}: ${tanda.joinToString()}"
+        }
+        assertTrue("kendali kembar muncul kembali: $pelanggar", pelanggar.isEmpty())
+
+        val pengaturan = kode("feature/settings/SettingsScreen.kt")
+        assertTrue("Pengaturan kehilangan pemilih mazhab Asar",
+            pengaturan.contains("JadwalHariIni.ASAR_SEMUA"))
+        assertTrue("Pengaturan kehilangan pemilih satuan/tampilan kompas",
+            pengaturan.contains("Store.COMPASS_UNIT") && pengaturan.contains("Store.COMPASS_VIEW"))
+        assertTrue("Pengaturan kehilangan saklar pengingat iqomah",
+            pengaturan.contains("store.set(Store.IQOMAH_ON"))
     }
 }

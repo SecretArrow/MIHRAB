@@ -5,6 +5,25 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Pengaturan dirapikan ke dalam delapan kelompok berkartu.** Tampilan, Pengaturan bacaan,
+  Ibadah & mazhab, Jadwal & pengingat, Kompas kiblat, Data lokal, Pembaruan konten, dan Tentang —
+  masing-masing dalam kartu berbingkai dengan nama pengaturan di atas, kendalinya di bawah, dan
+  catatan penjelas di ujung; pengukur ukuran teks kini menampilkan angkanya di baris namanya.
+  Bagian "Jadwal & lokasi" diubah namanya menjadi "Jadwal & pengingat" — kotanya memang dipilih
+  di menu Jadwal; yang dikelola di sini pengingat serta koreksinya.
+- **Satu pengaturan, satu rumah — kendali kembar dibubarkan.** Mazhab Asar kini hanya diatur dari
+  Pengaturan (chip kembar di menu Jadwal dihapus; jam Asar di sana tetap mengikuti pilihannya),
+  satuan & tampilan kompas hanya dari Pengaturan (chip di layar Kiblat diganti penunjuk; layar itu
+  kini membaca pilihannya secara langsung sehingga perubahan langsung berlaku), saklar pengingat
+  doa setelah adzan hanya di menu Adzan (salinannya di layar Doa Adzan diganti penunjuk), dan
+  saklar pengingat iqomah pindah ke Pengaturan — satu kelompok dengan durasinya — sehingga layar
+  Iqomah murni timer dan bacaannya.
+- **Keterangan arahan yang tidak akurat dibetulkan.** Kartu jadwal di menu Adzan dahulu menyuruh
+  mengubah koreksi menit di menu Jadwal padahal kendalinya sudah ada di Pengaturan; kini tiap
+  pengaturan diarahkan ke rumahnya yang sebenarnya, termasuk pada layar keterangan Jadwal, Iqomah,
+  dan Doa Adzan.
+
 ## [1.8.0] - 2026-10-15
 
 ### Diubah

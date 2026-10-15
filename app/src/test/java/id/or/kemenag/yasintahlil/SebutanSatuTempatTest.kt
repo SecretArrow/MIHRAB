@@ -23,8 +23,9 @@ import java.io.File
  *    pencarian tetap mendaftarkannya;
  *  - **judul satu ayat Yasin** (`Yasin ayat 58`) — di `YasinViewModel` (riwayat & favorit) dan di
  *    indeks pencarian, sehingga ayat yang sama dapat muncul dengan dua nama;
- *  - **nama mazhab Asar** beserta faktor bayangannya (`Syafi'i (1)`) — di menu Jadwal dan menu
- *    Pengaturan, yang keduanya mengatur nilai yang sama (`Store.ASAR`).
+ *  - **nama mazhab Asar** beserta faktor bayangannya (`Syafi'i (1)`) — dahulu ditawarkan sekaligus
+ *    di menu Jadwal dan menu Pengaturan untuk nilai yang sama (`Store.ASAR`); pemilihnya kini
+ *    tunggal di menu Pengaturan, dan yang dijaga adalah ejaannya tetap dari aturan bersama.
  *  - **id entri daftar sholat khusus** (`ghaib`, `jenazah`) — di `sholat_daftar.json` dan di layar
  *    Panduan Sholat, yang menawarkan tombol "Buka" bagi entri dengan id itu.
  */
@@ -193,12 +194,20 @@ class SebutanSatuTempatTest {
 
     @Test
     fun keduaLayarMenawarkanPilihanMazhabAsarYangSama() {
-        assertTrue("menu Jadwal tidak memakai nama mazhab dari aturan bersama",
-            kodeLayar("feature/jadwal/JadwalScreen.kt").contains("JadwalHariIni.asarLabel("))
+        // Pemilih mazhab Asar kini hanya hidup di menu Pengaturan (permintaan pengguna: satu
+        // pengaturan satu rumah — chip kembar di menu Jadwal dibubarkan). Yang tetap dijaga di sini
+        // adalah ejaannya: menu Pengaturan memakai daftar pilihan bersama, dan layar Jadwal tidak
+        // menawarkan pilihan keduanya lagi.
         assertTrue("menu Pengaturan tidak memakai daftar pilihan mazhab Asar bersama",
             kodeLayar("feature/settings/SettingsScreen.kt").contains("JadwalHariIni.ASAR_SEMUA"))
-        assertTrue("pasangan boolean→kunci mazhab Asar disusun ulang di JadwalViewModel",
-            kodeLayar("feature/jadwal/JadwalViewModel.kt").contains("JadwalHariIni.asarKey("))
+        val jadwal = kodeLayar("feature/jadwal/JadwalScreen.kt")
+        assertFalse("layar Jadwal kembali menawarkan pemilih mazhab Asar — rumahnya di Pengaturan",
+            jadwal.contains("setAsarHanafi(") || jadwal.contains("asarLabel("))
+        // ViewModel Jadwal tetap membaca Store.ASAR: jam Asar yang tercetak harus mengikuti mazhab
+        // yang dipilih di Pengaturan, sama seperti penjadwal pengingat.
+        val vm = kodeLayar("feature/jadwal/JadwalViewModel.kt")
+        assertTrue("JadwalViewModel tidak lagi membaca mazhab Asar — jam Asarnya berbohong",
+            vm.contains("store.get(Store.ASAR"))
     }
 
     @Test

@@ -17,7 +17,6 @@ import id.or.kemenag.yasintahlil.core.data.AdzanDoa
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.designsystem.*
-import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.FormatWaktu
 import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
@@ -26,7 +25,6 @@ import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.FullscreenEffect
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * Getar penanda waktu iqomah habis.
@@ -43,15 +41,15 @@ private fun vibrate(ctx: Context) {
 }
 
 // Panjang timer (menit) tidak lagi diubah dari layar ini: tombol − / + -nya dipindah ke tab
-// Pengaturan (bagian "Jadwal & lokasi" → "Durasi iqomah") yang menulis `Store.IQOMAH_MIN` dan
-// menjadwalkan ulang pengingatnya. Layar ini cukup membaca nilainya lalu menjalankan hitung
-// mundurnya — sama dengan notifikasi latar yang membaca kunci yang sama.
+// Pengaturan (bagian "Jadwal & pengingat" → "Durasi iqomah") yang menulis `Store.IQOMAH_MIN` dan
+// menjadwalkan ulang pengingatnya. Saklar pengingatnya pun kini satu rumah dengan durasinya di
+// sana. Layar ini cukup membaca nilainya lalu menjalankan hitung mundurnya — sama dengan
+// notifikasi latar yang membaca kunci yang sama.
 
 @Composable
 fun IqomahScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
-    val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     val items = remember { repo.iqomah() }
     var mins by remember { mutableStateOf(PengingatAdzan.IQOMAH_DEFAULT_MENIT) }
@@ -62,7 +60,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_IQOMAH) }
     LaunchedEffect(Unit) {
         mins = PengingatAdzan.iqomahMenit(
             store.get(Store.IQOMAH_MIN, PengingatAdzan.IQOMAH_DEFAULT_MENIT))
@@ -70,7 +67,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
         showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
-        ingatkan = store.get(Store.IQOMAH_ON, BawaanPreferensi.PENGINGAT_IQOMAH)
     }
     FullscreenEffect(fullscreen)
 
@@ -96,8 +92,8 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("iqomah")) }
         }
-        Text("Timer opsional setelah masuk waktu (± $mins mnt) — durasinya diubah di tab " +
-                "Pengaturan (\"Durasi iqomah\"). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
+        Text("Timer opsional setelah masuk waktu (± $mins mnt) — durasi dan pengingatnya diatur " +
+                "di tab Pengaturan (bagian \"Jadwal & pengingat\"). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
             style = MaterialTheme.typography.labelMedium)
 
         // Durasi, bukan jam: ejaannya dari aturan bersama, tetapi namanya sengaja beda —
@@ -118,34 +114,15 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
             OutlinedButton(onClick = { remaining = -1 }) { Text(if (running) NamaAntarmuka.BATAL else NamaAntarmuka.RESET) }
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
-        Text("Timer berjalan selama layar ini terbuka; getar menandai waktu habis.",
-            style = MaterialTheme.typography.labelSmall)
-
-        // Panjang timer tidak lagi punya tombol − / + di sini — pengaturannya terpusat di tab
-        // Pengaturan bersama seluruh pengaturan lain, sesuai permintaan agar layar tetap bersih.
-
         // `plan.txt` §"Fitur Iqomah": *"Tambahkan pengatur waktu Iqomah opsional setelah pengingat
-        // masuk waktu sholat."* Timer di atas hanya hidup selama layar terbuka; saklar inilah yang
-        // menambatkannya ke pengingat masuk waktu, sehingga tetap berbunyi saat aplikasi ditutup.
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Ingatkan saat perkiraan iqomah habis")
-            Switch(ingatkan, {
-                ingatkan = it
-                scope.launch {
-                    store.set(Store.IQOMAH_ON, ingatkan)
-                    PrayerScheduler.scheduleAll(ctx.applicationContext)
-                }
-            })
-        }
-        Text(if (ingatkan) {
-            "Bila aktif: notifikasi $mins menit setelah pengingat masuk waktu sholat, berjalan " +
-                "walau layar ini tertutup. Ketukannya membuka layar ini. " +
-                "${PengingatAdzan.IQOMAH_PERKIRAAN} Mengikuti saklar per waktu di menu Adzan: " +
-                "waktu yang dimatikan tidak ikut mengingatkan."
-        } else {
-            "Bila diaktifkan: notifikasi $mins menit setelah pengingat masuk waktu sholat, " +
-                "berjalan walau layar ini tertutup. ${PengingatAdzan.IQOMAH_PERKIRAAN}"
-        }, style = MaterialTheme.typography.labelSmall)
+        // masuk waktu sholat."* Timer di atas hanya hidup selama layar terbuka; pengingat yang
+        // tetap berbunyi saat aplikasi ditutup dinyalakan dari tab Pengaturan bersama durasinya —
+        // satu keluarga pengaturan di satu rumah, bukan saklar yang tersebar di layar bacaan.
+        Text("Timer berjalan selama layar ini terbuka; getar menandai waktu habis. Pengingat " +
+                "perkiraan iqomah habis beserta durasinya diatur di tab Pengaturan " +
+                "(bagian \"Jadwal & pengingat\"). ${PengingatAdzan.IQOMAH_PERKIRAAN}",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(top = 4.dp))
 
         if (repo.iqomahCatatan().isNotBlank()) {
             Text(repo.iqomahCatatan(), style = MaterialTheme.typography.labelMedium,
@@ -173,8 +150,6 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
 fun DoaAdzanScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
-    val scope = rememberCoroutineScope()
-    val ctx = LocalContext.current
     val doa = remember { repo.doaAdzan() }
     val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
@@ -182,13 +157,11 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
     var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
-    var ingatkan by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     LaunchedEffect(Unit) {
         arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
         showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
         showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
         showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
-        ingatkan = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
     }
     Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
         Row(
@@ -202,38 +175,28 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
             TombolInfo { go(Routes.keterangan("doa_adzan")) }
         }
         // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat
-        // membaca doa setelah adzan."* Saklar yang sama juga ada di menu Adzan; keduanya menulis
-        // kunci `Store.DOA_ADZAN_REMINDER` yang sama, jadi tidak ada dua sumber kebenaran.
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(PengingatAdzan.NAMA_PENGINGAT_DOA)
-            Switch(ingatkan, {
-                ingatkan = it
-                scope.launch {
-                    store.set(Store.DOA_ADZAN_REMINDER, ingatkan)
-                    PrayerScheduler.scheduleAll(ctx.applicationContext)
-                }
-            })
-        }
-        // Sebab, ikut-saklar, dan batas syariat dari aturan bersama (`PengingatAdzan`), sama dengan
-        // penjelasan di menu Adzan. Yang khas layar ini hanya ke mana ketukannya membuka ("layar
-        // ini") dan bahwa pengingatnya tetap berbunyi saat aplikasi ditutup.
-        Text(if (ingatkan) {
-            "Bila aktif: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, dan " +
-                "pengingat tetap berbunyi walau aplikasi ditutup. ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
-                PengingatAdzan.DOA_BUKAN_SYARIAT
-        } else {
-            "Bila diaktifkan: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar ini, " +
-                "dan pengingat tetap berbunyi walau aplikasi ditutup."
-        }, style = MaterialTheme.typography.labelSmall)
+        // membaca doa setelah adzan."* Saklarnya hidup di menu Adzan — hub seluruh pengaturan
+        // pengingat adzan — dan tidak lagi digandakan di sini (satu pengaturan, satu rumah):
+        // pengguna yang menemukan doanya di layar ini tetap diarahkan ke saklarnya, tanpa dua
+        // saklar yang bisa saling bertentangan di mata pengguna.
+        //
+        // Sebab, ikut-saklar, dan batas syariatnya tetap dari aturan bersama (`PengingatAdzan`),
+        // sama persis dengan yang ditulis menu Adzan — dua penjelasan untuk satu pengingat tidak
+        // boleh berbeda kata.
+        Text("\"${PengingatAdzan.NAMA_PENGINGAT_DOA}\" dinyalakan dari menu Adzan. Bila aktif: " +
+                "${PengingatAdzan.DOA_SEBAB}; ketukannya langsung membuka layar ini dan pengingatnya " +
+                "tetap berbunyi walau aplikasi ditutup. ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
+                PengingatAdzan.DOA_BUKAN_SYARIAT,
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(bottom = 4.dp))
         KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize,
             showArab, showLatin, showTrans)
         KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize,
             showArab, showLatin, showTrans)
         KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize,
             showArab, showLatin, showTrans)
-        Text("Suara adzan dan pengingat sebelum adzan diatur di menu Adzan; saklar pengingat doa di " +
-                "atas dan di menu Adzan menulis preferensi yang sama. Iqomah memiliki timer " +
-                "tersendiri di menu Iqomah.",
+        Text("Suara adzan, pengingat sebelum adzan, dan saklar pengingat doanya diatur di menu " +
+                "Adzan. Iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
 

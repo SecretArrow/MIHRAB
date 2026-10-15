@@ -88,24 +88,38 @@ class TampilanKompasTest {
         assertTrue("jarum kompas tanpa contentDescription (TalkBack)", blok.contains("contentDescription"))
     }
 
+    /**
+     * Pemilih tampilan kompas hanya hidup di Pengaturan (satu pengaturan, satu rumah) — chip
+     * kembar di layar Kiblat dibubarkan. Layar itu tetap menampilkan hasil pilihannya, dan
+     * penjaga `layarKiblatMenggambarJarumHanyaLewatPenjaga` di atas memastikan hasilnya benar.
+     */
     @Test
-    fun pemilihTampilanDitawarkanDiLayarKiblatDanPengaturan() {
+    fun pemilihTampilanHanyaDitawarkanDiPengaturan() {
         val layar = kiblatScreen()
-        assertTrue("layar Kiblat tidak menawarkan pemilih tampilan",
-            layar.contains("TampilanKompas.SEMUA.forEach") && layar.contains("vm.setTampilan("))
+        assertFalse("layar Kiblat kembali menawarkan pemilih tampilan — rumahnya di Pengaturan",
+            layar.contains("vm.setTampilan(") || layar.contains("TampilanKompas.SEMUA.forEach"))
+        assertTrue("layar Kiblat tidak lagi mengarahkan pengguna ke Pengaturan",
+            layar.contains("diatur di tab Pengaturan"))
         val pengaturan = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt")
         assertTrue("Pengaturan tidak menyediakan tampilan kompas",
             pengaturan.contains("TampilanKompas.SEMUA.forEach") && pengaturan.contains("Store.COMPASS_VIEW"))
     }
 
-    /** ViewModel harus membaca dan menyimpan pilihannya, bukan hanya menyediakannya di layar. */
+    /**
+     * ViewModel membaca pilihan satuan dan tampilan sebagai **aliran**, bukan sekali di `init`:
+     * kendalinya kini di tab Pengaturan, dan pengguna dapat mengganti pilihannya lalu kembali ke
+     * layar Kiblat yang masih hidup di tumpukan navigasi. Pembacaan sekali membuat layar itu
+     * menampilkan satuan lama tanpa galat apa pun. Penulisan kuncinya hanya di Pengaturan.
+     */
     @Test
-    fun viewModelMembacaDanMenyimpanTampilan() {
+    fun viewModelMembacaPreferensiSecaraReaktif() {
         val vm = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/kiblat/KiblatViewModel.kt")
-        assertTrue("ViewModel tidak membaca preferensi tampilan",
-            vm.contains("store.get(Store.COMPASS_VIEW"))
-        assertTrue("ViewModel tidak menyimpan preferensi tampilan",
-            vm.contains("store.set(Store.COMPASS_VIEW"))
+        assertTrue("ViewModel tidak membaca satuan azimut secara reaktif",
+            vm.contains("store.flow(Store.COMPASS_UNIT"))
+        assertTrue("ViewModel tidak membaca preferensi tampilan secara reaktif",
+            vm.contains("store.flow(Store.COMPASS_VIEW"))
+        assertFalse("ViewModel masih menyimpan preferensi kompas — penulisannya milik Pengaturan",
+            vm.contains("store.set(Store.COMPASS_UNIT") || vm.contains("store.set(Store.COMPASS_VIEW"))
     }
 
     // ---- Satuan azimut ----

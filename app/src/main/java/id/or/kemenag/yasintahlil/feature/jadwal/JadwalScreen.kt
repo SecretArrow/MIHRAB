@@ -132,18 +132,10 @@ fun JadwalScreen(go: (String) -> Unit = {}, vm: JadwalViewModel = hiltViewModel(
             TextButton(onClick = { vm.setTimezone(id); tzDrop = false }) { Text(label) }
         }
 
-        // Mazhab Asar. Nama mazhabnya dari aturan bersama; awalan "Asar" milik layar ini karena
-        // chip di sini berdiri tanpa judul bagian (di menu Pengaturan sudah ada judul "Mazhab Asar:").
-        BarisChip {
-            FilterChip(!s.asarHanafi, { vm.setAsarHanafi(false) },
-                { Text("Asar ${JadwalHariIni.asarLabel(false)}") })
-            FilterChip(s.asarHanafi, { vm.setAsarHanafi(true) },
-                { Text("Asar ${JadwalHariIni.asarLabel(true)}") })
-        }
-
-        // Koreksi menit per waktu dahulu menempel di sini sebagai deretan tombol − / +. Kendali itu
-        // kini terpusat di tab Pengaturan (bagian "Jadwal & lokasi") — layar ini cukup membaca dan
-        // menampilkan hasilnya: jam yang tercetak di bawah tetap memakai koreksi yang dipilih.
+        // Mazhab Asar dan koreksi menit per waktu dahulu menempel di sini sebagai chip dan deretan
+        // tombol − / +. Kendali keduanya kini terpusat di tab Pengaturan (bagian "Jadwal & pengingat")
+        // — layar ini cukup membaca dan menampilkan hasilnya: jam yang tercetak di bawah tetap
+        // memakai mazhab dan koreksi yang dipilih. Satu pengaturan, satu rumah.
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
         when {

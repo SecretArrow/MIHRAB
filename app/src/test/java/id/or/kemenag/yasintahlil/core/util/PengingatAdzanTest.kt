@@ -224,9 +224,11 @@ class PengingatAdzanTest {
             "feature/adzan/AdzanScreen.kt" to Harapan(
                 listOf("PengingatAdzan.NAMA_PENGINGAT_DOA", "Store.DOA_ADZAN_REMINDER"),
                 listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU")),
+            // Saklar doa tidak lagi digandakan di layar Doa Adzan (satu pengaturan, satu rumah);
+            // layar itu menyebut namanya untuk mengarahkan ke menu Adzan, tanpa menyentuh kuncinya.
             "feature/adzan/IqomahDoaScreen.kt" to Harapan(
-                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA", "Store.DOA_ADZAN_REMINDER"),
-                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU")),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_DOA"),
+                listOf("PengingatAdzan.NAMA_PENGINGAT_WAKTU", "Store.DOA_ADZAN_REMINDER")),
         )
         harapan.forEach { (berkas, h) ->
             val k = layar(berkas)

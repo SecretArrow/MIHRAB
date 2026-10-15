@@ -189,10 +189,11 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
             modifier = Modifier.padding(top = 4.dp),
         ) {
             Text("Jam di atas dihitung di perangkat untuk hari ini dari lokasi, metode, mazhab Asar, " +
-                    "koreksi menit, dan zona waktu yang sama dengan menu Jadwal. Metode aktif: " +
-                    "${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; ubah metode, koreksi " +
-                    "menit, dan zona waktu di menu Jadwal. Menonaktifkan sebuah waktu mematikan " +
-                    "adzan sekaligus pengingatnya.",
+                    "koreksi menit, dan zona waktu yang sama dengan penjadwal pengingatnya. Metode " +
+                    "aktif: ${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; metode dan " +
+                    "zona waktunya diubah di menu Jadwal, mazhab Asar serta koreksi menitnya di " +
+                    "tab Pengaturan. Menonaktifkan sebuah waktu mematikan adzan sekaligus " +
+                    "pengingatnya.",
                 style = MaterialTheme.typography.labelMedium)
         }
 
@@ -275,6 +276,11 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
             onValueChangeFinished = { scope.launch { store.set(Store.ADZAN_PRE_MIN, preMin); PrayerScheduler.scheduleAll(ctx.applicationContext) } },
         )
 
+        // Saklar ini dahulu digandakan di layar Doa Adzan; kini satu pengaturan satu rumah —
+        // rumahnya di sini, hub pengaturan pengingat adzan, dan layar itu cukup mengarahkan ke sini.
+        // Kalimat sebab, ikut-saklar, dan batas syariat tetap dari aturan bersama (`PengingatAdzan`)
+        // — layar Doa Adzan memakai kata-kata yang sama persis, sehingga dua penjelasan untuk satu
+        // pengingat tidak dapat berbeda.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(PengingatAdzan.NAMA_PENGINGAT_DOA)
             Switch(doaReminder, {
@@ -285,9 +291,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
                 }
             })
         }
-        // Kalimat sebab, ikut-saklar, dan batas syariat datang dari aturan bersama
-        // (`PengingatAdzan`) — layar Iqomah menjelaskan saklar yang sama dengan kata-kata yang sama.
-        // Yang tetap khas layar ini hanyalah ke mana ketukannya membuka: layar Doa Adzan.
         Text("Bila aktif: ${PengingatAdzan.DOA_SEBAB}. Ketukannya langsung membuka layar Doa Adzan. " +
                 "${PengingatAdzan.DOA_IKUT_SAKLAR} ${PengingatAdzan.DOA_BUKAN_SYARIAT}",
             style = MaterialTheme.typography.labelSmall)

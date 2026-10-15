@@ -93,11 +93,21 @@ class KiblatViewModel @Inject constructor(
                     useGps = useGps, lat = lat, lon = lon,
                     hasPermission = LocationProvider.hasPermission(ctx),
                     bearing = QiblaCalc.bearing(lat, lon),
-                    unit = store.get(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT),
-                    tampilan = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS),
                 )
             }
             if (useGps) refreshLocation()
+        }
+        // Satuan dan tampilan kompas kini diubah dari tab Pengaturan, bukan dari layar ini —
+        // keduanya karena itu dibaca sebagai **aliran**: pengguna boleh membuka Pengaturan,
+        // mengganti pilihannya, lalu kembali ke layar ini yang masih hidup di tumpukan navigasi.
+        // Pembacaan sekali di `init` membuat layar itu menampilkan satuan lama tanpa galat apa pun.
+        viewModelScope.launch {
+            store.flow(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT)
+                .collect { u -> _state.update { it.copy(unit = u) } }
+        }
+        viewModelScope.launch {
+            store.flow(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
+                .collect { v -> if (TampilanKompas.sah(v)) _state.update { it.copy(tampilan = v) } }
         }
         startCompass()
     }
@@ -178,18 +188,9 @@ class KiblatViewModel @Inject constructor(
         }
     }
 
-    /** Satuan tampilan azimut. */
-    fun setUnit(u: String) {
-        _state.update { it.copy(unit = u) }
-        viewModelScope.launch { store.set(Store.COMPASS_UNIT, u) }
-    }
-
-    /** Tampilan kompas: jarum & peta, atau angka & peta saja. */
-    fun setTampilan(v: String) {
-        if (!TampilanKompas.sah(v)) return
-        _state.update { it.copy(tampilan = v) }
-        viewModelScope.launch { store.set(Store.COMPASS_VIEW, v) }
-    }
+    // Satuan azimut dan tampilan kompas tidak lagi punya pengendalinya di sini — rumahnya di tab
+    // Pengaturan (bagian "Kompas kiblat"). Keduanya dibaca sebagai aliran di `init` sehingga
+    // pilihan yang baru langsung berlaku, termasuk pada layar ini yang masih hidup di tumpukan.
 
     private fun startCompass() {
         val sm = sensorManager

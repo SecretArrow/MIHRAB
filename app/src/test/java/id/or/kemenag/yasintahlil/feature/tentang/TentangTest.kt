@@ -122,9 +122,10 @@ class TentangTest {
         assertTrue("Pengaturan tidak membuka layar Tentang", pengaturan.contains("go(Routes.TENTANG)"))
         // NavSmokeTest mencari judul bagian ini, dan judulnya harus **nama yang sama** dengan yang
         // dipakai layar yang dibukanya — dahulu di sini tertulis "Tentang & sumber" sementara
-        // layarnya berjudul "Tentang aplikasi".
+        // layarnya berjudul "Tentang aplikasi". Judul bagian seluruh Pengaturan kini memakai
+        // `BagianJudul`, dan namanya tetap dibaca dari kosakata bersama.
         assertTrue("judul bagian Tentang di Pengaturan tidak memakai nama bersama",
-            KodeSumber.kodeTanpaKomentar(pengaturan).contains("Text(NamaLayar.TENTANG"))
+            KodeSumber.kodeTanpaKomentar(pengaturan).contains("BagianJudul(NamaLayar.TENTANG)"))
         assertTrue("tombol Tentang di Pengaturan tidak memakai nama bersama",
             KodeSumber.kodeTanpaKomentar(pengaturan).contains("Buka \${NamaLayar.TENTANG}"))
     }

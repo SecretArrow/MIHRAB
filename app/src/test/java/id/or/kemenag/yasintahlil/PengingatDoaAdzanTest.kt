@@ -49,19 +49,23 @@ class PengingatDoaAdzanTest {
     }
 
     /**
-     * Saklar yang sama harus tersedia di layar Doa Adzan — di situlah orang membacanya, jadi
-     * mengaktifkannya tidak boleh menuntut berpindah ke menu Adzan lebih dulu. Keduanya menulis
-     * kunci preferensi yang sama supaya tidak lahir dua sumber kebenaran.
+     * Saklar pengingat doa hanya hidup di menu Adzan — hub seluruh pengaturan pengingat adzan
+     * (satu pengaturan, satu rumah). Dahulu ia digandakan di layar Doa Adzan; pengganda itu
+     * dibubarkan, dan layar tersebut cukup mengarahkan ke saklarnya dengan nama yang sama.
      */
     @Test
-    fun saklarPengingatJugaAdaDiLayarDoaAdzan() {
-        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt")
-        val doa = layar.substringAfter("fun DoaAdzanScreen(").substringBefore("private fun KartuDoa(")
-        assertTrue("layar Doa Adzan tidak punya saklar pengingat", doa.contains("DOA_ADZAN_REMINDER"))
-        assertTrue("mengubah saklar di layar Doa Adzan tidak menjadwalkan ulang pengingat",
-            doa.contains("PrayerScheduler.scheduleAll"))
-        assertTrue("saklar di layar Doa Adzan tidak dipulihkan dari preferensi",
-            doa.contains("store.get(Store.DOA_ADZAN_REMINDER"))
+    fun saklarPengingatHanyaDiLayarAdzanLayarDoaMengarahkan() {
+        val layar = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/AdzanScreen.kt")
+        assertTrue("saklar pengingat doa tidak ada di layar Adzan", layar.contains("DOA_ADZAN_REMINDER"))
+        assertTrue("mengubah saklar tidak menjadwalkan ulang pengingat",
+            layar.contains("PrayerScheduler.scheduleAll"))
+
+        val doa = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt")
+            .substringAfter("fun DoaAdzanScreen(").substringBefore("private fun KartuDoa(")
+        assertFalse("layar Doa Adzan kembali membawa saklar pengingat — rumahnya di menu Adzan",
+            doa.contains("DOA_ADZAN_REMINDER") || doa.contains("Switch("))
+        assertTrue("layar Doa Adzan tidak lagi menunjuk rumah saklarnya",
+            doa.contains("NAMA_PENGINGAT_DOA") && doa.contains("menu Adzan"))
     }
 
     @Test
