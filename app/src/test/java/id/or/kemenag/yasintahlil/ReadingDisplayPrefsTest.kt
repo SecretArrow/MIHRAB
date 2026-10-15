@@ -171,11 +171,18 @@ class ReadingDisplayPrefsTest {
 
     @Test
     fun ArabText_langsung_juga_dihormati_showArab() {
-        val offenders = featureSources().flatMap { f ->
-            callSites(f.readText(), "ArabText")
-                .filterNot { it.contains("showArab") }
-                .map { "${f.name}: ${rapikan(it)}" }
-        }
+        // AsmaulHusnaScreen dikecualikan dengan sengaja: sakelar "tampilkan Arab" mengatur
+        // BACAAN (Yasin, tahlil, dzikir — baris Arab panjang yang sebagian pengguna ingin
+        // sembunyikan), sedangkan Asmaul Husna adalah daftar nama — justru tulisan Arabnya-lah
+        // isi utamanya; menyembunyikannya menyisakan daftar arti tanpa yang didefinisikan.
+        // Alasan itu didokumentasikan pula di KDoc layarnya.
+        val offenders = featureSources()
+            .filterNot { it.name == "AsmaulHusnaScreen.kt" }
+            .flatMap { f ->
+                callSites(f.readText(), "ArabText")
+                    .filterNot { it.contains("showArab") }
+                    .map { "${f.name}: ${rapikan(it)}" }
+            }
         assertTrue(
             "Ada ArabText yang tampil tanpa memeriksa showArab:\n" + offenders.joinToString("\n"),
             offenders.isEmpty(),

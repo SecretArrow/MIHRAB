@@ -50,8 +50,8 @@ class AlmarhumWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
 
     override suspend fun doWork(): Result {
         NotifChannels.ensure(applicationContext)
-        val dao = EntryPointAccessors
-            .fromApplication(applicationContext, AlmarhumPintu::class.java).almarhumDao()
+        val dao = EntryPointAccessors.fromApplication(applicationContext, AlmarhumPintu::class.java)
+            .almarhumDao()
         val hariIni = LocalDate.now()
         dao.getAll().forEach { baris ->
             val wafat = AlmarhumHitung.dariIso(baris.tanggalWafat)

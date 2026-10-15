@@ -27,8 +27,8 @@ object AlmarhumHitung {
      */
     const val KETERANGAN_TRADISI =
         "Hari ke-7, 40, 100, dan 1000 beserta haul adalah tradisi masyarakat Indonesia untuk " +
-            "menghimpun doa bagi yang telah wafat — bukan ketentuan syariat; siapa pun bebas " +
-            "menggunakannya atau tidak."
+            "menghimpun doa bagi yang telah wafat — tradisi turun-temurun, bukan ketetapan agama; " +
+            "siapa pun bebas menggunakannya atau tidak."
 
     /** Hari-hari pengingat menurut tradisi tahlil di masyarakat Indonesia, dihitung sejak hari wafat. */
     private val HARI_TRADISI = longArrayOf(7, 40, 100, 1000)

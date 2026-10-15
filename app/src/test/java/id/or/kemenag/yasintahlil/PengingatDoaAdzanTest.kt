@@ -32,8 +32,12 @@ class PengingatDoaAdzanTest {
         // Rute berargumen tak mungkin dibuka dari notifikasi: rinciannya menempel pada argumennya —
         // rincian sholat pada id sholatnya, keterangan pada layar asalnya (`keterangan/{asal}`).
         // Keduanya karena itu sengaja bukan anggota LANGSUNG, sama seperti sebelum keterangan ada.
+        // ONBOARDING juga sengaja dikecualikan dengan alasan yang berbeda: layar pengantar hanya
+        // dituju SEKALI dari dalam aplikasi (penanda `Store.ONBOARDING_SELESAI`), tidak pernah
+        // oleh notifikasi — mendaftarkannya ke LANGSUNG justru membuka pintu yang tak pernah dipakai.
         val berargumen = setOf("SHOLAT_DETAIL", "KETERANGAN")
-        val kurang = semua.filterNot { it in berargumen || blok.contains(it) }
+        val tanpaNotifikasi = setOf("ONBOARDING")
+        val kurang = semua.filterNot { it in berargumen || it in tanpaNotifikasi || blok.contains(it) }
         assertTrue("rute tidak boleh dibuka dari notifikasi: $kurang", kurang.isEmpty())
         berargumen.forEach {
             assertFalse("rute berargumen tidak boleh ikut: $it", blok.contains(it))

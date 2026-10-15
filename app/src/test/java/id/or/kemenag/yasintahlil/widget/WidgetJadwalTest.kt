@@ -132,7 +132,9 @@ class WidgetJadwalTest {
 
     @Test
     fun berkasGradleTidakMenambahkanGlance() {
-        listOf("gradle/libs.versions.toml", "app/build.gradle.kts").forEach { jalur ->
+        // `root()` adalah direktori modul `app` (tempat `src/main` berada) — katalog versi ada
+        // di akar repo (satu tingkat di atas modul), sedangkan skrip gradle modul di modulnya sendiri.
+        listOf("../gradle/libs.versions.toml", "build.gradle.kts").forEach { jalur ->
             val berkas = File(root(), jalur)
             assertTrue("$jalur tidak ditemukan", berkas.isFile)
             assertFalse(

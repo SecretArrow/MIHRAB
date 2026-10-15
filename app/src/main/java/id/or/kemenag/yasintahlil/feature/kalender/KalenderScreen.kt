@@ -141,7 +141,7 @@ private fun KartuHariIni(t: LocalDate, koreksi: Int) {
                 modifier = Modifier.padding(top = 6.dp),
             )
             Text(
-                "Pasaran dan neptu adalah pengetahuan budaya Jawa, bukan ketentuan syariat.",
+                "Pasaran dan neptu adalah pengetahuan budaya Jawa, bukan bagian ajaran agama.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
