@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-10-15
+
 ### Ditambahkan
 - **Identitas baru: MIHRAB — Sahabat Ibadah Muslim.** Nama aplikasi, slogan
   ("Sahabat Ibadah Muslim"), dan deskripsi ("Teman Setia dalam Setiap Ibadah") diperbarui di
@@ -25,6 +27,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   dipertahankan apa adanya karena dirujuk modul lain (`dzikir.json`, `sholat_mayit.json`).
 - `tahlil_full.json` tidak lagi menjadi target `FLAT_TARGETS` `tools/fetch_quran_kemenag.py`
   (entri `doa_penutup` lama kini bagian dari doa penutup NU).
+
+**Rilis otomatis** dari commit `580907896aadf2bbddab5b90464abab0386ea5d3`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.11.0`.
 
 ## [1.10.0] - 2026-10-15
 
