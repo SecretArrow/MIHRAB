@@ -286,6 +286,9 @@ class NamaLayarSatuTempatTest {
      * tombolnya dianggap menyebut **tindakannya** saja. Nyatanya tiap bagian diawali judul bagian
      * yang menyebut layar tujuannya, sehingga namanya muncul dua kali di layar yang sama — dan
      * keduanya sudah berbeda dari judul layar yang dibukanya.
+     *
+     * Judul bagian Pengaturan kini seragam memakai `BagianJudul` (pengelompokan berkartu); namanya
+     * tetap dibaca dari kosakata bersama — satu nama untuk satu layar, di mana pun ia disebut.
      */
     @Test
     fun pengaturanMenamaiLayarTujuannyaDenganNamaBersama() {
@@ -293,7 +296,7 @@ class NamaLayarSatuTempatTest {
         listOf("NamaLayar.TENTANG" to "Tentang", "NamaLayar.PEMBARUAN_KONTEN" to "Pembaruan konten")
             .forEach { (rujukan, sebutan) ->
                 assertTrue("judul bagian $sebutan di Pengaturan tidak memakai $rujukan",
-                    k.contains("Text($rujukan"))
+                    k.contains("BagianJudul($rujukan"))
                 assertTrue("tombol $sebutan di Pengaturan tidak menyusun labelnya dari $rujukan",
                     k.contains("Buka \${$rujukan}"))
             }
