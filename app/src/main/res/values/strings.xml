@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Yasin dan Tahlil</string>
+    <string name="app_name">MIHRAB</string>
+    <string name="app_slogan">Sahabat Ibadah Muslim</string>
+    <string name="app_deskripsi">Teman Setia dalam Setiap Ibadah</string>
     <!-- Deskripsi widget jadwal sholat di pemilih widget. `android:description` pada
          appwidget-provider hanya menerima RUJUKAN string — literal ditolak saat penautan
          sumber daya (berbeda dari android:label yang menerima keduanya) — maka teksnya
-         tinggal di sini, bukan diletik di berkas xml-nya. -->
+         tinggal di sini, bukan diletakkan di berkas xml-nya. -->
     <string name="widget_jadwal_deskripsi">Jadwal sholat lima waktu, dihitung di perangkat.</string>
 </resources>

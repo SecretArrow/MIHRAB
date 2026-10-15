@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pakai-keystore.sh — buka brankas keystore rilis "Yasin dan Tahlil" sesaat, lalu bersihkan.
+# pakai-keystore.sh — buka brankas keystore rilis "MIHRAB" sesaat, lalu bersihkan.
 #
 #   ./pakai-keystore.sh buka [dir]        # dekripsi + unzip ke <dir> (bawaan: ./.keystore-terbuka)
 #   ./pakai-keystore.sh bersihkan [dir]   # hapus total hasil buka

@@ -65,7 +65,9 @@ fun TentangScreen() {
         item {
             Card(Modifier.fillMaxWidth().padding(top = 8.dp)) {
                 Column(Modifier.padding(12.dp)) {
-                    Text("Yasin dan Tahlil", style = MaterialTheme.typography.titleMedium)
+                    Text("MIHRAB", style = MaterialTheme.typography.titleMedium)
+                    Text("Sahabat Ibadah Muslim — Teman Setia dalam Setiap Ibadah",
+                        style = MaterialTheme.typography.labelMedium)
                     Text("Versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                         style = MaterialTheme.typography.labelMedium)
                     Text("Aplikasi offline-first: seluruh bacaan, panduan, dan perhitungan jadwal " +

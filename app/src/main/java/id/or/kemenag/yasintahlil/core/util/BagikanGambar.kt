@@ -66,7 +66,7 @@ object BagikanGambar {
     private const val FOLDER = "bagikan"
 
     /** Nama aplikasi pada kaki gambar — penanda asal ketika gambarnya disimpan ulang penerima. */
-    private const val KAKI = "Yasin dan Tahlil"
+    private const val KAKI = "MIHRAB"
 
     /**
      * Render satu kartu bacaan menjadi PNG di `cache/bagikan` dan kembalikan berkasnya.

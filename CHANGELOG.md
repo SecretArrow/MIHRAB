@@ -5,6 +5,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+- **Identitas baru: MIHRAB — Sahabat Ibadah Muslim.** Nama aplikasi, slogan
+  ("Sahabat Ibadah Muslim"), dan deskripsi ("Teman Setia dalam Setiap Ibadah") diperbarui di
+  launcher, layar Tentang, Pengaturan, onboarding, dan footer gambar bagikan; dokumentasi
+  (README, kebijakan privasi) ikut diselaraskan.
+- **Susunan Tahlil kedua** — pemilih susunan kini berisi dua susunan: **Tahlil NU Online
+  (ringkas)** dan susunan lazim Indonesia (ringkas), dengan sumber per-susunan yang tampil di
+  layar keterangan.
+
+### Diubah
+- **Konten Tahlil diperbarui total mengikuti NU Online** (`quran.nu.or.id/tahlil`, domain
+  `nu.or.id` — whitelist sumber resmi): Tawassul 4 bagian, Al-Ikhlas 3x, Al-Falaq, An-Nas,
+  Al-Fatihah, potongan Al-Baqarah (1-5, 163, 284-286) dan Al-Ahzab (33, 56), Ayat Kursi,
+  wirid & sholawat NU (Irhamna, Afdhaludz dzikri, Hasbunallah, tiga sholawat afdhal, tasbih
+  33x/100x, dsb.), serta rangkaian doa arwah hingga Al-Fatihah penutup — 41 bagian.
+  Bacaan surah dan ayat Kursi tetap MSI LPMQ Kemenag via berkas rujukan; terjemahan
+  Al-Baqarah 284-286 Kemenag edisi 2019; `istighfar` (HR Muslim 591) dan `doa_mayit`
+  dipertahankan apa adanya karena dirujuk modul lain (`dzikir.json`, `sholat_mayit.json`).
+- `tahlil_full.json` tidak lagi menjadi target `FLAT_TARGETS` `tools/fetch_quran_kemenag.py`
+  (entri `doa_penutup` lama kini bagian dari doa penutup NU).
+
 ## [1.10.0] - 2026-10-15
 
 ### Ditambahkan

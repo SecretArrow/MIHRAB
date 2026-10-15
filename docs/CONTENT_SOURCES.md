@@ -13,8 +13,8 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `yasin_full.json` | Yasin 83 ayat (Arab, latin, terjemahan) | **MSI LPMQ Kemenag** + transliterasi & terjemah Kemenag | ✅ resmi |
 | `surah_001/112/113/114.json` | Al-Fatihah, Al-Ikhlas, Al-Falaq, An-Nas | idem | ✅ resmi |
 | `ayat_kursi.json` | Ayat Kursi (Al-Baqarah 255) | idem | ✅ resmi |
-| `tahlil_full.json` | 15 bagian susunan tahlil | Qur'an Kemenag (MSI) + hadis sunnah.com | ✅ resmi |
-| `tahlil.json` | Deskriptor susunan (id merujuk `tahlil_full`) | — | ✅ metadata |
+| `tahlil_full.json` | 41 bagian susunan tahlil (Tahlil & Doa Arwah) | **NU Online** (quran.nu.or.id/tahlil) + MSI Kemenag (berkas rujukan) + terjemah Kemenag 2019 (Baqarah 284-286) + sunnah.com (doa mayit) | ✅ resmi |
+| `tahlil.json` | Deskriptor 2 susunan (id merujuk `tahlil_full`): **NU Online (ringkas)** + lazim Indonesia | NU Online (quran.nu.or.id/tahlil) | ✅ resmi |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
 | `dzikir.json` | Dzikir & doa harian — 5 kelompok: *setelah sholat*, *pagi & petang*, *harian*, *doa khusus*, *doa memohon ampunan* | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
@@ -41,7 +41,7 @@ karena itu wajib menyatakan `kategori`:
 Kategori boleh dinyatakan **sekali di tingkat berkas**, dan **ditimpa per entri** bila berkasnya
 bercampur. Contohnya `sholat_bacaan.json` bertingkat berkas `hadis`, tetapi entri `niat`-nya
 `tradisi` dan `fatihah`/`surat_setelah_fatihah` `quran`; `tahlil_full.json` bertingkat `dzikir`
-dengan `doa_mayit` = `hadis` dan `doa_penutup` = `quran`.
+dengan `tawassul_*` = `tradisi`, potongan Al-Baqarah/Al-Ahzab = `quran`, dan `doa_mayit` = `hadis`.
 
 Kunci di luar daftar di atas **gagal di gate CI**. Di aplikasi, `SumberKategori.dikenal()`
 menyaringnya sehingga kunci tak dikenal **tidak ditampilkan sama sekali** — lebih baik tanpa label
@@ -68,6 +68,22 @@ dijalankan di CI) sehingga jejak pengambilan data dapat diaudit dan diulang. Inv
 uji `ContentSourceTest.quranTextUsesMsiAndOfficialTransliteration` dan
 `ContentSourceTest.noContentFileCitesNonOfficialTextSource`.
 
+## Pembaruan susunan Tahlil — NU Online (selesai)
+
+Susunan Tahlil diperbarui mengikuti halaman resmi **NU Online** (`quran.nu.or.id/tahlil`, domain
+`nu.or.id` ada di whitelist): Tawassul 4 bagian, Al-Ikhlas/Falaq/Nas/Fatihah/Ayat Kursi via
+**rujukan** ke berkas MSI Kemenag, potongan Al-Baqarah (1-5, 163, 284-286) dan Al-Ahzab (33, 56)
+teks NU Online dengan kategori `quran`, wirid & sholawat NU, dan rangkaian doa arwah.
+
+- Terjemahan Al-Baqarah 284-286 memakai **terjemah Kemenag edisi 2019** (teks NU pada payload
+  halaman tidak lengkap), diambil dari layanan resmi yang sama dengan `tools/fetch_quran_kemenag.py`.
+- `istighfar` (HR Muslim 591), `tasbih` (33x), `tahlil` (100x), dan `doa_mayit` **tetap dipertahankan
+  apa adanya**: yang pertama dirujuk `dzikir.json#istighfar`, yang terakhir wajib identik dengan
+  `sholat_mayit.json` (`LafazSamaSatuTerjemahanTest`).
+- Entri `doa_penutup` lama (QS Al-Baqarah 201, terpisah) digantikan doa penutup NU
+  (Rabbana arinal haqqa) yang memuat doa tersebut di dalam rangkaiannya; karena itu
+  `tahlil_full.json` tidak lagi menjadi target `FLAT_TARGETS` pada `tools/fetch_quran_kemenag.py`.
+
 ## Kekurangan yang masih menunggu sumber resmi
 
 `plan.txt` meminta beberapa bacaan yang **belum dapat dicantumkan** karena teks Arabnya belum
@@ -83,7 +99,7 @@ manusia dari sumber resmi.
 | **Lafaz sholawat setelah adzan** | ✅ ada di `adzan.json` (`sholawat_setelah_adzan`) & tampil di layar Doa Adzan | HR Bukhari 3370 — sunnah.com |
 | **Penjelasan waktu membaca tiap bacaan adzan** | ✅ setiap entri di `adzan.json` (`menjawab_adzan`, `sholawat_setelah_adzan`, `doa_setelah_adzan`) punya field `waktu`, dan gate konten menolak entri yang kehilangannya | mengikuti urutan yang diperintahkan pada hadis yang **sudah dikutip entri itu sendiri** (menjawab → sholawat → doa; HR Bukhari & Muslim — sunnah.com). Field `waktu` hanya keterangan berbahasa Indonesia, **bukan lafaz atau hadis baru** |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
-| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ❌ hanya 1 susunan (`lazim_indonesia`); pemilih susunan sudah siap menerima lebih dari satu, di modul Tahlil **dan** di Pengaturan (`PreferensiSusunan`) | rujukan tradisi yang jelas (mis. HPT Muhammadiyah) — jangan disusun sendiri |
+| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ✅ dua susunan di `tahlil.json`: **NU Online (ringkas)** — sumber resmi `nu.or.id` (whitelist) — dan lazim Indonesia (ringkas, kompatibel preferensi lama) | NU Online (quran.nu.or.id/tahlil), diambil langsung dari halaman resminya |
 | **Rincian kata syarat/persiapan sholat** (`sholat_syarat.json`) | ⚠️ kerangka berbahasa Indonesia sudah ada dan tampil di layar detail sholat; kalimatnya **belum dicocokkan kata-per-kata** dengan modul Fasolatan resmi | modul Fasolatan Ditjen Bimas Islam (unduhan resmi) |
 
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum
@@ -96,7 +112,8 @@ manusia dari sumber resmi.
 >
 > **"Doa memohon ampunan"** (`plan.txt` §"Pustaka Doa dan Dzikir") kini menjadi kelompok
 > tersendiri di `dzikir.json`. Isinya juga **tidak ada yang baru**: ketiga entrinya menunjuk
-> lafaz yang sudah terverifikasi — Istighfar 3x (`tahlil_full.json#istighfar`, HR Muslim 591),
+> lafaz yang sudah terverifikasi — Istighfar 3x (`tahlil_full.json#istighfar`, HR Muslim 591;
+> tetap dipertahankan apa adanya sekalipun susunan Tahlil diperbarui ke NU Online),
 > Sayyidul Istighfar, dan Subhanallahi wa bihamdih 100x (HR Bukhari-Muslim) — yang dua terakhir
 > ada di kelompok *Dzikir pagi & petang* di berkas yang sama. Agar rujukan seperti itu mungkin,
 > setiap entri `dzikir.json` diberi `id` stabil dan `ContentRepo` mencari `#id` juga di dalam

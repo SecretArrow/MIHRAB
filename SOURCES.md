@@ -37,7 +37,19 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
 - Sholat Ghaib: imbauan resmi Kemenag (Cianjur 2022, Turki-Suriah 2023, Maroko-Libya 2023); dalil primer HR Muttafaq Alaih (Abu Hurairah, sholat Najasyi 4 takbir); penjelasan syarat + kritik sanad via NU Online (hanya Najasyi yang sahih)
 - Perbedaan mazhab wajib tampil: Syafi'i/Hambali membolehkan; Hanafi/Maliki masyhur membatasi. Default Indonesia = Syafi'i.
 
-## 6. Aturan konten
+## 6. Susunan Tahlil & Doa Arwah
+- https://quran.nu.or.id/tahlil (NU Online — susunan Tahlil & Doa Arwah: Tawassul, wirid,
+  sholawat, doa arwah; domain `nu.or.id` ada di whitelist resmi)
+- Bacaan surah/ayat di dalam Tahlil (Al-Fatihah, Al-Ikhlas, Al-Falaq, An-Nas, Ayat Kursi)
+  tetap memakai berkas rujukan MSI LPMQ Kemenag (bagian 1), bukan teks inline.
+- Terjemahan Al-Baqarah 284-286: Kemenag edisi 2019 (bagian 1) — teks NU pada payload halaman
+  tidak lengkap.
+- `istighfar` (HR Muslim 591) dan `doa_mayit` (HR Muslim) dipertahankan dari sunnah.com karena
+  dirujuk modul lain (`dzikir.json`, `sholat_mayit.json`); NU Online membaca bentuk ringkasnya.
+- Berkas: `app/src/main/assets/content/tahlil_full.json` (41 bagian) + `tahlil.json`
+  (deskriptor 2 susunan).
+
+## 7. Aturan konten
 - Setiap entri JSON wajib: `sumber_url` — domain resmi, dan **gagal** di mode `--strict`.
 - Aturan tambahan per jenis entri: entri dzikir wajib `sumber` per-entri; bacaan setelah adzan wajib `waktu`.
 - **Tidak diperiksa mesin**: `edisi` dan `catatan_mazhab` — metadata provenans di tingkat berkas/bagian

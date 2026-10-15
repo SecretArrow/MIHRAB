@@ -79,7 +79,7 @@ fun OnboardingScreen(selesai: () -> Unit) {
                             textAlign = TextAlign.Center,
                         )
                         Text(
-                            "Selamat datang di Yasin dan Tahlil. Bacaan Surat Yasin dan tahlil " +
+                            "Selamat datang di MIHRAB — Sahabat Ibadah Muslim. Bacaan Surat Yasin dan tahlil " +
                                 "lengkap dengan terjemahannya — semuanya tersimpan di perangkat " +
                                 "dan tetap dapat dibaca tanpa sambungan internet.",
                             style = MaterialTheme.typography.bodyLarge,

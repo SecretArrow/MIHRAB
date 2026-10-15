@@ -64,7 +64,7 @@ class BagikanGambarTest {
     @Test
     fun footerMemuatNamaAplikasiDanTanggal() {
         assertEquals(
-            "Yasin dan Tahlil · 15 Oktober 2026",
+            "MIHRAB · 15 Oktober 2026",
             BagikanGambar.susunFooter("15 Oktober 2026"),
         )
     }

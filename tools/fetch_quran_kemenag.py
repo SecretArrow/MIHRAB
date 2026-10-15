@@ -59,9 +59,11 @@ TARGETS = {
 }
 
 # ayat tunggal: berkas -> (surah, ayah, id bagian bila di dalam "bagian")
+# `tahlil_full.json` dahulu memuat `doa_penutup` = QS Al-Baqarah 201 secara berdiri sendiri;
+# susunan Tahlil kini mengikuti NU Online dan doa itu hidup di dalam rangkaian doa penutupnya,
+# sehingga berkas itu tidak lagi bisa ditimpa ayat tunggal (lihat docs/CONTENT_SOURCES.md).
 FLAT_TARGETS = {
     "ayat_kursi.json": (2, 255, None),
-    "tahlil_full.json": (2, 201, "doa_penutup"),
 }
 
 

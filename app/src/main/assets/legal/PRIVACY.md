@@ -4,7 +4,7 @@ Terakhir diperbarui: 2026-10-15
 
 ## Ringkasan
 
-Aplikasi **Yasin dan Tahlil** dirancang *offline-first*. Seluruh konten (ayat, doa, dzikir,
+Aplikasi **MIHRAB** dirancang *offline-first*. Seluruh konten (ayat, doa, dzikir,
 panduan sholat, jadwal) disimpan di dalam aplikasi. Kami **tidak mengumpulkan, tidak
 mengirim, dan tidak menjual** data pribadi Anda.
 

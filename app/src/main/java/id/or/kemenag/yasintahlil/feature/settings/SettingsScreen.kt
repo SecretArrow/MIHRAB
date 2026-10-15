@@ -582,7 +582,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         // Pengaturan — judul bagian memakai nama yang sama dengan layar yang dibukanya.
         BagianJudul(NamaLayar.TENTANG)
         KartuGrup {
-            Text("Yasin dan Tahlil — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            Text("MIHRAB — versi ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                 style = MaterialTheme.typography.bodyMedium)
             OutlinedButton(onClick = { go(Routes.TENTANG) }, modifier = Modifier.fillMaxWidth()) {
                 Text("Buka ${NamaLayar.TENTANG}")

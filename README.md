@@ -1,6 +1,8 @@
-# Yasin dan Tahlil — Aplikasi Islami Modern
+# MIHRAB — Sahabat Ibadah Muslim
 
-Aplikasi Android native (Kotlin + Jetpack Compose + Material 3), offline-first.
+**Teman Setia dalam Setiap Ibadah.** Aplikasi Android native (Kotlin + Jetpack Compose +
+Material 3), offline-first: Yasin, Tahlil, panduan sholat, adzan, kiblat, jadwal, dan doa —
+semuanya tersimpan di perangkat.
 
 ## Sumber resmi (wajib)
 Lihat `SOURCES.md`. Teks Qur'an dari LPMQ Kemenag RI (Mushaf Standar Indonesia),
@@ -68,8 +70,8 @@ Semuanya adalah pilihan sadar, bukan pekerjaan yang tertinggal — supaya tidak 
   ("Hindari tombol dekoratif yang tidak bekerja").
 - **Tidak ada audio adzan bawaan.** Lisensi audio tidak dapat dipastikan, jadi setiap jenis suara
   adalah berkas pilihan pengguna yang ia beri nama — aplikasi tidak menyertakan satu pun.
-- **Satu susunan Tahlil.** Susunan lain menunggu sumber resmi; lihat `docs/CONTENT_SOURCES.md`.
-  Penjelasan perbedaan susunan Iqomah antar-mazhab juga belum ada karena alasan yang sama.
+- **Dua susunan Tahlil** — NU Online (ringkas, sumber resmi `nu.or.id`) dan lazim Indonesia
+  (ringkas); lihat `docs/CONTENT_SOURCES.md`.
 - **Pengingat memakai WorkManager, tanpa izin alarm tepat waktu.** Waktu dapat bergeser beberapa
   menit saat perangkat tidur (Doze); hal ini dinyatakan di layar Adzan, bukan disembunyikan.
 - **Sepenuhnya offline** — tidak ada sumber *online*, dengan alasan yang dijelaskan di bagian Build
