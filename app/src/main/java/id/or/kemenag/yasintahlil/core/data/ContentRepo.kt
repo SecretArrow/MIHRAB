@@ -125,16 +125,36 @@ class ContentRepo(private val ctx: Context) {
             return Triple(o.optString("arab"), o.optString("latin"), o.optString("terjemahan"))
         }
         return if (d.has("verses")) {
+            // Arab utuh mengalir — ayat-ayatnya dirangkai dengan koma Arab ("، ") seperti mushaf
+            // dibaca bersambung, bukan daftar bernomor. Rincian per ayat tetap tersedia lewat
+            // [ayatRujukan] dan ditampilkan kartu di bagian "Ayat demi ayat".
             val arr = d.getJSONArray("verses")
             Triple(
-                (0 until arr.length()).joinToString("\n") { i ->
-                    val o = arr.getJSONObject(i); "${o.getInt("nomor")}. ${o.getString("arab")}" },
-                (0 until arr.length()).joinToString("\n") { i ->
-                    val o = arr.getJSONObject(i); "${o.getInt("nomor")}. ${o.optString("latin")}" },
-                (0 until arr.length()).joinToString("\n") { i ->
-                    val o = arr.getJSONObject(i); "${o.getInt("nomor")}. ${o.optString("terjemahan")}" }
+                (0 until arr.length()).joinToString("، ") { i ->
+                    arr.getJSONObject(i).getString("arab") },
+                (0 until arr.length()).joinToString(" ") { i ->
+                    arr.getJSONObject(i).optString("latin") },
+                (0 until arr.length()).joinToString(" ") { i ->
+                    arr.getJSONObject(i).optString("terjemahan") }
             )
         } else Triple(d.optString("arab"), d.optString("latin"), d.optString("terjemahan"))
+    }
+
+    /**
+     * Rincian ayat-per-ayat dari sebuah rujukan **yang menunjuk satu surat utuh**
+     * (`surah_001.json` dsb.) — kosong untuk bentuk lain (`berkas.json#id`, `ayat_kursi.json`,
+     * rujukan mati). Dipakai kartu bacaan untuk menampilkan Arab utuh diikuti ayat-ayatnya
+     * sekalian, sehingga pembaca yang ingin mengulang satu ayat tidak perlu membaca ulang
+     * seluruh rangkaiannya.
+     */
+    fun ayatRujukan(rujukanFile: String?): List<Verse> {
+        if (rujukanFile.isNullOrBlank() || rujukanFile.contains("#")) return emptyList()
+        val nama = rujukanFile.trim()
+        if (nama.isBlank()) return emptyList()
+        val d = docAtauNull(nama) ?: return emptyList()
+        if (!d.has("verses")) return emptyList()
+        val arr = d.getJSONArray("verses")
+        return (0 until arr.length()).map { i -> verse(arr.getJSONObject(i)) }
     }
 
     fun tahlil(susunanId: String? = null): List<TahlilItem> {
@@ -151,13 +171,33 @@ class ContentRepo(private val ctx: Context) {
                 o.optInt("ulangi", 1),
                 rujukan,
                 o.optString("sumber", ""),
-                o.optString("kategori", def)
+                o.optString("kategori", def),
+                ayatRujukan(rujukan),
             )
         }
         if (susunanId == null) return all
         val order = tahlilSusunan().firstOrNull { it.id == susunanId }?.bagian ?: return all
         val byId = all.associateBy { it.id }
         return order.mapNotNull { byId[it] }.ifEmpty { all }
+    }
+
+    /**
+     * Peta id bagian Tahlil → pembaginya pada Mode Imam (`tahlil_imam.json`): siapa yang membaca
+     * (Bersama/Imam/Sendiri-sendiri) beserta aba singkat dan keterangannya. Mode Imam menampilkan
+     * susunan Lengkap dengan lencana pembagi ini — berkasnya tidak memuat lafaz apa pun, sehingga
+     * peta kosong (berkas tak terbaca) hanya berarti lencana tidak tampil, bukan bacaan hilang.
+     */
+    fun tahlilImam(): Map<String, TahlilImamAba> {
+        val d = docAtauNull(BerkasKonten.TAHLIL_IMAM) ?: return emptyMap()
+        val aba = d.optJSONObject("aba") ?: return emptyMap()
+        val out = mutableMapOf<String, TahlilImamAba>()
+        aba.keys().forEach { id ->
+            val o = aba.optJSONObject(id) ?: return@forEach
+            out[id] = TahlilImamAba(
+                o.optString("aba"), o.optString("siapa"), o.optString("ket"),
+            )
+        }
+        return out
     }
 
     /**
@@ -283,7 +323,8 @@ class ContentRepo(private val ctx: Context) {
                 catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
                 sholatScope = scope,
-                kategori = o.optString("kategori", defKategori))
+                kategori = o.optString("kategori", defKategori),
+                ayat = ayatRujukan(rujukan))
         }
     }
 
@@ -311,7 +352,8 @@ class ContentRepo(private val ctx: Context) {
                         o.optString("latin", jl), o.optString("terjemahan", jt),
                         o.optInt("ulangi", 1), o.optString("sumber"),
                         all.firstOrNull(), all.drop(1),
-                        o.optString("kategori", defKategori))
+                        o.optString("kategori", defKategori),
+                        ayatRujukan(all.firstOrNull()))
                 })
         }
     }

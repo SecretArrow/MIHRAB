@@ -79,7 +79,7 @@ class BerkasKontenSatuTempatTest {
     fun contentRepoMembacaSetiapNamaDariBerkasKonten() {
         val k = kodeBerkas(repo)
         val konstantanya = listOf(
-            "YASIN_FULL", "TAHLIL_FULL", "TAHLIL_SUSUNAN",
+            "YASIN_FULL", "TAHLIL_FULL", "TAHLIL_SUSUNAN", "TAHLIL_IMAM",
             "SHOLAT_DAFTAR", "SHOLAT_BACAAN", "SHOLAT_MAYIT", "SHOLAT_SYARAT",
             "WUDHU", "DZIKIR", "ADZAN", "KOTA",
         )
@@ -94,6 +94,7 @@ class BerkasKontenSatuTempatTest {
             "SEMUA tidak lagi memuat seluruh nama berkas konten",
             listOf(
                 BerkasKonten.YASIN_FULL, BerkasKonten.TAHLIL_FULL, BerkasKonten.TAHLIL_SUSUNAN,
+                BerkasKonten.TAHLIL_IMAM,
                 BerkasKonten.SHOLAT_DAFTAR, BerkasKonten.SHOLAT_BACAAN, BerkasKonten.SHOLAT_MAYIT,
                 BerkasKonten.SHOLAT_SYARAT, BerkasKonten.WUDHU, BerkasKonten.DZIKIR,
                 BerkasKonten.ADZAN, BerkasKonten.KOTA,

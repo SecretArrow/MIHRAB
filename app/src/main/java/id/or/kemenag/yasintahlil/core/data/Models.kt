@@ -23,7 +23,13 @@ data class TahlilItem(
     val arab: String = "", val latin: String = "", val terjemahan: String = "",
     val ulangi: Int = 1, val rujukanFile: String? = null, val sumber: String = "",
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
-    val kategori: String = ""
+    val kategori: String = "",
+    /**
+     * Rincian ayat-per-ayat bila [rujukanFile] menunjuk satu surat (`surah_001.json` dsb.) —
+     * kartu menampilkan Arab utuh di atas, lalu ayat-ayatnya sekalian di bawah. Kosong untuk
+     * rujukan bentuk lain (`berkas.json#id`, `ayat_kursi.json`) maupun bacaan ber-teks sendiri.
+     */
+    val ayat: List<Verse> = emptyList(),
 )
 
 /**
@@ -67,7 +73,9 @@ data class Bacaan(
     /** Bila terisi (mis. ["subuh"]), bacaan hanya tampil untuk sholat itu. kosong = semua sholat. */
     val sholatScope: List<String> = emptyList(),
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
-    val kategori: String = ""
+    val kategori: String = "",
+    /** Rincian ayat-per-ayat bila [rujukanFile] menunjuk satu surat — lihat [TahlilItem.ayat]. */
+    val ayat: List<Verse> = emptyList(),
 )
 
 data class DzikirItem(
@@ -76,7 +84,18 @@ data class DzikirItem(
     val sumber: String = "", val rujukanFile: String? = null,
     val rujukan: List<String> = emptyList(),
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
-    val kategori: String = ""
+    val kategori: String = "",
+    /** Rincian ayat-per-ayat bila rujukan pertamanya satu surat — lihat [TahlilItem.ayat]. */
+    val ayat: List<Verse> = emptyList(),
+)
+
+/**
+ * Satu entri Mode Imam Tahlil (`tahlil_imam.json`): aba singkat, **siapa yang membaca**, dan
+ * keterangannya — untuk lencana pada kartu bagian ketika mode Imam dipilih. Bacaannya tetap
+ * susunan Lengkap; berkas ini tidak memuat lafaz apa pun.
+ */
+data class TahlilImamAba(
+    val aba: String, val siapa: String, val ket: String,
 )
 data class DzikirGroup(val id: String, val judul: String, val items: List<DzikirItem>)
 

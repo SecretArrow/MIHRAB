@@ -84,6 +84,13 @@ class Store(private val ctx: Context) {
         val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
         /** Susunan tahlil buatan pengguna: CSV id bagian, urut. Kosong = belum disusun. */
         val TAHLIL_CUSTOM = stringPreferencesKey("tahlil_custom")
+        /**
+         * Mode Imam Tahlil aktif: lencana "siapa membaca" tampil pada tiap bagian dan bacaannya
+         * memakai susunan Lengkap. Terpisah dari [TAHLIL_SUSUNAN] karena [TAHLIL_SUSUNAN] tetap
+         * menyimpan susunan dasarnya (Lengkap) — Pengaturan menampilkan sumber susunan yang sah,
+         * bukan id "imam" yang tidak dikenal daftar susunan bundel.
+         */
+        val TAHLIL_IMAM = booleanPreferencesKey("tahlil_imam")
         val COMPASS_UNIT = stringPreferencesKey("compass_unit") // derajat|mil
         /** Tampilan kompas kiblat: `kompas`|`angka` (lihat `TampilanKompas` di paket designsystem). */
         val COMPASS_VIEW = stringPreferencesKey("compass_view")
@@ -150,7 +157,7 @@ class Store(private val ctx: Context) {
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
             bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON); bool(KEEP_ON)
-            bool(SHOW_COUNTER); bool(ONBOARDING_SELESAI); bool(IMSAK_ON)
+            bool(SHOW_COUNTER); bool(ONBOARDING_SELESAI); bool(IMSAK_ON); bool(TAHLIL_IMAM)
             int(ADZAN_PRE_MIN); int(IQOMAH_MIN); int(YASIN_MARK); int(HIJRI_CORR); int(IMSAK_MIN)
             if (o.has(FAV.name)) {
                 val arr = o.optJSONArray(FAV.name)

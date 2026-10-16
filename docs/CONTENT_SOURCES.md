@@ -15,6 +15,7 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `ayat_kursi.json` | Ayat Kursi (Al-Baqarah 255) | idem | ✅ resmi |
 | `tahlil_full.json` | 41 bagian susunan tahlil (Tahlil & Doa Arwah) | **NU Online** (quran.nu.or.id/tahlil) + MSI Kemenag (berkas rujukan) + terjemah Kemenag 2019 (Baqarah 284-286) + sunnah.com (doa mayit) | ✅ resmi |
 | `tahlil.json` | Deskriptor 2 susunan (id merujuk `tahlil_full`): **Tahlil Lengkap — NU Online** (41 bagian) + **Tahlil Ringkas — NU Online** (28 bagian, susunan asli tab Ringkas di halamannya) | NU Online (quran.nu.or.id/tahlil) | ✅ resmi |
+| `tahlil_imam.json` | Mode Imam Tahlil: label siapa membaca per bagian (Bersama/Imam/Sendiri-sendiri) untuk 41 bagian — bacaannya sama dengan susunan Lengkap, tanpa teks bacaan terpisah | NU Online (quran.nu.or.id/tahlil) — panduan pelaksanaan umum tradisi tahlil | ✅ resmi |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
 | `dzikir.json` | Dzikir & doa harian — 5 kelompok: *setelah sholat*, *pagi & petang*, *harian*, *doa khusus*, *doa memohon ampunan* | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |

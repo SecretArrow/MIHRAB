@@ -7,9 +7,11 @@ import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Campaign
@@ -67,6 +70,7 @@ import id.or.kemenag.yasintahlil.core.audio.TtsBacakan
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
+import id.or.kemenag.yasintahlil.core.data.Verse
 import id.or.kemenag.yasintahlil.core.util.BagikanGambar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.Dispatchers
@@ -145,6 +149,14 @@ data class AksiBacaan(
  * **global** (Pengaturan → "Ukuran Latin" dan "Jarak antarbaris") yang dibaca langsung dari
  * preferensi di sini. Layar yang tidak mengoper nilainya karena itu tetap menghormati pilihan
  * pengguna, bukan angka tetap.
+ *
+ * [lencanaKanan] adalah lencana kecil di ujung kanan kepala kartu — mis. pembagi bacaan pada
+ * Mode Imam Tahlil ("Imam", "Bersama"), sehingga makmum tahu bagian mana yang dibaca bersama.
+ *
+ * [ayat] adalah rincian ayat-per-ayat bila bacaan ini merujuk satu surat utuh: Arab utuh tampil
+ * di atas, lalu tiap ayat dirinci di bawahnya — nomor berlingkaran, Arab, latin, dan artinya.
+ * Sumber konten TIDAK dicetak di kartu — seluruh atribusi dikumpulkan di layar Sumber Konten
+ * (Pengaturan), satu tempat, bukan berulang di setiap kartu bacaan.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,6 +171,8 @@ fun BacaanCard(
     showArab: Boolean = true,
     kategori: String = "",
     aksiEkstra: List<AksiBacaan> = emptyList(),
+    lencanaKanan: String = "",
+    ayat: List<Verse> = emptyList(),
 ) {
     val ctx = LocalContext.current
     val userData = rememberUserData()
@@ -216,8 +230,15 @@ fun BacaanCard(
                         modifier = Modifier.weight(1f))
                     // Penanda jumlah ulangan — lencana tonal bersama ([Lencana]), bukan tombol.
                     // Sebelumnya AssistChip dengan onClick kosong: tombol yang tampak bisa
-                    // ditekan tetapi tak melakukan apa pun.
-                    if (ulangi > 1) Lencana("${ulangi}x")
+                    // ditekan tetapi tak melakukan apa pun. Sebelahnya (paling kanan) lencana
+                    // pembagi bacaan [lencanaKanan] — mis. siapa membaca pada Mode Imam Tahlil.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        if (ulangi > 1) Lencana("${ulangi}x")
+                        if (lencanaKanan.isNotBlank()) Lencana(lencanaKanan)
+                    }
                 }
                 // Kertas bacaan Arab: permukaan pasir lembut dengan sudut membulat, sehingga
                 // baris Arab terbaca sebagai satu bidang mushaf — bukan teks mengambang. Pada
@@ -243,11 +264,54 @@ fun BacaanCard(
                     terjemahan, fontSize = ukuranLatin.sp,
                     modifier = Modifier.padding(top = 4.dp),
                 )
-                if (sumber.isNotBlank()) Text(
-                    "Sumber: $sumber",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(top = 10.dp),
-                )
+                // Rincian ayat-per-ayat untuk rujukan satu surat utuh: Arab utuh sudah tampil di
+                // atas; di bawahnya tiap ayat dirinci — nomor berlingkaran, Arab, latin, arti —
+                // sehingga ayat yang ingin diulang mudah ditemukan tanpa membaca ulang semuanya.
+                if (ayat.size > 1) {
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    ) {
+                        Column(Modifier.fillMaxWidth().padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text("Ayat demi ayat",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            ayat.forEach { a ->
+                                Column(Modifier.fillMaxWidth()) {
+                                    Box(
+                                        Modifier.size(22.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.primaryContainer,
+                                                CircleShape,
+                                            ),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Text("${a.nomor}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                    }
+                                    if (showArab && a.arab.isNotBlank()) ArabText(
+                                        a.arab,
+                                        (arabSize - 6f).coerceAtLeast(18f),
+                                        lineHeightFactor = tinggiBaris,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                    if (showLatin && a.latin.isNotBlank()) Text(
+                                        a.latin, fontSize = ukuranLatin.sp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                    if (showTrans && a.terjemahan.isNotBlank()) Text(
+                                        a.terjemahan, fontSize = ukuranLatin.sp,
+                                        modifier = Modifier.padding(top = 2.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 SumberKategoriLabel(kategori, Modifier.padding(top = 2.dp))
             }
         }

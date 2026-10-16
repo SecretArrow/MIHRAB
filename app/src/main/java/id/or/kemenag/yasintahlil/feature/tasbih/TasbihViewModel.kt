@@ -83,6 +83,16 @@ class TasbihViewModel @Inject constructor(
     /** Mulai hitungan hari ini dari nol lagi; riwayat hari-hari sebelumnya tidak tersentuh. */
     fun reset() = ubah(0, _state.value.target)
 
+    /**
+     * Kosongkan seluruh riwayat — termasuk baris hari ini — dari layar Riwayat Tasbih. Keadaan di
+     * memori ditimpa lebih dulu (polanya sama dengan [ubah]) supaya layar tidak sempat menampilkan
+     * baris yang sudah dihapus; aliran `observe`/`observeTerbaru` kemudian menegaskannya.
+     */
+    fun kosongkan() {
+        _state.update { it.copy(hitung = 0, riwayat = emptyList()) }
+        viewModelScope.launch { dao.clear() }
+    }
+
     private fun ubah(hitung: Int, target: Int) {
         // Diperbarui di memori lebih dulu supaya ketukan yang beruntun tidak tertinggal oleh
         // perjalanan bolak-balik Room — pola yang sama dengan penghitung dzikir (`setCount`).

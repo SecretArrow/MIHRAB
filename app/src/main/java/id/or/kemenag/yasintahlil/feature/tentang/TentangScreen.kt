@@ -19,6 +19,7 @@ import id.or.kemenag.yasintahlil.core.legal.DokumenLegal
 import id.or.kemenag.yasintahlil.core.legal.MarkdownRingkas
 import id.or.kemenag.yasintahlil.core.legal.SumberKonten
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
+import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
  * `plan.txt` §"Pengaturan Aplikasi": *"Tentang aplikasi, sumber konten, lisensi, serta kebijakan
@@ -38,7 +39,7 @@ import id.or.kemenag.yasintahlil.core.util.NamaLayar
  * menyesatkannya dengan daftar yang bertambah tanpa keterangan.
  */
 @Composable
-fun TentangScreen() {
+fun TentangScreen(go: (String) -> Unit = {}) {
     val ctx = LocalContext.current
     val repo = rememberRepo()
     // Kegagalan membaca bundel tidak ditelan menjadi daftar kosong: sebabnya dibawa ke layar lewat
@@ -111,6 +112,14 @@ fun TentangScreen() {
                     "diperbarui, sehingga daftar di atas tidak dapat bertambah diam-diam.",
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(top = 4.dp))
+        }
+        // Pintu ke layar Sumber Konten: layar ini menjawab "domain mana" per situs; layar Sumber
+        // menjawab "dari mana" per modul bacaan — keduanya saling melengkapi, bukan salinan.
+        item {
+            TextButton(onClick = { go(Routes.SUMBER) },
+                modifier = Modifier.padding(top = 2.dp)) {
+                Text("Rincian sumber per modul — ${NamaLayar.SUMBER}")
+            }
         }
 
         item { Bagian("Kebijakan privasi", privasiBuka) { privasiBuka = !privasiBuka } }

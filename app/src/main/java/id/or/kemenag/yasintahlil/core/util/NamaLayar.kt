@@ -124,10 +124,23 @@ object NamaLayar {
     /** Layar memasang bundel konten pilihan pengguna, dari berkas yang ia pilih sendiri. */
     const val PEMBARUAN_KONTEN = "Pembaruan konten"
 
+    /**
+     * Sumber Konten — seluruh atribusi sumber bacaan (teks Qur'an, hadis, susunan tahlil, hingga
+     * algoritma perhitungan) dikumpulkan di layar ini, sehingga kartu bacaan tidak perlu
+     * mengulang baris sumbernya di setiap entri.
+     */
+    const val SUMBER = "Sumber Konten"
+
     // ---- Amalan & referensi ---------------------------------------------------------------------
 
     /** Layar penghitung tasbih digital: target harian, getar tiap ketukan, riwayat 7 hari. */
     const val TASBIH = "Tasbih Digital"
+
+    /** Riwayat ketukan tujuh hari terakhir — layar tersendiri yang dibuka dari layar Tasbih. */
+    const val TASBIH_RIWAYAT = "Riwayat Tasbih"
+
+    /** Keterangan perilaku Tasbih (getar, putaran, reset harian) — dibuka dari ikon bel. */
+    const val TASBIH_INFO = "Keterangan Tasbih"
 
     /** Layar 99 nama Allah beserta artinya, dapat dicari. */
     const val ASMAUL = "Asmaul Husna"

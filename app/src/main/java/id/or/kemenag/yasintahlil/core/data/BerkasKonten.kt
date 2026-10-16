@@ -58,6 +58,16 @@ object BerkasKonten {
     /** Daftar susunan Tahlil (urutan bagian) beserta catatan tradisi tingkat modul. */
     const val TAHLIL_SUSUNAN = "tahlil.json"
 
+    /**
+     * Mode Imam Tahlil: label **siapa membaca** tiap bagian (Bersama/Imam/Sendiri-sendiri).
+     *
+     * Bacaannya SAMA dengan susunan Lengkap — berkas ini bukan teks bacaan terpisah, melainkan
+     * pemetaan id bagian ke pembaginya, sehingga makmum tahu bagian mana yang dibaca bersama.
+     * Rincian aba-aba tidak ditampilkan di kartu (adatnya berbeda antar daerah — ikuti imam
+     * setempat); penjelasannya tinggal di layar keterangan Tahlil.
+     */
+    const val TAHLIL_IMAM = "tahlil_imam.json"
+
     /** Daftar sholat wajib & sunnah, lengkap dengan niat dan ketentuannya. */
     const val SHOLAT_DAFTAR = "sholat_daftar.json"
 
@@ -94,7 +104,7 @@ object BerkasKonten {
      * bukan sekadar dijanjikan oleh ejaan yang kebetulan sama di sebelas tempat.
      */
     val SEMUA: List<String> = listOf(
-        YASIN_FULL, TAHLIL_FULL, TAHLIL_SUSUNAN,
+        YASIN_FULL, TAHLIL_FULL, TAHLIL_SUSUNAN, TAHLIL_IMAM,
         SHOLAT_DAFTAR, SHOLAT_BACAAN, SHOLAT_MAYIT, SHOLAT_SYARAT,
         WUDHU, DZIKIR, ADZAN, KOTA,
         SHOLAT_GHAIB, SHOLAT_JENAZAH,

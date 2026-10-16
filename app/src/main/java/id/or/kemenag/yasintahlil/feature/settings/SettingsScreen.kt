@@ -577,6 +577,20 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 style = MaterialTheme.typography.labelSmall)
         }
 
+        // ---- Sumber Konten -----------------------------------------------------------------------
+        // Satu rumah bagi seluruh atribusi sumber — kartu bacaan tidak lagi mengulang baris
+        // "Sumber:" per entri. Judul bagian dan tombolnya menyebut nama bersama layar tujuan,
+        // pola yang sama dengan bagian Pembaruan konten dan Tentang di bawahnya.
+        BagianJudul(NamaLayar.SUMBER)
+        KartuGrup {
+            OutlinedButton(onClick = { go(Routes.SUMBER) }, modifier = Modifier.fillMaxWidth()) {
+                Text("Buka ${NamaLayar.SUMBER}")
+            }
+            Text("Asal-usul seluruh bacaan — teks Qur'an, hadis, susunan tahlil, hingga algoritma " +
+                    "jadwal dan kalender — terkumpul di satu layar.",
+                style = MaterialTheme.typography.labelSmall)
+        }
+
         // ---- Tentang ----------------------------------------------------------------------------
         // NavSmokeTest mencari teks judul ini (nama bersama layar Tentang) saat menggulir layar
         // Pengaturan — judul bagian memakai nama yang sama dengan layar yang dibukanya.

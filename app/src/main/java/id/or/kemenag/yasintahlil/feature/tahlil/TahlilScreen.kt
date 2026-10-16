@@ -134,9 +134,14 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 listOf("nu_online_ringkas" to "Ringkas", "nu_online_lengkap" to "Lengkap")
                     .forEach { (id, label) ->
                         if (s.susunan.any { it.id == id }) {
-                            FilterChip(s.susunanId == id, { vm.setSusunan(id) }, { Text(label) })
+                            FilterChip(!s.modeImam && s.susunanId == id && !jamaah,
+                                { vm.setSusunan(id) }, { Text(label) })
                         }
                     }
+                // Mode Imam — bacaannya SAMA dengan Lengkap; yang bertambah hanya lencana siapa
+                // yang membaca tiap bagian (kartunya sendiri), sehingga makmum tahu bagian mana
+                // yang dibaca bersama. Keterangannya lewat ikon Info di kepala layar.
+                FilterChip(s.modeImam && !jamaah, { vm.setModeImam(!s.modeImam) }, { Text("Imam") })
                 // Chip ukuran teks, bukan pilihan isi: menaikkan ukuran Arab untuk dibaca dari
                 // jauh, sama aturannya dengan mode layar penuh di sebelahnya.
                 FilterChip(jamaah, { jamaah = !jamaah }, { Text("Teks besar") })
@@ -165,6 +170,9 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary)
         }
+        // Peta pembagi Mode Imam (id bagian → siapa membaca) dibaca sekali dari bundel — statis
+        // selama layar hidup; bila berkasnya tak terbaca, peta kosong dan lencananya tidak tampil.
+        val imam = remember { repo.tahlilImam() }
         // Dua mode berarti bacaan dibaca dari jauh — teks besar (chip) dan "Layar penuh" — dan
         // keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
         // Jenazah, Iqomah, Yasin, dan Dzikir.
@@ -193,7 +201,8 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                         "Bagian ${i + 1} — ${it.judul}", arab, latin, trans,
                         s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
                         ulangi = it.ulangi, sumber = it.sumber,
-                        showArab = s.showArab, kategori = it.kategori,
+                        showArab = s.showArab, kategori = it.kategori, ayat = it.ayat,
+                        lencanaKanan = if (s.modeImam) imam[it.id]?.siapa.orEmpty() else "",
                         aksiEkstra = listOf(
                             AksiBacaan(
                                 if (i == s.idx) "✓ Penanda terakhir dibaca" else "Tandai terakhir dibaca",

@@ -1,0 +1,220 @@
+{
+  "modul": "tahlil_imam",
+  "judul": "Panduan Imam Tahlil",
+  "sumber": "Panduan pelaksanaan umum tradisi tahlil NU (aba-aba & pembagian bacaan); susunan bacaan mengikuti tahlil_full.json (NU Online).",
+  "sumber_url": "https://quran.nu.or.id/tahlil",
+  "catatan": "Bacaan mode Imam persis sama dengan susunan Lengkap (41 bagian NU Online) — tidak ada teks bacaan terpisah khusus imam. Yang ditambahkan hanyalah aba-aba (panggilan nama bagian) yang diucapkan imam sebelum setiap bagian serta catatan siapa yang membaca, agar makmum tahu apa yang akan dibaca setelah aba-aba. Adat aba-aba berbeda-beda antar daerah dan pengajian — pakailah ini sebagai panduan umum dan ikuti imam setempat.",
+  "siapa_ket": {
+    "Bersama": "Imam & makmum membaca bersama-sama",
+    "Imam": "Imam yang membaca, makmum menyimak",
+    "Imam + āmīn": "Imam membaca doa, makmum menyambut āmīn",
+    "Sendiri-sendiri": "Setiap orang membaca sendiri dalam hati"
+  },
+  "aba": {
+    "tawassul_1": {
+      "aba": "Tawāssul",
+      "siapa": "Imam",
+      "ket": "Imam membuka majelis tahlil dengan tawassul — Al-Fātiḥah dipersembahkan untuk Rasulullah ﷺ, dilanjutkan syair tawassul."
+    },
+    "tawassul_2": {
+      "aba": "Tawāssul",
+      "siapa": "Imam",
+      "ket": "Rangkaian tawassul untuk para nabi, wali, syuhadā, ulama, dan Syekh Abdul Qadir al-Jailani — imam melanjutkan bacaan."
+    },
+    "tawassul_3": {
+      "aba": "Tawāssul",
+      "siapa": "Imam",
+      "ket": "Tawassul untuk seluruh ahli kubur dan leluhur — imam melanjutkan."
+    },
+    "tawassul_4": {
+      "aba": "Tawāssul — arwah yang dituju",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam menyetujukan pahala bacaan kepada arwah yang dimaksud (disebutkan namanya); makmum menyambut āmīn."
+    },
+    "ikhlas": {
+      "aba": "Al-Ikhlāṣ",
+      "siapa": "Bersama",
+      "ket": "Setelah aba-aba, imam dan makmum membaca Surat Al-Ikhlāṣ tiga kali bersama-sama."
+    },
+    "tahlil_takbir_1": {
+      "aba": "Tahlīl wa takbīr",
+      "siapa": "Bersama",
+      "ket": "Bacaan penghubung: Lā ilāha illallāhu waḥdahū lā syarīka lah… wa Allāhu akbar kabīran wa-l-ḥamdu lillāh…"
+    },
+    "falaq": {
+      "aba": "Al-Falaq",
+      "siapa": "Bersama",
+      "ket": "Surat perlindungan pertama dibaca bersama-sama."
+    },
+    "tahlil_takbir_2": {
+      "aba": "Tahlīl wa takbīr",
+      "siapa": "Bersama",
+      "ket": "Tahlil dan takbir penghubung setelah Al-Falaq."
+    },
+    "nas": {
+      "aba": "An-Nās",
+      "siapa": "Bersama",
+      "ket": "Surat perlindungan terakhir dibaca bersama-sama."
+    },
+    "tahlil_takbir_3": {
+      "aba": "Tahlīl wa takbīr",
+      "siapa": "Bersama",
+      "ket": "Tahlil dan takbir penghubung setelah An-Nās — masuk ke rangkaian ayat."
+    },
+    "fatihah_1": {
+      "aba": "Al-Fātiḥah",
+      "siapa": "Bersama",
+      "ket": "Ummul kitab dibaca bersama-sama — pembuka rangkaian ayat Al-Qur'an."
+    },
+    "baqarah_1_5": {
+      "aba": "Awal Al-Baqarah",
+      "siapa": "Bersama",
+      "ket": "Alif lām mīm — żālikal kitābu lā raiba fīh… (QS 2:1-5) dibaca bersama."
+    },
+    "baqarah_163": {
+      "aba": "Al-Baqarah 163",
+      "siapa": "Bersama",
+      "ket": "Wa ilāhukum ilāhuw wāḥid… (QS 2:163) dibaca bersama."
+    },
+    "kursi": {
+      "aba": "Ayat Kursi",
+      "siapa": "Bersama",
+      "ket": "Ayat paling agung (QS 2:255) dibaca bersama-sama."
+    },
+    "baqarah_284_286": {
+      "aba": "Āmanar rasūl",
+      "siapa": "Bersama",
+      "ket": "Penutup Surat Al-Baqarah 284-286 dibaca bersama-sama."
+    },
+    "irhamna": {
+      "aba": "Wirid — Irḥamnā",
+      "siapa": "Bersama",
+      "ket": "Irḥamnā ya Arḥamar rāḥimīn diwiridkan tujuh kali — pantau dengan penghitung."
+    },
+    "ahlalbait_salam": {
+      "aba": "Salam ahlul bait",
+      "siapa": "Bersama",
+      "ket": "Salam dan rahmat untuk ahlul bait Nabi ﷺ dibaca bersama."
+    },
+    "ahlalbait_tathir": {
+      "aba": "Ayat taṭhīr",
+      "siapa": "Bersama",
+      "ket": "QS Al-Aḥzāb 33 (ayat suci ahlul bait) dibaca bersama."
+    },
+    "sholawat_ahzab": {
+      "aba": "Shalawat",
+      "siapa": "Bersama",
+      "ket": "QS Al-Aḥzāb 56 — dalil perintah sholawat; dibaca sebagai pengantar rangkaian sholawat."
+    },
+    "sholawat_afdhal_1": {
+      "aba": "Shalawat afdhal",
+      "siapa": "Bersama",
+      "ket": "Nūril hudā wa misbāḥuḥ… — pilihan sholawat afdhal yang masyhur di majelis NU."
+    },
+    "sholawat_afdhal_2": {
+      "aba": "Shalawat afdhal",
+      "siapa": "Bersama",
+      "ket": "Syamsid-ḍuḥā badrid-dujā… — imam melanjutkan rangkaian sholawat."
+    },
+    "sholawat_afdhal_3": {
+      "aba": "Shalawat afdhal",
+      "siapa": "Bersama",
+      "ket": "Saṭṭāran lil auliyā wal kirām… — imam melanjutkan rangkaian sholawat."
+    },
+    "sholawat_radha": {
+      "aba": "Shalawat penutup",
+      "siapa": "Bersama",
+      "ket": "Doa ridha untuk para sahabat — menutup rangkaian sholawat afdhal."
+    },
+    "hasbunallah": {
+      "aba": "Wirid — Ḥasbunallāh",
+      "siapa": "Bersama",
+      "ket": "Ḥasbunallāhu wa ni‘mal wakīl diwiridkan bersama-sama."
+    },
+    "la_hawla": {
+      "aba": "Wirid — Lā ḥaula",
+      "siapa": "Bersama",
+      "ket": "Lā ḥaula wa lā quwwata illā billāh diwiridkan bersama-sama."
+    },
+    "istighfar": {
+      "aba": "Istighfār",
+      "siapa": "Bersama",
+      "ket": "Astaghfirullāhal ‘aẓīm dibaca tiga kali bersama."
+    },
+    "afdaludz_dzikri": {
+      "aba": "Afdhaḍuż-żikr",
+      "siapa": "Bersama",
+      "ket": "Lā ilāha illallāhu ḥayyun maujūd… diwiridkan bersama-sama."
+    },
+    "hayyun_mabud": {
+      "aba": "Tahlil",
+      "siapa": "Bersama",
+      "ket": "Lā ilāha illallāhu ḥayyun ma‘būd — tahlil diperluas pertama."
+    },
+    "hayyun_baqi": {
+      "aba": "Tahlil",
+      "siapa": "Bersama",
+      "ket": "Lā ilāha illallāhu ḥayyun bāqī — tahlil diperluas kedua."
+    },
+    "tahlil": {
+      "aba": "Tahlīl",
+      "siapa": "Sendiri-sendiri",
+      "ket": "Inti tahlil: Lā ilāha illallāh dibaca sendiri-sendiri sampai 100× dalam hati. Imam memberi aba-aba untuk mulai dan menutup dengan aba-aba sholawat."
+    },
+    "sholawat": {
+      "aba": "Shalawat",
+      "siapa": "Bersama",
+      "ket": "Penanda selesai tahlil 100× — sholawat Nabi dibaca bersama dua kali."
+    },
+    "subhanallah_adada": {
+      "aba": "Tasbīh",
+      "siapa": "Bersama",
+      "ket": "Subḥānallāhi ‘adada ma khalaqallāh… dibaca tujuh kali bersama."
+    },
+    "tasbih": {
+      "aba": "Tasbīh",
+      "siapa": "Sendiri-sendiri",
+      "ket": "Tasbih dihitung 33 kali — pantau dengan penghitung di layar."
+    },
+    "sholawat_habib_1": {
+      "aba": "Shalawat",
+      "siapa": "Bersama",
+      "ket": "Sholawat kepada kekasih Allah ﷺ dibaca bersama dua kali."
+    },
+    "sholawat_habib_2": {
+      "aba": "Shalawat & salam",
+      "siapa": "Bersama",
+      "ket": "Sholawat serta salam untuk Nabi ﷺ dan seluruh keluarganya — imam melanjutkan."
+    },
+    "doa_pembuka": {
+      "aba": "Doa",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam mulai merangkai doa arwah; makmum menyambut āmīn di setiap penutup kalimat doa."
+    },
+    "doa_tawasul_pahala": {
+      "aba": "Doa — wasilah pahala",
+      "siapa": "Imam + āmīn",
+      "ket": "Doa mengantar pahala bacaan kepada Nabi ﷺ dan seluruh arwah muslimin & muslimat."
+    },
+    "doa_ahlulqubur": {
+      "aba": "Doa — ahli kubur",
+      "siapa": "Imam + āmīn",
+      "ket": "Doa ampunan untuk seluruh ahli kubur — imam melanjutkan rangkaian doa."
+    },
+    "doa_mayit": {
+      "aba": "Doa — jenazah",
+      "siapa": "Imam + āmīn",
+      "ket": "Doa khusus untuk jenazah yang dituju — imam memakai dhamir laki-laki (lahu) atau perempuan (lahā) sesuai almarhum/almarhumah."
+    },
+    "doa_penutup": {
+      "aba": "Doa penutup",
+      "siapa": "Imam + āmīn",
+      "ket": "Rabbanā ātinā fid dunyā ḥasanah… — puncak rangkaian doa; makmum memperhatikan dan mengāmīnkan."
+    },
+    "fatihah_2": {
+      "aba": "Al-Fātiḥah penutup",
+      "siapa": "Bersama",
+      "ket": "Rangkaian ditutup Al-Fātiḥah yang dipersembahkan kepada seluruh arwah — selanjutnya biasanya disambut hurrah/tahmid sesuai kebiasaan setempat."
+    }
+  }
+}

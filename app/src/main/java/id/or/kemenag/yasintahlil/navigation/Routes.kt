@@ -22,10 +22,19 @@ object Routes {
     const val FAVORIT = "favorit"
     const val KONTEN_UPDATE = "settings/konten"
     const val TENTANG = "settings/tentang"
+    /** Layar Sumber Konten — satu-satunya tempat atribusi sumber bacaan dikumpulkan. */
+    const val SUMBER = "settings/sumber"
 
     // ---- Fitur amalan & referensi (v1.10.0) ------------------------------------------------------
 
     const val TASBIH = "tasbih"
+    /**
+     * Dua layar pendamping Tasbih: riwayat 7 hari dan keterangan perilakunya (getar, putaran,
+     * reset harian). Keduanya sengaja **bukan** anggota [LANGSUNG] — keduanya bermakna bersama
+     * layar Tasbih, dan ketukan notifikasi tidak pernah dimaksudkan mendarat di sana.
+     */
+    const val TASBIH_RIWAYAT = "tasbih/riwayat"
+    const val TASBIH_INFO = "tasbih/info"
     const val ASMAUL = "asmaul"
     const val ZAKAT = "zakat"
     const val KALENDER = "kalender"

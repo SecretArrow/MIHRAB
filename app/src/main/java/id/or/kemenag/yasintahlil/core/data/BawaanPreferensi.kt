@@ -112,6 +112,9 @@ object BawaanPreferensi {
     const val SUSUNAN_SAYA = ""
     const val SUSUNAN_TAHLIL_DIPILIH = ""
 
+    /** Mode Imam Tahlil mati selama pengguna belum memilih chip "Imam" di layar Tahlil. */
+    const val MODE_IMAM = false
+
     /** Penanda ayat Yasin terakhir; `0` berarti belum ada. */
     const val PENANDA_YASIN = 0
 

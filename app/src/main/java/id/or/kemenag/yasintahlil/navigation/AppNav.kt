@@ -58,8 +58,11 @@ import id.or.kemenag.yasintahlil.feature.sholat.SholatDetailScreen
 import id.or.kemenag.yasintahlil.feature.sholat.SholatScreen
 import id.or.kemenag.yasintahlil.feature.sholat.WudhuScreen
 import id.or.kemenag.yasintahlil.feature.tahlil.TahlilScreen
+import id.or.kemenag.yasintahlil.feature.tasbih.TasbihInfoScreen
+import id.or.kemenag.yasintahlil.feature.tasbih.TasbihRiwayatScreen
 import id.or.kemenag.yasintahlil.feature.tasbih.TasbihScreen
 import id.or.kemenag.yasintahlil.feature.tentang.TentangScreen
+import id.or.kemenag.yasintahlil.feature.sumber.SumberScreen
 import id.or.kemenag.yasintahlil.feature.yasin.YasinScreen
 import id.or.kemenag.yasintahlil.feature.zakat.ZakatScreen
 import kotlinx.coroutines.launch
@@ -154,9 +157,14 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.SEARCH) { SearchScreen(go = { nav.navigate(it) }) }
                 composable(Routes.FAVORIT) { FavoritScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KONTEN_UPDATE) { ContentUpdateScreen() }
-                composable(Routes.TENTANG) { TentangScreen() }
+                composable(Routes.TENTANG) { TentangScreen(go = { nav.navigate(it) }) }
+                composable(Routes.SUMBER) { SumberScreen() }
                 // ---- Amalan & referensi --------------------------------------------------------------
                 composable(Routes.TASBIH) { TasbihScreen(go = { nav.navigate(it) }) }
+                // Dua layar pendamping Tasbih — riwayat 7 hari dan keterangannya — dibuka dari
+                // layar Tasbih sendiri, bukan dari menu: keduanya bermakna bersama alat hitungnya.
+                composable(Routes.TASBIH_RIWAYAT) { TasbihRiwayatScreen() }
+                composable(Routes.TASBIH_INFO) { TasbihInfoScreen() }
                 composable(Routes.ASMAUL) { AsmaulHusnaScreen(go = { nav.navigate(it) }) }
                 composable(Routes.ZAKAT) { ZakatScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KALENDER) { KalenderScreen(go = { nav.navigate(it) }) }

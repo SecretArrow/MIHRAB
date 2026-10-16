@@ -88,7 +88,7 @@ fun DzikirGroupScreen(id: String, go: (String) -> Unit = {}, vm: DzikirViewModel
                 BacaanCard(key, it.judul, it.arab, it.latin, it.terjemahan,
                     s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, fullscreen),
                     ulangi = it.ulangi, sumber = it.sumber,
-                    showArab = s.showArab, kategori = it.kategori)
+                    showArab = s.showArab, kategori = it.kategori, ayat = it.ayat)
                 // Hitungan tiap bacaan tetap tersimpan di Room untuk semua entri, bukan hanya yang
                 // ulangi > 1 — penghitungnya sendiri hanya tampil bila dinyalakan di Pengaturan,
                 // sehingga layar berpuluhan bacaan ini tidak dipenuhi deretan tombol tambah/kurang.
