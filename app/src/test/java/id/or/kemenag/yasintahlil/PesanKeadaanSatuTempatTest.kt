@@ -78,7 +78,8 @@ class PesanKeadaanSatuTempatTest {
     @Test
     fun empatLayarMemakaiPesanKontenUntukBerkasnya() {
         val diharapkan = mapOf(
-            "feature/adzan/AdzanScreen.kt" to "lafaz adzan",
+            // Lafaz adzan pindah ke layar bacaannya sendiri (2026-10-16) — pesan kosongnya ikut.
+            "feature/adzan/LafazAdzanScreen.kt" to "lafaz adzan",
             "feature/tahlil/TahlilScreen.kt" to "susunan tahlil",
             "feature/dzikir/DzikirScreen.kt" to "kumpulan dzikir",
             "feature/settings/SettingsScreen.kt" to "susunan tahlil",
