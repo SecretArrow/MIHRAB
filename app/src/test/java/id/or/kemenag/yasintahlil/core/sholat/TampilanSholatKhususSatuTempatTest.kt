@@ -66,7 +66,7 @@ class TampilanSholatKhususSatuTempatTest {
             assertTrue("$nama tidak memakai aturan cadangan teks bersama (TeksBacaan.pilih)",
                 teks.contains("TeksBacaan.pilih("))
         }
-        val keterangan = layar("keterangan/KeteranganScreen.kt")
+        val keterangan = layar("feature/keterangan/KeteranganScreen.kt")
         listOf("syarat(", "catatanMazhab(").forEach { a ->
             assertTrue("keterangan sholat mayit tidak memakai TampilanSholatKhusus.$a",
                 keterangan.contains("TampilanSholatKhusus.$a"))
