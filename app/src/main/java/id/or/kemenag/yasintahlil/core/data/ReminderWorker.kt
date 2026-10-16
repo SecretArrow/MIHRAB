@@ -178,7 +178,9 @@ class ReminderWorker(app: Context, params: WorkerParameters) : CoroutineWorker(a
             .setContentTitle("Baca doa setelah adzan $nama")
             .setContentText("Sholawat lalu doa setelah adzan. Ketuk untuk membuka bacaannya.")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentIntent(contentIntent(Routes.DOA_ADZAN))
+            // Rutenya layar Doa setelah adzan (2026-10-16) — rute lama "adzan/doa" diteruskan oleh
+            // `Routes.DOA_SETELAH_ADZAN`, sehingga ketukan notifikasi tetap mendarat di doanya.
+            .setContentIntent(contentIntent(Routes.DOA_SETELAH_ADZAN))
             .setAutoCancel(true)
             .build()
         post(nama.hashCode() + 3000, notif)

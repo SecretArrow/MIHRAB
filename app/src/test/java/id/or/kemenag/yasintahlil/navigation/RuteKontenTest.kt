@@ -53,10 +53,11 @@ class RuteKontenTest {
             JenisBacaan.LANGKAH to Routes.SHOLAT,
             JenisBacaan.GHAIB to Routes.GHAIB,
             JenisBacaan.JENAZAH to Routes.JENAZAH,
-            JenisBacaan.ADZAN to Routes.ADZAN,
+            // Lafaz adzan kini layar bacaannya sendiri (2026-10-16) — bukan lagi layar pengaturnya.
+            JenisBacaan.ADZAN to Routes.LAFAZ_ADZAN,
             JenisBacaan.IQOMAH to Routes.IQOMAH,
-            // Lafaz pada layar Doa Adzan memakai jenis "doa" — bukan layar Dzikir.
-            JenisBacaan.DOA to Routes.DOA_ADZAN,
+            // Bacaan adzan memakai jenis "doa"; doa setelah adzan kini layarnya sendiri (2026-10-16).
+            JenisBacaan.DOA to Routes.DOA_SETELAH_ADZAN,
             JenisBacaan.SEARCH to Routes.SEARCH,
         )
         assertEquals("daftar jenis di uji ini berbeda dari kosakata bersama `JenisBacaan.BERPETA`",

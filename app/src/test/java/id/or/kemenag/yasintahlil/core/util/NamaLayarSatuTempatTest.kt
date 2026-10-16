@@ -53,7 +53,9 @@ class NamaLayarSatuTempatTest {
         "GHAIB" to ("feature/sholat/GhaibScreen.kt" to "GHAIB"),
         "JENAZAH" to ("feature/sholat/JenazahScreen.kt" to "JENAZAH"),
         "DZIKIR" to ("feature/dzikir/DzikirScreen.kt" to "DZIKIR"),
-        "DOA_ADZAN" to ("feature/adzan/IqomahDoaScreen.kt" to "DOA_ADZAN"),
+        "DOA_SEBELUM_ADZAN" to ("feature/adzan/IqomahDoaScreen.kt" to "DOA_SEBELUM_ADZAN"),
+        "LAFAZ_ADZAN" to ("feature/adzan/LafazAdzanScreen.kt" to "LAFAZ_ADZAN"),
+        "DOA_SETELAH_ADZAN" to ("feature/adzan/IqomahDoaScreen.kt" to "DOA_SETELAH_ADZAN"),
         "IQOMAH" to ("feature/adzan/IqomahDoaScreen.kt" to "IQOMAH"),
         "ADZAN" to ("feature/adzan/AdzanScreen.kt" to "ADZAN"),
         "KIBLAT" to ("feature/kiblat/KiblatScreen.kt" to "KIBLAT"),
@@ -99,12 +101,14 @@ class NamaLayarSatuTempatTest {
         assertEquals("Surat Yasin", NamaLayar.YASIN)
         assertEquals("Tahlil", NamaLayar.TAHLIL)
         assertEquals("Dzikir & Doa", NamaLayar.DZIKIR)
-        assertEquals("Panduan Sholat", NamaLayar.SHOLAT)
+        assertEquals("Sholat", NamaLayar.SHOLAT)
         assertEquals("Wudhu & Tayamum", NamaLayar.WUDHU)
         assertEquals("Sholat Ghaib", NamaLayar.GHAIB)
         assertEquals("Sholat Jenazah", NamaLayar.JENAZAH)
         assertEquals("Adzan & Pengingat", NamaLayar.ADZAN)
-        assertEquals("Doa Adzan", NamaLayar.DOA_ADZAN)
+        assertEquals("Doa sebelum adzan", NamaLayar.DOA_SEBELUM_ADZAN)
+        assertEquals("Adzan", NamaLayar.LAFAZ_ADZAN)
+        assertEquals("Doa setelah adzan", NamaLayar.DOA_SETELAH_ADZAN)
         assertEquals("Iqomah", NamaLayar.IQOMAH)
         assertEquals("Jadwal Sholat", NamaLayar.JADWAL)
         assertEquals("Arah Kiblat", NamaLayar.KIBLAT)
@@ -130,7 +134,8 @@ class NamaLayarSatuTempatTest {
             NamaLayar.BERANDA, NamaLayar.IBADAH, NamaLayar.ALAT, NamaLayar.PENGATURAN,
             NamaLayar.YASIN, NamaLayar.TAHLIL, NamaLayar.DZIKIR, NamaLayar.SHOLAT,
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
-            NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
+            NamaLayar.DOA_SEBELUM_ADZAN, NamaLayar.LAFAZ_ADZAN, NamaLayar.DOA_SETELAH_ADZAN,
+            NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
             NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
             NamaLayar.TASBIH, NamaLayar.ASMAUL, NamaLayar.ZAKAT, NamaLayar.KALENDER,
             NamaLayar.KHATAMAN, NamaLayar.ALMARHUM,
@@ -150,7 +155,8 @@ class NamaLayarSatuTempatTest {
             NamaLayar.BERANDA, NamaLayar.IBADAH, NamaLayar.ALAT, NamaLayar.PENGATURAN,
             NamaLayar.YASIN, NamaLayar.TAHLIL, NamaLayar.DZIKIR, NamaLayar.SHOLAT,
             NamaLayar.WUDHU, NamaLayar.GHAIB, NamaLayar.JENAZAH, NamaLayar.ADZAN,
-            NamaLayar.DOA_ADZAN, NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
+            NamaLayar.DOA_SEBELUM_ADZAN, NamaLayar.LAFAZ_ADZAN, NamaLayar.DOA_SETELAH_ADZAN,
+            NamaLayar.IQOMAH, NamaLayar.JADWAL, NamaLayar.KIBLAT,
             NamaLayar.SEARCH, NamaLayar.FAVORIT, NamaLayar.TENTANG, NamaLayar.PEMBARUAN_KONTEN,
             NamaLayar.TASBIH, NamaLayar.ASMAUL, NamaLayar.ZAKAT, NamaLayar.KALENDER,
             NamaLayar.KHATAMAN, NamaLayar.ALMARHUM,
@@ -209,17 +215,21 @@ class NamaLayarSatuTempatTest {
     }
 
     /**
-     * Berkas yang memuat **dua** layar (Iqomah dan Doa Adzan tinggal di satu berkas) harus menyebut
-     * nama yang benar di **masing-masing** judulnya, bukan satu nama untuk keduanya.
+     * Berkas yang memuat **beberapa** layar (Iqomah, Doa sebelum adzan, dan Doa setelah adzan
+     * tinggal di satu berkas) harus menyebut nama yang benar di **masing-masing** judulnya, bukan
+     * satu nama untuk semuanya. Lafaz adzan berkasnya sendiri (LafazAdzanScreen.kt) dan ikut
+     * diperiksa `judulLayarMemuatNamanyaSendiri` lewat peta tujuan.
      */
     @Test
     fun tiapJudulDalamSatuBerkasMemakaiNamanyaSendiri() {
         val jendela = jendelaJudul(kode("feature/adzan/IqomahDoaScreen.kt"))
-        assertEquals("jumlah judul di IqomahDoaScreen.kt berubah", 2, jendela.size)
+        assertEquals("jumlah judul di IqomahDoaScreen.kt berubah", 3, jendela.size)
         assertTrue("judul Iqomah tidak memakai NamaLayar.IQOMAH",
             jendela.any { it.contains("NamaLayar.IQOMAH") })
-        assertTrue("judul Doa Adzan tidak memakai NamaLayar.DOA_ADZAN",
-            jendela.any { it.contains("NamaLayar.DOA_ADZAN") })
+        assertTrue("judul Doa sebelum adzan tidak memakai NamaLayar.DOA_SEBELUM_ADZAN",
+            jendela.any { it.contains("NamaLayar.DOA_SEBELUM_ADZAN") })
+        assertTrue("judul Doa setelah adzan tidak memakai NamaLayar.DOA_SETELAH_ADZAN",
+            jendela.any { it.contains("NamaLayar.DOA_SETELAH_ADZAN") })
     }
 
     // ---- Tempat yang menunjuk layar ------------------------------------------------------------
@@ -267,10 +277,11 @@ class NamaLayarSatuTempatTest {
             "IbadahScreen.kt",
             pasangan("feature/ibadah/IbadahScreen.kt",
                 """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
-            // Tasbih, zakat, dan tahlil almarhum pindah ke menu Alat (2026-10-16): menu Ibadah
-            // murni bacaan, panduan, referensi, dan simpanan.
-            setOf("YASIN", "TAHLIL", "SHOLAT", "WUDHU", "GHAIB", "JENAZAH", "DZIKIR",
-                "DOA_ADZAN", "SEARCH", "FAVORIT", "ASMAUL", "KHATAMAN"),
+            // Sholat Ghaib & Jenazah pindah menjadi entri di dalam layar Sholat, dan bacaan adzan
+            // pecah menjadi tiga layar pada bagian "Adzan" (2026-10-16).
+            setOf("YASIN", "TAHLIL", "SHOLAT", "WUDHU", "DZIKIR",
+                "DOA_SEBELUM_ADZAN", "LAFAZ_ADZAN", "DOA_SETELAH_ADZAN",
+                "SEARCH", "FAVORIT", "ASMAUL", "KHATAMAN"),
         )
         periksa(
             "AlatScreen.kt",
@@ -340,7 +351,8 @@ class NamaLayarSatuTempatTest {
         periksa(
             "RuteKonten.namaTujuan",
             pasangan("navigation/RuteKonten.kt", """Routes\.(\w+)\s*->\s*NamaLayar\.(\w+)"""),
-            setOf("YASIN", "TAHLIL", "DZIKIR", "DOA_ADZAN", "IQOMAH", "ADZAN", "SHOLAT",
+            setOf("YASIN", "TAHLIL", "DZIKIR", "DOA_SEBELUM_ADZAN", "LAFAZ_ADZAN",
+                "DOA_SETELAH_ADZAN", "IQOMAH", "ADZAN", "SHOLAT",
                 "GHAIB", "JENAZAH", "SEARCH"),
         )
     }

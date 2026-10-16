@@ -29,7 +29,10 @@ object NotifChannels {
 
     fun ensure(ctx: Context) {
         val mgr = ctx.getSystemService<NotificationManager>() ?: return
-        val adzan = NotificationChannel(ADZAN, "Adzan", NotificationManager.IMPORTANCE_HIGH).apply {
+        // Nama kanalnya "Pengingat adzan", bukan "Adzan" sebelahnya: nama satu kata itu ejaan
+        // layar "Adzan" yang harus dibaca dari `NamaLayar`, bukan ditulis ulang di sini — dan
+        // kanal ini memang membawa pengingatnya, bukan layarnya.
+        val adzan = NotificationChannel(ADZAN, "Pengingat adzan", NotificationManager.IMPORTANCE_HIGH).apply {
             description = "Pemberitahuan masuk waktu sholat"
             enableVibration(true)
         }

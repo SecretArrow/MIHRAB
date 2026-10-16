@@ -146,12 +146,57 @@ fun IqomahScreen(go: (String) -> Unit = {}) {
 
 }
 
+/**
+ * Doa sebelum adzan — lafaz menjawab adzan beserta waktunya (permintaan pengguna, 2026-10-16):
+ * dahulu bacaan ini menumpuk bersama sholawat dan doa setelah adzan di satu layar "Doa Adzan";
+ * kini tiap waktu bacaan layar sendiri pada bagian "Adzan" di menu Ibadah.
+ */
 @Composable
-fun DoaAdzanScreen(go: (String) -> Unit = {}) {
+fun DoaSebelumAdzanScreen(go: (String) -> Unit = {}) {
+    val repo = rememberRepo()
+    val store = rememberStore()
+    val menjawab = remember { repo.menjawabAdzan() }
+    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
+    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
+    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
+    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
+    LaunchedEffect(Unit) {
+        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
+        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
+        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
+        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
+    }
+    Column(Modifier.fillMaxSize().padding(12.dp).verticalScroll(rememberScrollState())) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.DOA_SEBELUM_ADZAN, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            TombolInfo { go(Routes.keterangan("doa_sebelum_adzan")) }
+        }
+        Text("Bacaan yang berlaku ketika adzan dikumandangkan: jawab lafaz muadzin selama adzan " +
+                "belum selesai. Doa setelah adzan ada di layar tersendiri setelah ini.",
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(bottom = 4.dp))
+        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize,
+            showArab, showLatin, showTrans)
+    }
+}
+
+/**
+ * Doa setelah adzan — sholawat lalu doanya, dalam urutan waktunya (permintaan pengguna,
+ * 2026-10-16): dahulu keduanya menumpuk bersama bacaan menjawab adzan di satu layar "Doa Adzan".
+ *
+ * Ketukan notifikasi pengingat doa setelah adzan mendarat di layar ini (`Routes.DOA_SETELAH_ADZAN`
+ * meneruskan peran rute lama), sehingga keterangannya tetap menyebut rumah saklarnya di menu Adzan.
+ */
+@Composable
+fun DoaSesudahAdzanScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
     val doa = remember { repo.doaAdzan() }
-    val menjawab = remember { repo.menjawabAdzan() }
     val sholawat = remember { repo.sholawatAdzan() }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
@@ -169,16 +214,14 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("${NamaLayar.DOA_ADZAN} — sebelum & sesudah adzan",
-                style = MaterialTheme.typography.titleLarge,
+            Text(NamaLayar.DOA_SETELAH_ADZAN, style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f))
-            TombolInfo { go(Routes.keterangan("doa_adzan")) }
+            TombolInfo { go(Routes.keterangan("doa_sesudah_adzan")) }
         }
         // `plan.txt` §"Bacaan Setelah Adzan": *"Tambahkan tombol untuk … mengaktifkan pengingat
         // membaca doa setelah adzan."* Saklarnya hidup di menu Adzan — hub seluruh pengaturan
-        // pengingat adzan — dan tidak lagi digandakan di sini (satu pengaturan, satu rumah):
-        // pengguna yang menemukan doanya di layar ini tetap diarahkan ke saklarnya, tanpa dua
-        // saklar yang bisa saling bertentangan di mata pengguna.
+        // pengingat adzan — dan tidak digandakan di sini (satu pengaturan, satu rumah): pengguna
+        // yang menemukan doanya di layar ini tetap diarahkan ke saklarnya.
         //
         // Sebab, ikut-saklar, dan batas syariatnya tetap dari aturan bersama (`PengingatAdzan`),
         // sama persis dengan yang ditulis menu Adzan — dua penjelasan untuk satu pengingat tidak
@@ -189,17 +232,15 @@ fun DoaAdzanScreen(go: (String) -> Unit = {}) {
                 PengingatAdzan.DOA_BUKAN_SYARIAT,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 4.dp))
-        KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "menjawab_adzan"), menjawab, arabSize,
-            showArab, showLatin, showTrans)
         KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "sholawat_adzan"), sholawat, arabSize,
             showArab, showLatin, showTrans)
         KartuDoa(JenisBacaan.id(JenisBacaan.DOA, "adzan"), doa, arabSize,
             showArab, showLatin, showTrans)
         Text("Suara adzan, pengingat sebelum adzan, dan saklar pengingat doanya diatur di menu " +
-                "Adzan. Iqomah memiliki timer tersendiri di menu Iqomah.",
+                "Adzan. Bacaan ketika adzan dikumandangkan ada di layar ${NamaLayar.DOA_SEBELUM_ADZAN}; " +
+                "Iqomah memiliki timer tersendiri di menu Iqomah.",
             style = MaterialTheme.typography.labelSmall)
     }
-
 }
 
 /**

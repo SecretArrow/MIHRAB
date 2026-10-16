@@ -21,7 +21,8 @@ class AtribusiLafazAdzanTest {
 
     private fun sumber(relatif: String): String = File(root(), relatif).readText()
 
-    private fun layarAdzan() = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/AdzanScreen.kt")
+    private fun layarAdzan() =
+        sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/LafazAdzanScreen.kt")
 
     private fun layarIqomah() =
         sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt")
@@ -122,10 +123,14 @@ class AtribusiLafazAdzanTest {
 
     // ---- Layar ----
 
+    /**
+     * Lafaz adzan tinggal di layarnya sendiri (LafazAdzanScreen.kt, 2026-10-16) — pindah dari
+     * bagian bawah layar pengaturannya; id kartunya ikut pindah tanpa berubah.
+     */
     @Test
     fun layarAdzanMenampilkanSumberLafaz() {
         val s = layarAdzan()
-        assertTrue("layar Adzan tidak meneruskan sumber ke kartu lafaz", s.contains("sumber = l.sumber"))
+        assertTrue("layar lafaz adzan tidak meneruskan sumber ke kartu lafaz", s.contains("sumber = l.sumber"))
     }
 
     @Test
@@ -160,7 +165,7 @@ class AtribusiLafazAdzanTest {
     /** Id yang memakai 10 huruf Arab pertama berulang untuk lafaz yang sama — sumber tabrakan. */
     @Test
     fun idKartuTidakLagiMemakaiPotonganArab() {
-        listOf("AdzanScreen.kt" to layarAdzan(), "IqomahDoaScreen.kt" to layarIqomah()).forEach { (nama, isi) ->
+        listOf("LafazAdzanScreen.kt" to layarAdzan(), "IqomahDoaScreen.kt" to layarIqomah()).forEach { (nama, isi) ->
             assertTrue("$nama masih memakai potongan Arab sebagai id kartu",
                 !isi.contains("BacaanCard(\"adzan:\${l.arab.take(10)}\"") &&
                     !isi.contains("BacaanCard(\"iqomah:\${l.arab.take(10)}\""))

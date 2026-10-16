@@ -116,7 +116,7 @@ class NavSmokeTest {
     fun bottomNavigation_switchesBetweenMainScreens() {
         lewatiPengantar()
         // Beranda tampil lebih dulu.
-        rule.onNodeWithText("Assalamu'alaikum").assertIsDisplayed()
+        rule.onNodeWithText("Aksi cepat").assertIsDisplayed()
 
         rule.onNodeWithText(NamaLayar.IBADAH).performClick()
         rule.onNodeWithText("Menu ${NamaLayar.IBADAH}").assertIsDisplayed()
@@ -129,7 +129,7 @@ class NavSmokeTest {
         rule.onNodeWithText(NamaLayar.TENTANG).performScrollTo().assertIsDisplayed()
 
         rule.onNodeWithText(NamaLayar.BERANDA).performClick()
-        rule.onNodeWithText("Assalamu'alaikum").assertIsDisplayed()
+        rule.onNodeWithText("Aksi cepat").assertIsDisplayed()
     }
 
     @Test

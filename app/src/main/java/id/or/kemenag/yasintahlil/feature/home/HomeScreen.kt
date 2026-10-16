@@ -69,7 +69,7 @@ import java.util.*
  * sehingga bertahan saat rotasi dan ikut berubah begitu pengguna mengganti lokasi/metode di layar
  * Jadwal tanpa membuka ulang beranda.
  *
- * Tata letaknya ringkas: kepala sapaan berikut ikon Pencarian di atas bidang mint bermotif khatam,
+ * Tata letaknya ringkas: kepala tanggal berikut ikon Pencarian di atas bidang mint bermotif khatam,
  * kartu waktu sholat berikutnya (seluruh kartunya dapat diketuk untuk membuka jadwal lengkap),
  * lalu kisi aksi cepat dua baris — enam tujuan yang paling sering dibuka. Saklar pengingat dan
  * ringkasan simpanan yang dahulu menumpuk di sini tinggal di rumahnya masing-masing: seluruh
@@ -137,16 +137,13 @@ fun HomeScreen(go: (String) -> Unit, vm: HomeViewModel = hiltViewModel()) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        "Assalamu'alaikum",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
+                    // Sapaan dihapus (permintaan pengguna, 2026-10-16): baris pertama kepala beranda
+                    // kini tanggal dan jamnya — informasi yang benar-benar berguna setiap hari —
+                    // bukan sapaan yang sama setiap kali layar dibuka.
                     Text(
                         "$masehi • $jam",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(top = 2.dp),
                     )
                     Spacer(Modifier.height(12.dp))
                     Surface(

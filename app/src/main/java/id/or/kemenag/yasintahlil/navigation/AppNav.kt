@@ -33,8 +33,10 @@ import id.or.kemenag.yasintahlil.core.designsystem.KolomKonten
 import id.or.kemenag.yasintahlil.core.designsystem.rememberStore
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.feature.adzan.AdzanScreen
-import id.or.kemenag.yasintahlil.feature.adzan.DoaAdzanScreen
+import id.or.kemenag.yasintahlil.feature.adzan.DoaSebelumAdzanScreen
+import id.or.kemenag.yasintahlil.feature.adzan.DoaSesudahAdzanScreen
 import id.or.kemenag.yasintahlil.feature.adzan.IqomahScreen
+import id.or.kemenag.yasintahlil.feature.adzan.LafazAdzanScreen
 import id.or.kemenag.yasintahlil.feature.alat.AlatScreen
 import id.or.kemenag.yasintahlil.feature.almarhum.AlmarhumScreen
 import id.or.kemenag.yasintahlil.feature.asmaul.AsmaulHusnaScreen
@@ -134,7 +136,11 @@ fun AppNav(pendingRoute: String? = null, onRouteConsumed: () -> Unit = {}) {
                 composable(Routes.JENAZAH) { JenazahScreen(go = { nav.navigate(it) }) }
                 composable(Routes.WUDHU) { WudhuScreen(go = { nav.navigate(it) }) }
                 composable(Routes.ADZAN) { AdzanScreen(go = { nav.navigate(it) }) }
-                composable(Routes.DOA_ADZAN) { DoaAdzanScreen(go = { nav.navigate(it) }) }
+                // Tiga bacaan seputar adzan (2026-10-16): doa sebelum, lafaznya, dan doa setelah
+                // adzan — masing-masing layar sendiri, dikelompokkan pada bagian "Adzan" menu Ibadah.
+                composable(Routes.DOA_SEBELUM_ADZAN) { DoaSebelumAdzanScreen(go = { nav.navigate(it) }) }
+                composable(Routes.LAFAZ_ADZAN) { LafazAdzanScreen(go = { nav.navigate(it) }) }
+                composable(Routes.DOA_SETELAH_ADZAN) { DoaSesudahAdzanScreen(go = { nav.navigate(it) }) }
                 composable(Routes.IQOMAH) { IqomahScreen(go = { nav.navigate(it) }) }
                 composable(Routes.KIBLAT) { KiblatScreen(go = { nav.navigate(it) }) }
                 composable(Routes.JADWAL) { JadwalScreen(go = { nav.navigate(it) }) }

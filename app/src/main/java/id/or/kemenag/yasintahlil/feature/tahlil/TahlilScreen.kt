@@ -42,18 +42,16 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * layar ini, persis dua tab di quran.nu.or.id/tahlil; seluruh susunan (termasuk "Susunan saya")
  * tetap dapat dilihat dari Pengaturan dan penyusunnya lewat ikon Tune. Keterangan susunan — nama
  * susunan, catatan tradisi, sumber sampai sunnah.com — tinggal di layar keterangan lewat ikon Info.
- * Dahulu baris chip di sini berlabel "Jamaah" — padahal yang diaturnya hanyalah ukuran teks, dan
- * namanya justru tersangkut dengan pilihan versi tahlil; kini chipnya berlabel "Teks besar" supaya
- * tak tertukar dengan pilihan Ringkas/Lengkap di sebelahnya.
+ * Chip "Teks besar" di baris yang sama dihapus (permintaan pengguna, 2026-10-16): ukuran bacaan
+ * cukup diatur dari Pengaturan dan mode layar penuh, bukan pilihan ketiga yang menumpuk di sini.
  */
 @Composable
 fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
     val store = rememberStore()
-    // rememberSaveable: pilihan tampilan (teks besar, layar penuh, panel susunan, nomor yang
-    // sedang diketik) tidak hilang saat layar diputar ulang.
-    var jamaah by rememberSaveable { mutableStateOf(false) }
+    // rememberSaveable: pilihan tampilan (layar penuh, panel susunan, nomor yang sedang diketik)
+    // tidak hilang saat layar diputar ulang.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
     var jump by rememberSaveable { mutableStateOf("") }
@@ -134,17 +132,14 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 listOf("nu_online_ringkas" to "Ringkas", "nu_online_lengkap" to "Lengkap")
                     .forEach { (id, label) ->
                         if (s.susunan.any { it.id == id }) {
-                            FilterChip(!s.modeImam && s.susunanId == id && !jamaah,
+                            FilterChip(!s.modeImam && s.susunanId == id,
                                 { vm.setSusunan(id) }, { Text(label) })
                         }
                     }
                 // Mode Imam — bacaannya SAMA dengan Lengkap; yang bertambah hanya lencana siapa
                 // yang membaca tiap bagian (kartunya sendiri), sehingga makmum tahu bagian mana
                 // yang dibaca bersama. Keterangannya lewat ikon Info di kepala layar.
-                FilterChip(s.modeImam && !jamaah, { vm.setModeImam(!s.modeImam) }, { Text("Imam") })
-                // Chip ukuran teks, bukan pilihan isi: menaikkan ukuran Arab untuk dibaca dari
-                // jauh, sama aturannya dengan mode layar penuh di sebelahnya.
-                FilterChip(jamaah, { jamaah = !jamaah }, { Text("Teks besar") })
+                FilterChip(s.modeImam, { vm.setModeImam(!s.modeImam) }, { Text("Imam") })
             }
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -173,10 +168,11 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
         // Peta pembagi Mode Imam (id bagian → siapa membaca) dibaca sekali dari bundel — statis
         // selama layar hidup; bila berkasnya tak terbaca, peta kosong dan lencananya tidak tampil.
         val imam = remember { repo.tahlilImam() }
-        // Dua mode berarti bacaan dibaca dari jauh — teks besar (chip) dan "Layar penuh" — dan
-        // keduanya menaikkan ukuran Arab lewat aturan bersama yang sama dengan layar Ghaib,
-        // Jenazah, Iqomah, Yasin, dan Dzikir.
-        val bacaJauh = jamaah || fullscreen
+        // Mode baca jarak jauh — "Layar penuh" — menaikkan ukuran Arab lewat aturan bersama yang
+        // sama dengan layar Ghaib, Jenazah, Iqomah, Yasin, dan Dzikir. Chip "Teks besar" yang dahulu
+        // ikut menaikkan ukuran dihapus (permintaan pengguna, 2026-10-16); ukuran lazimnya diatur
+        // dari Pengaturan.
+        val bacaJauh = fullscreen
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
             itemsIndexed(s.items, key = { _, it -> it.id }) { i, it ->
                 // Aturan cadangan teks dari `TeksBacaan` — sama dengan layar sholat, bukan salinan
@@ -185,18 +181,7 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                     val (ra, rl, rt) = repo.resolveArabLatinTerjemah(it.rujukanFile)
                     TeksBacaan.pilih(it, ra, rl, rt)
                 }
-                if (jamaah) {
-                    Column(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        // Satu baris dengan syaratnya — pola yang dibaca penjaga showArab
-                        // (`ReadingDisplayPrefsTest` memindai teks sebelum pemanggilan pada
-                        // baris yang sama, bukan baris-baris di atasnya).
-                        if (s.showArab && arab.isNotBlank()) ArabText(arab, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh))
-                        if (s.showTrans && trans.isNotBlank()) {
-                            Text(trans, style = MaterialTheme.typography.headlineSmall)
-                        }
-                    }
-                } else {
-                    BacaanCard(
+                BacaanCard(
                         JenisBacaan.id(JenisBacaan.TAHLIL, it.id),
                         "Bagian ${i + 1} — ${it.judul}", arab, latin, trans,
                         s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
@@ -210,7 +195,6 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                             ) { vm.jumpTo(i) },
                         ),
                     )
-                }
             }
         }
     }

@@ -25,12 +25,9 @@ import id.or.kemenag.yasintahlil.core.designsystem.*
 import id.or.kemenag.yasintahlil.core.scheduling.NotifChannels
 import id.or.kemenag.yasintahlil.core.scheduling.PrayerScheduler
 import id.or.kemenag.yasintahlil.core.util.JadwalHariIni
-import id.or.kemenag.yasintahlil.core.util.JenisBacaan
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
-import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
-import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -40,14 +37,16 @@ import java.util.Calendar
  * pengguna yang diberi nama — aplikasi tidak menyertakan audio bawaan karena lisensi), volume,
  * jeda pengingat sebelum adzan, penembus mode senyap, pratinjau, serta pintasan izin sistem
  * (notifikasi, optimasi baterai, akses DND).
+ *
+ * Lafaz adzannya bukan anggota layar ini lagi: ia pindah ke layar "Adzan" pada bagian "Adzan" di
+ * menu Ibadah (permintaan pengguna, 2026-10-16) — bacaan tinggal di menu Ibadah, pengaturan tetap
+ * di sini.
  */
 @Composable
 fun AdzanScreen(go: (String) -> Unit = {}) {
-    val repo = rememberRepo()
     val store = rememberStore()
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
-    val lafaz = remember { repo.adzan() }
     // Nilai awalnya adalah bawaan bersama, bukan literal: yang tampil sebelum pemuatan selesai
     // harus sama dengan yang tampil sesudahnya bagi pengguna yang belum menyentuh pengaturannya.
     var on by remember { mutableStateOf(PengingatAdzan.parseOn(PengingatAdzan.ON_DEFAULT)) }
@@ -58,10 +57,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
     var preMin by remember { mutableStateOf(PengingatAdzan.preMenit(PengingatAdzan.PRE_MIN_DEFAULT)) }
     var doaReminder by remember { mutableStateOf(BawaanPreferensi.PENGINGAT_DOA_ADZAN) }
     var dnd by remember { mutableStateOf(false) }
-    var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
-    var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
-    var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
-    var showTrans by remember { mutableStateOf(BawaanPreferensi.TAMPIL_TERJEMAHAN) }
     // Metode hisab yang benar-benar dipakai menjadwalkan pengingat. Sebelumnya layar ini menulis
     // nama metode secara hardcode — selalu Kemenag/SIHAT — sehingga berbohong begitu pengguna
     // memilih metode lain di menu Jadwal. Nilai awalnya pun dahulu masih `Method.KEMENAG`: sisa
@@ -120,10 +115,6 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
             store.get(Store.ADZAN_PRE_MIN, PengingatAdzan.PRE_MIN_DEFAULT))
         doaReminder = store.get(Store.DOA_ADZAN_REMINDER, BawaanPreferensi.PENGINGAT_DOA_ADZAN)
         dnd = NotifChannels.canBypassDnd(ctx.applicationContext)
-        arabSize = store.get(Store.ARAB_SIZE, UkuranBacaan.ARAB_DEFAULT)
-        showArab = store.get(Store.SHOW_ARAB, BawaanPreferensi.TAMPIL_ARAB)
-        showLatin = store.get(Store.SHOW_LATIN, BawaanPreferensi.TAMPIL_LATIN)
-        showTrans = store.get(Store.SHOW_TRANS, BawaanPreferensi.TAMPIL_TERJEMAHAN)
         metode = PrayerCalc.Method.from(store.get(Store.METHOD, JadwalHariIni.METODE_DEFAULT))
         lat = store.get(Store.LAT, JadwalHariIni.LAT_DEFAULT)
         lon = store.get(Store.LON, JadwalHariIni.LON_DEFAULT)
@@ -318,25 +309,9 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
             OutlinedButton(onClick = { openBatterySettings(ctx) }) { Text("Optimasi baterai") }
         }
 
-        BagianJudul("Lafaz adzan")
-        if (lafaz.isEmpty()) {
-            EmptyState("Lafaz adzan tidak tersedia",
-                PesanKonten.berkasTidakAda("lafaz adzan"))
-        }
-        // Urutan lafaz diberi nomor, dan tiap kartu menyebut sumbernya. Sebelumnya kartu hanya
-        // berjudul "Adzan" dan tanpa sumber, sehingga lafaz yang berbunyi sama berulang kali
-        // (takbir, syahadat, dan seruan hayya) tak dapat dibedakan satu sama lain. Karena judulnya
-        // sama, id kartunya pun bertabrakan (`l.arab.take(10)`), dan kartu dengan id kembar berbagi
-        // satu entri favorit — menandai satu lafaz membuat lafaz lain ikut bertanda. Nomor urut
-        // menjadikan id-nya unik.
-        lafaz.forEachIndexed { i, l ->
-            BacaanCard(JenisBacaan.id(JenisBacaan.ADZAN, (i + 1).toString()),
-                "Lafaz adzan ${i + 1} dari ${lafaz.size}",
-                l.arab, l.latin, l.terjemahan,
-                showLatin, showTrans, arabSize, ulangi = l.ulangi, sumber = l.sumber,
-                showArab = showArab, kategori = l.kategori)
-        }
-        Text(repo.adzanCatatan(), style = MaterialTheme.typography.labelMedium)
+        // Lafaz adzan pindah ke layarnya sendiri — layar "Adzan" pada bagian "Adzan" di menu
+        // Ibadah (2026-10-16): layar ini cukup membawa pengaturannya — bacaan tinggal bersama
+        // bacaan, bukan menumpuk di bawah daftar saklar dan izin.
     }
 
     ubahNama?.let { s ->

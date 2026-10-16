@@ -13,12 +13,12 @@ import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.filled.PersonOff
+import androidx.compose.material.icons.filled.Hearing
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.WavingHand
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +38,11 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * Tasbih Digital, Kalkulator Zakat, dan Tahlil Almarhum bukan lagi anggota menu ini — ketiganya
  * pindah ke tab Alat (permintaan pengguna, 2026-10-16): yang tersisa di sini benar-benar bacaan
  * dan panduan ibadah, sementara penghitung dan hitungan tinggal satu rumah di Alat.
+ *
+ * Restrukturisasi lanjutan hari yang sama (permintaan pengguna): "Panduan Sholat" kini cukup
+ * "Sholat", Sholat Ghaib & Jenazah tidak lagi berbaris sendiri — keduanya entri di dalam layar
+ * Sholat — dan bacaan seputar adzan dikumpulkan pada bagiannya sendiri, satu layar per waktu
+ * bacaannya (dahulu satu layar "Doa Adzan" memuat ketiganya sekaligus).
  */
 @Composable
 fun IbadahScreen(go: (String) -> Unit) {
@@ -60,12 +65,20 @@ fun IbadahScreen(go: (String) -> Unit) {
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
 
         BagianJudul("Panduan ibadah")
+        // Sholat Ghaib & Jenazah tidak lagi berbaris di sini (permintaan pengguna, 2026-10-16):
+        // keduanya entri di dalam layar Sholat — satu pintu untuk seluruh panduan sholat.
         listOf(
             Triple(Routes.SHOLAT, NamaLayar.SHOLAT, Icons.Filled.SelfImprovement),
             Triple(Routes.WUDHU, NamaLayar.WUDHU, Icons.Filled.WaterDrop),
-            Triple(Routes.GHAIB, NamaLayar.GHAIB, Icons.Filled.PersonOff),
-            Triple(Routes.JENAZAH, NamaLayar.JENAZAH, Icons.Filled.Groups),
-            Triple(Routes.DOA_ADZAN, NamaLayar.DOA_ADZAN, Icons.Filled.Campaign),
+        ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
+
+        // Bagian "Adzan": judulnya dibaca dari nama layar lafaz adzannya, bukan literal di sini —
+        // nama itu milik `NamaLayar`, dan satu tempat itulah satu-satunya yang mengejanya.
+        BagianJudul(NamaLayar.LAFAZ_ADZAN)
+        listOf(
+            Triple(Routes.DOA_SEBELUM_ADZAN, NamaLayar.DOA_SEBELUM_ADZAN, Icons.Filled.Hearing),
+            Triple(Routes.LAFAZ_ADZAN, NamaLayar.LAFAZ_ADZAN, Icons.Filled.Campaign),
+            Triple(Routes.DOA_SETELAH_ADZAN, NamaLayar.DOA_SETELAH_ADZAN, Icons.Filled.WavingHand),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
 
         // Referensi ringan: Asmaul Husna dan khataman. Tasbih, zakat, dan tahlil almarhum pindah

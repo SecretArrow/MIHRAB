@@ -13,7 +13,14 @@ object Routes {
     const val GHAIB = "sholat/ghaib"
     const val JENAZAH = "sholat/jenazah"
     const val ADZAN = "adzan"
-    const val DOA_ADZAN = "adzan/doa"
+    /**
+     * Tiga layar bacaan seputar adzan (2026-10-16): doa sebelum adzan (menjawab adzan), lafaz
+     * adzannya, dan doa setelah adzan. Rute [DOA_SETELAH_ADZAN] meneruskan peran rute lama
+     * `adzan/doa` sebagai tujuan ketukan notifikasi pengingat doa setelah adzan.
+     */
+    const val DOA_SEBELUM_ADZAN = "adzan/doa_sebelum"
+    const val LAFAZ_ADZAN = "adzan/lafaz"
+    const val DOA_SETELAH_ADZAN = "adzan/doa_sesudah"
     const val IQOMAH = "iqomah"
     const val KIBLAT = "kiblat"
     const val JADWAL = "jadwal"
@@ -75,7 +82,8 @@ object Routes {
      */
     val LANGSUNG: Set<String> = setOf(
         HOME, IBADAH, ALAT, SETTINGS, YASIN, TAHLIL, SHOLAT, WUDHU, GHAIB, JENAZAH,
-        ADZAN, DOA_ADZAN, IQOMAH, KIBLAT, JADWAL, DZIKIR, SEARCH, FAVORIT, KONTEN_UPDATE,
-        TENTANG, TASBIH, ASMAUL, ZAKAT, KALENDER, KHATAMAN, ALMARHUM,
+        ADZAN, DOA_SEBELUM_ADZAN, LAFAZ_ADZAN, DOA_SETELAH_ADZAN, IQOMAH, KIBLAT, JADWAL,
+        DZIKIR, SEARCH, FAVORIT, KONTEN_UPDATE, TENTANG, TASBIH, ASMAUL, ZAKAT, KALENDER,
+        KHATAMAN, ALMARHUM,
     )
 }

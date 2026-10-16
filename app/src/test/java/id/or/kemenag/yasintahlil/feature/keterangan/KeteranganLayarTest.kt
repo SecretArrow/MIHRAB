@@ -111,7 +111,8 @@ class KeteranganLayarTest {
         listOf(
             "NamaLayar.YASIN", "NamaLayar.TAHLIL", "NamaLayar.DZIKIR", "NamaLayar.SHOLAT",
             "NamaLayar.WUDHU", "NamaLayar.GHAIB", "NamaLayar.JENAZAH", "NamaLayar.ADZAN",
-            "NamaLayar.DOA_ADZAN", "NamaLayar.IQOMAH", "NamaLayar.KIBLAT", "NamaLayar.JADWAL",
+            "NamaLayar.DOA_SEBELUM_ADZAN", "NamaLayar.LAFAZ_ADZAN", "NamaLayar.DOA_SETELAH_ADZAN",
+            "NamaLayar.IQOMAH", "NamaLayar.KIBLAT", "NamaLayar.JADWAL",
         ).forEach { nama ->
             assertTrue("nama layar asal $nama tidak dipetakan layar keterangan", k.contains(nama)) }
     }

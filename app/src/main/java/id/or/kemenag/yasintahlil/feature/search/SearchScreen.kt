@@ -262,9 +262,19 @@ private fun bangunIndeks(repo: ContentRepo): List<SearchDoc> = buildList {
         }
     }
 
-    // Doa seputar adzan dan lafaz iqomah.
-    listOf(repo.doaAdzan(), repo.menjawabAdzan(), repo.sholawatAdzan()).forEach { doa ->
-        add(SearchDoc(JenisBacaan.id(JenisBacaan.ADZAN, doa.judul), doa.judul, listOf(doa.judul, doa.terjemahan, doa.latin, doa.arab), Routes.DOA_ADZAN))
+    // Bacaan seputar adzan dan lafaz iqomah. Id tiga bacaan adzan memakai aturan yang sama dengan
+    // kartunya di layarnya (jenis "doa" + kunci entri) — sebelumnya idnya jenis "adzan" + judul,
+    // yang tidak pernah sama dengan id kartu manapun, sehingga favorit dari hasil pencarian tidak
+    // pernah menempel pada kartu bacaannya. Rutenya mengikuti layar baru tiap waktu bacaannya
+    // (2026-10-16): menjawab adzan di layar Doa sebelum adzan, sisanya di layar Doa setelah adzan.
+    listOf(
+        "menjawab_adzan" to repo.menjawabAdzan(),
+        "sholawat_adzan" to repo.sholawatAdzan(),
+        "adzan" to repo.doaAdzan(),
+    ).forEach { (kunci, doa) ->
+        val rute = if (kunci == "menjawab_adzan") Routes.DOA_SEBELUM_ADZAN else Routes.DOA_SETELAH_ADZAN
+        add(SearchDoc(JenisBacaan.id(JenisBacaan.DOA, kunci), doa.judul,
+            listOf(doa.judul, doa.terjemahan, doa.latin, doa.arab), rute))
     }
     repo.iqomah().forEachIndexed { i, lafaz ->
         // Id lafaz memakai aturan bernomor urut 1 yang sama dengan kartunya di layar Iqomah —

@@ -68,8 +68,8 @@ class PengingatDoaAdzanTest {
             layar.contains("PrayerScheduler.scheduleAll"))
 
         val doa = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/adzan/IqomahDoaScreen.kt")
-            .substringAfter("fun DoaAdzanScreen(").substringBefore("private fun KartuDoa(")
-        assertFalse("layar Doa Adzan kembali membawa saklar pengingat — rumahnya di menu Adzan",
+            .substringAfter("fun DoaSesudahAdzanScreen(").substringBefore("private fun KartuDoa(")
+        assertFalse("layar Doa setelah adzan kembali membawa saklar pengingat — rumahnya di menu Adzan",
             doa.contains("DOA_ADZAN_REMINDER") || doa.contains("Switch("))
         assertTrue("layar Doa Adzan tidak lagi menunjuk rumah saklarnya",
             doa.contains("NAMA_PENGINGAT_DOA") && doa.contains("menu Adzan"))
@@ -92,8 +92,8 @@ class PengingatDoaAdzanTest {
     fun notifikasiPengingatMenujuLayarDoaAdzan() {
         val pekerja = sumber("src/main/java/id/or/kemenag/yasintahlil/core/data/ReminderWorker.kt")
         assertTrue("pekerja tidak menangani jenis doa", pekerja.contains("JENIS_DOA"))
-        assertTrue("notifikasi pengingat tidak menunjuk layar Doa Adzan",
-            pekerja.contains("Routes.DOA_ADZAN"))
+        assertTrue("notifikasi pengingat tidak menunjuk layar Doa setelah adzan",
+            pekerja.contains("Routes.DOA_SETELAH_ADZAN"))
         assertTrue("pekerja tidak meneruskan rute lewat intent",
             pekerja.contains("MainActivity.EXTRA_ROUTE"))
     }

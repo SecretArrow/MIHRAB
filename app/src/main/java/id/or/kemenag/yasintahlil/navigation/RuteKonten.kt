@@ -61,10 +61,11 @@ object RuteKonten {
         JenisBacaan.YASIN -> Routes.YASIN
         JenisBacaan.TAHLIL -> Routes.TAHLIL
         JenisBacaan.DZIKIR -> Routes.DZIKIR
-        // Bacaan di layar Doa Adzan memakai jenis "doa"; lafaz Iqomah memakai "iqomah".
-        JenisBacaan.DOA -> Routes.DOA_ADZAN
+        // Bacaan adzan memakai jenis "doa" (menjawab, sholawat, doa setelahnya) dan "adzan"
+        // (lafaz adzannya); lafaz Iqomah memakai "iqomah".
+        JenisBacaan.DOA -> Routes.DOA_SETELAH_ADZAN
         JenisBacaan.IQOMAH -> Routes.IQOMAH
-        JenisBacaan.ADZAN -> Routes.ADZAN
+        JenisBacaan.ADZAN -> Routes.LAFAZ_ADZAN
         // Bacaan sholat, lafaz niat, dan langkah panduan hidup di modul sholat; rincian per-sholat
         // (Routes.SHOLAT_DETAIL) butuh argumen id sehingga tidak dapat dituju dari sini.
         JenisBacaan.BACAAN, JenisBacaan.NIAT, JenisBacaan.LANGKAH -> Routes.SHOLAT
@@ -116,7 +117,9 @@ object RuteKonten {
             Routes.YASIN -> NamaLayar.YASIN
             Routes.TAHLIL -> NamaLayar.TAHLIL
             Routes.DZIKIR -> NamaLayar.DZIKIR
-            Routes.DOA_ADZAN -> NamaLayar.DOA_ADZAN
+            Routes.DOA_SEBELUM_ADZAN -> NamaLayar.DOA_SEBELUM_ADZAN
+            Routes.LAFAZ_ADZAN -> NamaLayar.LAFAZ_ADZAN
+            Routes.DOA_SETELAH_ADZAN -> NamaLayar.DOA_SETELAH_ADZAN
             Routes.IQOMAH -> NamaLayar.IQOMAH
             Routes.ADZAN -> NamaLayar.ADZAN
             Routes.SHOLAT -> NamaLayar.SHOLAT

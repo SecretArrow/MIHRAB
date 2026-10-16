@@ -43,7 +43,8 @@ class KeadaanLayarSaatDiputarTest {
         Triple("feature/sholat/GhaibScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/sholat/JenazahScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/adzan/IqomahDoaScreen.kt", "fullscreen", "mode layar penuh"),
-        Triple("feature/tahlil/TahlilScreen.kt", "jamaah", "mode bacaan berjamaah"),
+        // Chip "Teks besar" Tahlil (keadaan `jamaah`) dihapus (2026-10-16) — barisnya pun hilang
+        // dari daftar ini; ukuran bacaan kini cukup dari Pengaturan dan layar penuh.
         Triple("feature/tahlil/TahlilScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/tahlil/TahlilScreen.kt", "susun", "panel susunan tahlil"),
         Triple("feature/tahlil/TahlilScreen.kt", "jump", "nomor bagian yang sedang diketik"),

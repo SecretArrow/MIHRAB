@@ -5,6 +5,31 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Beranda
+- **Sapaan "Assalamu'alaikum" dihilangkan dari kepala beranda** (permintaan pengguna,
+  2026-10-16): baris pertama kini tanggal dan jam — informasi yang berguna setiap hari —
+  diikuti chip tanggal Hijriah dan ikon Pencarian seperti sebelumnya.
+
+### Tahlil
+- **Chip "Teks besar" dihapus dari layar Tahlil** (permintaan pengguna, 2026-10-16): ukuran
+  bacaan cukup diatur dari Pengaturan dan mode layar penuh; baris chip kini hanya memuat
+  pilih versi (Ringkas/Lengkap) dan Mode Imam.
+
+### Ibadah
+- **"Panduan Sholat" disederhanakan menjadi "Sholat"** (permintaan pengguna, 2026-10-16) —
+  menu Ibadah, kartu Aksi cepat beranda, judul layar, dan label tujuan "Buka" ikut memakai
+  nama baru.
+- **Sholat Ghaib & Sholat Jenazah tidak lagi berbaris sendiri di menu Ibadah**: keduanya entri
+  di dalam layar Sholat (bagian Sholat wajib) — satu pintu untuk seluruh panduan sholat.
+- **Bagian baru "Adzan" di menu Ibadah berisi tiga layar bacaan** (permintaan pengguna,
+  2026-10-16): Doa sebelum adzan (menjawab adzan), Adzan (lafaznya), dan Doa setelah adzan
+  (sholawat lalu doanya) — dahulu ketiganya menumpuk di satu layar "Doa Adzan".
+- **Lafaz adzan pindah ke layarnya sendiri**: dahulu menempel di bagian bawah layar pengaturan
+  "Adzan & Pengingat"; kini dibuka dari bagian "Adzan" di menu Ibadah, dengan id kartu yang
+  sama sehingga favorit lama tetap menempel. Ketukan notifikasi pengingat doa setelah adzan
+  kini mendarat di layar "Doa setelah adzan" yang baru.
+
+
 ## [1.15.0] - 2026-10-16
 
 **Rilis otomatis** dari commit `e6c99d97705b4179f983d300b5ee67e223089f81`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.15.0`.

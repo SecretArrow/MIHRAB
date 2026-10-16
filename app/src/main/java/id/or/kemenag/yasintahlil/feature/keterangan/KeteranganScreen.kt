@@ -97,7 +97,9 @@ private fun namaAsal(repo: ContentRepo, asal: String): String = when (asal) {
     "ghaib" -> NamaLayar.GHAIB
     "jenazah" -> NamaLayar.JENAZAH
     "adzan" -> NamaLayar.ADZAN
-    "doa_adzan" -> NamaLayar.DOA_ADZAN
+    "doa_sebelum_adzan" -> NamaLayar.DOA_SEBELUM_ADZAN
+    "lafaz_adzan" -> NamaLayar.LAFAZ_ADZAN
+    "doa_sesudah_adzan" -> NamaLayar.DOA_SETELAH_ADZAN
     "iqomah" -> NamaLayar.IQOMAH
     "kiblat" -> NamaLayar.KIBLAT
     "jadwal" -> NamaLayar.JADWAL
@@ -276,20 +278,57 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
         }
     }
 
-    "doa_adzan" -> {
+    // Keterangan tiga layar bacaan adzan (2026-10-16) — satu layar per waktu bacaannya, dan
+    // keterangannya ikut terbagi: yang menjawab adzan menjelaskan bacaan saat adzan berkumandang,
+    // lafaz adzan menjelaskan rujukan dan catatan Subuhnya, doa setelah adzan menjelaskan urutan
+    // sekaligus rumah saklar pengingatnya.
+    "doa_sebelum_adzan" -> {
         buildList {
             add(
                 BagianKeterangan(
-                    "Bacaan sebelum & sesudah adzan",
-                    "Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan: " +
-                        "menjawab adzan, sholawat, lalu doa setelah adzan — tiap kartu menyebut " +
-                        "kapan dibacanya.",
+                    "Menjawab adzan",
+                    "Tidak ada satu doa khusus yang wajib tepat sebelum adzan. Yang disyariatkan " +
+                        "ketika adzan dikumandangkan: menjawab lafaz muadzin selama adzan belum " +
+                        "selesai — kartu di layarnya menyebut kapan dibacanya, dan doa setelahnya " +
+                        "ada di layar ${NamaLayar.DOA_SETELAH_ADZAN}.",
+                ),
+            )
+        }
+    }
+
+    "lafaz_adzan" -> {
+        buildList {
+            val lafaz = repo.adzan()
+            val sumber = lafaz.firstOrNull()?.sumber.orEmpty()
+            add(
+                BagianKeterangan(
+                    "Asal lafaz",
+                    "Lafaz adzan dibaca dari bundel konten beserta rujukannya" +
+                        (if (sumber.isNotBlank()) " ($sumber)" else "") +
+                        ". Suara adzan, pengingatnya, dan volumenya diatur di layar " +
+                        "${NamaLayar.ADZAN} (menu Alat) — bacaan dan pengaturannya dua layar berbeda.",
+                ),
+            )
+            val catatan = repo.adzanCatatan()
+            if (catatan.isNotBlank()) add(BagianKeterangan("Catatan", catatan))
+        }
+    }
+
+    "doa_sesudah_adzan" -> {
+        buildList {
+            add(
+                BagianKeterangan(
+                    "Urutan bacaan",
+                    "Setelah adzan selesai: sholawat dahulu, lalu doanya — tiap kartu menyebut " +
+                        "kapan dibacanya. Bacaan ketika adzan sedang berkumandang (menjawab adzan) " +
+                        "ada di layar ${NamaLayar.DOA_SEBELUM_ADZAN}.",
                 ),
             )
             add(
                 BagianKeterangan(
                     "Pengingat doa setelah adzan",
-                    "Saklarnya ada di menu Adzan (hub pengaturan pengingat adzan). " +
+                    "Saklarnya ada di menu Adzan (hub pengaturan pengingat adzan); ketukan " +
+                        "notifikasinya membuka layar ${NamaLayar.DOA_SETELAH_ADZAN}. " +
                         "${PengingatAdzan.DOA_SEBAB} ${PengingatAdzan.DOA_IKUT_SAKLAR} " +
                         PengingatAdzan.DOA_BUKAN_SYARIAT,
                 ),

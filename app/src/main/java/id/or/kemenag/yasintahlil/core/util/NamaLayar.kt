@@ -15,7 +15,9 @@ package id.or.kemenag.yasintahlil.core.util
  * - **Arah Kiblat** disebut *"Kiblat"* di kartu beranda dan *"Kompas Kiblat"* di menu Alat, padahal
  *   judul layarnya *"Arah Kiblat"* — tiga nama untuk satu layar.
  * - **Pencarian** disebut *"Cari"* di kartu beranda.
- * - **Panduan Sholat** disebut *"Sholat Wajib & Sunnah"* di menu Ibadah.
+ * - **Panduan Sholat** disebut *"Sholat Wajib & Sunnah"* di menu Ibadah; kemudian namanya
+ *   disederhanakan menjadi *"Sholat"* (permintaan pengguna, 2026-10-16) — menu Ibadah sudah
+ *   menerangkan bahwa isinya panduan ibadah, dan Sholat Ghaib & Jenazah tinggal di dalam layarnya.
  * - **Iqomah** disebut *"Iqomah + timer"* dan **Tahlil** disebut *"Tahlil + counter"* di menu
  *   Ibadah, padahal timer dan counter itu memang ada **di dalam** layarnya: imbuhan itu tidak
  *   menjanjikan hal lain, hanya menyebut isi layar yang sama dengan kata yang berbeda.
@@ -78,8 +80,12 @@ object NamaLayar {
 
     // ---- Panduan ibadah ------------------------------------------------------------------------
 
-    /** Layar panduan sholat wajib & sunnah. Menu Ibadah dahulu menyebutnya "Sholat Wajib & Sunnah". */
-    const val SHOLAT = "Panduan Sholat"
+    /**
+     * "Sholat", bukan "Panduan Sholat" (permintaan pengguna, 2026-10-16): menu Ibadah sudah
+     * menerangkan bagian ini sebagai panduan ibadah, dan Sholat Ghaib & Jenazah kini tinggal di
+     * dalam layarnya — bukan lagi baris terpisah di menu.
+     */
+    const val SHOLAT = "Sholat"
 
     const val WUDHU = "Wudhu & Tayamum"
     const val GHAIB = "Sholat Ghaib"
@@ -91,10 +97,19 @@ object NamaLayar {
     const val ADZAN = "Adzan & Pengingat"
 
     /**
-     * Layar doa seputar adzan. Judulnya menambahkan keterangan *"sebelum & sesudah adzan"* di
-     * belakang nama ini — keterangan itu boleh, selama namanya tetap yang bersama.
+     * Tiga bacaan seputar adzan (permintaan pengguna, 2026-10-16): masing-masing kini layar
+     * sendiri pada bagian "Adzan" di menu Ibadah — dahulu ketiganya menumpuk di satu layar
+     * "Doa Adzan" yang mencampur bacaan sebelum, saat, dan sesudah adzan.
      */
-    const val DOA_ADZAN = "Doa Adzan"
+    const val DOA_SEBELUM_ADZAN = "Doa sebelum adzan"
+
+    /**
+     * "Adzan" — layar lafaz adzannya. Berbeda dari [ADZAN] yang merupakan layar **pengaturan**
+     * pengingatnya; satu nama per layar, dan keduanya memang dua layar berbeda.
+     */
+    const val LAFAZ_ADZAN = "Adzan"
+
+    const val DOA_SETELAH_ADZAN = "Doa setelah adzan"
 
     const val IQOMAH = "Iqomah"
     const val JADWAL = "Jadwal Sholat"
