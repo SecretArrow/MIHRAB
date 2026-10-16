@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-10-16
+
 ### Diubah
 - **Sel kalender bergaya kalender dinding penuh**: tiap nomor tanggal kini memuat angka Masehi
   yang besar, angka Hijriah kecil **di dalam lingkaran** di samping kiri nama pasaran
@@ -16,6 +18,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **Nama layar "Kalender Hijriah & Jawa" disederhanakan menjadi "Kalender"** — menu Alat,
   judul layar, dan judul layar keterangannya ikut memakai nama baru; kalimat pengantar
   onboarding menyesuaikan.
+
+**Rilis otomatis** dari commit `0a875de9da5c90752b1b0014e54608c451890e8a`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.13.0`.
 
 ## [1.12.0] - 2026-10-16
 
