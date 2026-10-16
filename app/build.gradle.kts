@@ -32,8 +32,8 @@ android {
         // `versionCode` harus naik setiap rilis (Google Play menolak yang tidak naik), dan
         // `versionName` harus sama dengan nama tag — `release.yml` membandingkan keduanya dan
         // menggagalkan rilis bila berbeda, sehingga APK tak pernah mengaku versi lain dari tag-nya.
-        versionCode = 19
-        versionName = "1.14.0"
+        versionCode = 20
+        versionName = "1.15.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
