@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-10-16
+
 ### Beranda
 - **Sapaan "Assalamu'alaikum" dihilangkan dari kepala beranda** (permintaan pengguna,
   2026-10-16): baris pertama kini tanggal dan jam — informasi yang berguna setiap hari —
@@ -29,6 +31,7 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   sama sehingga favorit lama tetap menempel. Ketukan notifikasi pengingat doa setelah adzan
   kini mendarat di layar "Doa setelah adzan" yang baru.
 
+**Rilis otomatis** dari commit `ca343d047652acfacca676c93f3b37c983be310e`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.16.0`.
 
 ## [1.15.0] - 2026-10-16
 
