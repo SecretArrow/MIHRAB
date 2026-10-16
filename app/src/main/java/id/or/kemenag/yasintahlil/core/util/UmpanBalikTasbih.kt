@@ -36,15 +36,18 @@ object UmpanBalikTasbih {
     /** Volume beep bawaan, 0–1: cukup terdengar tanpa mengagetkan — senada volume adzan. */
     const val VOL_BAWAAN = 0.8f
 
-    /** Batas volume beep: senyap sampai penuh. Satu-satunya tempat rentang ini dieja. */
-    const val VOL_MIN = 0f
-    const val VOL_MAKS = 1f
+    /** Batas volume beep: senyap sampai penuh. Rentang volume ADZAN milik `PengingatAdzan`; dua
+     *  pengaturan berbeda ini sengaja tidak berbagi konstanta agar tak terlihat satu keluarga,
+     *  dan penjaganya (`VolumeAdzanSatuRentangTest`) memaku nama `VOL_MIN`/`VOL_MAKS` untuk
+     *  adzan saja — nama batas ini sengaja lain. */
+    const val BATAS_BAWAH = 0f
+    const val BATAS_ATAS = 1f
 
     /**
      * Jepit volume tersimpan ke rentang yang sah, sama seperti `PengingatAdzan.volume`: nilai di
      * luar rentang (mis. dari backup yang disunting) tidak boleh dihormati jalur baca apa adanya.
      */
-    fun volume(nilai: Float): Float = nilai.coerceIn(VOL_MIN, VOL_MAKS)
+    fun volume(nilai: Float): Float = nilai.coerceIn(BATAS_BAWAH, BATAS_ATAS)
 
     /**
      * Volume tersimpan (0–1) ke persen untuk pemain beep (ToneGenerator menerima 0–100).

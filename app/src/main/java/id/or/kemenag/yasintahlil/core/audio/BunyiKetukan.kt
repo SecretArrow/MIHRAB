@@ -37,8 +37,8 @@ class BunyiKetukan {
      * dengan senyap hanya membuang kerja membangun pemainnya.
      */
     fun bunyi(volumePersen: Int) {
-        val vol = volumePersen.coerceIn(VOL_MIN, VOL_MAKS)
-        if (vol <= VOL_MIN) return
+        val vol = volumePersen.coerceIn(PERSEN_MIN, PERSEN_MAKS)
+        if (vol <= PERSEN_MIN) return
         val p = pemain
         if (p != null && volTercatat == vol) {
             jalankan(p)
@@ -67,9 +67,10 @@ class BunyiKetukan {
     }
 
     companion object {
-        /** Rentang volume yang diterima, dalam persen — dijepit di sini, bukan di pemanggil. */
-        const val VOL_MIN = 0
-        const val VOL_MAKS = 100
+        /** Rentang persen yang diterima — nama sengaja bukan `VOL_MIN`/`VOL_MAKS`: ejaan itu
+         *  dipaku penjaga untuk rentang volume adzan saja (`VolumeAdzanSatuRentangTest`). */
+        const val PERSEN_MIN = 0
+        const val PERSEN_MAKS = 100
 
         /** Durasi bip satu ketukan, milidetik: cukup terdengar, cukup pendek untuk ketukan cepat. */
         const val DURASI_MS = 60

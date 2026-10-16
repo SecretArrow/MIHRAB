@@ -352,7 +352,7 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 BarisUkur(
                     "Volume beep",
                     "${UmpanBalikTasbih.persen(volBeepTasbih)}%",
-                    UmpanBalikTasbih.VOL_MIN..UmpanBalikTasbih.VOL_MAKS,
+                    UmpanBalikTasbih.BATAS_BAWAH..UmpanBalikTasbih.BATAS_ATAS,
                     volBeepTasbih,
                 ) {
                     volBeepTasbih = UmpanBalikTasbih.volume(it)

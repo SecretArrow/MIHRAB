@@ -38,7 +38,9 @@ class UmpanBalikTasbihTest {
         assertEquals(0.8f, UmpanBalikTasbih.volume(0.8f))
         // Bawaan harus berada di dalam rentang yang sah — kesalahan ketik di konstanta bawaan
         // tidak boleh lolos ke penyimpanan.
-        assertTrue(UmpanBalikTasbih.VOL_BAWAAN in UmpanBalikTasbih.VOL_MIN..UmpanBalikTasbih.VOL_MAKS)
+        assertTrue(UmpanBalikTasbih.VOL_BAWAAN in UmpanBalikTasbih.BATAS_BAWAH..UmpanBalikTasbih.BATAS_ATAS)
+        // Nama batas sengaja bukan VOL_MIN/VOL_MAKS — ejaan itu dipaku penjaga volume adzan
+        // (`VolumeAdzanSatuRentangTest`) untuk rentang adzan saja.
     }
 
     @Test
