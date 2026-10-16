@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-10-16
+
 ### Ditambahkan
 - **Pilihan Laki-laki / Wanita pada Sholat Jenazah & Sholat Ghaib** — pilihan diletakkan
   sebelum konten: niat langsung memakai varian yang sesuai (Jenazah kini punya niat wanita
@@ -31,6 +33,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   penuh dan hari terpilih berlatar lembut bersudut jelas, navigasi bulan memakai tombol panah
   dengan label di tengah; angka neptu tidak lagi ditampilkan — kartu hari menampilkan weton
   (hari + pasaran Legi/Pahing/Pon/Wage/Kliwon) saja.
+
+**Rilis otomatis** dari commit `0aed601f752dafc1c7fbdaf1d6d54239d5917da3`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.12.0`.
 
 ## [1.11.0] - 2026-10-15
 
