@@ -115,7 +115,7 @@ class NamaLayarSatuTempatTest {
         assertEquals("Tasbih Digital", NamaLayar.TASBIH)
         assertEquals("Asmaul Husna", NamaLayar.ASMAUL)
         assertEquals("Kalkulator Zakat", NamaLayar.ZAKAT)
-        assertEquals("Kalender Hijriah & Jawa", NamaLayar.KALENDER)
+        assertEquals("Kalender", NamaLayar.KALENDER)
         assertEquals("Khataman & Streak", NamaLayar.KHATAMAN)
         assertEquals("Tahlil Almarhum", NamaLayar.ALMARHUM)
     }

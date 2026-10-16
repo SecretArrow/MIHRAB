@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import id.or.kemenag.yasintahlil.core.data.BawaanPreferensi
 import id.or.kemenag.yasintahlil.core.data.Store
@@ -50,16 +51,23 @@ import java.time.YearMonth
 import java.util.Calendar
 
 /**
- * Kalender Hijriah & Jawa: kisi satu bulan Masehi bergaya kalender dinding — tiap sel memuat
- * tanggal Masehi, tanggal Hijriah, dan penanda puasa sunnah/hari besar — berikut kartu hari ini
- * dan kartu hari yang dipilih pengguna, keduanya menampilkan weton (nama hari + **pasaran**
- * Legi/Pahing/Pon/Wage/Kliwon).
+ * Kalender: kisi satu bulan Masehi bergaya kalender dinding — tiap sel memuat angka tanggal
+ * Masehi yang **besar**, angka tanggal Hijriah **kecil di dalam lingkaran** di samping kiri nama
+ * **pasaran** (Legi/Pahing/Pon/Wage/Kliwon), dan penanda puasa sunnah/hari besar. Nama hari
+ * ("Jumat") tampil di kepala kolom, sehingga tiap tanggal terbaca weton lengkapnya — mis.
+ * "Jumat Kliwon" — persis permintaan pengguna (2026-10-16): hari dan pasaran saja, ditampilkan
+ * di angka tiap nomor tanggalan.
  *
- * Dahulu kedua kartu itu menyertakan angka **neptu** dan dua kalimat keterangan budaya yang
- * panjang; permintaan pengguna (2026-10-16): pasaran saja yang perlu — "neptu 11" dan sejenisnya
- * dihapus, dan keterangan panjangnya pindah ke layar keterangan lewat ikon Info bersama seluruh
- * keterangan panjang layar lain. Kisi kini juga berada di dalam kartu dengan sel berbentuk
- * persegi yang tak lagi menempel satu sama lain.
+ * Dahulu kedua kartu hari menyertakan angka **neptu**, bulan-tahun Jawa ("Jumadilawal 1370"),
+ * dan dua kalimat keterangan budaya yang panjang; semuanya dihapus — yang tersisa weton
+ * (hari + pasaran) saja, dan keterangan panjangnya pindah ke layar keterangan lewat ikon Info
+ * bersama seluruh keterangan panjang layar lain. Angka Hijriah diberi lingkaran agar tetap
+ * menarik dan mudah dibedakan dari angka Masehi yang besar. Kisi berada di dalam kartu dengan
+ * sel berbentuk persegi yang tak lagi menempel satu sama lain.
+ *
+ * Nama layarnya juga disederhanakan menjadi **"Kalender"** atas permintaan yang sama — kisi
+ * utamanya memang berbulan Masehi, dan rincian sumber tanggal Hijriah/pasarannya tetap
+ * dijelaskan di layar keterangan.
  *
  * Kisinya sengaja bulan **Masehi**, bukan bulan Hijriah: kalender dinding di Indonesia memang
  * berbulan Masehi beranotasi Hijriah-pasaran, dan membangun kisi Hijriah menuntut konversi
@@ -150,7 +158,10 @@ fun KalenderScreen(go: (String) -> Unit) {
     }
 }
 
-/** Kartu ringkasan hari ini: Masehi, Hijriah (dengan koreksi), weton — hari + pasaran. */
+/**
+ * Kartu ringkasan hari ini: Masehi (judul), Hijriah dengan koreksi (lencana), dan weton —
+ * hari + pasaran saja; bulan-tahun Jawa ("Jumadilawal 1370") tidak lagi ditampilkan.
+ */
 @Composable
 private fun KartuHariIni(t: LocalDate, koreksi: Int) {
     val (hHari, hBulan, hTahun) = HijriCalc.from(keKalender(t), koreksi)
@@ -164,16 +175,11 @@ private fun KartuHariIni(t: LocalDate, koreksi: Int) {
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 6.dp),
             )
-            Text(
-                "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)}",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 2.dp),
-            )
         },
     )
 }
 
-/** Kisi satu bulan: kepala tujuh hari (Minggu duluan, selaras indeks [KalenderJawa.HARI]). */
+/** Kisi satu bulan: kepala tujuh **nama hari penuh** (Minggu duluan — urutan [KalenderJawa.HARI]). */
 @Composable
 private fun KisiBulan(
     bulan: YearMonth,
@@ -188,13 +194,16 @@ private fun KisiBulan(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            // Nama hari penuh dari [KalenderJawa.HARI] — satu sumber dengan weton di kartu; huruf
+            // kecil 9sp agar tujuh nama itu muat sebaris di lebar layar mana pun.
             Row(Modifier.fillMaxWidth()) {
-                listOf("Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab").forEach {
+                KalenderJawa.HARI.forEach {
                     Text(
                         it,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
+                        maxLines = 1,
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -211,6 +220,7 @@ private fun KisiBulan(
                     SelKalendar(
                         tanggal = t,
                         hijriHari = hHari,
+                        pasaran = KalenderJawa.pasaran(t),
                         puasa = PuasaSunnah.puasaSunnah(hHari, hBulan, t.dayOfWeek.value),
                         besar = PuasaSunnah.hariBesar(hHari, hBulan),
                     )
@@ -239,12 +249,14 @@ private fun KisiBulan(
 private data class SelKalendar(
     val tanggal: LocalDate,
     val hijriHari: Int,
+    val pasaran: String,
     val puasa: List<String>,
     val besar: String?,
 )
 
 /**
- * Satu sel tanggal: angka Masehi, angka Hijriah kecil, dan titik penanda di bawahnya. Selnya
+ * Satu sel tanggal: angka Masehi **besar**, angka Hijriah **kecil berlingkaran** di samping
+ * kiri nama pasaran, dan titik penanda di bawahnya — gaya kalender dinding Jawa. Selnya
  * berbentuk persegi ([aspectRatio]) dengan latar hanya pada hari ini dan hari terpilih — kisi
  * yang sepi lebih mudah dipindai daripada kisi yang tiap selnya berlatar.
  */
@@ -285,18 +297,40 @@ private fun SelBulan(
             )
             .clickable(onClick = { pilih(sel.tanggal) }),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(1.dp, Alignment.CenterVertically),
     ) {
+        // Angka Masehi tetap yang besar — inilah identitas tanggal di kalender dinding.
         Text(
             "${sel.tanggal.dayOfMonth}",
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
             color = warnaUtama,
         )
-        Text(
-            "${sel.hijriHari}",
-            style = MaterialTheme.typography.labelSmall,
-            color = warnaKecil,
-        )
+        // Angka Hijriah kecil di dalam lingkaran, di samping kiri nama pasaran — keduanya
+        // berukuran mini agar baris ini tidak merebut perhatian dari angka Masehi di atasnya.
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(12.dp)
+                    .border(1.dp, warnaKecil.copy(alpha = 0.7f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "${sel.hijriHari}",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 7.sp),
+                    color = warnaKecil,
+                )
+            }
+            Text(
+                sel.pasaran,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+                color = warnaKecil,
+                maxLines = 1,
+            )
+        }
         // Titik penanda: puasa sunnah warna pokok, hari besar warna galat — keduanya bisa hadir
         // bersamaan pada satu tanggal (mis. Senin 13 Syawal).
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -320,9 +354,9 @@ private fun KartuHariTerpilih(t: LocalDate, koreksi: Int) {
         judul = KalenderJawa.tanggalIndo(t),
         lencana = listOf(KalenderJawa.weton(t)),
         isi = {
+            // Hijriah saja — bulan-tahun Jawa ("Jumadilawal 1370") tidak lagi ditampilkan.
             Text(
-                "${hHari} ${HijriCalc.bulan[hBulan - 1]} $hTahun H · " +
-                    "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)}",
+                "${hHari} ${HijriCalc.bulan[hBulan - 1]} $hTahun H",
                 style = MaterialTheme.typography.bodyMedium,
             )
             if (besar != null) {

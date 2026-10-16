@@ -135,8 +135,8 @@ object NamaLayar {
     /** Kalkulator zakat: fitrah, mal/penghasilan, dan tabungan dengan hitungan nisab. */
     const val ZAKAT = "Kalkulator Zakat"
 
-    /** Kalender Masehi, Hijriah, dan Jawa: pasaran & weton, puasa sunnah, hari besar Islam. */
-    const val KALENDER = "Kalender Hijriah & Jawa"
+    /** Kalender Masehi beranotasi Hijriah & pasaran: weton, puasa sunnah, hari besar Islam. */
+    const val KALENDER = "Kalender"
 
     /** Catatan khataman Yasin beserta rangkaian hari baca (streak) yang sedang berjalan. */
     const val KHATAMAN = "Khataman & Streak"

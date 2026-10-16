@@ -5,6 +5,18 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Sel kalender bergaya kalender dinding penuh**: tiap nomor tanggal kini memuat angka Masehi
+  yang besar, angka Hijriah kecil **di dalam lingkaran** di samping kiri nama pasaran
+  (Legi/Pahing/Pon/Wage/Kliwon), sedangkan nama hari penuh (Minggu–Sabtu) tampil di kepala
+  kolom — weton "Jumat Kliwon" terbaca langsung pada tiap tanggal tanpa perlu mengetuknya.
+- **Kartu hari ini & kartu hari terpilih menampilkan hari + pasaran saja**: sisa bulan-tahun
+  Jawa ("Jumadilawal 1370") dihapus dari kedua kartu, melengkapi penghapusan angka neptu
+  sebelumnya.
+- **Nama layar "Kalender Hijriah & Jawa" disederhanakan menjadi "Kalender"** — menu Alat,
+  judul layar, dan judul layar keterangannya ikut memakai nama baru; kalimat pengantar
+  onboarding menyesuaikan.
+
 ## [1.12.0] - 2026-10-16
 
 ### Ditambahkan

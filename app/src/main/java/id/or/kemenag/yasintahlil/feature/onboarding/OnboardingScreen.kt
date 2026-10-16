@@ -95,7 +95,7 @@ fun OnboardingScreen(selesai: () -> Unit) {
                         )
                         Text(
                             "Dzikir pagi & petang, doa harian, tasbih digital, Asmaul Husna, " +
-                                "kalkulator zakat, kalender Hijriah & Jawa, hingga catatan tahlil " +
+                                "kalkulator zakat, kalender, hingga catatan tahlil " +
                                 "almarhum dan khataman Yasin — satu aplikasi untuk kebiasaan " +
                                 "harian Anda.",
                             style = MaterialTheme.typography.bodyLarge,
