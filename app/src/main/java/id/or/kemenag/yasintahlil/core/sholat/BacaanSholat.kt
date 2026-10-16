@@ -67,6 +67,21 @@ object BacaanSholat {
     val MAYIT: List<String> = listOf(DOA_MAYIT, DOA_MAYIT_TAMBAHAN)
 
     /**
+     * Varian dhamir **wanita** (muannats) untuk bacaan mayit — satu aturan untuk kedua layar
+     * mayit (Jenazah & Ghaib): saat pengguna memilih "Wanita", id di kiri diganti id di kanan.
+     * Keduanya entri tersendiri di `sholat_mayit.json` dengan riwayat hadis yang sama; peta ini
+     * hanya memetakan pilihan, bukan menyalin lafaz.
+     */
+    val VARIAN_WANITA: Map<String, String> = mapOf(
+        DOA_MAYIT to "doa_mayit_wanita",
+        DOA_MAYIT_TAMBAHAN to "doa_mayit_tambahan_wanita",
+    )
+
+    /** Id bacaan setelah penyesuaian varian wanita — bila tak ada variannya, id aslinya tetap. */
+    fun idUntuk(id: String, wanita: Boolean): String =
+        if (wanita) VARIAN_WANITA[id] ?: id else id
+
+    /**
      * Langkah pokok untuk **mode ringkas**, urut seperti di [SEMUA].
      *
      * Dipilih agar sah untuk sholat dua rakaat sekalipun: tasyahud awal dan qunut sengaja tidak

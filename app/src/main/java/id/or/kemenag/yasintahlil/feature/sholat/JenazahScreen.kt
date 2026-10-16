@@ -44,6 +44,15 @@ private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangka
  * Sholat jenazah hadir: 4 takbir tanpa ruku/sujud, fardhu kifayah. Konten (niat & doa)
  * dibaca dari assets ([BerkasKonten.SHOLAT_JENAZAH] + bacaan bersama) — tanpa teks Arab di Kotlin.
  *
+ * Sebelum masuk ke bacaannya, pengguna memilih dahulu jenazahnya **Laki-laki atau Wanita**
+ * (permintaan pengguna, 2026-10-16): niat dan doa mayit keduanya ber-dhamir gender, jadi
+ * pilihannya diletakkan paling atas — pilihannya langsung menyesuaikan seluruh lafaz di
+ * bawahnya, bukan dibiarkan tertukar di tengah bacaan.
+ *
+ * Keterangan panjang — dalil utuh, syarat, catatan mazhab — tinggal di layar keterangan lewat
+ * ikon Info; di badan layar yang tersisa hanyalah hukum dan baris dalilnya (keduanya dipaku
+ * penjaga atribusi), bukan lagi kartu keterangan yang mengulang isinya.
+ *
  * Perangkaian teksnya — judul, syarat, dalil, catatan mazhab, langkah, dan cadangan teks bacaan —
  * datang dari [TampilanSholatKhusus], sama dengan layar Ghaib. Yang khas layar ini hanya
  * [judulLangkah] dan label chip layar penuhnya.
@@ -52,8 +61,9 @@ private val judulLangkah: Map<String, String> = TampilanSholatKhusus.judulLangka
 fun JenazahScreen(go: (String) -> Unit = {}) {
     val repo = rememberRepo()
     val store = rememberStore()
-    // rememberSaveable: mode layar penuh pilihan pengguna tidak hilang saat layar diputar ulang.
+    // rememberSaveable: mode layar penuh dan pilihan gender tidak hilang saat layar diputar ulang.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
+    var wanita by rememberSaveable { mutableStateOf(false) }
     var arabSize by remember { mutableStateOf(UkuranBacaan.ARAB_DEFAULT) }
     var showArab by remember { mutableStateOf(BawaanPreferensi.TAMPIL_ARAB) }
     var showLatin by remember { mutableStateOf(BawaanPreferensi.TAMPIL_LATIN) }
@@ -67,7 +77,9 @@ fun JenazahScreen(go: (String) -> Unit = {}) {
     FullscreenEffect(fullscreen)
     val info = remember { repo.sholatKhusus(BerkasKonten.SHOLAT_JENAZAH) }
     val bacaan = remember { repo.sholatBacaan() + repo.sholatMayitBacaan() }
-    fun cari(id: String) = bacaan.find { it.id == id }
+    // Lookup gender-sadar: bacaan mayit punya varian dhamir wanita (`BacaanSholat.VARIAN_WANITA`,
+    // aturan bersama kedua layar) — pilihan di kepala layar menentukan lafaz mana yang dipakai.
+    fun cari(id: String) = bacaan.find { it.id == BacaanSholat.idUntuk(id, wanita) }
     val steps: List<Pair<String, Bacaan?>> =
         // Urutan bacaan takbir datang dari `BacaanSholat.TAKBIR_MAYIT`; yang khas layar ini hanya
         // judulnya. Sebelumnya kelima idnya diketik ulang di sini, sehingga satu salah eja cukup
@@ -84,37 +96,31 @@ fun JenazahScreen(go: (String) -> Unit = {}) {
                 modifier = Modifier.weight(1f))
             TombolInfo { go(Routes.keterangan("jenazah")) }
         }
-        // Keterangan modul — hukum, dalil beserta rujukannya, syarat, dan catatan mazhab —
-        // dipadatkan ke satu kartu ringkas (semua dirangkai aturan bersama `TampilanSholatKhusus`,
-        // sama dengan layar Ghaib); keterangannya yang utuh dibuka lewat ikon Info. Dahulu
-        // keempatnya menumpuk sebagai baris-baris teks lepas di atas kartu bacaan.
-        KartuKeterangan(
-            onInfo = { go(Routes.keterangan("jenazah")) },
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            // Hukum dibaca dari bundel (`hukum`), sama seperti di layar Ghaib — bukan diketik di sini.
-            if (info.hukum.isNotBlank()) {
-                Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium)
-            }
-            // Catatan rujukan diteruskan walau berkas Jenazah belum memuatnya: aturannya satu tempat,
-            // jadi modul yang menambahkannya kelak tak perlu mengubah layar ini.
-            Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 2, overflow = TextOverflow.Ellipsis)
-            if (info.syarat.isNotEmpty()) {
-                Text(TampilanSholatKhusus.syarat(info.syarat), style = MaterialTheme.typography.labelMedium,
-                    maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-            if (info.catatanMazhab.isNotBlank()) {
-                Text(TampilanSholatKhusus.catatanMazhab(info.catatanMazhab),
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
+        // Hukum dan dalil tetap tampil ringkas di badan layar (keduanya dipaku penjaga atribusi
+        // dan hanya sebaris); syarat dan catatan mazhab yang lebih panjang tinggal di layar
+        // keterangan lewat ikon Info — tidak lagi mengulang isinya di sini.
+        if (info.hukum.isNotBlank()) {
+            Text(TampilanSholatKhusus.hukum(info.hukum), style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 6.dp))
+        }
+        Text(TampilanSholatKhusus.dalil(info.dalil, info.catatanRujukan),
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 2, overflow = TextOverflow.Ellipsis)
+
+        // Pilihan jenazah — Laki-laki / Wanita — diletakkan SEBELUM konten agar jelas lafaz mana
+        // yang sedang dibaca: niat dan doa mayit sama-sama menyesuaikan dhamirnya seketika.
+        BarisChip(Modifier.padding(top = 6.dp)) {
+            FilterChip(!wanita, { wanita = false }, { Text("Laki-laki") })
+            FilterChip(wanita, { wanita = true }, { Text("Wanita") })
         }
         BarisChip(Modifier.padding(vertical = 4.dp)) {
             FilterChip(fullscreen, { fullscreen = !fullscreen }, { Text(NamaAntarmuka.LAYAR_PENUH) })
         }
-        info.niat.forEach { n ->
+        // Niat mengikuti pilihan jenazah; bila bundelnya belum memuat varian yang dipilih,
+        // seluruh varian tampil — layar tidak boleh buntu karena bundel yang lebih tua.
+        val niatPas = info.niat.filter { it.id == if (wanita) "jenazah_perempuan" else "jenazah_laki" }
+            .ifEmpty { info.niat }
+        niatPas.forEach { n ->
             // Varian niat diberi rujukan `niat:<id varian>` supaya tidak bertabrakan dengan id
             // langkah takbir di bawah (`jenazah:<id bacaan>`).
             BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, JenisBacaan.id(JenisBacaan.NIAT, n.id)),

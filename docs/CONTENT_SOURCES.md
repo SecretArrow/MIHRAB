@@ -14,14 +14,14 @@ Sumber resmi yang diizinkan (gate CI `tools/validate_content.py`):
 | `surah_001/112/113/114.json` | Al-Fatihah, Al-Ikhlas, Al-Falaq, An-Nas | idem | ✅ resmi |
 | `ayat_kursi.json` | Ayat Kursi (Al-Baqarah 255) | idem | ✅ resmi |
 | `tahlil_full.json` | 41 bagian susunan tahlil (Tahlil & Doa Arwah) | **NU Online** (quran.nu.or.id/tahlil) + MSI Kemenag (berkas rujukan) + terjemah Kemenag 2019 (Baqarah 284-286) + sunnah.com (doa mayit) | ✅ resmi |
-| `tahlil.json` | Deskriptor 2 susunan (id merujuk `tahlil_full`): **NU Online (ringkas)** + lazim Indonesia | NU Online (quran.nu.or.id/tahlil) | ✅ resmi |
+| `tahlil.json` | Deskriptor 2 susunan (id merujuk `tahlil_full`): **Tahlil Lengkap — NU Online** (41 bagian) + **Tahlil Ringkas — NU Online** (28 bagian, susunan asli tab Ringkas di halamannya) | NU Online (quran.nu.or.id/tahlil) | ✅ resmi |
 | `adzan.json` | Lafaz adzan, iqomah, doa setelah adzan, menjawab adzan | **sunnah.com** (hadis sahih) + Fasolatan Kemenag | ✅ resmi |
 | `dzikir.json` | Dzikir & doa harian — 5 kelompok: *setelah sholat*, *pagi & petang*, *harian*, *doa khusus*, *doa memohon ampunan* | **sunnah.com** + Qur'an Kemenag (sumber per-entri) | ✅ resmi |
 | `sholat_bacaan.json` | Bacaan sholat (takbir..salam, qunut) | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_daftar.json` | Daftar sholat wajib/sunnah + niat | **sunnah.com** + Fasolatan Kemenag | ✅ resmi |
 | `sholat_ghaib.json` | Sholat ghaib | **sunnah.com** (Bukhari 1335, Muslim 394) + imbauan Kemenag + **NU Online** (kritik sanad) | ✅ resmi |
-| `sholat_jenazah.json` | Sholat jenazah (syarat, langkah, niat) | **sunnah.com** (Bukhari 1335) | ✅ resmi |
-| `sholat_mayit.json` | Doa untuk mayit | **sunnah.com** (HR Muslim, Tirmidzi, Ibnu Majah) | ✅ resmi |
+| `sholat_jenazah.json` | Sholat jenazah (syarat, langkah, niat — varian niat laki-laki & wanita) | **sunnah.com** (Bukhari 1335) | ✅ resmi |
+| `sholat_mayit.json` | Doa untuk mayit — dhamir laki-laki & varian wanita (muannats) | **sunnah.com** (HR Muslim, Tirmidzi, Ibnu Majah) | ✅ resmi |
 | `wudhu.json` | Wudhu, tayamum, rukun, pembatal | **Fasolatan Kemenag** (kerangka) | ✅ resmi (tanpa lafaz) |
 | `sholat_syarat.json` | Syarat wajib/sah, persiapan, penutup aurat, kebersihan tempat | **Fasolatan Kemenag** (kerangka) | ⚠️ kerangka, menunggu verifikasi kata-per-kata |
 | `kota.json` | Koordinat kota | **sihat.kemenag.dev** (metode SIHAT) | ✅ resmi |
@@ -99,7 +99,7 @@ manusia dari sumber resmi.
 | **Lafaz sholawat setelah adzan** | ✅ ada di `adzan.json` (`sholawat_setelah_adzan`) & tampil di layar Doa Adzan | HR Bukhari 3370 — sunnah.com |
 | **Penjelasan waktu membaca tiap bacaan adzan** | ✅ setiap entri di `adzan.json` (`menjawab_adzan`, `sholawat_setelah_adzan`, `doa_setelah_adzan`) punya field `waktu`, dan gate konten menolak entri yang kehilangannya | mengikuti urutan yang diperintahkan pada hadis yang **sudah dikutip entri itu sendiri** (menjawab → sholawat → doa; HR Bukhari & Muslim — sunnah.com). Field `waktu` hanya keterangan berbahasa Indonesia, **bukan lafaz atau hadis baru** |
 | **Niat sholat Jumat** | ⚠️ ditandai belum dicantumkan di panduan sholat | Fasolatan Kemenag / MSI LPMQ |
-| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ✅ dua susunan di `tahlil.json`: **NU Online (ringkas)** — sumber resmi `nu.or.id` (whitelist) — dan lazim Indonesia (ringkas, kompatibel preferensi lama) | NU Online (quran.nu.or.id/tahlil), diambil langsung dari halaman resminya |
+| **Susunan Tahlil kedua** (`plan.txt`: "jika memungkinkan") | ✅ dua susunan di `tahlil.json`, keduanya dari NU Online: **Lengkap** (41 bagian) dan **Ringkas** (28 bagian — urutan asli tab "Ringkas" di halamannya); susunan lazim Indonesia yang lama dilepas agar pilihan pengguna persis seperti situs sumbernya | NU Online (quran.nu.or.id/tahlil), diambil langsung dari halaman resminya |
 | **Rincian kata syarat/persiapan sholat** (`sholat_syarat.json`) | ⚠️ kerangka berbahasa Indonesia sudah ada dan tampil di layar detail sholat; kalimatnya **belum dicocokkan kata-per-kata** dengan modul Fasolatan resmi | modul Fasolatan Ditjen Bimas Islam (unduhan resmi) |
 
 > Catatan: teks Arab/hadis **tidak pernah** dibuat dengan AI. Bila sumber resmi belum

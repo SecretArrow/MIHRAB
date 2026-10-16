@@ -5,6 +5,33 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Ditambahkan
+- **Pilihan Laki-laki / Wanita pada Sholat Jenazah & Sholat Ghaib** — pilihan diletakkan
+  sebelum konten: niat langsung memakai varian yang sesuai (Jenazah kini punya niat wanita
+  `jenazah_perempuan`; Ghaib tetap tiga varian: laki-laki, wanita, jamak) dan doa takbir ke-3
+  dan ke-4 memakai varian dhamir muannats (`doa_mayit_wanita`, `doa_mayit_tambahan_wanita`,
+  riwayat hadis yang sama dari sunnah.com).
+- **Pemilih versi Tahlil Ringkas / Lengkap di kepala layar Tahlil** — persis dua tab di
+  quran.nu.or.id/tahlil, tanpa perlu membuka Pengaturan.
+- Pintu keterangan (ikon Info) pada layar Kalender; isi keterangannya dibaca dari aturan yang
+  sama dengan layar lainnya.
+
+### Diubah
+- **Tasbih Digital, Kalkulator Zakat, dan Tahlil Almarhum pindah ke tab Alat** (kelompok
+  "Hitung & ingatan"); menu Ibadah kini murni bacaan, panduan, referensi, dan simpanan.
+- **Susunan Tahlil mengikuti situs sumbernya**: `nu_online_lengkap` (41 bagian, default) dan
+  `nu_online_ringkas` (28 bagian — urutan asli tab Ringkas di quran.nu.or.id/tahlil); susunan
+  "lazim Indonesia" dilepas agar pilihan pengguna persis seperti situs sumbernya. Chip "Jamaah"
+  pada layar Tahlil diganti label "Teks besar" agar tidak tertukar dengan pilihan versi.
+- **Keterangan panjang yang sudah dipindah ke layar keterangan dihapus dari badan layar**:
+  kartu keterangan pada Sholat Jenazah & Ghaib (tersisa hukum + baris dalil), paragraf cara
+  kerja di menu Adzan (tersisa baris metode aktif), kartu azimut di Kiblat, serta dua kalimat
+  keterangan di Kalender — semuanya kini hanya di layar keterangan masing-masing.
+- **Kalender dirapikan**: kisi di dalam kartu dengan sel persegi berjarak, hari ini berlatar
+  penuh dan hari terpilih berlatar lembut bersudut jelas, navigasi bulan memakai tombol panah
+  dengan label di tengah; angka neptu tidak lagi ditampilkan — kartu hari menampilkan weton
+  (hari + pasaran Legi/Pahing/Pon/Wage/Kliwon) saja.
+
 ## [1.11.0] - 2026-10-15
 
 ### Ditambahkan

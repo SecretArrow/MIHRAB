@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,14 +18,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,6 +44,7 @@ import id.or.kemenag.yasintahlil.core.util.HijriCalc
 import id.or.kemenag.yasintahlil.core.util.KalenderJawa
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 import id.or.kemenag.yasintahlil.core.util.PuasaSunnah
+import id.or.kemenag.yasintahlil.navigation.Routes
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Calendar
@@ -42,7 +52,14 @@ import java.util.Calendar
 /**
  * Kalender Hijriah & Jawa: kisi satu bulan Masehi bergaya kalender dinding — tiap sel memuat
  * tanggal Masehi, tanggal Hijriah, dan penanda puasa sunnah/hari besar — berikut kartu hari ini
- * (Masehi, Hijriah, weton & neptu Jawa) dan kartu hari yang dipilih pengguna.
+ * dan kartu hari yang dipilih pengguna, keduanya menampilkan weton (nama hari + **pasaran**
+ * Legi/Pahing/Pon/Wage/Kliwon).
+ *
+ * Dahulu kedua kartu itu menyertakan angka **neptu** dan dua kalimat keterangan budaya yang
+ * panjang; permintaan pengguna (2026-10-16): pasaran saja yang perlu — "neptu 11" dan sejenisnya
+ * dihapus, dan keterangan panjangnya pindah ke layar keterangan lewat ikon Info bersama seluruh
+ * keterangan panjang layar lain. Kisi kini juga berada di dalam kartu dengan sel berbentuk
+ * persegi yang tak lagi menempel satu sama lain.
  *
  * Kisinya sengaja bulan **Masehi**, bukan bulan Hijriah: kalender dinding di Indonesia memang
  * berbulan Masehi beranotasi Hijriah-pasaran, dan membangun kisi Hijriah menuntut konversi
@@ -54,10 +71,6 @@ import java.util.Calendar
  * selalu sama dengan yang tertera di beranda — dua kalender yang tidak sepakat lebih buruk
  * daripada satu yang salah. Nilainya dijepit aturan bersama saat dibaca karena jalur pemulihan
  * backup bisa menulis angka di luar rentangnya.
- *
- * [go] dipertahankan di tanda tangan karena `AppNav` memanggilnya seragam untuk seluruh layar;
- * layar ini belum punya tujuan lain yang perlu dibuka dari sini (pola yang sama dengan layar
- * Kalkulator Zakat).
  */
 @Composable
 fun KalenderScreen(go: (String) -> Unit) {
@@ -79,24 +92,40 @@ fun KalenderScreen(go: (String) -> Unit) {
         Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(NamaLayar.KALENDER, style = MaterialTheme.typography.titleLarge)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(NamaLayar.KALENDER, style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f))
+            // Keterangan panjang (perkiraan Hijriah tabular, catatan budaya pasaran) tinggal di
+            // layar keterangan — badan layar murni kalender.
+            TombolInfo { go(Routes.keterangan("kalender")) }
+        }
 
         KartuHariIni(hariIni, koreksi)
 
-        // Navigasi bulan memakai tombol teks yang menyebut arahnya — bukan ikon panah yang harus
-        // ditebak arahnya, dan bukan tombol −/+ yang oleh penjaga pusat hanya boleh hidup di
-        // Pengaturan.
+        // Navigasi bulan: dua tombol panah di tepi dengan label bulan di tengah — ringkas dan
+        // tidak menyita lebar baris. Arah panahnya mengikuti arah baca (AutoMirrored).
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = { bulanGeser-- }) { Text("Bulan sebelumnya") }
+            IconButton(onClick = { bulanGeser-- }) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = "Bulan sebelumnya")
+            }
             Text(
                 "${KalenderJawa.BULAN_MASEHI[bulan.monthValue - 1]} ${bulan.year}",
                 style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
             )
-            TextButton(onClick = { bulanGeser++ }) { Text("Bulan berikutnya") }
+            IconButton(onClick = { bulanGeser++ }) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Bulan berikutnya")
+            }
         }
 
         KisiBulan(
@@ -121,7 +150,7 @@ fun KalenderScreen(go: (String) -> Unit) {
     }
 }
 
-/** Kartu ringkasan hari ini: Masehi, Hijriah (dengan koreksi), weton & neptu Jawa. */
+/** Kartu ringkasan hari ini: Masehi, Hijriah (dengan koreksi), weton — hari + pasaran. */
 @Composable
 private fun KartuHariIni(t: LocalDate, koreksi: Int) {
     val (hHari, hBulan, hTahun) = HijriCalc.from(keKalender(t), koreksi)
@@ -130,21 +159,15 @@ private fun KartuHariIni(t: LocalDate, koreksi: Int) {
         lencana = listOf("${hHari} ${HijriCalc.bulan[hBulan - 1]} $hTahun H"),
         isi = {
             Text(
-                "Perkiraan Hijriah tabular — untuk Ramadan dan hari raya, ikuti penetapan isbat Kemenag.",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)} · " +
-                    "${KalenderJawa.weton(t)} · Neptu ${KalenderJawa.neptu(t)}",
-                style = MaterialTheme.typography.bodyMedium,
+                KalenderJawa.weton(t),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 6.dp),
             )
             Text(
-                "Pasaran dan neptu adalah pengetahuan budaya Jawa, bukan bagian ajaran agama.",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
+                "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 2.dp),
             )
         },
     )
@@ -159,49 +182,55 @@ private fun KisiBulan(
     terpilih: String,
     pilih: (LocalDate) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(Modifier.fillMaxWidth()) {
-            listOf("Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab").forEach {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
-        // Data sel dihitung sekali per bulan+koreksi, bukan per komposisi ulang: 31 konversi
-        // Hijriah yang diulang tiap kali pengguna mengetuk sel hanya membakar waktu tanpa hasil
-        // yang berbeda.
-        val sel = remember(bulan, koreksi) {
-            val awal = bulan.atDay(1)
-            val kosong = awal.dayOfWeek.value % 7 // Minggu = 0 (DayOfWeek.SUNDAY == 7)
-            val isi = (1..bulan.lengthOfMonth()).map { hari ->
-                val t = bulan.atDay(hari)
-                val (hHari, hBulan, _) = HijriCalc.from(keKalender(t), koreksi)
-                SelKalendar(
-                    tanggal = t,
-                    hijriHari = hHari,
-                    puasa = PuasaSunnah.puasaSunnah(hHari, hBulan, t.dayOfWeek.value),
-                    besar = PuasaSunnah.hariBesar(hHari, hBulan),
-                )
-            }
-            List(kosong) { null } + isi
-        }
-        sel.chunked(7).forEach { baris ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                baris.forEach { s ->
-                    if (s == null) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
-                        // `weight` milik RowScope sehingga hanya bisa dipanggil di sini — di dalam
-                        // SelBulan ia tak beresolusi. Ukurannya karena itu dioper sebagai modifier.
-                        SelBulan(s, s.tanggal == hariIni, s.tanggal.toString() == terpilih,
-                            Modifier.weight(1f), pilih)
-                    }
+    Card(
+        Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Row(Modifier.fillMaxWidth()) {
+                listOf("Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab").forEach {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f),
+                    )
                 }
-                if (baris.size < 7) repeat(7 - baris.size) { Spacer(Modifier.weight(1f)) }
+            }
+            // Data sel dihitung sekali per bulan+koreksi, bukan per komposisi ulang: 31 konversi
+            // Hijriah yang diulang tiap kali pengguna mengetuk sel hanya membakar waktu tanpa
+            // hasil yang berbeda.
+            val sel = remember(bulan, koreksi) {
+                val awal = bulan.atDay(1)
+                val kosong = awal.dayOfWeek.value % 7 // Minggu = 0 (DayOfWeek.SUNDAY == 7)
+                val isi = (1..bulan.lengthOfMonth()).map { hari ->
+                    val t = bulan.atDay(hari)
+                    val (hHari, hBulan, _) = HijriCalc.from(keKalender(t), koreksi)
+                    SelKalendar(
+                        tanggal = t,
+                        hijriHari = hHari,
+                        puasa = PuasaSunnah.puasaSunnah(hHari, hBulan, t.dayOfWeek.value),
+                        besar = PuasaSunnah.hariBesar(hHari, hBulan),
+                    )
+                }
+                List(kosong) { null } + isi
+            }
+            sel.chunked(7).forEach { baris ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    baris.forEach { s ->
+                        if (s == null) {
+                            Spacer(Modifier.weight(1f))
+                        } else {
+                            // `weight` milik RowScope sehingga hanya bisa dipanggil di sini — di dalam
+                            // SelBulan ia tak beresolusi. Ukurannya karena itu dioper sebagai modifier.
+                            SelBulan(s, s.tanggal == hariIni, s.tanggal.toString() == terpilih,
+                                Modifier.weight(1f), pilih)
+                        }
+                    }
+                    if (baris.size < 7) repeat(7 - baris.size) { Spacer(Modifier.weight(1f)) }
+                }
             }
         }
     }
@@ -214,7 +243,11 @@ private data class SelKalendar(
     val besar: String?,
 )
 
-/** Satu sel tanggal: angka Masehi, angka Hijriah kecil, dan titik penanda di bawahnya. */
+/**
+ * Satu sel tanggal: angka Masehi, angka Hijriah kecil, dan titik penanda di bawahnya. Selnya
+ * berbentuk persegi ([aspectRatio]) dengan latar hanya pada hari ini dan hari terpilih — kisi
+ * yang sepi lebih mudah dipindai daripada kisi yang tiap selnya berlatar.
+ */
 @Composable
 private fun SelBulan(
     sel: SelKalendar,
@@ -223,17 +256,28 @@ private fun SelBulan(
     modifier: Modifier,
     pilih: (LocalDate) -> Unit,
 ) {
-    val latar = if (hariIni) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surface
+    val latar = when {
+        hariIni -> MaterialTheme.colorScheme.primary
+        terpilih -> MaterialTheme.colorScheme.primaryContainer
+        else -> Color.Transparent
+    }
+    val warnaUtama = when {
+        hariIni -> MaterialTheme.colorScheme.onPrimary
+        terpilih -> MaterialTheme.colorScheme.onPrimaryContainer
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+    val warnaKecil = when {
+        hariIni -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+        terpilih -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     Column(
         modifier
-            .height(58.dp)
-            .background(latar, MaterialTheme.shapes.small)
+            .aspectRatio(1f)
+            .clip(MaterialTheme.shapes.small)
+            .background(latar)
             .then(
-                if (terpilih) {
+                if (terpilih && !hariIni) {
                     Modifier.border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small)
                 } else {
                     Modifier
@@ -245,21 +289,19 @@ private fun SelBulan(
     ) {
         Text(
             "${sel.tanggal.dayOfMonth}",
-            style = MaterialTheme.typography.titleSmall,
-            color = if (hariIni) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelLarge,
+            color = warnaUtama,
         )
         Text(
             "${sel.hijriHari}",
             style = MaterialTheme.typography.labelSmall,
-            color = if (hariIni) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onSurfaceVariant,
+            color = warnaKecil,
         )
         // Titik penanda: puasa sunnah warna pokok, hari besar warna galat — keduanya bisa hadir
         // bersamaan pada satu tanggal (mis. Senin 13 Syawal).
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             if (sel.puasa.isNotEmpty()) {
-                Box(Modifier.size(4.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+                Box(Modifier.size(4.dp).background(warnaUtama, CircleShape))
             }
             if (sel.besar != null) {
                 Box(Modifier.size(4.dp).background(MaterialTheme.colorScheme.error, CircleShape))
@@ -268,7 +310,7 @@ private fun SelBulan(
     }
 }
 
-/** Kartu detail hari yang diketuk pengguna di kisi. */
+/** Kartu detail hari yang diketuk pengguna di kisi — weton (hari + pasaran) sebagai lencananya. */
 @Composable
 private fun KartuHariTerpilih(t: LocalDate, koreksi: Int) {
     val (hHari, hBulan, hTahun) = HijriCalc.from(keKalender(t), koreksi)
@@ -280,8 +322,7 @@ private fun KartuHariTerpilih(t: LocalDate, koreksi: Int) {
         isi = {
             Text(
                 "${hHari} ${HijriCalc.bulan[hBulan - 1]} $hTahun H · " +
-                    "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)} · " +
-                    "Neptu ${KalenderJawa.neptu(t)}",
+                    "${KalenderJawa.bulanJawa(hBulan)} ${KalenderJawa.tahunJawa(hTahun)}",
                 style = MaterialTheme.typography.bodyMedium,
             )
             if (besar != null) {

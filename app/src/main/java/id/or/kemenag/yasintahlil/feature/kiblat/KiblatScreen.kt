@@ -99,25 +99,21 @@ fun KiblatScreen(go: (String) -> Unit = {}, vm: KiblatViewModel = hiltViewModel(
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         // Judul dahulu berbunyi "(SIHAT Kemenag)" — melekatkan nama lembaga pada angka yang justru
         // dihitung sendiri di perangkat. Yang benar-benar berasal dari SIHAT adalah **koordinat
-        // Ka'bah** yang dipakai sebagai titik acuan, jadi itulah yang disebut; dan disebutkan pula
-        // bahwa aplikasi tidak menghubungi server, agar klaimnya dapat diperiksa. Penjelasan
-        // verifikasi tanpa alat (rashdul kiblat) dan rincian kompas/peta dibuka lewat ikon Info.
-        KartuKeterangan(
-            onInfo = { go(Routes.keterangan("kiblat")) },
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            Text(
-                "Azimut dihitung di perangkat dari koordinat Ka'bah yang diterbitkan SIHAT Bimas Islam " +
-                    "(E-Kiblat); aplikasi tidak menghubungi server. Ketelitiannya bergantung pada " +
-                    "ketelitian lokasi dan sensor perangkat.",
-                style = MaterialTheme.typography.labelMedium,
-            )
-            Text(
-                if (s.useGps) "Sumber lokasi: GPS perangkat."
-                else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
-                style = MaterialTheme.typography.labelMedium,
-            )
-        }
+        // Ka'bah** yang dipakai sebagai titik acuan, jadi itulah yang disebut. Penjelasan lengkap
+        // (rashdul kiblat, rincian kompas & peta) dibuka lewat ikon Info — kartu keterangannya
+        // dihapus karena mengulang isi layar keterangan itu.
+        Text(
+            "Azimut dihitung di perangkat dari koordinat Ka'bah yang diterbitkan SIHAT Bimas Islam (E-Kiblat).",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
+        Text(
+            if (s.useGps) "Sumber lokasi: GPS perangkat."
+            else "Sumber lokasi: manual/kota terpilih (atur di menu Jadwal).",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         if (!s.hasPermission) {
             Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
@@ -209,19 +205,15 @@ fun KiblatScreen(go: (String) -> Unit = {}, vm: KiblatViewModel = hiltViewModel(
                     drawCircle(Color.Red, 8f, c)
                 }
             }
-            Text("Jarum emas = kiblat • garis abu = utara • Akurasi kompas tidak dijamin; pisahkan azimut matematis vs sensor.",
+            Text("Jarum emas = kiblat • garis abu = utara.",
                 style = MaterialTheme.typography.labelSmall)
         } else {
-            Text("Jarum kompas tidak digambar — gunakan angka azimut di atas bersama peta di bawah. " +
-                    "Jarum hanya berarti bila perangkat punya magnetometer dan arahnya terkalibrasi.",
+            Text("Gunakan angka azimut di atas bersama peta di bawah.",
                 style = MaterialTheme.typography.labelSmall)
         }
         Text("Peta arah kiblat (offline)", style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = 8.dp))
         KiblatMap(s.lat, s.lon, s.bearing, Modifier.padding(top = 4.dp))
-        Text("Peta skematik tanpa internet: posisi Anda, Ka'bah, dan rute lingkaran besar di antaranya. " +
-            "Jadi acuan arah bila perangkat tak punya magnetometer atau kompas belum terkalibrasi.",
-            style = MaterialTheme.typography.labelSmall)
 
         BarisChip(Modifier.padding(top = 8.dp)) {
             FilterChip(s.useGps, {

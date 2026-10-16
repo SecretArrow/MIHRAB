@@ -49,6 +49,7 @@ class KeteranganLayarTest {
         "adzan/IqomahDoaScreen.kt",
         "kiblat/KiblatScreen.kt",
         "jadwal/JadwalScreen.kt",
+        "kalender/KalenderScreen.kt",
     )
 
     @Test

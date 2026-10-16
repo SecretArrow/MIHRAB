@@ -1,11 +1,11 @@
 {
  "modul": "tahlil",
  "sumber_url": "https://quran.nu.or.id/tahlil",
- "catatan_tradisi": "Susunan tahlil dapat berbeda menurut tradisi dan rujukan. Susunan utama aplikasi mengikuti NU Online; selain itu tersedia susunan ringkas yang lazim di Indonesia. Keduanya bukan satu-satunya yang benar.",
+ "catatan_tradisi": "Susunan tahlil tersedia dalam dua versi mengikuti quran.nu.or.id/tahlil: ringkas dan lengkap. Susunan tahlil lazim di Indonesia berbeda-beda menurut tradisi dan rujukan, sehingga kedua versi ini bukan satu-satunya yang benar.",
  "susunan": [
   {
-   "id": "nu_online_ringkas",
-   "nama": "Tahlil NU Online (ringkas)",
+   "id": "nu_online_lengkap",
+   "nama": "Tahlil Lengkap — NU Online",
    "bagian": [
     "tawassul_1",
     "tawassul_2",
@@ -49,26 +49,42 @@
     "doa_penutup",
     "fatihah_2"
    ],
-   "sumber": "NU Online — quran.nu.or.id/tahlil"
+   "sumber": "NU Online — quran.nu.or.id/tahlil (versi lengkap)"
   },
   {
-   "id": "lazim_indonesia",
-   "nama": "Susunan tahlil lazim Indonesia (ringkas)",
+   "id": "nu_online_ringkas",
+   "nama": "Tahlil Ringkas — NU Online",
    "bagian": [
     "tawassul_1",
-    "istighfar",
-    "sholawat",
-    "fatihah_1",
+    "tawassul_2",
+    "tawassul_3",
+    "tawassul_4",
     "ikhlas",
+    "tahlil_takbir_1",
     "falaq",
+    "tahlil_takbir_2",
     "nas",
+    "tahlil_takbir_3",
+    "fatihah_1",
+    "baqarah_1_5",
+    "baqarah_163",
     "kursi",
-    "tasbih",
+    "istighfar",
+    "afdaludz_dzikri",
+    "hayyun_mabud",
+    "hayyun_baqi",
     "tahlil",
-    "doa_mayit",
+    "sholawat",
+    "subhanallah_adada",
+    "tasbih",
+    "sholawat_habib_1",
+    "sholawat_habib_2",
+    "doa_pembuka",
+    "doa_tawasul_pahala",
+    "doa_ahlulqubur",
     "doa_penutup"
    ],
-   "sumber": "Susunan lazim Indonesia atas bagian-bagian yang bersumber resmi"
+   "sumber": "NU Online — quran.nu.or.id/tahlil (versi ringkas)"
   }
  ],
  "edisi": "Susunan bacaan NU Online (quran.nu.or.id/tahlil); bacaan Qur’an memakai MSI LPMQ Kemenag + terjemah Kemenag edisi 2019 pada berkas rujukan, terjemahan Al-Baqarah 284-286 Kemenag edisi 2019, doa mayit HR Muslim dari sunnah.com."

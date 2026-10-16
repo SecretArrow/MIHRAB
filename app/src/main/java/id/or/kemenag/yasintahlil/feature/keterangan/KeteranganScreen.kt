@@ -101,6 +101,7 @@ private fun namaAsal(repo: ContentRepo, asal: String): String = when (asal) {
     "iqomah" -> NamaLayar.IQOMAH
     "kiblat" -> NamaLayar.KIBLAT
     "jadwal" -> NamaLayar.JADWAL
+    "kalender" -> NamaLayar.KALENDER
     else -> sholatById(repo, asal)?.nama ?: asal
 }
 
@@ -360,6 +361,36 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                         "dinyalakan dari sana; menitnya dihitung mundur dari jadwal Subuh. Saklar " +
                         "\"Ikuti perubahan lokasi\" menghitung ulang jadwal otomatis saat Anda " +
                         "berpindah tempat.",
+                ),
+            )
+        }
+    }
+
+    "kalender" -> {
+        buildList {
+            add(
+                BagianKeterangan(
+                    "Sumber tanggal Hijriah",
+                    "Tanggal Hijriah adalah perkiraan tabular yang dihitung di perangkat — untuk " +
+                        "Ramadan dan hari raya, ikuti penetapan isbat Kemenag. Koreksi ± hari " +
+                        "tersedia di tab Pengaturan dan berlaku juga di beranda.",
+                ),
+            )
+            add(
+                BagianKeterangan(
+                    "Weton & pasaran",
+                    "Pasaran (Legi, Pahing, Pon, Wage, Kliwon) berputar dalam siklus lima hari dan " +
+                        "berpasangan dengan nama hari menjadi weton. Ia khazanah budaya Jawa yang " +
+                        "dipakai luas dalam tradisi — bukan bagian ajaran agama, dan aplikasi " +
+                        "menampilkannya sebagai pengetahuan, bukan anjuran ibadah.",
+                ),
+            )
+            add(
+                BagianKeterangan(
+                    "Bulan & tahun Jawa",
+                    "Nama bulan Jawa (Sura sampai Besar) berjalan selaras urutan bulan Hijriah sejak " +
+                        "era Sultan Agung; penomoran tahunnya memakai konvensi Hijriah − 78 (era " +
+                        "Aji Saka) sebagai penanda sederhana — bukan taraf kalender resmi mana pun.",
                 ),
             )
         }

@@ -267,9 +267,10 @@ class NamaLayarSatuTempatTest {
             "IbadahScreen.kt",
             pasangan("feature/ibadah/IbadahScreen.kt",
                 """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
+            // Tasbih, zakat, dan tahlil almarhum pindah ke menu Alat (2026-10-16): menu Ibadah
+            // murni bacaan, panduan, referensi, dan simpanan.
             setOf("YASIN", "TAHLIL", "SHOLAT", "WUDHU", "GHAIB", "JENAZAH", "DZIKIR",
-                "DOA_ADZAN", "SEARCH", "FAVORIT",
-                "TASBIH", "ASMAUL", "ZAKAT", "KHATAMAN", "ALMARHUM"),
+                "DOA_ADZAN", "SEARCH", "FAVORIT", "ASMAUL", "KHATAMAN"),
         )
         periksa(
             "AlatScreen.kt",
@@ -277,8 +278,10 @@ class NamaLayarSatuTempatTest {
                 """Routes\.(\w+),\s*NamaLayar\.(\w+),"""),
             // Pencarian tidak lagi diulang di sini: bagian "Temuan" yang hanya memuat satu
             // baris sudah dibubarkan — pintunya tetap ada di menu Ibadah (bagian Simpanan)
-            // dan di ikon Pencarian pada kepala beranda.
-            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH", "KALENDER"),
+            // dan di ikon Pencarian pada kepala beranda. Tasbih, zakat, dan tahlil almarhum
+            // pindah ke sini dari menu Ibadah (2026-10-16) — penghitung dan hitungan rumahnya
+            // di tab Alat.
+            setOf("KIBLAT", "JADWAL", "ADZAN", "IQOMAH", "KALENDER", "TASBIH", "ZAKAT", "ALMARHUM"),
         )
         periksa(
             "SholatDetailScreen.kt",

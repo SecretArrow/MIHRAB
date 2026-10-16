@@ -47,7 +47,8 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
 - `istighfar` (HR Muslim 591) dan `doa_mayit` (HR Muslim) dipertahankan dari sunnah.com karena
   dirujuk modul lain (`dzikir.json`, `sholat_mayit.json`); NU Online membaca bentuk ringkasnya.
 - Berkas: `app/src/main/assets/content/tahlil_full.json` (41 bagian) + `tahlil.json`
-  (deskriptor 2 susunan).
+  (deskriptor 2 susunan — **Lengkap** 41 bagian dan **Ringkas** 28 bagian; urutan Ringkas
+  mengikuti tab "Ringkas" asli di halamannya, susunan lazim Indonesia yang lama dilepas).
 
 ## 7. Aturan konten
 - Setiap entri JSON wajib: `sumber_url` — domain resmi, dan **gagal** di mode `--strict`.

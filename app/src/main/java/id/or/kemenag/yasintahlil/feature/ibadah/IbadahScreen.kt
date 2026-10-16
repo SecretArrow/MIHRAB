@@ -10,16 +10,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.AutoStories
-import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.MaterialTheme
@@ -34,9 +31,13 @@ import id.or.kemenag.yasintahlil.navigation.Routes
 
 /**
  * Menu Ibadah: pintu ke seluruh bacaan dan panduan ibadah, dikelompokkan menurut maksud
- * kunjungannya — bacaan utama, panduan tata cara, lalu simpanan pribadi. Tiap tujuan adalah
- * baris berikon dari satu komponen bersama ([MenuBaris]) supaya bentuknya seragam dengan menu
- * Alat; labelnya tetap dari [NamaLayar], satu nama untuk satu layar.
+ * kunjungannya — bacaan utama, panduan tata cara, referensi, lalu simpanan pribadi. Tiap tujuan
+ * adalah baris berikon dari satu komponen bersama ([MenuBaris]) supaya bentuknya seragam dengan
+ * menu Alat; labelnya tetap dari [NamaLayar], satu nama untuk satu layar.
+ *
+ * Tasbih Digital, Kalkulator Zakat, dan Tahlil Almarhum bukan lagi anggota menu ini — ketiganya
+ * pindah ke tab Alat (permintaan pengguna, 2026-10-16): yang tersisa di sini benar-benar bacaan
+ * dan panduan ibadah, sementara penghitung dan hitungan tinggal satu rumah di Alat.
  */
 @Composable
 fun IbadahScreen(go: (String) -> Unit) {
@@ -67,16 +68,12 @@ fun IbadahScreen(go: (String) -> Unit) {
             Triple(Routes.DOA_ADZAN, NamaLayar.DOA_ADZAN, Icons.Filled.Campaign),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
 
-        // Amalan harian dan referensi ringan: tasbih, Asmaul Husna, zakat, khataman, hingga
-        // peringatan tahlil untuk almarhum. Sama bentuknya dengan bagian lain — satu keluarga
-        // `MenuBaris` — supaya menu tetap satu bentuk, bukan menumpuk gaya baru.
-        BagianJudul("Amalan & referensi")
+        // Referensi ringan: Asmaul Husna dan khataman. Tasbih, zakat, dan tahlil almarhum pindah
+        // ke tab Alat — sama bentuknya dengan bagian lain, satu keluarga `MenuBaris`.
+        BagianJudul("Referensi")
         listOf(
-            Triple(Routes.TASBIH, NamaLayar.TASBIH, Icons.Filled.TouchApp),
             Triple(Routes.ASMAUL, NamaLayar.ASMAUL, Icons.Filled.AutoStories),
-            Triple(Routes.ZAKAT, NamaLayar.ZAKAT, Icons.Filled.Calculate),
             Triple(Routes.KHATAMAN, NamaLayar.KHATAMAN, Icons.Filled.Flag),
-            Triple(Routes.ALMARHUM, NamaLayar.ALMARHUM, Icons.Filled.Event),
         ).forEach { (rute, label, ikon) -> MenuBaris(label, ikon, { go(rute) }) }
 
         BagianJudul("Simpanan")

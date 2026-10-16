@@ -182,20 +182,13 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
                 })
             }
         }
-        // Penjelasan pengaturan waktu dipadatkan ke kartu keterangan; cara kerja pengingat yang
-        // lebih panjang (WorkManager, Doze, optimasi baterai) dibuka lewat ikon Info.
-        KartuKeterangan(
-            onInfo = { go(Routes.keterangan("adzan")) },
-            modifier = Modifier.padding(top = 4.dp),
-        ) {
-            Text("Jam di atas dihitung di perangkat untuk hari ini dari lokasi, metode, mazhab Asar, " +
-                    "koreksi menit, dan zona waktu yang sama dengan penjadwal pengingatnya. Metode " +
-                    "aktif: ${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}; metode dan " +
-                    "zona waktunya diubah di menu Jadwal, mazhab Asar serta koreksi menitnya di " +
-                    "tab Pengaturan. Menonaktifkan sebuah waktu mematikan adzan sekaligus " +
-                    "pengingatnya.",
-                style = MaterialTheme.typography.labelMedium)
-        }
+        // Keterangan panjang (dihitung di perangkat, metode & mazhab Asar & koreksi diubah di
+        // mana, cara kerja pengingat WorkManager) sudah pindah ke layar keterangan lewat ikon
+        // Info — di sini tersisa satu baris info yang benar-benar berganti saat dipakai.
+        Text("Metode aktif: ${metode.label} — diubah di menu ${NamaLayar.JADWAL}.",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp))
 
         // `plan.txt` §"Fitur Adzan": *"Pilihan suara adzan dari sumber audio yang legal digunakan"*
         // dan *"Pengaturan volume dan jenis suara"*. Aplikasi tidak menyertakan audio bawaan, jadi
