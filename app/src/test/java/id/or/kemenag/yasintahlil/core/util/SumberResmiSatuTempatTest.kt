@@ -103,7 +103,10 @@ class SumberResmiSatuTempatTest {
     fun situsYangDisebutLayarBeradaDiDaftarResmi() {
         assertEquals("situs SIHAT berubah", "sihat.kemenag.dev", ContentValidator.SITUS_SIHAT)
         assertEquals("situs teks hadis berubah", "sunnah.com", ContentValidator.SITUS_HADIS)
-        listOf(ContentValidator.SITUS_SIHAT, ContentValidator.SITUS_HADIS).forEach { situs ->
+        assertEquals("situs tahlil NU berubah", "quran.nu.or.id", ContentValidator.SITUS_NU)
+        listOf(
+            ContentValidator.SITUS_SIHAT, ContentValidator.SITUS_HADIS, ContentValidator.SITUS_NU,
+        ).forEach { situs ->
             assertTrue("situs '$situs' yang disebut layar bukan domain resmi",
                 ContentValidator.isOfficialSource("https://$situs/contoh"))
         }

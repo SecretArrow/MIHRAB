@@ -36,7 +36,10 @@ class PengingatDoaAdzanTest {
         // dituju SEKALI dari dalam aplikasi (penanda `Store.ONBOARDING_SELESAI`), tidak pernah
         // oleh notifikasi — mendaftarkannya ke LANGSUNG justru membuka pintu yang tak pernah dipakai.
         val berargumen = setOf("SHOLAT_DETAIL", "KETERANGAN")
-        val tanpaNotifikasi = setOf("ONBOARDING")
+        // Layar pendamping Tanpa pintu notifikasi — keduanya bermakna bersama layar Tasbihnya
+        // (riwayat & keterangan), dan Sumber Konten terbuka dari Pengaturan/Tentang. Ketiganya
+        // sengaja tidak terdaftar LANGSUNG dengan alasan yang sama dengan ONBOARDING.
+        val tanpaNotifikasi = setOf("ONBOARDING", "TASBIH_RIWAYAT", "TASBIH_INFO", "SUMBER")
         val kurang = semua.filterNot { it in berargumen || it in tanpaNotifikasi || blok.contains(it) }
         assertTrue("rute tidak boleh dibuka dari notifikasi: $kurang", kurang.isEmpty())
         berargumen.forEach {

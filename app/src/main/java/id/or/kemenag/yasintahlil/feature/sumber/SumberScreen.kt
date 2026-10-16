@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.or.kemenag.yasintahlil.core.util.ContentValidator
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
 
 /**
@@ -42,10 +43,11 @@ fun SumberScreen() {
             "Transliterasi Latin mengikuti pedoman transliterasi resmi yang sama dengan bundel.",
         ),
         "Tahlil & doa arwah" to listOf(
-            "Susunan Tahlil Ringkas (28 bagian) & Lengkap (41 bagian): quran.nu.or.id/tahlil " +
-                "(NU Online) — lafaz berharakat, latin, dan terjemahan diekstraksi dari halaman " +
+            "Susunan Tahlil Ringkas (28 bagian) & Lengkap (41 bagian): " +
+                "${ContentValidator.SITUS_NU}/tahlil (NU Online) — lafaz berharakat, latin, dan " +
+                "terjemahan diekstraksi dari halaman " +
                 "resmi dan diverifikasi lintas bundel.",
-            "Doa jenazah (takbir 3): HR Muslim 591 — sunnah.com.",
+            "Doa jenazah (takbir 3): HR Muslim 591 — ${ContentValidator.SITUS_HADIS}.",
             "Mode Imam: label siapa membaca adalah panduan umum tradisi tahlil; bacaannya sama " +
                 "dengan susunan Lengkap.",
         ),
@@ -61,10 +63,10 @@ fun SumberScreen() {
             "Jadwal sholat: algoritma posisi matahari Meeus dengan sudut Kemenag/SIHAT " +
                 "(Subuh −20°, Isya −18°) — dihitung di perangkat, bukan diambil dari server.",
             "Kalender Hijriah: perhitungan tabular + koreksi pengguna; rujukan resmi " +
-                "sihat.kemenag.dev/kalender-hijriah.",
+                "${ContentValidator.SITUS_SIHAT}/kalender-hijriah.",
             "Pasaran Jawa (Legi–Kliwon): siklus 5 hari, jangkar proklamasi 17 Agustus 1945 = " +
                 "Jumat Legi.",
-            "Koordinat kota & Ka'bah: SIHAT Kemenag (sihat.kemenag.dev).",
+            "Koordinat kota & Ka'bah: SIHAT Kemenag (${ContentValidator.SITUS_SIHAT}).",
         ),
     )
     Column(

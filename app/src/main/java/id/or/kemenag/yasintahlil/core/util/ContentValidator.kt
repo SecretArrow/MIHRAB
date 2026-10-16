@@ -28,8 +28,17 @@ object ContentValidator {
      */
     val SITUS_HADIS: String get() = INDUK_HADIS
 
+    /**
+     * Situs Tahlil NU Online — asal susunan Tahlil Ringkas/Lengkap beserta label Mode Imam
+     * (`tahlil_imam.json`). Polanya sama dengan [SITUS_SIHAT] dan [SITUS_HADIS]: layar yang
+     * menunjuknya menurunkan dari konstanta ini, bukan mengeja hostnya sendiri, sehingga
+     * alamat yang ditunjuk selalu dinilai gerbang konten yang sama.
+     */
+    val SITUS_NU: String get() = INDUK_NU
+
     private const val INDUK_SIHAT = "kemenag.dev"
     private const val INDUK_HADIS = "sunnah.com"
+    private const val INDUK_NU = "quran.nu.or.id"
 
     /** Host dari URL, atau null bila URL tidak valid. */
     fun hostOf(url: String): String? =

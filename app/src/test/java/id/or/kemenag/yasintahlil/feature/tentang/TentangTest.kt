@@ -116,7 +116,7 @@ class TentangTest {
 
         val nav = sumber("src/main/java/id/or/kemenag/yasintahlil/navigation/AppNav.kt")
         assertTrue("layar Tentang tidak terpasang di navigasi",
-            nav.contains("composable(Routes.TENTANG) { TentangScreen() }"))
+            nav.contains("composable(Routes.TENTANG) { TentangScreen(go = { nav.navigate(it) }) }"))
 
         val pengaturan = sumber("src/main/java/id/or/kemenag/yasintahlil/feature/settings/SettingsScreen.kt")
         assertTrue("Pengaturan tidak membuka layar Tentang", pengaturan.contains("go(Routes.TENTANG)"))

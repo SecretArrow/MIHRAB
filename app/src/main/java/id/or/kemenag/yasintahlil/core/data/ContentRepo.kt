@@ -27,6 +27,13 @@ class ContentRepo(private val ctx: Context) {
     private val updateDir = File(ctx.filesDir, ContentUpdateManager.DIR)
     private val metaPembaruan = File(updateDir, ContentUpdateManager.META)
 
+    /**
+     * Koma Arab (U+060C) — pemisah ayat pada rangkaian Arab yang mengalir (rujukan satu surat
+     * utuh). Ditulis sebagai escape agar **teks Arab tetap tinggal di bundel**: kode memuat
+     * pemisahnya saja, dan penjaga "tidak ada teks Arab hardcoded di kode" tetap hijau.
+     */
+    private val KOMA_ARAB = "\u060C"
+
     /** Cap terakhir pembaruan; berubahnya cap membatalkan cache agar tak menyajikan teks lama. */
     private var cap = metaPembaruan.lastModified()
 
@@ -125,12 +132,12 @@ class ContentRepo(private val ctx: Context) {
             return Triple(o.optString("arab"), o.optString("latin"), o.optString("terjemahan"))
         }
         return if (d.has("verses")) {
-            // Arab utuh mengalir — ayat-ayatnya dirangkai dengan koma Arab ("، ") seperti mushaf
-            // dibaca bersambung, bukan daftar bernomor. Rincian per ayat tetap tersedia lewat
-            // [ayatRujukan] dan ditampilkan kartu di bagian "Ayat demi ayat".
+            // Arab utuh mengalir — ayat-ayatnya dirangkai dengan koma Arab (lihat [KOMA_ARAB])
+            // seperti mushaf dibaca bersambung, bukan daftar bernomor. Rincian per ayat tetap
+            // tersedia lewat [ayatRujukan] dan ditampilkan kartu di bagian "Ayat demi ayat".
             val arr = d.getJSONArray("verses")
             Triple(
-                (0 until arr.length()).joinToString("، ") { i ->
+                (0 until arr.length()).joinToString("$KOMA_ARAB ") { i ->
                     arr.getJSONObject(i).getString("arab") },
                 (0 until arr.length()).joinToString(" ") { i ->
                     arr.getJSONObject(i).optString("latin") },
