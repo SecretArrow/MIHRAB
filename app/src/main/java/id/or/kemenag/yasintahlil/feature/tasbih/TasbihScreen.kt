@@ -35,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,18 +52,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import id.or.kemenag.yasintahlil.core.audio.BunyiKetukan
 import id.or.kemenag.yasintahlil.core.designsystem.BarisChip
 import id.or.kemenag.yasintahlil.core.designsystem.NamaAntarmuka
 import id.or.kemenag.yasintahlil.core.util.NamaLayar
+import id.or.kemenag.yasintahlil.core.util.UmpanBalikTasbih
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.delay
 
 /**
  * Layar Tasbih Digital: penghitung harian yang diketuk, bukan ditekan tombol − / + (tombol teks
  * semacam itu hanya hidup di Pengaturan). Satu ketukan pada lingkaran besar menimpa baris hari ini
- * di Room; getaran singkat menandai tiap ketukan, dan getaran kedua — diberi jeda agar terasa
- * sebagai dua — menandai target tercapai (TANPA teks "Target tercapai" di layar; umpan baliknya
- * cukup dari getar dan ganti warna lingkaran).
+ * di Room, dan tiap ketukan diberi tanda sesuai mode yang dipilih pengguna di Pengaturan —
+ * getar singkat, bunyi beep dengan volume yang dapat diatur, atau diam sama sekali. Tanda kedua —
+ * diberi jeda agar terasa/terdengar sebagai dua — menandai target tercapai (TANPA teks "Target
+ * tercapai" di layar; umpan baliknya cukup dari getar/bunyi dan ganti warna lingkaran).
  *
  * Susunannya mengikuti desain terkini: target chips di **atas**, diikuti baris "Reset hari ini" +
  * "Riwayat 7 hari" (riwayatnya layar tersendiri), dan lingkaran ketuk di **bawah** — angka besar
@@ -84,10 +88,17 @@ fun TasbihScreen(go: (String) -> Unit) {
     var dialogTerbuka by rememberSaveable { mutableStateOf(false) }
     // Tanda menyeberangi target — sengaja tidak disimpan: hanya berumur selama ketukannya.
     var lewatTarget by remember { mutableStateOf(false) }
+    // Pemain beep dibuat malas pada ketukan pertama bila mode Beep, dan dibebaskan saat layar
+    // pergi — pola yang sama dengan `MurottalPlayer.lepas` di layar Yasin.
+    val bunyi = remember { BunyiKetukan() }
+    DisposableEffect(Unit) { onDispose { bunyi.lepas() } }
     LaunchedEffect(lewatTarget) {
         if (lewatTarget) {
             delay(150)
-            getar.performHapticFeedback(HapticFeedbackType.LongPress)
+            // Tanda kedua mengikuti mode yang sedang dipilih: getar ganda, atau bunyi ganda —
+            // kecuali mode Diam, yang memang tidak pernah menyalakan tandanya sama sekali.
+            if (s.umbal == UmpanBalikTasbih.BEEP) bunyi.bunyi(UmpanBalikTasbih.persen(s.volBeep))
+            else getar.performHapticFeedback(HapticFeedbackType.LongPress)
             lewatTarget = false
         }
     }
@@ -145,10 +156,11 @@ fun TasbihScreen(go: (String) -> Unit) {
 
         // ---- Lingkaran ketuk — di bawah -----------------------------------------------------------------
         // Warna lingkaran berganti saat target tercapai supaya capaian itu terlihat sekilas dari
-        // jauh — pengguna tasbih sering tidak menatap layar saat menghitung. Getar memakai
+        // jauh — pengguna tasbih sering tidak menatap layar saat menghitung. Tanda ketukannya
+        // mengikuti mode di Pengaturan (diam/getar/beep); getar memakai
         // `HapticFeedbackType.LongPress` karena ia tersedia di seluruh versi Compose yang dipakai
-        // aplikasi ini (`HeavyClick` hadir belakangan); getar kedua diberi jeda 150 ms agar
-        // terasa sebagai penanda tersendiri, bukan getar pertama yang memanjang. Di bawah angka
+        // aplikasi ini (`HeavyClick` hadir belakangan). Tanda kedua diberi jeda 150 ms agar
+        // terasa sebagai penanda tersendiri, bukan tanda pertama yang memanjang. Di bawah angka
         // besarnya tampil hitungan putaran ("2x") setelah target terlewati, atau "dari N" sebelum.
         val tercapai = s.targetTercapai
         val latar = if (tercapai) MaterialTheme.colorScheme.primary
@@ -165,9 +177,16 @@ fun TasbihScreen(go: (String) -> Unit) {
                 .border(4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), CircleShape)
                 .clickable {
                     val lama = s.hitung
+                    val mode = s.umbal
                     vm.tap()
-                    getar.performHapticFeedback(HapticFeedbackType.LongPress)
-                    if (s.target > 0 && lama < s.target && lama + 1 >= s.target) {
+                    when (mode) {
+                        UmpanBalikTasbih.BEEP -> bunyi.bunyi(UmpanBalikTasbih.persen(s.volBeep))
+                        UmpanBalikTasbih.DIAM -> {}
+                        else -> getar.performHapticFeedback(HapticFeedbackType.LongPress)
+                    }
+                    if (s.target > 0 && lama < s.target && lama + 1 >= s.target &&
+                        mode != UmpanBalikTasbih.DIAM
+                    ) {
                         lewatTarget = true
                     }
                 },
@@ -233,16 +252,17 @@ fun TasbihScreen(go: (String) -> Unit) {
 
 /**
  * Layar Keterangan Tasbih — rumah teks penjelasan yang dahulu menumpuk di badan layar Tasbih
- * (getar tiap ketukan, hitungan putaran, reset harian, dan pilihan target). Dibuka dari ikon bel
- * pada layar Tasbih; isinya statis karena menjelaskan PERILAKU aplikasi, bukan isi bundel.
+ * (umpan balik tiap ketukan, hitungan putaran, reset harian, dan pilihan target). Dibuka dari
+ * ikon bel pada layar Tasbih; isinya statis karena menjelaskan PERILAKU aplikasi, bukan isi bundel.
  */
 @Composable
 fun TasbihInfoScreen() {
     val butir = listOf(
-        "Getar tiap ketukan" to
-            "Setiap ketukan memberi getar singkat sebagai tanda hitungan masuk. Saat target " +
-            "tercapai (ketukan habis dibagi target), perangkat bergetar ganda — tanpa perlu " +
-            "melihat layar.",
+        "Umpan balik ketukan" to
+            "Tiap ketukan diberi tanda sesuai pilihan di Pengaturan (bagian Tasbih): getar " +
+            "singkat, bunyi beep dengan volume yang dapat diatur, atau diam sama sekali. Saat " +
+            "target tercapai, tandanya diberi ganda — kecuali mode Diam, yang cukup mengganti " +
+            "warna lingkaran.",
         "Hitungan putaran" to
             "Melewati target, lingkaran menampilkan hitungan putaran di bawah angka besar. " +
             "Contoh: target 33 dan sudah terklik lebih dari 66 → lingkaran menulis \"2x\", " +

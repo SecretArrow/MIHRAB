@@ -3,8 +3,10 @@ package id.or.kemenag.yasintahlil.feature.tasbih
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.local.TasbihDao
 import id.or.kemenag.yasintahlil.core.data.local.TasbihEntity
+import id.or.kemenag.yasintahlil.core.util.UmpanBalikTasbih
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,13 @@ data class TasbihState(
     val hitung: Int = 0,
     val target: Int = TasbihViewModel.TARGET_BAWAAN,
     val riwayat: List<TasbihEntity> = emptyList(),
+    /**
+     * Mode umpan balik ketukan (diam/getar/beep) — kendalinya di bagian Tasbih layar Pengaturan,
+     * layar ini hanya membaca. Bawaannya sama dengan perilaku sebelum pilihan ini ada (getar).
+     */
+    val umbal: String = UmpanBalikTasbih.BAWAAN,
+    /** Volume beep 0–1; hanya berarti bila [umbal] bernilai `beep`. */
+    val volBeep: Float = UmpanBalikTasbih.VOL_BAWAAN,
 ) {
     /** Target dianggap tercapai bila hitungan menyamai/melebihi target yang sah. */
     val targetTercapai: Boolean get() = target > 0 && hitung >= target
@@ -46,6 +55,7 @@ data class TasbihState(
 @HiltViewModel
 class TasbihViewModel @Inject constructor(
     private val dao: TasbihDao,
+    private val store: Store,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TasbihState())
@@ -70,6 +80,19 @@ class TasbihViewModel @Inject constructor(
         viewModelScope.launch {
             dao.observeTerbaru(RIWAYAT_HARI).collect { riwayat ->
                 _state.update { it.copy(riwayat = riwayat) }
+            }
+        }
+        // Umpan balik dikumpulkan reaktif — bukan sekali baca — karena VM ini hidup selama layar
+        // Tasbih ada di tumpukan belakang: pengguna yang kembali dari Pengaturan harus melihat
+        // pilihan barunya tanpa membunuh layar. Nilainya dibenarkan di sini, bukan di layar.
+        viewModelScope.launch {
+            store.flow(Store.TASBIH_UMBAL, UmpanBalikTasbih.BAWAAN).collect { mode ->
+                _state.update { it.copy(umbal = UmpanBalikTasbih.benarkan(mode)) }
+            }
+        }
+        viewModelScope.launch {
+            store.flow(Store.TASBIH_BEEP_VOL, UmpanBalikTasbih.VOL_BAWAAN).collect { vol ->
+                _state.update { it.copy(volBeep = UmpanBalikTasbih.volume(vol)) }
             }
         }
     }

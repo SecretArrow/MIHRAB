@@ -81,6 +81,18 @@ class Store(private val ctx: Context) {
          */
         val IQOMAH_ON = booleanPreferencesKey("iqomah_on")
         val MADHAB = stringPreferencesKey("madhab") // syafii|hanafi|maliki|hambali
+        /**
+         * Mode umpan balik ketukan Tasbih: `diam`|`getar`|`beep` (lihat `UmpanBalikTasbih`).
+         * Kendalinya terpusat di bagian Tasbih layar Pengaturan; layar Tasbih cukup membaca.
+         */
+        val TASBIH_UMBAL = stringPreferencesKey("tasbih_umbal")
+        /**
+         * Volume beep ketukan Tasbih, 0–1 — hanya berarti bila [TASBIH_UMBAL] bernilai `beep`.
+         * Terpisah dari [TASBIH_UMBAL] karena menjawab hal berbeda: "cara ketukan memberi tahu"
+         * versus "sekeras apa bunyinya"; menggabungkannya memaksa pengguna mengatur ulang
+         * volume tiap kali hanya ingin berpindah mode.
+         */
+        val TASBIH_BEEP_VOL = floatPreferencesKey("tasbih_beep_vol")
         val TAHLIL_SUSUNAN = stringPreferencesKey("tahlil_susunan")
         /** Susunan tahlil buatan pengguna: CSV id bagian, urut. Kosong = belum disusun. */
         val TAHLIL_CUSTOM = stringPreferencesKey("tahlil_custom")
@@ -150,10 +162,10 @@ class Store(private val ctx: Context) {
             fun int(k: Preferences.Key<Int>) { if (o.has(k.name)) p[k] = o.optInt(k.name) }
             str(DARK); str(ASAR); str(METHOD); str(CITY); str(TZ); str(CORR)
             str(ADZAN_ON); str(ADZAN_URI); str(ADZAN_SOUNDS); str(MADHAB); str(TAHLIL_SUSUNAN)
-            str(COMPASS_UNIT)
+            str(COMPASS_UNIT); str(TASBIH_UMBAL)
             str(TAHLIL_CUSTOM); str(PAGE_THEME); str(COMPASS_VIEW)
             str(HIST); str(LAST); str(TAHLIL_PROG)
-            flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL)
+            flt(ARAB_SIZE); flt(LATIN_SIZE); flt(LINE_HEIGHT); flt(ADZAN_VOL); flt(TASBIH_BEEP_VOL)
             dbl(LAT); dbl(LON)
             bool(SHOW_LATIN); bool(SHOW_TRANS); bool(SHOW_ARAB); bool(USE_GPS); bool(JADWAL_IKUT)
             bool(INFO_CARD); bool(NOTIF); bool(DOA_ADZAN_REMINDER); bool(IQOMAH_ON); bool(KEEP_ON)

@@ -30,6 +30,7 @@ import id.or.kemenag.yasintahlil.core.util.PengingatAdzan
 import id.or.kemenag.yasintahlil.core.util.PesanKonten
 import id.or.kemenag.yasintahlil.core.util.PrayerCalc
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
+import id.or.kemenag.yasintahlil.core.util.UmpanBalikTasbih
 import id.or.kemenag.yasintahlil.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -102,6 +103,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
     var hijriCorr by remember { mutableStateOf(BawaanPreferensi.KOREKSI_HIJRIAH) }
     var compassUnit by remember { mutableStateOf(TampilanKompas.SATUAN_DEFAULT) }
     var compassView by remember { mutableStateOf(TampilanKompas.KOMPAS) }
+    // Mode umpan balik ketukan Tasbih beserta volume beep-nya: kendalinya satu rumah di bagian
+    // Tasbih layar ini; layar Tasbih hanya membaca Store-nya dan melaksanakannya.
+    var umbalTasbih by remember { mutableStateOf(UmpanBalikTasbih.BAWAAN) }
+    var volBeepTasbih by remember { mutableStateOf(UmpanBalikTasbih.VOL_BAWAAN) }
     // Susunan tahlil yang boleh dipilih dan yang sedang aktif — dibaca dari bundel konten plus
     // "Susunan saya" bila pengguna pernah menyusunnya di modul Tahlil.
     var susunanTersedia by remember { mutableStateOf<List<TahlilSusunan>>(emptyList()) }
@@ -137,6 +142,10 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
         hijriCorr = store.get(Store.HIJRI_CORR, BawaanPreferensi.KOREKSI_HIJRIAH)
         compassUnit = store.get(Store.COMPASS_UNIT, TampilanKompas.SATUAN_DEFAULT)
         compassView = store.get(Store.COMPASS_VIEW, TampilanKompas.KOMPAS)
+        umbalTasbih = UmpanBalikTasbih.benarkan(
+            store.get(Store.TASBIH_UMBAL, UmpanBalikTasbih.BAWAAN))
+        volBeepTasbih = UmpanBalikTasbih.volume(
+            store.get(Store.TASBIH_BEEP_VOL, UmpanBalikTasbih.VOL_BAWAAN))
         val daftarSusunan = PreferensiSusunan.tersedia(
             repo.tahlilSusunan(),
             PreferensiSusunan.susunanSaya(
@@ -315,6 +324,43 @@ fun SettingsScreen(go: (String) -> Unit = {}) {
                 }
             }
         }
+        // ---- Tasbih ------------------------------------------------------------------------------
+        // Rumah tunggal kendali umpan balik ketukan Tasbih — layar Tasbih hanya membaca Store-nya
+        // dan melaksanakannya (aturan "satu pengaturan satu rumah", dijaga PengaturanTerpusatTest).
+        BagianJudul("Tasbih")
+        KartuGrup {
+            KolomPreferensi(
+                "Umpan balik ketukan",
+                "Tanda tiap ketukan di layar Tasbih — getar singkat, bunyi beep, atau diam " +
+                    "sama sekali. Saat target tercapai tandanya diberi ganda, kecuali mode Diam " +
+                    "yang cukup mengganti warna lingkaran.",
+            ) {
+                BarisChip {
+                    UmpanBalikTasbih.SEMUA.forEach { m ->
+                        FilterChip(umbalTasbih == m,
+                            {
+                                umbalTasbih = m
+                                scope.launch { store.set(Store.TASBIH_UMBAL, m) }
+                            },
+                            { Text(UmpanBalikTasbih.label(m)) })
+                    }
+                }
+            }
+            // Volume hanya berarti bagi mode Beep — menyembunyikannya pada mode lain menjaga kartu
+            // tetap ringkas, dan nilainya tetap tersimpan untuk saat Beep dipilih lagi.
+            if (umbalTasbih == UmpanBalikTasbih.BEEP) {
+                BarisUkur(
+                    "Volume beep",
+                    "${UmpanBalikTasbih.persen(volBeepTasbih)}%",
+                    UmpanBalikTasbih.VOL_MIN..UmpanBalikTasbih.VOL_MAKS,
+                    volBeepTasbih,
+                ) {
+                    volBeepTasbih = UmpanBalikTasbih.volume(it)
+                    scope.launch { store.set(Store.TASBIH_BEEP_VOL, volBeepTasbih) }
+                }
+            }
+        }
+
         // ---- Jadwal & pengingat ------------------------------------------------------------------
         // Dahulu bernama "Jadwal & lokasi", tetapi kotanya justru dipilih di menu Jadwal; yang
         // tinggal di sini adalah kendali pengingat beserta koreksinya — namanya disesuaikan agar
