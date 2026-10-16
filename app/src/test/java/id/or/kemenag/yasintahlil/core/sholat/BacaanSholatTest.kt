@@ -39,7 +39,7 @@ class BacaanSholatTest {
             .findAll(berkas("src/main/assets/content/$nama").substringAfter("\"bacaan\""))
             .map { it.groupValues[1] }.toList()
 
-    private val idSemua: List<String> = BacaanSholat.SEMUA + BacaanSholat.MAYIT
+    private val idSemua: List<String> = BacaanSholat.SEMUA + BacaanSholat.MAYIT + BacaanSholat.MAYIT_WANITA
 
     /**
      * Kata pada kosakata yang **juga** punya arti lain di luar bacaan sholat: `niat` adalah
@@ -97,8 +97,10 @@ class BacaanSholatTest {
     fun idBacaanSejajarDenganBundelKonten() {
         assertEquals("id pada sholat_bacaan.json berbeda dari kosakata bersama",
             BacaanSholat.SEMUA, idBundel("sholat_bacaan.json"))
+        // sholat_mayit.json kini memuat varian dhamir wanita juga (urutannya sama dengan MAYIT):
+        // pilihan "Wanita" pada layar Jenazah/Ghaib memakai entri ini, bukan menyalin lafaz.
         assertEquals("id pada sholat_mayit.json berbeda dari kosakata bersama",
-            BacaanSholat.MAYIT, idBundel("sholat_mayit.json"))
+            BacaanSholat.MAYIT + BacaanSholat.MAYIT_WANITA, idBundel("sholat_mayit.json"))
     }
 
     @Test

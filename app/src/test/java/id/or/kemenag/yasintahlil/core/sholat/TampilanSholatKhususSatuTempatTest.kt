@@ -51,7 +51,11 @@ class TampilanSholatKhususSatuTempatTest {
     /** Kedua layar harus memanggil tiap aturan bersama — bukan hanya sebagian. */
     @Test
     fun keduaLayarMemakaiAturanBersama() {
-        val aturan = listOf("judul(", "langkah(", "syarat(", "dalil(", "catatanMazhab(")
+        // Dahulu kedua layar mayit juga merangkai `syarat(` dan `catatanMazhab(` sebagai kartu
+        // keterangan di badan layar; keterangan panjang itu kini tinggal di layar keterangan
+        // (ikon Info) — tetap dirangkai aturan bersama yang sama di sana, jadi aturannya tetap
+        // satu tempat, hanya rumah tampilnya yang pindah.
+        val aturan = listOf("judul(", "langkah(", "dalil(", "hukum(")
         mapOf("Ghaib" to ghaib, "Jenazah" to jenazah).forEach { (nama, teks) ->
             aturan.forEach { a ->
                 assertTrue("$nama tidak memakai TampilanSholatKhusus.$a untuk teks yang sama",
@@ -61,6 +65,11 @@ class TampilanSholatKhususSatuTempatTest {
             // sholat biasa dan Tahlil, jadi rumahnya `TeksBacaan` — lihat `TeksBacaanSatuTempatTest`.
             assertTrue("$nama tidak memakai aturan cadangan teks bersama (TeksBacaan.pilih)",
                 teks.contains("TeksBacaan.pilih("))
+        }
+        val keterangan = layar("keterangan/KeteranganScreen.kt")
+        listOf("syarat(", "catatanMazhab(").forEach { a ->
+            assertTrue("keterangan sholat mayit tidak memakai TampilanSholatKhusus.$a",
+                keterangan.contains("TampilanSholatKhusus.$a"))
         }
     }
 

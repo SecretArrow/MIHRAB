@@ -66,6 +66,9 @@ object BacaanSholat {
     /** Bacaan tambahan untuk sholat mayit; berkasnya berbeda dari [SEMUA], jadi dipisah. */
     val MAYIT: List<String> = listOf(DOA_MAYIT, DOA_MAYIT_TAMBAHAN)
 
+    /** Varian dhamir wanita — urutnya sama dengan [MAYIT], sesuai bundel `sholat_mayit.json`. */
+    val MAYIT_WANITA: List<String> = listOf("doa_mayit_wanita", "doa_mayit_tambahan_wanita")
+
     /**
      * Varian dhamir **wanita** (muannats) untuk bacaan mayit — satu aturan untuk kedua layar
      * mayit (Jenazah & Ghaib): saat pengguna memilih "Wanita", id di kiri diganti id di kanan.

@@ -184,8 +184,11 @@ fun AdzanScreen(go: (String) -> Unit = {}) {
         }
         // Keterangan panjang (dihitung di perangkat, metode & mazhab Asar & koreksi diubah di
         // mana, cara kerja pengingat WorkManager) sudah pindah ke layar keterangan lewat ikon
-        // Info — di sini tersisa satu baris info yang benar-benar berganti saat dipakai.
-        Text("Metode aktif: ${metode.label} — diubah di menu ${NamaLayar.JADWAL}.",
+        // Info — di sini tersisa satu baris info yang benar-benar berganti saat dipakai. Ringkas
+        // metodenya tetap dari aturan bersama `JadwalHariIni.metodeRingkas` (satu aturan, satu
+        // tempat — penjaga AturanMetodeSatuTempatTest), bukan sudut yang diketik ulang di sini.
+        Text("Metode aktif: ${metode.label} — ${JadwalHariIni.metodeRingkas(metode)}. " +
+                "Diubah di menu ${NamaLayar.JADWAL}.",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp))
