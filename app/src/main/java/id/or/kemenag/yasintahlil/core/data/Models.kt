@@ -24,12 +24,6 @@ data class TahlilItem(
     val ulangi: Int = 1, val rujukanFile: String? = null, val sumber: String = "",
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",
-    /**
-     * Rincian ayat-per-ayat bila [rujukanFile] menunjuk satu surat (`surah_001.json` dsb.) —
-     * kartu menampilkan Arab utuh di atas, lalu ayat-ayatnya sekalian di bawah. Kosong untuk
-     * rujukan bentuk lain (`berkas.json#id`, `ayat_kursi.json`) maupun bacaan ber-teks sendiri.
-     */
-    val ayat: List<Verse> = emptyList(),
 )
 
 /**
@@ -74,8 +68,6 @@ data class Bacaan(
     val sholatScope: List<String> = emptyList(),
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",
-    /** Rincian ayat-per-ayat bila [rujukanFile] menunjuk satu surat — lihat [TahlilItem.ayat]. */
-    val ayat: List<Verse> = emptyList(),
 )
 
 data class DzikirItem(
@@ -85,8 +77,6 @@ data class DzikirItem(
     val rujukan: List<String> = emptyList(),
     /** Kategori sumber bacaan ([SumberKategori]); kosong = tidak diklaim. */
     val kategori: String = "",
-    /** Rincian ayat-per-ayat bila rujukan pertamanya satu surat — lihat [TahlilItem.ayat]. */
-    val ayat: List<Verse> = emptyList(),
 )
 
 /**

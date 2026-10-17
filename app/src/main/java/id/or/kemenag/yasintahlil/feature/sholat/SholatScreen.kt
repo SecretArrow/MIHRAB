@@ -178,7 +178,7 @@ fun SholatScreen(go: (String) -> Unit) {
                 BacaanCard(JenisBacaan.id(JenisBacaan.BACAAN, b.id), b.judul, a, l, t,
                     showLatin, showTrans, arabSize,
                     sumber = b.sumber.ifBlank { b.kapan },
-                    showArab = showArab, kategori = b.kategori, ayat = b.ayat)
+                    showArab = showArab, kategori = b.kategori)
                 if (b.catatan.isNotBlank()) {
                     Text(b.catatan, style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(top = 4.dp))

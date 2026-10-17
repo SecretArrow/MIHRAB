@@ -7,11 +7,9 @@ import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Campaign
@@ -70,7 +67,6 @@ import id.or.kemenag.yasintahlil.core.audio.TtsBacakan
 import id.or.kemenag.yasintahlil.core.data.ContentRepo
 import id.or.kemenag.yasintahlil.core.data.Store
 import id.or.kemenag.yasintahlil.core.data.SumberKategori
-import id.or.kemenag.yasintahlil.core.data.Verse
 import id.or.kemenag.yasintahlil.core.util.BagikanGambar
 import id.or.kemenag.yasintahlil.core.util.UkuranBacaan
 import kotlinx.coroutines.Dispatchers
@@ -153,8 +149,6 @@ data class AksiBacaan(
  * [lencanaKanan] adalah lencana kecil di ujung kanan kepala kartu — mis. pembagi bacaan pada
  * Mode Imam Tahlil ("Imam", "Bersama"), sehingga makmum tahu bagian mana yang dibaca bersama.
  *
- * [ayat] adalah rincian ayat-per-ayat bila bacaan ini merujuk satu surat utuh: Arab utuh tampil
- * di atas, lalu tiap ayat dirinci di bawahnya — nomor berlingkaran, Arab, latin, dan artinya.
  * Sumber konten TIDAK dicetak di kartu — seluruh atribusi dikumpulkan di layar Sumber Konten
  * (Pengaturan), satu tempat, bukan berulang di setiap kartu bacaan.
  */
@@ -172,7 +166,6 @@ fun BacaanCard(
     kategori: String = "",
     aksiEkstra: List<AksiBacaan> = emptyList(),
     lencanaKanan: String = "",
-    ayat: List<Verse> = emptyList(),
 ) {
     val ctx = LocalContext.current
     val userData = rememberUserData()
@@ -264,54 +257,9 @@ fun BacaanCard(
                     terjemahan, fontSize = ukuranLatin.sp,
                     modifier = Modifier.padding(top = 4.dp),
                 )
-                // Rincian ayat-per-ayat untuk rujukan satu surat utuh: Arab utuh sudah tampil di
-                // atas; di bawahnya tiap ayat dirinci — nomor berlingkaran, Arab, latin, arti —
-                // sehingga ayat yang ingin diulang mudah ditemukan tanpa membaca ulang semuanya.
-                if (ayat.size > 1) {
-                    Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                    ) {
-                        Column(Modifier.fillMaxWidth().padding(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Ayat demi ayat",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            ayat.forEach { a ->
-                                Column(Modifier.fillMaxWidth()) {
-                                    Box(
-                                        Modifier.size(22.dp)
-                                            .background(
-                                                MaterialTheme.colorScheme.primaryContainer,
-                                                CircleShape,
-                                            ),
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        Text("${a.nomor}",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer)
-                                    }
-                                    if (showArab && a.arab.isNotBlank()) ArabText(
-                                        a.arab,
-                                        (arabSize - 6f).coerceAtLeast(18f),
-                                        lineHeightFactor = tinggiBaris,
-                                        modifier = Modifier.padding(top = 4.dp),
-                                    )
-                                    if (showLatin && a.latin.isNotBlank()) Text(
-                                        a.latin, fontSize = ukuranLatin.sp,
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.padding(top = 4.dp),
-                                    )
-                                    if (showTrans && a.terjemahan.isNotBlank()) Text(
-                                        a.terjemahan, fontSize = ukuranLatin.sp,
-                                        modifier = Modifier.padding(top = 2.dp),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                // Rincian "ayat demi ayat" yang dahulu mengulang isi surat di bawah teks utuhnya
+                // dihapus (permintaan pengguna, 2026-10-17): kartu kini menampilkan satu salinan
+                // bacaan — Arab utuh, latin, terjemahan — tanpa pengulangan dobel.
                 SumberKategoriLabel(kategori, Modifier.padding(top = 2.dp))
             }
         }

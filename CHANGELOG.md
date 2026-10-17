@@ -5,6 +5,22 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Perbaikan konten
+- **Sisa markup & escape liar di Penutup Al-Baqarah 284-286 dibersihkan** (laporan pengguna,
+  2026-10-17): bagian "Amanar rasul" pada Tahlil Lengkap menyisakan artefak hasil pengambilan
+  konten web — teks `\r\n` liar di tengah Arab dan bagian Latin yang terpotong berakhir pada
+  potongan tag `<span style=…>`. Arab kini mengalir bersambung dengan pergantian baris yang
+  wajar, dan kalimat penutup Latin yang hilang ("Anta maulânâ fanshurnâ 'alal qaumil
+  kâfirîn.") dipulihkan dari sumber aslinya.
+
+### Tahlil & Sholat
+- **Bacaan tidak lagi tampil dobel** (laporan pengguna, 2026-10-17): kartu yang merujuk satu
+  surat utuh dahulu menampilkan Arab utuh di atas, lalu mengulang seluruh ayatnya lagi di
+  blok "Ayat demi ayat" — Al-Fatihah, Al-Ikhlas, Al-Falaq, dan An-Nas terbaca dua kali di
+  Tahlil (Al-Fatihah bahkan dua kartu sekaligus), demikian pula Al-Fatihah & Al-Ikhlas pada
+  bacaan Sholat. Blok pengulangan itu dihapus; kartu kini menampilkan satu salinan bacaan —
+  Arab utuh, latin, terjemahan.
+
 ## [1.16.0] - 2026-10-16
 
 ### Beranda

@@ -135,7 +135,7 @@ fun JenazahScreen(go: (String) -> Unit = {}) {
                 val (a, l, t) = TeksBacaan.pilih(b, ra, rl, rt)
                 BacaanCard(JenisBacaan.id(JenisBacaan.JENAZAH, b.id), b.judul, a, l, t, showLatin, showTrans,
                     UkuranBacaan.arabBacaJauh(arabSize, fullscreen), sumber = b.sumber,
-                    showArab = showArab, kategori = b.kategori, ayat = b.ayat)
+                    showArab = showArab, kategori = b.kategori)
             }
         }
     }

@@ -186,7 +186,7 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                         "Bagian ${i + 1} — ${it.judul}", arab, latin, trans,
                         s.showLatin, s.showTrans, UkuranBacaan.arabBacaJauh(s.arabSize, bacaJauh),
                         ulangi = it.ulangi, sumber = it.sumber,
-                        showArab = s.showArab, kategori = it.kategori, ayat = it.ayat,
+                        showArab = s.showArab, kategori = it.kategori,
                         lencanaKanan = if (s.modeImam) imam[it.id]?.siapa.orEmpty() else "",
                         aksiEkstra = listOf(
                             AksiBacaan(

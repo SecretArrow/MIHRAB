@@ -133,8 +133,7 @@ class ContentRepo(private val ctx: Context) {
         }
         return if (d.has("verses")) {
             // Arab utuh mengalir — ayat-ayatnya dirangkai dengan koma Arab (lihat [KOMA_ARAB])
-            // seperti mushaf dibaca bersambung, bukan daftar bernomor. Rincian per ayat tetap
-            // tersedia lewat [ayatRujukan] dan ditampilkan kartu di bagian "Ayat demi ayat".
+            // seperti mushaf dibaca bersambung, bukan daftar bernomor.
             val arr = d.getJSONArray("verses")
             Triple(
                 (0 until arr.length()).joinToString("$KOMA_ARAB ") { i ->
@@ -148,22 +147,11 @@ class ContentRepo(private val ctx: Context) {
     }
 
     /**
-     * Rincian ayat-per-ayat dari sebuah rujukan **yang menunjuk satu surat utuh**
-     * (`surah_001.json` dsb.) — kosong untuk bentuk lain (`berkas.json#id`, `ayat_kursi.json`,
-     * rujukan mati). Dipakai kartu bacaan untuk menampilkan Arab utuh diikuti ayat-ayatnya
-     * sekalian, sehingga pembaca yang ingin mengulang satu ayat tidak perlu membaca ulang
-     * seluruh rangkaiannya.
+     * Seluruh bagian Tahlil dari berkas konten, urut sesuai berkas; [susunanId] memilahnya
+     * mengikuti susunan di `tahlil.json`. Rincian "ayat demi ayat" dahulu ikut dimuat untuk
+     * blok kartu bernama sama — dihapus karena mengulang bacaan yang sama (permintaan
+     * pengguna, 2026-10-17), dan bersama itu jalur rinciannya dipensunkan seluruhnya.
      */
-    fun ayatRujukan(rujukanFile: String?): List<Verse> {
-        if (rujukanFile.isNullOrBlank() || rujukanFile.contains("#")) return emptyList()
-        val nama = rujukanFile.trim()
-        if (nama.isBlank()) return emptyList()
-        val d = docAtauNull(nama) ?: return emptyList()
-        if (!d.has("verses")) return emptyList()
-        val arr = d.getJSONArray("verses")
-        return (0 until arr.length()).map { i -> verse(arr.getJSONObject(i)) }
-    }
-
     fun tahlil(susunanId: String? = null): List<TahlilItem> {
         val d = doc(BerkasKonten.TAHLIL_FULL)
         val arr = d.getJSONArray(BentukKonten.BAGIAN)
@@ -179,7 +167,6 @@ class ContentRepo(private val ctx: Context) {
                 rujukan,
                 o.optString("sumber", ""),
                 o.optString("kategori", def),
-                ayatRujukan(rujukan),
             )
         }
         if (susunanId == null) return all
@@ -330,8 +317,7 @@ class ContentRepo(private val ctx: Context) {
                 catatan = o.optString("catatan", ""),
                 mazhab = o.optString("mazhab", "").takeIf { it.isNotBlank() },
                 sholatScope = scope,
-                kategori = o.optString("kategori", defKategori),
-                ayat = ayatRujukan(rujukan))
+                kategori = o.optString("kategori", defKategori))
         }
     }
 
@@ -359,8 +345,7 @@ class ContentRepo(private val ctx: Context) {
                         o.optString("latin", jl), o.optString("terjemahan", jt),
                         o.optInt("ulangi", 1), o.optString("sumber"),
                         all.firstOrNull(), all.drop(1),
-                        o.optString("kategori", defKategori),
-                        ayatRujukan(all.firstOrNull()))
+                        o.optString("kategori", defKategori))
                 })
         }
     }
