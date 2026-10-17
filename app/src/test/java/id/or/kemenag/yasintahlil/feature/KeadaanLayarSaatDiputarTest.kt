@@ -47,7 +47,9 @@ class KeadaanLayarSaatDiputarTest {
         // dari daftar ini; ukuran bacaan kini cukup dari Pengaturan dan layar penuh.
         Triple("feature/tahlil/TahlilScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/tahlil/TahlilScreen.kt", "susun", "panel susunan tahlil"),
-        Triple("feature/tahlil/TahlilScreen.kt", "jump", "nomor bagian yang sedang diketik"),
+        // Keadaan `jump` Tahlil (isian "Bagian") dihapus bersama kolom dan tombol "Ke bagian"-nya
+        // (2026-10-17) — barisnya pun hilang dari daftar ini; layar terbuka langsung pada penanda
+        // terakhir dibaca tanpa isian angka.
         Triple("feature/kiblat/KiblatScreen.kt", "fullscreen", "mode layar penuh"),
         Triple("feature/yasin/YasinScreen.kt", "focus", "mode baca fokus"),
         Triple("feature/yasin/YasinScreen.kt", "jump", "nomor ayat yang sedang diketik"),

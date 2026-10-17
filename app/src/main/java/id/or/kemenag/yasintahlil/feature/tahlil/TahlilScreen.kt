@@ -35,26 +35,32 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * Dahulu satu bagian tampil per layar dengan tombol "Sebelumnya/Berikutnya" beserta tab susunan
  * dan bilah kemajuannya. Permintaan pengguna (2026-10-15): *"tahlil tampilannya seperti yasin
  * langsung bersambung di bawahnya, bukan next prev"* — maka seluruh bagian kini menjadi satu
- * daftar gulir panjang; posisi baca ditandai (bukan dilingkari tombol), dan lompatannya lewat
- * baris "Ke bagian" seperti baris "Ke ayat" di Yasin.
+ * daftar gulir panjang; posisi baca dipulihkan diam-diam saat layar dibuka, tanpa mengumumkannya,
+ * dan penandaannya lewat aksi tekan-lama pada kartu (bukan dilingkari tombol).
+ *
+ * Baris penanda "Terakhir dibaca", kolom "Bagian", dan tombol "Ke bagian" dihapus (permintaan
+ * pengguna, 2026-10-17): layar cukup terbuka pada posisi baca terakhir tanpa baris pengumuman,
+ * dan penandaan bagian lewat aksi pada kartunya. Kepala layar kini hanya satu baris — judul,
+ * lalu ikon Atur susunan dan layar penuh di kiri ikon Info.
  *
  * Dua versi susunan NU — Ringkas dan Lengkap — dapat langsung dipilih dari baris chip di kepala
  * layar ini, persis dua tab di quran.nu.or.id/tahlil; seluruh susunan (termasuk "Susunan saya")
  * tetap dapat dilihat dari Pengaturan dan penyusunnya lewat ikon Tune. Keterangan susunan — nama
  * susunan, catatan tradisi, sumber sampai sunnah.com — tinggal di layar keterangan lewat ikon Info.
- * Chip "Teks besar" di baris yang sama dihapus (permintaan pengguna, 2026-10-16): ukuran bacaan
- * cukup diatur dari Pengaturan dan mode layar penuh, bukan pilihan ketiga yang menumpuk di sini.
+ * Chip "Teks besar" di baris yang sama dihapus lebih dahulu (permintaan pengguna, 2026-10-16):
+ * ukuran bacaan cukup diatur dari Pengaturan dan mode layar penuh, bukan pilihan ketiga yang
+ * menumpuk di sini.
  */
 @Composable
 fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel()) {
     val s by vm.state.collectAsStateWithLifecycle()
     val repo = rememberRepo()
     val store = rememberStore()
-    // rememberSaveable: pilihan tampilan (layar penuh, panel susunan, nomor yang sedang diketik)
-    // tidak hilang saat layar diputar ulang.
+    // rememberSaveable: pilihan tampilan (layar penuh, panel susunan) tidak hilang saat layar
+    // diputar ulang. Isian "Bagian" yang dahulu ikut dijaga di sini dihapus bersama kolomnya
+    // (2026-10-17) — tidak ada lagi nomor yang diketik di layar ini.
     var fullscreen by rememberSaveable { mutableStateOf(false) }
     var susun by rememberSaveable { mutableStateOf(false) }
-    var jump by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
     // Penghitung ulangan dibaca reaktif dari preferensi terpusat: menyalakannya di tab Pengaturan
     // langsung memunculkannya di sini tanpa membuka ulang layar.
@@ -68,13 +74,15 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
         return
     }
     // Bagian penanda terakhir dibaca — pengganti "bagian yang sedang dibuka" pada tampilan
-    // next/prev yang lama: penghitung ulangannya mengikuti bagian yang ditandai ini.
+    // next/prev yang lama: layar terbuka padanya dan penghitung ulangannya mengikuti bagian
+    // yang ditandai ini, tanpa baris pengumuman di kepala layar.
     val cur = s.items[s.idx.coerceIn(0, s.items.size - 1)]
     val selesai = s.count >= cur.ulangi
 
     // Buka layar pada penanda terakhir dibaca — kelanjutan posisi baca yang dahulu diberikan
-    // tombol "Berikutnya". Tanpa animasi supaya pembukaan layar tidak terasa melompat sendiri,
-    // dan cukup sekali: sekali sudah, guliran pengguna tidak boleh digeser lagi.
+    // tombol "Berikutnya", kini tanpa baris "Terakhir dibaca" sebagai pengumumnya (2026-10-17).
+    // Tanpa animasi supaya pembukaan layar tidak terasa melompat sendiri, dan cukup sekali:
+    // sekali sudah, guliran pengguna tidak boleh digeser lagi.
     var sudahKePenanda by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(s.items.size) {
         if (!sudahKePenanda && s.items.isNotEmpty()) {
@@ -93,36 +101,19 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 Text("${NamaLayar.TAHLIL} — ${s.items.size} bagian",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f))
-                TombolInfo { go(Routes.keterangan("tahlil")) }
-            }
-            // Baris penanda terakhir dibaca sekaligus menjadi tombol lompat — pola yang sama
-            // dengan baris "Terakhir dibaca" di Surat Yasin.
-            TextButton(onClick = { vm.jumpTo(s.idx) }) {
-                Text(
-                    "${NamaAntarmuka.TERAKHIR_DIBACA}: bagian ${s.idx + 1} — ${cur.judul}",
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedTextField(jump, { jump = it.filter(Char::isDigit).take(2) },
-                    label = { Text("Bagian") }, singleLine = true,
-                    modifier = Modifier.weight(1f))
-                Button(onClick = { jump.toIntOrNull()?.let { vm.jumpTo(it - 1) } }) { Text("Ke bagian") }
                 // Penyusun "Susunan saya": satu-satunya pengatur susunan yang memang milik
                 // bacaan ini — memilih bagian dan menatanya, bukan memilih susunan jadi
-                // (yang terpusat di Pengaturan bersama pilihan ibadah lainnya).
+                // (yang terpusat di Pengaturan bersama pilihan ibadah lainnya). Dahulu ia dan
+                // ikon layar penuh menumpuk di baris isian "Bagian"/"Ke bagian"; kedua ikon itu
+                // pindah ke kepala layar, di kiri ikon Info (permintaan pengguna, 2026-10-17),
+                // sebab baris isian itu sendiri dihapus.
                 IconButton(onClick = { susun = true }) {
                     Icon(Icons.Filled.Tune, contentDescription = "Atur susunan")
                 }
-                // Tombol layar penuh berikon, menempel di kanan tombol "Ke bagian" — pola yang
-                // sama dengan baris "Ke ayat" di Surat Yasin.
                 IconButton(onClick = { fullscreen = true }) {
                     Icon(Icons.Filled.Fullscreen, contentDescription = NamaAntarmuka.LAYAR_PENUH)
                 }
+                TombolInfo { go(Routes.keterangan("tahlil")) }
             }
             BarisChip {
                 // Pemilih versi tahlil NU — dua id susunan dari berkas konten (`tahlil.json`),

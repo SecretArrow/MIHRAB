@@ -227,8 +227,8 @@ class TahlilViewModel @Inject constructor(
      * *"riwayat terakhir dibaca"*).
      *
      * Layar Tahlil kini bersambung seperti Surat Yasin, jadi posisi baca berpindah lewat
-     * [jumpTo] saja: tombol "Ke bagian", tindakan "Tandai terakhir dibaca" pada kartunya,
-     * maupun tombol penanda "Terakhir dibaca" — semuanya jalan yang sama menuju fungsi ini.
+     * [jumpTo] saja: tindakan "Tandai terakhir dibaca" pada kartunya — kolom "Bagian", tombol
+     * "Ke bagian", dan penanda "Terakhir dibaca" dihapus 2026-10-17 — bermuara ke fungsi ini.
      * Bukan pada [setCount]: menghitung tasbih juga memanggil [persist], dan mencatat riwayat
      * tiap ketukan penghitung akan membanjiri daftar "Riwayat terbaru" dengan satu bagian
      * yang sama.

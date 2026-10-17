@@ -29,11 +29,13 @@ import java.io.File
  *    yang sama dengan kata lama, dan pengguna mengira ada dua pengaturan.
  *  - Enam **kendali tindakan** yang sama di dua layar atau lebih: *"Batalkan tanda"*
  *    pada rincian sholat dan Wudhu, *"Kosongkan"* pada tombol kosongkan Pencarian,
- *    *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada ketiga
- *    layar itu beserta Yasin dan Tahlil. Tiap pasangan menamai satu tindakan yang sama; kata yang
+ *    *"Lanjutkan"* pada beranda dan daftar favorit, serta awalan *"Terakhir dibaca: …"* pada
+ *    beranda, daftar favorit, dan Yasin. Tiap pasangan menamai satu tindakan yang sama; kata yang
  *    berbeda di salah satunya membuat pengguna mengira ada dua tombol berbeda untuk hal yang sama.
- *    (Dua nama langkah — *"← Sebelumnya"* / *"Berikutnya →"* — dahulu juga hidup di sini; keduanya
- *    dibubarkan bersama tombolnya ketika panduan sholat dan Tahlil menjadi bersambung.)
+ *    (Baris penanda serupa di Tahlil dihapus atas permintaan pengguna 2026-10-17, sehingga layar
+ *    itu tidak lagi memakai nama ini; dua nama langkah — *"← Sebelumnya"* / *"Berikutnya →"* —
+ *    dahulu juga hidup di sini, keduanya dibubarkan bersama tombolnya ketika panduan sholat dan
+ *    Tahlil menjadi bersambung.)
  *  - Empat **kata tindakan baku** — *"Batal"*, *"Hapus"*, *"Reset"*, *"Buka"* — juga muncul di
  *    beberapa layar. Karena singkat dan umum, tiap tempat cenderung mengejanya sendiri; padahal
  *    *"Batal"* di dialog mana pun berarti menutup tanpa melakukan apa pun, dan *"Hapus"* di mana pun
@@ -381,7 +383,9 @@ class NamaAntarmukaSatuTempatTest {
             ),
             "TERAKHIR_DIBACA" to listOf(
                 "feature/home/HomeScreen.kt", "feature/favorit/FavoritScreen.kt",
-                "feature/yasin/YasinScreen.kt", "feature/tahlil/TahlilScreen.kt",
+                "feature/yasin/YasinScreen.kt",
+                // Tahlil tidak lagi memakainya: baris penanda "Terakhir dibaca" dihapus
+                // atas permintaan pengguna (2026-10-17) — posisi baca dipulihkan diam-diam.
             ),
         )
         pemakaian.forEach { (kunci, berkas) ->
