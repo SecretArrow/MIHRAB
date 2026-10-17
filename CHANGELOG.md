@@ -5,6 +5,10 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-10-17
+
+**Rilis otomatis** dari commit `2fee291f15ec5ce85d65e541689ce8584c590599`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.17.0`.
+
 ## [1.16.1] - 2026-10-17
 
 ### Perbaikan konten
