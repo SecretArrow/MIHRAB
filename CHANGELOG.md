@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.16.1] - 2026-10-17
+
 ### Perbaikan konten
 - **Sisa markup & escape liar di Penutup Al-Baqarah 284-286 dibersihkan** (laporan pengguna,
   2026-10-17): bagian "Amanar rasul" pada Tahlil Lengkap menyisakan artefak hasil pengambilan
@@ -20,6 +22,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   Tahlil (Al-Fatihah bahkan dua kartu sekaligus), demikian pula Al-Fatihah & Al-Ikhlas pada
   bacaan Sholat. Blok pengulangan itu dihapus; kartu kini menampilkan satu salinan bacaan —
   Arab utuh, latin, terjemahan.
+
+**Rilis otomatis** dari commit `3c453be5ddcf9ebd044c4b0d03443d0cc0db30ae`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.16.1`.
 
 ## [1.16.0] - 2026-10-16
 
