@@ -43,10 +43,12 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * dan penandaan bagian lewat aksi pada kartunya. Kepala layar kini hanya satu baris — judul,
  * lalu ikon Atur susunan dan layar penuh di kiri ikon Info.
  *
- * Dua versi susunan NU — Ringkas dan Lengkap — dapat langsung dipilih dari baris chip di kepala
- * layar ini, persis dua tab di quran.nu.or.id/tahlil; seluruh susunan (termasuk "Susunan saya")
- * tetap dapat dilihat dari Pengaturan dan penyusunnya lewat ikon Tune. Keterangan susunan — nama
- * susunan, catatan tradisi, sumber sampai sunnah.com — tinggal di layar keterangan lewat ikon Info.
+ * Tiga susunan dapat langsung dipilih dari baris chip di kepala layar ini: dua versi NU —
+ * Ringkas dan Lengkap — persis dua tab di quran.nu.or.id/tahlil, ditambah "Buku Imam" —
+ * rangkaian buku panduan imam milik jamaah yang id bagian-lah sama dengan Lengkap. Seluruh
+ * susunan (termasuk "Susunan saya") tetap dapat dilihat dari Pengaturan dan penyusunnya lewat
+ * ikon Tune. Keterangan susunan — nama susunan, catatan tradisi, sumber sampai sunnah.com —
+ * tinggal di layar keterangan lewat ikon Info.
  * Chip "Teks besar" di baris yang sama dihapus lebih dahulu (permintaan pengguna, 2026-10-16):
  * ukuran bacaan cukup diatur dari Pengaturan dan mode layar penuh, bukan pilihan ketiga yang
  * menumpuk di sini.
@@ -116,11 +118,13 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                 TombolInfo { go(Routes.keterangan("tahlil")) }
             }
             BarisChip {
-                // Pemilih versi tahlil NU — dua id susunan dari berkas konten (`tahlil.json`),
-                // bukan susunan karangan: bila bundelnya diganti, chip yang tak dikenal tidak
-                // digambar dan pilihan tinggal yang sah. Bila "Susunan saya" yang aktif, kedua
-                // chip ini libur terpilih — penyusunnya tetap lewat ikon Tune.
-                listOf("nu_online_ringkas" to "Ringkas", "nu_online_lengkap" to "Lengkap")
+                // Pemilih versi tahlil — tiga id susunan dari berkas konten (`tahlil.json`):
+                // dua versi NU Online dan "Buku Imam" (dokumen jamaah yang lafaznya memetakan
+                // bagian Lengkap), bukan susunan karangan: bila bundelnya diganti, chip yang tak
+                // dikenal tidak digambar dan pilihan tinggal yang sah. Bila "Susunan saya" yang
+                // aktif, chip ini libur terpilih — penyusunnya tetap lewat ikon Tune.
+                listOf("nu_online_ringkas" to "Ringkas", "nu_online_lengkap" to "Lengkap",
+                    "buku_imam" to "Buku Imam")
                     .forEach { (id, label) ->
                         if (s.susunan.any { it.id == id }) {
                             FilterChip(!s.modeImam && s.susunanId == id,

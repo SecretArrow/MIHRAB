@@ -1,7 +1,7 @@
 {
  "modul": "tahlil",
  "sumber_url": "https://quran.nu.or.id/tahlil",
- "catatan_tradisi": "Susunan tahlil tersedia dalam dua versi mengikuti quran.nu.or.id/tahlil: ringkas dan lengkap. Susunan tahlil lazim di Indonesia berbeda-beda menurut tradisi dan rujukan, sehingga kedua versi ini bukan satu-satunya yang benar.",
+ "catatan_tradisi": "Susunan tahlil tersedia dalam tiga pilihan: dua versi mengikuti quran.nu.or.id/tahlil (ringkas dan lengkap) serta satu rangkaian buku panduan imam milik jamaah (Buku Imam). Susunan tahlil lazim di Indonesia berbeda-beda menurut tradisi dan rujukan, sehingga ketiganya bukan satu-satunya yang benar.",
  "susunan": [
   {
    "id": "nu_online_lengkap",
@@ -85,6 +85,42 @@
     "doa_penutup"
    ],
    "sumber": "NU Online — quran.nu.or.id/tahlil (versi ringkas)"
+  },
+  {
+   "id": "buku_imam",
+   "nama": "Buku Imam — Tahlil dan doa imam",
+   "bagian": [
+    "tawassul_1",
+    "tawassul_2",
+    "tawassul_3",
+    "tawassul_4",
+    "ikhlas",
+    "tahlil_takbir_1",
+    "falaq",
+    "tahlil_takbir_2",
+    "nas",
+    "tahlil_takbir_3",
+    "fatihah_1",
+    "baqarah_1_5",
+    "baqarah_163",
+    "kursi",
+    "istighfar",
+    "afdaludz_dzikri",
+    "hayyun_mabud",
+    "hayyun_baqi",
+    "tahlil",
+    "sholawat",
+    "subhanallah_adada",
+    "tasbih",
+    "sholawat_habib_1",
+    "sholawat_habib_2",
+    "doa_pembuka",
+    "doa_tawasul_pahala",
+    "doa_ahlulqubur",
+    "doa_penutup",
+    "fatihah_2"
+   ],
+   "sumber": "Buku panduan jamaah — dokumen “Tahlil dan doa Imam” (2026-10-18); lafaz Arab dan latinya identik dengan bagian susunan Lengkap NU Online, rangkaiannya mengikuti buku (22 bagian buku menjadi 29 kartu karena takbir antar surat dan Fatihah penutup berdiri sebagai kartu sendiri)."
   }
  ],
  "edisi": "Susunan bacaan NU Online (quran.nu.or.id/tahlil); bacaan Qur’an memakai MSI LPMQ Kemenag + terjemah Kemenag edisi 2019 pada berkas rujukan, terjemahan Al-Baqarah 284-286 Kemenag edisi 2019, doa mayit HR Muslim dari sunnah.com."
