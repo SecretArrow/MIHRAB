@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.18.3] - 2026-10-19
+
 ### Diubah
 - **Mode Imam kini membaca susunan Buku Imam** (permintaan pengguna, 2026-10-19: "buku imam
   pakai seperti docx aja jangan ikut nu"). Semula chip "Imam" memaksa bacaan kembali ke
@@ -15,6 +17,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   (hadiah Al-Fatihah pembuka: imam; surat & ayat: bersama; tahlil 100x & tasbih 33x:
   sendiri-sendiri; rangkaian doa: imam + āmīn) — dicatat jujur di `tahlil_imam.json`;
   entri panduan 41 bagian Lengkap dipertahankan sebagai rujukan padanan.
+
+**Rilis otomatis** dari commit `149bd279d0b5b62fbeca5f64a4b0f6003788f542`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.18.3`.
 
 ## [1.18.2] - 2026-10-19
 
