@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.18.2] - 2026-10-19
+
 ### Diperbaiki
 - **Buku Imam: tanpa gaya NU dan berharakat lengkap** (permintaan pengguna, 2026-10-19).
   Transliterasi Latin 22 bagian `bi_*` disederhanakan dari gaya ilmiah dokumen menjadi
@@ -17,6 +19,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `الْعٰلَمِيْنَ`). Huruf Arab tidak ada yang berubah — hanya tandanya; urutan, judul,
   dan jumlah bagian tetap. Klaim sumber diperbarui: teks dokumen dengan harakat
   dilengkapi & Latin polos, bukan lagi "apa adanya".
+
+**Rilis otomatis** dari commit `d005605ece0dce131836a4968fd4be04aeac9d99`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.18.2`.
 
 ## [1.18.1] - 2026-10-19
 
