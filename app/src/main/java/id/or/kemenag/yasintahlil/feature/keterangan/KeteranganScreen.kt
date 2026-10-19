@@ -177,8 +177,8 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                 BagianKeterangan(
                     "Mode Imam",
                     "Mode \"Imam\" memakai susunan Buku Imam — rangkaian dokumen jamaah " +
-                        "Tahlil dan doa IMAM — bukan lagi susunan Lengkap NU Online (permintaan " +
-                        "pengguna, 2026-10-19). Dokumen tidak mencantumkan penanda siapa membaca, " +
+                        "Tahlil dan doa IMAM (permintaan pengguna, 2026-10-19). Dokumen tidak " +
+                        "mencantumkan penanda siapa membaca, " +
                         "maka lencana tiap bagian diturunkan dari padanan tahapannya pada panduan " +
                         "umum tradisi tahlil: " + imam.values.distinctBy { it.siapa }.joinToString("; ") { s ->
                             "${s.siapa} (${s.ket})"

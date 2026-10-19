@@ -49,13 +49,12 @@ fun SumberScreen() {
                 "resmi dan diverifikasi lintas bundel.",
             "Susunan Buku Imam (22 bagian): rangkaian buku panduan tahlil imam milik jamaah " +
                 "(dokumen \"Tahlil dan doa IMAM\", 2026-10-18) — harakat Arab dilengkapi dan " +
-                "transliterasi Latin disederhanakan polos dari gaya ilmiah dokumen " +
-                "(metadata dokumen: NU Online, ${ContentValidator.SITUS_NU}); " +
+                "transliterasi Latin disederhanakan polos dari gaya ilmiah dokumen; " +
                 "dokumen tidak menyertakan terjemahan, maka kartunya tampil tanpa terjemahan.",
             "Doa jenazah (takbir 3): HR Muslim 591 — ${ContentValidator.SITUS_HADIS}.",
-            "Mode Imam: bacaannya kini susunan Buku Imam — buku jamaah itu sendiri, bukan " +
-                "susunan NU Online (permintaan pengguna, 2026-10-19); label siapa membaca " +
-                "adalah panduan umum tradisi tahlil yang diturunkan dari padanan tahapannya.",
+            "Mode Imam: bacaannya kini susunan Buku Imam — buku jamaah itu sendiri " +
+                "(permintaan pengguna, 2026-10-19); label siapa membaca adalah panduan umum " +
+                "tradisi tahlil yang diturunkan dari padanan tahapannya.",
         ),
         "Panduan ibadah" to listOf(
             "Panduan sholat wajib & sunnah, bacaan sholat, wudhu & tayamum: Fasolatan Kemenag.",

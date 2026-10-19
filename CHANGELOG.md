@@ -5,6 +5,15 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diperbaiki
+- **Atribusi Buku Imam bebas penyebutan NU** (permintaan pengguna, 2026-10-20). Susunan
+  Ringkas & Lengkap tetap menyandang atribusi NU Online; khusus Buku Imam kini tidak ada
+  lagi kata NU pada teks yang tampil di aplikasi: sumber susunan di layar Keterangan,
+  sumber tiap kartu `bi_*` di lembaga info bacaan, paragraf Buku Imam & Mode Imam di layar
+  Sumber, serta "Sumber bacaan" tingkat modul (kini menyebut NU Online hanya untuk
+  Ringkas & Lengkap — Buku Imam merujuk dokumen jamaah "Tahlil dan doa IMAM"). Teks Arab,
+  Latin, harakat, dan susunan bacaan tidak berubah satu pun.
+
 ## [1.18.3] - 2026-10-19
 
 ### Diubah
