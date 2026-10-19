@@ -24,6 +24,17 @@ import java.io.File
  * di lebih dari satu tempat dibaca dan diterjemahkan dengan kata yang sama. Salinan baru yang
  * menyimpang karena itu tertangkap tanpa perlu didaftar di sini — persis seperti penjaga layar pada
  * `UkuranBacaanModeBacaTest` yang menemukan layarnya dari sumber.
+ *
+ * Pengecualian tunggal: entri berpenanda `ragam_dokumen: true` (kini: 22 bagian `bi_*` susunan
+ * "Buku Imam"). Penanda itu BUKAN izin untuk salinan yang menyimpang dari satu sumber yang sama —
+ * ia menyatakan bahwa lafaz itu tercatat di **dokumen sumber lain** dengan konvensi ejaan Arab dan
+ * transliterasinya sendiri (dokumen jamaah "Tahlil dan doa IMAM": gaya ā/ḫ, takbir menyatu di
+ * bagian surat, tanpa terjemahan). Bedanya dengan ejaan NU Online memang disengaja dan justru inti
+ * permintaan pengguna (2026-10-19): bacaan harus persis dokumen. Tanpa penanda, lafaz tahlil dan
+ * dua tasbih ditolak sebagai "dibaca/diterjemahkan berbeda" — padahal yang diperbandingkan bukan
+ * dua salinan satu sumber, melainkan dua dokumen sumber. Penanda hanya sah untuk dokumen yang
+ * sumbernya berbeda; pasangan adzan×iqomah dan doa mayit TETAP dipindai karena salinannya satu
+ * sumber.
  */
 class LafazSamaSatuTerjemahanTest {
 
@@ -48,7 +59,11 @@ class LafazSamaSatuTerjemahanTest {
         berkasKonten().forEach { f ->
             fun turun(node: Any?, jalur: String) {
                 when (node) {
-                    is JSONObject -> {
+                    is JSONObject -> if (!node.optBoolean("ragam_dokumen", false)) {
+                        // Subtree berpenanda ragam_dokumen dilewati seluruhnya: lafaz dari
+                        // dokumen sumber lain dengan konvensi ejaannya sendiri — bukan salinan
+                        // yang harus sejalan (lihat KDoc). Anak-anaknya ikut, sebab seluruh
+                        // subtree itu milik dokumen yang sama.
                         val arab = node.optString("arab")
                         if (arab.isNotBlank()) hasil += Entri(
                             tempat = "${f.name}$jalur",
@@ -122,6 +137,29 @@ class LafazSamaSatuTerjemahanTest {
             LafazSama.Pemakaian("c.json[2]", "   ", "", ""),
         )
         assertTrue("spasi tepi keliru dianggap menyimpang", LafazSama.penyimpangan(spasi).isEmpty())
+    }
+
+    /**
+     * Pengecualian `ragam_dokumen` benar-benar menggigit — dua arah.
+     *
+     * Tanpa pengecualian yang berjalan, lafaz Buku Imam ikut terpidakan dan CI merah (sudah
+     * terjadi). Tanpa penanda di bundel, pengecualian jadi tak teruji: pemindaiannya hijau karena
+     * tidak menemukan apa pun yang dikecualikan, dan salinan yang menyimpang suatu saat dapat
+     * lolos dengan penanda yang sama. Karena itu keduanya dipaku: tidak ada entri `bi_*` di
+     * pemindaian, dan penandanya masih ada 22 di bundel.
+     */
+    @Test
+    fun ragamDokumenDikecualikanDanPenandanyaMasihDipakai() {
+        val masuk = entri().filter { it.id.startsWith("bi_") }
+        assertTrue("bagian bi_* masih ikut dipindai — pengecualian ragam_dokumen tidak berjalan",
+            masuk.isEmpty())
+        val penanda = File(root(), "src/main/assets/content/tahlil_full.json").readText()
+            .split("\"ragam_dokumen\"").size - 1
+        assertEquals(
+            "penanda ragam_dokumen berubah jumlahnya di bundel — pengecualian ini menjadi " +
+                "tak teruji tanpa pengguna yang tercatat",
+            22, penanda,
+        )
     }
 
     /**

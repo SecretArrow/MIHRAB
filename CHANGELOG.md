@@ -18,6 +18,12 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   Mîm" pada bagian 9 Buku Imam ditulis mushaf dengan tanda kecil ini tanpa harakat rentang
   utama; tanpa kode itu lafaz yang sah ditolak gate sebagai "tanpa harakat". Satu tempat
   (`TeksArab.HARAKAT_TUNGGAL`) — gate Python, uji assets, dan pemeriksa bundel ikut konsisten.
+- **Penjaga "satu lafaz, satu bacaan" mengenal `ragam_dokumen`**: bagian Buku Imam memuat lafaz
+  yang sama dengan item NU Online tetapi dari **dokumen sumber lain** (konvensi transliterasi
+  ā/ḫ dan takbir menyatu adalah bagian dari kesetiaan pada dokumen) — penjaga kini melewatinya,
+  sementara pasangan satu-sumber (adzan×iqomah, doa mayit) tetap dipindai. Gagal CI
+  `LafazSamaSatuTerjemahanTest` pada perbaikan pertama tertangkap dan dibereskan sebelum rilis;
+  tidak ada versi terbit dari commit yang gagal (gerbang rilis menolak).
 
 ## [1.18.0] - 2026-10-18
 
