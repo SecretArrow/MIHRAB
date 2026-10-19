@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.18.1] - 2026-10-19
+
 ### Perbaikan konten
 - **Bacaan susunan "Buku Imam" kini persis dokumen "Tahlil dan doa IMAM"** (keluhan pengguna,
   2026-10-19): semula 22 bagian buku hanya dipetakan ke id bagian susunan Lengkap NU Online —
@@ -24,6 +26,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   sementara pasangan satu-sumber (adzan×iqomah, doa mayit) tetap dipindai. Gagal CI
   `LafazSamaSatuTerjemahanTest` pada perbaikan pertama tertangkap dan dibereskan sebelum rilis;
   tidak ada versi terbit dari commit yang gagal (gerbang rilis menolak).
+
+**Rilis otomatis** dari commit `0a232830ceef570647b1668bd45fb668d389a6e6`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.18.1`.
 
 ## [1.18.0] - 2026-10-18
 
