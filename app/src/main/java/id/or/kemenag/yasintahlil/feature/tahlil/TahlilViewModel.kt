@@ -42,7 +42,9 @@ data class TahlilUiState(
     val showTrans: Boolean = BawaanPreferensi.TAMPIL_TERJEMAHAN,
     val showArab: Boolean = BawaanPreferensi.TAMPIL_ARAB,
     /**
-     * Mode Imam aktif: bacaan memakai susunan Lengkap dan tiap kartu diberi lencana siapa yang
+     * Mode Imam aktif: bacaan memakai susunan Buku Imam — dokumen jamaah "Tahlil dan doa
+     * IMAM" (permintaan pengguna 2026-10-19: imam membaca persis buku, bukan susunan NU
+     * Online; semula dipaksa ke Lengkap) — dan tiap kartu diberi lencana siapa yang
      * membaca (Bersama/Imam/Sendiri-sendiri). Terpisah dari [susunanId] — lihat [Store.TAHLIL_IMAM].
      */
     val modeImam: Boolean = false,
@@ -95,10 +97,10 @@ class TahlilViewModel @Inject constructor(
             val id = PreferensiSusunan.idAktif(
                 store.get(Store.TAHLIL_SUSUNAN, BawaanPreferensi.SUSUNAN_TAHLIL_DIPILIH), susunan)
             val modeImam = store.get(Store.TAHLIL_IMAM, BawaanPreferensi.MODE_IMAM)
-            // Mode Imam selalu membaca susunan Lengkap; bila nilai tersimpannya bukan Lengkap
-            // (mis. pengguna terakhir memilih Ringkas lalu menyalakan mode Imam dari sesi lama),
-            // susunan dasarnya mengikuti mode Imam.
-            val idEfektif = if (modeImam && susunan.any { it.id == SUSUNAN_LENGKAP }) SUSUNAN_LENGKAP else id
+            // Mode Imam selalu membaca susunan Buku Imam — bacaan imam persis buku jamaah
+            // (permintaan pengguna, 2026-10-19; semula dipaksa ke Lengkap). Bila bundelnya
+            // tak menyediakan susunan itu, susunan terpilih yang dipakai apa adanya.
+            val idEfektif = if (modeImam && susunan.any { it.id == SUSUNAN_BUKU_IMAM }) SUSUNAN_BUKU_IMAM else id
             val items = itemsUntuk(idEfektif, semua, pilihan)
             val idx = userData.progress(KIND, KunciProgres.TAHLIL_POSISI).first()?.value ?: 0
             val count = userData.progress(KIND, KunciProgres.TAHLIL_HITUNGAN).first()?.value ?: 0
@@ -136,15 +138,16 @@ class TahlilViewModel @Inject constructor(
     }
 
     /**
-     * Nyalakan/matikan Mode Imam. Menyalakannya membawa susunan dasar ke Lengkap — bacaannya
-     * memang persis Lengkap; lencananya saja yang ditambahkan. Mematikannya kembali ke susunan
-     * dasar yang tercatat tanpa mengubah pilihan pengguna yang lain.
+     * Nyalakan/matikan Mode Imam. Menyalakannya membawa susunan dasar ke Buku Imam — bacaan
+     * imam persis buku jamaah "Tahlil dan doa IMAM" (permintaan pengguna, 2026-10-19; semula
+     * Lengkap); lencananya saja yang ditambahkan. Mematikannya kembali ke susunan dasar yang
+     * tercatat tanpa mengubah pilihan pengguna yang lain.
      */
     fun setModeImam(aktif: Boolean) {
         val s = _state.value
         if (aktif) {
-            val punyaLengkap = s.susunan.any { it.id == SUSUNAN_LENGKAP }
-            val id = if (punyaLengkap) SUSUNAN_LENGKAP else s.susunanId
+            val punyaBuku = s.susunan.any { it.id == SUSUNAN_BUKU_IMAM }
+            val id = if (punyaBuku) SUSUNAN_BUKU_IMAM else s.susunanId
             val items = itemsUntuk(id, s.semuaBagian, s.pilihan)
             _state.update { it.copy(susunanId = id, items = items, idx = 0, count = 0, modeImam = true) }
             viewModelScope.launch { store.set(Store.TAHLIL_SUSUNAN, id) }
@@ -247,7 +250,7 @@ class TahlilViewModel @Inject constructor(
     companion object {
         const val KIND = JenisBacaan.TAHLIL
 
-        /** Id susunan Lengkap pada `tahlil.json` — dasar bacaan Mode Imam. */
-        const val SUSUNAN_LENGKAP = "nu_online_lengkap"
+        /** Id susunan Buku Imam pada `tahlil.json` — dasar bacaan Mode Imam (dokumen jamaah). */
+        const val SUSUNAN_BUKU_IMAM = "buku_imam"
     }
 }

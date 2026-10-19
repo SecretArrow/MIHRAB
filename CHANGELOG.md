@@ -5,6 +5,17 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+- **Mode Imam kini membaca susunan Buku Imam** (permintaan pengguna, 2026-10-19: "buku imam
+  pakai seperti docx aja jangan ikut nu"). Semula chip "Imam" memaksa bacaan kembali ke
+  susunan Lengkap NU Online (41 bagian) meski pengguna memilih Buku Imam — kini bacaan imam
+  persis buku jamaah "Tahlil dan doa IMAM" (22 bagian) dan yang bertambah hanya lencana siapa
+  yang membaca per kartu. Dokumen tidak mencantumkan penanda peran, sehingga lencana tiap
+  bagian `bi_*` diturunkan dari padanan tahapannya pada panduan umum tradisi tahlil
+  (hadiah Al-Fatihah pembuka: imam; surat & ayat: bersama; tahlil 100x & tasbih 33x:
+  sendiri-sendiri; rangkaian doa: imam + āmīn) — dicatat jujur di `tahlil_imam.json`;
+  entri panduan 41 bagian Lengkap dipertahankan sebagai rujukan padanan.
+
 ## [1.18.2] - 2026-10-19
 
 ### Diperbaiki

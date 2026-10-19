@@ -55,6 +55,10 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  * susunan (termasuk "Susunan saya") tetap dapat dilihat dari Pengaturan dan penyusunnya lewat
  * ikon Tune. Keterangan susunan — nama susunan, catatan tradisi, sumber sampai sunnah.com —
  * tinggal di layar keterangan lewat ikon Info.
+ *
+ * Mode Imam (chip "Imam") kini membaca susunan Buku Imam — bukan lagi susunan Lengkap NU
+ * (permintaan pengguna, 2026-10-19): bacaan imam persis buku jamaah itu, lencana siapa yang
+ * membaca (Bersama/Imam/Sendiri-sendiri) ditambahkan per kartu dari `tahlil_imam.json`.
  * Chip "Teks besar" di baris yang sama dihapus lebih dahulu (permintaan pengguna, 2026-10-16):
  * ukuran bacaan cukup diatur dari Pengaturan dan mode layar penuh, bukan pilihan ketiga yang
  * menumpuk di sini.
@@ -134,13 +138,17 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
                     "buku_imam" to "Buku Imam")
                     .forEach { (id, label) ->
                         if (s.susunan.any { it.id == id }) {
-                            FilterChip(!s.modeImam && s.susunanId == id,
+                            // Terpilih mengikuti susunanId apa adanya — termasuk saat Mode Imam
+                            // menyala, ketika susunan dasarnya memang Buku Imam (lihat ViewModel).
+                            FilterChip(s.susunanId == id,
                                 { vm.setSusunan(id) }, { Text(label) })
                         }
                     }
-                // Mode Imam — bacaannya SAMA dengan Lengkap; yang bertambah hanya lencana siapa
-                // yang membaca tiap bagian (kartunya sendiri), sehingga makmum tahu bagian mana
-                // yang dibaca bersama. Keterangannya lewat ikon Info di kepala layar.
+                // Mode Imam — bacaannya kini susunan Buku Imam (dokumen jamaah), bukan lagi
+                // Lengkap NU Online (permintaan pengguna, 2026-10-19); yang bertambah hanya
+                // lencana siapa yang membaca tiap bagian (kartunya sendiri), sehingga makmum
+                // tahu bagian mana yang dibaca bersama. Keterangannya lewat ikon Info di
+                // kepala layar.
                 FilterChip(s.modeImam, { vm.setModeImam(!s.modeImam) }, { Text("Imam") })
             }
         } else {

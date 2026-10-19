@@ -168,16 +168,19 @@ private fun bagian(repo: ContentRepo, asal: String): List<BagianKeterangan> = wh
                     },
                 ),
             )
-            // Mode Imam — dijelaskan dari bundel yang sama (`tahlil_imam.json`): bacaannya SAMA
-            // dengan Lengkap; yang bertambah hanya lencana siapa membaca per bagian, dan adat
-            // aba-abanya sengaja tidak dibakukan karena berbeda antar daerah.
+            // Mode Imam — dijelaskan dari bundel yang sama (`tahlil_imam.json`): bacaannya
+            // kini susunan Buku Imam (dokumen jamaah); yang bertambah hanya lencana siapa
+            // membaca per bagian, dan adat aba-abanya sengaja tidak dibakukan karena
+            // berbeda antar daerah.
             val imam = repo.tahlilImam()
             if (imam.isNotEmpty()) add(
                 BagianKeterangan(
                     "Mode Imam",
-                    "Mode \"Imam\" memakai bacaan yang SAMA dengan susunan Lengkap — tidak ada teks " +
-                        "bacaan terpisah khusus imam. Yang ditambahkan hanya lencana siapa yang membaca " +
-                        "tiap bagian: " + imam.values.distinctBy { it.siapa }.joinToString("; ") { s ->
+                    "Mode \"Imam\" memakai susunan Buku Imam — rangkaian dokumen jamaah " +
+                        "Tahlil dan doa IMAM — bukan lagi susunan Lengkap NU Online (permintaan " +
+                        "pengguna, 2026-10-19). Dokumen tidak mencantumkan penanda siapa membaca, " +
+                        "maka lencana tiap bagian diturunkan dari padanan tahapannya pada panduan " +
+                        "umum tradisi tahlil: " + imam.values.distinctBy { it.siapa }.joinToString("; ") { s ->
                             "${s.siapa} (${s.ket})"
                         } + ". Adat aba-aba imam berbeda-beda antar daerah — ikuti imam setempat.",
                 ),

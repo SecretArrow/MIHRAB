@@ -53,8 +53,9 @@ fun SumberScreen() {
                 "(metadata dokumen: NU Online, ${ContentValidator.SITUS_NU}); " +
                 "dokumen tidak menyertakan terjemahan, maka kartunya tampil tanpa terjemahan.",
             "Doa jenazah (takbir 3): HR Muslim 591 — ${ContentValidator.SITUS_HADIS}.",
-            "Mode Imam: label siapa membaca adalah panduan umum tradisi tahlil; bacaannya sama " +
-                "dengan susunan Lengkap.",
+            "Mode Imam: bacaannya kini susunan Buku Imam — buku jamaah itu sendiri, bukan " +
+                "susunan NU Online (permintaan pengguna, 2026-10-19); label siapa membaca " +
+                "adalah panduan umum tradisi tahlil yang diturunkan dari padanan tahapannya.",
         ),
         "Panduan ibadah" to listOf(
             "Panduan sholat wajib & sunnah, bacaan sholat, wudhu & tayamum: Fasolatan Kemenag.",

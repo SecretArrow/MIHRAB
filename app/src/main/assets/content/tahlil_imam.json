@@ -1,9 +1,9 @@
 {
   "modul": "tahlil_imam",
   "judul": "Panduan Imam Tahlil",
-  "sumber": "Panduan pelaksanaan umum tradisi tahlil NU (aba-aba & pembagian bacaan); susunan bacaan mengikuti tahlil_full.json (NU Online).",
+  "sumber": "Panduan pelaksanaan umum tradisi tahlil NU (aba-aba & pembagian bacaan) untuk peran; bacaan Mode Imam kini susunan Buku Imam — dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18; permintaan pengguna 2026-10-19: imam membaca persis buku, bukan susunan NU Online). Dokumen tak mencantumkan penanda siapa membaca, sehingga lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan ini; entri 41 bagian Lengkap dipertahankan sebagai rujukan padanan.",
   "sumber_url": "https://quran.nu.or.id/tahlil",
-  "catatan": "Bacaan mode Imam persis sama dengan susunan Lengkap (41 bagian NU Online) — tidak ada teks bacaan terpisah khusus imam. Yang ditambahkan hanyalah aba-aba (panggilan nama bagian) yang diucapkan imam sebelum setiap bagian serta catatan siapa yang membaca, agar makmum tahu apa yang akan dibaca setelah aba-aba. Adat aba-aba berbeda-beda antar daerah dan pengajian — pakailah ini sebagai panduan umum dan ikuti imam setempat.",
+  "catatan": "Bacaan Mode Imam kini susunan Buku Imam — 22 bagian dokumen jamaah \"Tahlil dan doa IMAM\" yang harakat Arabnya dilengkapi (permintaan pengguna 2026-10-19; semula dipaksa ke susunan Lengkap NU Online). Dokumen tidak mencantumkan penanda siapa membaca, maka lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan umum tradisi tahlil: hadiah Al-Fatihah pembuka diimami (yang dituju arwah disebut namanya, makmum menyambut amin), surat dan ayat dibaca bersama-sama, tahlil 100x dan tasbih 33x sendiri-sendiri dalam hati, rangkaian doa diimami. Entri panduan untuk 41 bagian Lengkap dipertahankan sebagai rujukan padanan — bukan bacaan Mode Imam lagi. Yang tetap ditambahkan hanyalah aba-aba (panggilan nama bagian) yang diucapkan imam sebelum setiap bagian serta catatan siapa yang membaca, agar makmum tahu apa yang akan dibaca setelah aba-aba. Adat aba-aba berbeda-beda antar daerah dan pengajian — pakailah ini sebagai panduan umum dan ikuti imam setempat.",
   "siapa_ket": {
     "Bersama": "Imam & makmum membaca bersama-sama",
     "Imam": "Imam yang membaca, makmum menyimak",
@@ -215,6 +215,116 @@
       "aba": "Al-Fātiḥah penutup",
       "siapa": "Bersama",
       "ket": "Rangkaian ditutup Al-Fātiḥah yang dipersembahkan kepada seluruh arwah — selanjutnya biasanya disambut hurrah/tahmid sesuai kebiasaan setempat."
+    },
+    "bi_01": {
+      "aba": "Al-Fatihah — hadiah untuk Rasulullah",
+      "siapa": "Imam",
+      "ket": "Imam membuka majelis tahlil: Al-Fatihah dipersembahkan sebagai hadiah pahala untuk Nabi Muhammad."
+    },
+    "bi_02": {
+      "aba": "Al-Fatihah — hadiah untuk para nabi",
+      "siapa": "Imam",
+      "ket": "Al-Fatihah hadiah pahala untuk para nabi, rasul, dan para saleh — imam melanjutkan."
+    },
+    "bi_03": {
+      "aba": "Al-Fatihah — hadiah untuk ahli kubur",
+      "siapa": "Imam",
+      "ket": "Al-Fatihah hadiah pahala untuk seluruh ahli kubur dan leluhur — imam melanjutkan."
+    },
+    "bi_04": {
+      "aba": "Al-Fatihah — hadiah untuk arwah yang dituju",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam mempersembahkan pahala bacaan kepada arwah yang dimaksud (disebutkan namanya); makmum menyambut āmīn."
+    },
+    "bi_05": {
+      "aba": "Al-Ikhlas",
+      "siapa": "Bersama",
+      "ket": "Imam dan makmum membaca Surat Al-Ikhlas tiga kali bersama-sama."
+    },
+    "bi_06": {
+      "aba": "Al-Falaq",
+      "siapa": "Bersama",
+      "ket": "Surat perlindungan pertama dibaca bersama-sama."
+    },
+    "bi_07": {
+      "aba": "An-Nas",
+      "siapa": "Bersama",
+      "ket": "Surat perlindungan terakhir dibaca bersama-sama."
+    },
+    "bi_08": {
+      "aba": "Al-Fatihah",
+      "siapa": "Bersama",
+      "ket": "Ummul kitab dibaca bersama-sama — pembuka rangkaian ayat Al-Qur'an."
+    },
+    "bi_09": {
+      "aba": "Awal Al-Baqarah",
+      "siapa": "Bersama",
+      "ket": "Awal Surat Al-Baqarah (ayat 1-5) dibaca bersama-sama."
+    },
+    "bi_10": {
+      "aba": "Al-Baqarah 163",
+      "siapa": "Bersama",
+      "ket": "Ayat tauhid QS Al-Baqarah 163 dibaca bersama-sama."
+    },
+    "bi_11": {
+      "aba": "Ayat Kursi",
+      "siapa": "Bersama",
+      "ket": "Ayat Kursi (QS Al-Baqarah 255) dibaca bersama-sama."
+    },
+    "bi_12": {
+      "aba": "Istighfar",
+      "siapa": "Bersama",
+      "ket": "Astaghfirullahal-'azhim dibaca tiga kali bersama-sama."
+    },
+    "bi_13": {
+      "aba": "Afdhaludz-dzikr dan lafaz tahlil",
+      "siapa": "Bersama",
+      "ket": "Bacaan afdhaludz-dzikri dan lafaz tahlil hayyun ma'bud, hayyun baqi dibaca bersama-sama."
+    },
+    "bi_14": {
+      "aba": "Tahlil",
+      "siapa": "Sendiri-sendiri",
+      "ket": "Lafaz tahlil dibaca 100 kali sendiri-sendiri dalam hati."
+    },
+    "bi_15": {
+      "aba": "Shalawat Nabi",
+      "siapa": "Bersama",
+      "ket": "Shalawat kepada Nabi Muhammad dibaca dua kali bersama-sama."
+    },
+    "bi_16": {
+      "aba": "Tasbih",
+      "siapa": "Bersama",
+      "ket": "Subhanallahi 'adada ma khalaqallahu dibaca tujuh kali bersama-sama."
+    },
+    "bi_17": {
+      "aba": "Tasbih",
+      "siapa": "Sendiri-sendiri",
+      "ket": "Subhanallahi wa bihamdihi, subhanallahil-'azhim dibaca 33 kali sendiri-sendiri dalam hati."
+    },
+    "bi_18": {
+      "aba": "Shalawat penutup",
+      "siapa": "Bersama",
+      "ket": "Shalawat penutup kepada Nabi dan seluruh keluarga serta sahabatnya dibaca bersama-sama."
+    },
+    "bi_19": {
+      "aba": "Pembuka doa",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam membuka rangkaian doa dengan ta'awudz, bismillah, dan hamdalah; makmum menyambut āmīn."
+    },
+    "bi_20": {
+      "aba": "Doa — hadiah pahala bacaan",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam mendoakan pengantar pahala bacaan kepada Nabi, para saleh, dan arwah yang dituju; makmum menyambut āmīn."
+    },
+    "bi_21": {
+      "aba": "Doa — ampunan untuk ahli kubur",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam membaca doa ampunan untuk ahli kubur; makmum menyambut āmīn."
+    },
+    "bi_22": {
+      "aba": "Doa penutup dan Al-Fatihah",
+      "siapa": "Imam + āmīn",
+      "ket": "Imam membaca doa penutup; makmum menyambut āmīn, lalu seluruh majelis mengakhiri dengan Al-Fatihah bersama-sama."
     }
   }
 }
