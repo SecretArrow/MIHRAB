@@ -5,6 +5,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Perbaikan konten
+- **Bacaan susunan "Buku Imam" kini persis dokumen "Tahlil dan doa IMAM"** (keluhan pengguna,
+  2026-10-19): semula 22 bagian buku hanya dipetakan ke id bagian susunan Lengkap NU Online —
+  lafaz Arabnya memang identik, tetapi transliterasi Latinnya tetap gaya NU (`musthafâ`,
+  `Afdlaludz dzikri`), istighfarnya versi panjang, dan takbir antar surat berdiri sebagai kartu
+  sendiri (29 kartu), sehingga bacaannya tidak sesuai buku. Kini 22 bagian khusus (`bi_01`–
+  `bi_22`) memuat teks Arab dan Latin **apa adanya dari dokumen** — termasuk takbir yang menyatu
+  di bagian suratnya dan gaya transliterasi dokumen (`ḫ`, `ā`) — tanpa terjemahan, sebab dokumen
+  tidak menyertakannya. Lencana Mode Imam tetap milik susunan Lengkap NU Online.
+- **Aturan harakat menerima tanda maddah kecil mushaf** (U+06E4): lafaz muqatta'ah "Alif Lâm
+  Mîm" pada bagian 9 Buku Imam ditulis mushaf dengan tanda kecil ini tanpa harakat rentang
+  utama; tanpa kode itu lafaz yang sah ditolak gate sebagai "tanpa harakat". Satu tempat
+  (`TeksArab.HARAKAT_TUNGGAL`) — gate Python, uji assets, dan pemeriksa bundel ikut konsisten.
+
 ## [1.18.0] - 2026-10-18
 
 **Rilis otomatis** dari commit `7bf6e2c93d5b248d969932b61c7b5c909415b2ee`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.18.0`.

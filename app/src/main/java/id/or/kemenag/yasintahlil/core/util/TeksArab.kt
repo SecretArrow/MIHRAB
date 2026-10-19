@@ -42,12 +42,16 @@ object TeksArab {
     val RENTANG_HARAKAT = listOf(0x064B to 0x0652)
 
     /**
-     * Tanda harakat di luar [RENTANG_HARAKAT]: alef khanjariyah dan tanda maddah.
+     * Tanda harakat di luar [RENTANG_HARAKAT]: alef khanjariyah, tanda maddah, dan tanda maddah
+     * kecil milik notasi mushaf (MSI) — lafaz muqatta'ah seperti "Alif Lâm Mîm" di awal
+     * Al-Baqarah ditulis mushaf memakai tanda kecil ini (U+06E4, saudara U+0653) tanpa satu pun
+     * harakat rentang utama, sehingga tanpa kode ini lafaz yang sah ditolak sebagai "tanpa
+     * harakat" (kasus nyata: susunan Buku Imam, 2026-10-19).
      *
      * Ditulis terpisah karena kodenya tidak berdampingan dengan rentang utama — kesalahan yang
      * paling mudah terjadi saat menyalin aturan ini adalah kehilangan daftar kecil ini.
      */
-    val HARAKAT_TUNGGAL = listOf(0x0670, 0x0653, 0x0654, 0x0655, 0x0656)
+    val HARAKAT_TUNGGAL = listOf(0x0670, 0x0653, 0x0654, 0x0655, 0x0656, 0x06E4)
 
     /**
      * Panjang minimum kata Arab sebelum dinilai, dalam huruf.

@@ -328,6 +328,182 @@
       "id": "fatihah_2",
       "judul": "Al-Fatihah penutup",
       "rujukan_file": "surah_001.json"
+    },
+    {
+      "id": "bi_01",
+      "judul": "Hadiah Al-Fatihah untuk Nabi Muhammad SAW",
+      "arab": "إِلَى حَضْرَةِ النَّبِيِّ الْمُصْطَفَى سَيِّدِنَا مُحمَّدٍ صَلَّى اللهُ عَلْيْهِ وَسَلَّمَ وَاٰلِهِ وَأَزْوَاجِهِ وَأَوْلَادِهِ وَذُرِّيَّاتِهِ الْفَــاتِحَةُ",
+      "latin": "Ilā hadhratin-nabiyyil-musthafā sayyidinā Muḫammadin shallallāhu 'alaihi wa sallama wa ālihi wa azwājihi wa awlādihi wa dzurriyyātihi, al-fātiḫah",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_02",
+      "judul": "Hadiah Al-Fatihah untuk Para Nabi, Rasul, Wali, dan Ulama",
+      "arab": "ثُمَّ إِلَى حَضْرَةِ إِخْوَانِهِ مِنَ الْأَنْبِيَاءِ وَالْمُرْسَلِيْنَ وَالْأَوْلِيَاءِ وَالشُّهَدَاءِ وَالصَّالِحِيْنَ وَالصَّحَابَةِ وَالتَّابِعِيْنَ وَالْعُلَمَاءِ الْعَامِلِيْنَ وَالْمُصَنِّفِيْنَ الْمُخْلِصِيْنَ وَجَمِيْعِ الْمَلَائِكَةِ الْمُقَرَّبِيْنَ، خُصُوْصًا إِلَى سَيِّدِنَا الشَّيْخِ عَبْدِ الْقَادِرِ الْجِيْلَانِي، شَيْءٌ لِلّٰهِ لَهُمُ الْفَــاتِحَةُ",
+      "latin": "Tsumma ilā hadhrati ikhwānihi minal-anbiyā'i wal-mursalīn wal-auliyā'i wasy-syuhadā'i wash-shālihīn wash-shahābati wat-tābi'īn wal-'ulamā'il-'āmilīn wal-mushannifīnal-mukhlishīn wa jamī'il-malā'ikatil-muqarrabīn, khusūshan ilā sayyidināsy-syaikh 'Abdil Qādir al-Jīlānī, syai'un lillāhi lahumul-fātihah",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_03",
+      "judul": "Hadiah Al-Fatihah untuk Seluruh Ahli Kubur Muslimin & Muslimat",
+      "arab": "ثُمَّ إِلَى جَمِيْعِ أَهْلِ الْقُبُوْرِ مِنَ الْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ مِنْ مَشَارِقِ الْأَرْضِ إِلَى مَغَارِبِهَا بَرِّهَا وَبَحْرِهَا خُصُوْصًا إِلَى اٰبَائِنَا وَأُمَّهَاتِنَا وَأَجْدَادِنَا وَجَدَّاتِنَا وَمَشَايِخِنَا وَمَشَايِخِ مَشَايِخِنَا وَأَسَاتِذَةِ أَسَاتِذَتِنَا وَلِمَنْ أَحْسَنَ إِلَيْنَا وَلِمَنِ اجْتَمَعْنَا هٰهُنَا بِسَبَبِهِ الْفَاتِحَةُ",
+      "latin": "Tsumma ilā jamī'i ahlil-qubūri minal-muslimīna wal-muslimāti wal-mu'minīna wal-mu'mināti min masyāriqil-ardli ilā maghāribihā barrihā wa baḫrihā khushushan ilā abā'inā wa ummahātinā wa ajdādinā wa jaddātina wa masyākhinā wa masyāykhi masyāyikhinā wa asātidzati asātidzatinā wa liman aḫsana ilainā wa liman ijtama'nā hāhunā bisababihi, al-fātiḫah",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_04",
+      "judul": "Hadiah Al-Fatihah untuk Arwah yang Dituju",
+      "arab": "ثُمَّ إِلَى جَمِيْعِ أهْلِ الْقُبُوْرِ مِمَّنْ ذُكِرَتْ أَسْمَاؤُهُ فِيْ هٰذِهِ الرِّسَالَةِ حَضْرَةِ رُوْحِ … وَحَضْرَةِ رُوْحِ … وَحَضْرَةِ رُوْحِ … رَحِمَهُمُ اللهُ وَغَفَرَهُمْ، الْفَاتِحَةُ",
+      "latin": "Tsumma ilā jamī'i ahlil-qubūri mimman dzukirat asmā'uhu fī hādzihir risālati, hadhrati rūhi..., wa hadhrati rūhi..., wa hadhrati rūhi..., rahimahumullāhu wa ghafarahum, al-fātiḫah",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_05",
+      "judul": "Surat Al-Ikhlas (3x)",
+      "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ قُلْ هُوَ اللّٰهُ اَحَدٌۚ، اَللّٰهُ الصَّمَدُۚ، لَمْ يَلِدْ وَلَمْ يُوْلَدْۙ، وَلَمْ يَكُنْ لَّهٗ كُفُوًا اَحَـــــدٌ\n\nلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ",
+      "latin": "Bismillāhir-raḫmānir-raḫīm(i), qul huwallāhu aḫad, Allāhush-shamad, lam yalid wa lam yūlad, wa lam yakul lahū kufuwan aḫad (3x)\n\nLā ilāha illallāhu wallāhu akbar",
+      "ulangi": 3,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_06",
+      "judul": "Surat Al-Falaq",
+      "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ قُلْ اَعُوْذُ بِرَبِّ الْفَلَقِۙ، مِنْ شَرِّ مَـــا خَلَقَۙ، وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ، وَمِنْ شَرِّ النَّفّٰثٰتِ فِى الْعُقَدِۙ، وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ\n\nلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ",
+      "latin": "Bismillāhir-raḫmānir-raḫīm(i), qul a'ūdzu bi rabbil-falaq, min syarri mā khalaq, wa min syarri ghāsiqin idzā waqab, wa min syarrin-naffātsāti fīl-'uqad, wa min syarri ḫāsidin idzā ḫasad\n\nLā ilāha illallāhu wallāhu akbar",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_07",
+      "judul": "Surat An-Nas",
+      "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ قُلْ اَعُوْذُ بِرَبِّ النَّاسِۙ، مَلِكِ النَّـــاسِۙ، اِلٰهِ النَّاسِۙ، مِنْ شَرِّ الْوَسْوَاسِ ەۙ الْخَنَّاسِۖ، الَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِۙ، مِنَ الْجِنَّةِ وَالنَّــاسِ\n\nلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ",
+      "latin": "Bismillāhir-raḫmānir-raḫīm(i), qul a'ūdzū bi rabbin-nās, malikin-nās, ilāhin-nās, min syarril-waswāsil khannās, alladzī yuwaswisu fī shudūrin-nās, minal-jinnati wan-nās\n\nLā ilāha illallāhu wallāhu akbar",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_08",
+      "judul": "Surat Al-Fatihah",
+      "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ، اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَۙ، الرَّحْمٰنِ الرَّحِيْمِۙ، مٰلِكِ يَوْمِ الدِّيْنِۗ، اِيَّاكَ نَعْبُدُ وَاِيَّاكَ نَسْتَعِيْنُۗ، اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيْمَۙ، صِرَاطَ الَّذِيْنَ اَنْعَمْتَ عَلَيْهِمْ ەۙ غَيْرِ الْمَغْضُوْبِ عَلَيْهِمْ وَلَا الضَّاۤلِّيْنَ",
+      "latin": "Bismillāhir-raḫmānir-raḫīm(i), al-ḫamdu lillāhi rabbil-'ālamīn, ar-raḫmānir-raḫīm, māliki yaumid-dīn, iyyāka na'budu wa iyyāka nasta'īn, ihdināsh-shirāthal-mustaqīm, shirāthal-ladzīna an'amta 'alaihim ghairil-maghdhūbi 'alaihim wa ladh-dhāllīn. Āmīn",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_09",
+      "judul": "Awal Surat Al-Baqarah",
+      "arab": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ، الۤمۤۚ، ذٰلِكَ الْكِتٰبُ لَا رَيْبَۛ فِيْهِۛ هُدًى لِّلْمُتَّقِيْنَۙ، الَّذِيْنَ يُؤْمِنُوْنَ بِالْغَيْبِ وَيُقِيْمُوْنَ الصّٰلٰوةَ وَمِمَّا رَزَقْنٰهُمْ يُنْفِقُوْنَۙ، وَالَّذِيْنَ يُؤْمِنُوْنَ بِمَآ اُنْزِلَ اِلَيْكَ وَمَآ اُنْزِلَ مِنْ قَبْلِكَ ۚ وَبِالْاٰخِرَةِ هُمْ يُوْقِنُوْنَۗ، اُولٰۤىِٕكَ عَلٰى هُدًى مِّنْ رَّبِّهِمْۙ وَاُولٰۤىِٕكَ هُمُ الْمُفْلِحُوْنَ",
+      "latin": "Bismillāhir-raḫmānir-raḫīm(i), alif lām mīm, dzālikal-kitābu lā raiba fīh, hudal-lilmuttaqīn, alladzīna yu'minūna bil-ghaibi wa yuqīmūnash-shalāta wa mimmā razaqnāhum yunfiqūn, wal-ladzīna yu'minūna bimā unzila ilaika wa mā unzila min qablika, wa bil-ākhirati hum yūqinūn, ulā'ika 'alā hudam-mir-rabbihim wa ulā'ika humul-muflihūn",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_10",
+      "judul": "QS Al-Baqarah Ayat 163",
+      "arab": "وَإِلٰهُكُمْ إِلٰهٌ وَّاحِدٌ لَا إِلٰهَ إِلَّا هُوَ الرَّحْمٰنُ الرَّحِيْمُ",
+      "latin": "Wa ilāhukum ilāhun wāhid, lā ilāha illā huwar-raḫmānur-raḫīm",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_11",
+      "judul": "Ayat Kursi (QS Al-Baqarah Ayat 255)",
+      "arab": "اَللّٰهُ لَآ اِلٰهَ اِلَّا هُوَۚ اَلْحَيُّ الْقَيُّوْمُ ەۚ لَا تَأْخُذُهٗ سِنَةٌ وَّلَا نَوْمٌۗ لَهٗ مَا فِى السَّمٰوٰتِ وَمَا فِى الْاَرْضِۗ مَنْ ذَا الَّذِيْ يَشْفَعُ عِنْدَهٗٓ اِلَّا بِاِذْنِهٖۗ يَعْلَمُ مَا بَيْنَ اَيْدِيْهِمْ وَمَا خَلْفَهُمْۚ وَلَا يُحِيْطُوْنَ بِشَيْءٍ مِّنْ عِلْمِهٖٓ اِلَّا بِمَا شَاۤءَۚ وَسِعَ كُرْسِيُّهُ السَّمٰوٰتِ وَالْاَرْضَۚ وَلَا يَـُٔوْدُهٗ حِفْظُهُمَاۚ وَهُوَ الْعَلِيُّ الْعَظِيْمُ",
+      "latin": "Allāhu lā ilāha illā huwal-ḫayyul-qayyūm, lā ta'khudzuhū sinatuw wa lā naum, lahū mā fis-samāwāti wa mā fil-ardh, man dzalladzī yasyfa'u 'indahū illā bi idznih, ya'lamu mā baina aidīhim wa mā khalfahum, wa lā yuḫīthūna bi syai'im-min 'ilmihī illā bimā syā', wasi'a kursiyyuhus-samāwāti wal-ardh, wa lā ya'ūduhū hifzhuhumā, wa huwal-'aliyyul-'azhīm",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_12",
+      "judul": "Istighfar (3x)",
+      "arab": "أَسْتَغْفِرُ اللهَ الْعَـــظِيْمَ",
+      "latin": "Astaghfirullāhal-'azhīm (3x)",
+      "ulangi": 3,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_13",
+      "judul": "Afdhaludz-Dzikr dan Lafaz Tahlil",
+      "arab": "أَفْضَلُ الذِّكْرِ فَاعْلَمْ أَنَّهُ لَا إِلٰهَ إِلَّا اللهُ، حَيٌّ مَوْجُوْدٌ\n\nلَا إِلٰهَ إِلَّا اللهُ، حَيٌّ مَعْبُوْدٌ\n\nلَاَ إِلٰهَ إِلَّا اللهُ، حَيٌّ بَاقٍ",
+      "latin": "Afdhaludz-dzikri fa'lam annahu lā ilāha illallāhu, ḫayyun maujūd\n\nLā ilāha illallāhu, ḫayyun ma'būd\n\nLā ilāha illallāhu, ḫayyun bāqin",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_14",
+      "judul": "Tahlil (100x)",
+      "arab": "لَا إِلٰهَ إِلَّا اللهُ",
+      "latin": "Lā ilāha illallāh (100x)",
+      "ulangi": 100,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_15",
+      "judul": "Shalawat Nabi (2x)",
+      "arab": "اَللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ، اَللّٰهُمَّ صَلِّ عَلَيْهِ وَسَلِّمْ",
+      "latin": "Allāhumma shalli 'alā sayyidinā Muḫammadin, Allāhumma shalli 'alaihi wa sallim (2x)",
+      "ulangi": 2,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_16",
+      "judul": "Tasbih (7x)",
+      "arab": "سُبْحَــانَ اللهِ عَدَدَ مَـــا خَلَقَ اللهُ",
+      "latin": "Subhānallāhi 'adada mā khalaqallāhu (7x)",
+      "ulangi": 7,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_17",
+      "judul": "Tasbih (33x)",
+      "arab": "سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيْمِ",
+      "latin": "Subhānallāhi wa biḫamdihi, subhānallāhil-'azhīm (33x)",
+      "ulangi": 33,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_18",
+      "judul": "Shalawat Penutup",
+      "arab": "اَللّٰهُمَّ صَلِّ عَلَى حَبِيْبِكَ سَيِّدِنَا مُحَمَّدٍ وَعَلَى اٰلِهِ وَصَحْبِهِ وَسَلِّمْ\n\nاَللّٰهُمَّ صَلِّ عَلَى حَبِيْبِكَ سَيِّدِنَا مُحَمَّدٍ وَعَلَى اٰلِهِ وَصَحْبِهِ وَبَارِكْ وَسَلِّمْ أَجْمَعِيْنَ",
+      "latin": "Allāhumma shalli 'alā ḫabībika sayyidinā Muḫammadin wa 'alā ālihi wa shahbihi wa sallim (2x)\n\nAllāhumma shalli 'alā ḫabībika sayyidinā Muḫammadin wa 'alā ālihi wa shahbihi wa bārik wa sallim ajma'īn",
+      "ulangi": 2,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_19",
+      "judul": "Pembuka Doa",
+      "arab": "أَعُوْذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، الْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ، حَمْدَ الشَّاكِرِيْنَ حَمْدَ النَّاعِمِيْنَ، حَمْدًا يُّوَافِي نِعَمَهُ وَيُكَافِئُ مَزِيْدَهُ، يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِي لِجَلَالِ وَجْهِكَ وَعَظِيْمِ سُلْطَانِكَ، اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَّعَلَى اٰلِ سَيِّدِنَا مُحَمَّدٍ",
+      "latin": "A'ūdzubillāhi minasy-syaiṭānir-rajīm, bismillāhir-raḫmānir-raḫīm, al-ḫamdulillāhi rabbil-'ālamīn, hamdasy-syākirīn, hamdan nā'imīn, hamdan yuwāfī ni'amahū wa yukāfī'u mazīdah, yā rabbanā lakal-ḫamdu kamā yanbaghī lijalāli wajhika wa 'azhīmi sulthānika, Allāhumma shalli 'alā sayyidinā Muḫammadin wa 'alā āli sayyidinā Muḫammadin",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_20",
+      "judul": "Doa Hadiah Pahala Bacaan",
+      "arab": "اَللّٰهُمَّ تَقَبَّلْ وَأَوْصِلْ ثَوَابَ مَا قَرَاْنَاهُ مِنَ الْقُرْآنِ الْعَظِيْمِ وَمَا هَلَّلْنَا وَمَا سَبَّحْنَا وَمَا اسْتَغْفَرْنَا وَمَا صَلَّيْنَا عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ هَدِيَّةً وَاصِلَةً وَرَحْمَةً نَازِلَةً وَبَرَكَةً شَامِلَةً إِلَى حَضَرَةِ حَبِيْبِنَا وَشَفِيْعِنَا وَقُرَّةِ أَعْيُنِنَا سَيِّدِنَا وَمَوْلَانَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ، وَإِلَى جَمِيْعِ إِخْوَانِهِ مِنَ الْأَنْبِيَاءِ وَالْمُرْسَلِيْنَ وَالْأَوْلِيَاءِ وَالشُّهَدَاءِ وَالصَّالِحِيْنَ وَالصَّحَابَةِ وَالتَّابِعِيْنَ وَالْعُلَمَاءِ الْعَامِلِيْنَ وَالْمُصَنِّفِيْنَ الْمُخْلِصِيْنَ وَجَمِيْعِ الْمُجَاهِدِيْنَ فِيْ سَبِيْلِ اللهِ رَبِّ الْعَلَمِيْنَ وَالْمَلَائِكَةِ الْمُقَرَّبِيْنَ، خُصُوْصًا إِلَى سَيِّدِنَا الشَّيْخِ عَبْدِ الْقَادِرِ الْجِيْلَانِيّ، ثُمَّ إِلَى أَرْوَاحِ جَمِيْعِ أَهْلِ الْقُبُوْرِ مِنَ الْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ مِنْ مَشَارِقِ الْأَرْضِ وَمَغَارِبِهَا بَرِّهَا وَبَحْرِهَا خُصُوْصًا إِلَى آبَائِنَا وَأُمَّهَاتِنَا وَأَجْدَادِنَا وَجَدَّاتِنَا، وَنَخُصُّ خَصُوْصًا إِلَى مَنِ اجْتَمَعْنَا هٰهُنَا بِسَبَبِهِ وَلِأَجْلِهِ",
+      "latin": "Allāhumma taqabbal wa-aushil tsawāba mā qara'nāhu minal-qur'ānil-'azhīmi wa mā hallalnā wa mā sabbaḫnā wa mā-staghfarnā wa mā shallainā 'alā sayyidinā Muḫammadin shallallāhu 'alaihi wa sallamā hadiyyatan wāshilatan wa raḫmatan nāzilatan wa barakatan syāmilatan ilā hadhrati habībinā wa syafī'inā wa qurrati a'yuninā sayyidinā wa maulānā Muḫammadin shallallāhu 'alaihi wa sallamā, wa ilā jamī'i ikhwānihi minal-anbiyā'i wal-mursalīn wal-auliyā'i wasy-syuhadā'i wash-shālihīn wash-shahābati wat-tābi'īn wal-'ulamā'il-'āmilīna wal-mushannifīnal-mukhlishīna wa jamī'il-mujāhidīna fī sabīlillāhi rabbil-'ālamīna wal-malā'ikatil-muqarrabīn, khusūshan ilā sayyidinasy-Syaikh 'Abdil Qādir al-Jīlānī, tsumma ilā arwāhi jamī'i ahlil-qubūri minal-muslimīna wal-muslimāti wal-mu'minīna wal-mu'mināti min masyāriqil-ardli wa maghāribihā barrihā wa baḫrihā khusushan ilā ābā'inā wa ummahātinā wa ajdādinā wa jaddātinā, wa nakhushshu khusūshan ilā man ijtama'nā hāhunā bisababihi wa li-ajlihi",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_21",
+      "judul": "Doa Ampunan untuk Ahli Kubur",
+      "arab": "اَللّٰهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ، اَللّٰهُمَّ أَنْزِلِ الرَّحْمَةَ وَالْمَغْفِرَةَ عَلَى أَهْلِ الْقُبُوْرِ مِنْ أَهْلِ لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُوْلُ اللهِ",
+      "latin": "Allāhummaghfir lahum warḫamhum wa 'āfihim wa'fu 'anhum, Allāhumma anzilir-raḫmata wal-maghfirata 'alā ahlil-qubūri min ahli lā ilāha illallāhu Muḫammadur-rasūlullāh",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
+    },
+    {
+      "id": "bi_22",
+      "judul": "Doa Penutup dan Al-Fatihah",
+      "arab": "رَبَّنَا أَرِنَا الْحَقَّ حَقًّا وَّارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا الْبَاطِلَ بَاطِلًا وَّارْزُقْنَا اجْتِنَابَهُ، رَبَّنَا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَّفِي الْآخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَلَمِيْنَ، اَلْفَاتِحَة",
+      "latin": "Rabbanā arināl-ḫaqqa ḫaqqan warzuqnāt-tibā'ah, wa arināl-bāthila bāthilan warzuqnaj-tinābah, Rabbanā ātinā fid-dunyā ḫasanatan wa fil-ākhirati ḫasanatan wa qinā 'adzaban-nār, Subhāna rabbika rabbil-'izzati 'ammā yashifūn, wa salāmun 'alal-mursalīn, wal-ḫamdulillāhi rabbil-'ālamīn. Al-fātiḫah",
+      "ulangi": 1,
+      "sumber": "Dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18) — teks persis dokumen; metadata dokumen: NU Online, quran.nu.or.id/tahlil"
     }
   ],
   "catatan_verifikasi": "Teks diambil dari halaman resmi NU Online (quran.nu.or.id/tahlil) dan divalidasi gate konten CI. Susunan tahlil dapat berbeda menurut tradisi; susunan ini bukan satu-satunya yang benar."

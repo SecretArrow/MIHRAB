@@ -47,9 +47,10 @@ fun SumberScreen() {
                 "${ContentValidator.SITUS_NU}/tahlil (NU Online) — lafaz berharakat, latin, dan " +
                 "terjemahan diekstraksi dari halaman " +
                 "resmi dan diverifikasi lintas bundel.",
-            "Susunan Buku Imam (29 kartu): rangkaian buku panduan tahlil imam milik jamaah " +
-                "(dokumen \"Tahlil dan doa Imam\", 2026-10-18) — lafaznya identik dengan bagian " +
-                "susunan Lengkap NU Online, tanpa teks baru.",
+            "Susunan Buku Imam (22 bagian): rangkaian buku panduan tahlil imam milik jamaah " +
+                "(dokumen \"Tahlil dan doa IMAM\", 2026-10-18) — teks Arab dan Latin diambil " +
+                "apa adanya dari dokumen (metadata dokumen: NU Online, ${ContentValidator.SITUS_NU}); " +
+                "dokumen tidak menyertakan terjemahan, maka kartunya tampil tanpa terjemahan.",
             "Doa jenazah (takbir 3): HR Muslim 591 — ${ContentValidator.SITUS_HADIS}.",
             "Mode Imam: label siapa membaca adalah panduan umum tradisi tahlil; bacaannya sama " +
                 "dengan susunan Lengkap.",
