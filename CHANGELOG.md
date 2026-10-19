@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.18.4] - 2026-10-19
+
 ### Diperbaiki
 - **Atribusi Buku Imam bebas penyebutan NU** (permintaan pengguna, 2026-10-20). Susunan
   Ringkas & Lengkap tetap menyandang atribusi NU Online; khusus Buku Imam kini tidak ada
@@ -13,6 +15,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   Sumber, serta "Sumber bacaan" tingkat modul (kini menyebut NU Online hanya untuk
   Ringkas & Lengkap — Buku Imam merujuk dokumen jamaah "Tahlil dan doa IMAM"). Teks Arab,
   Latin, harakat, dan susunan bacaan tidak berubah satu pun.
+
+**Rilis otomatis** dari commit `362b1f7f3afcb7a2e564739532064d98aba1fba4`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.18.4`.
 
 ## [1.18.3] - 2026-10-19
 
