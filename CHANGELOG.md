@@ -5,6 +5,19 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diperbaiki
+- **Buku Imam: tanpa gaya NU dan berharakat lengkap** (permintaan pengguna, 2026-10-19).
+  Transliterasi Latin 22 bagian `bi_*` disederhanakan dari gaya ilmiah dokumen menjadi
+  polos — `ā→a, ī→i, ū→u, ṭ→t` dan `ḫ→h` (dalam dokumen, tanda `ḫ` selalu mewakili
+  ح, sedangkan خ memang ditulis `kh`), mis. `musthafā`→`musthafa`,
+  `Muḫammadin`→`Muhammadin`, `syaiṭānir`→`syaitanir`. Lafaz Allah yang ditulis telanjang
+  dalam dokumen (24 lokasi: tahlil, tasbih, istighfar, takbir penutup, bismillah doa)
+  kini berharakat penuh `اللّٰه` — persis bentuk bismillah surat di bagian yang sama;
+  ditambah empat perbaikan harakat satuan (`مُحَمَّدٍ`, `أَهْلِ`, `اِغْفِرْ`,
+  `الْعٰلَمِيْنَ`). Huruf Arab tidak ada yang berubah — hanya tandanya; urutan, judul,
+  dan jumlah bagian tetap. Klaim sumber diperbarui: teks dokumen dengan harakat
+  dilengkapi & Latin polos, bukan lagi "apa adanya".
+
 ## [1.18.1] - 2026-10-19
 
 ### Perbaikan konten

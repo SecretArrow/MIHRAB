@@ -50,7 +50,8 @@ Dokumen ini adalah satu-satunya daftar sumber yang sah untuk konten aplikasi.
   22 bagian khusus `bi_*` susunan Buku Imam) + `tahlil.json` (deskriptor 3 susunan —
   **Lengkap** 41 bagian, **Ringkas** 28 bagian dengan urutan asli tab "Ringkas" di
   halamannya, dan **Buku Imam** 22 bagian dari dokumen jamaah "Tahlil dan doa IMAM"
-  [2026-10-18; metadata dokumen: NU Online] yang Arab & Latin-nya diambil apa adanya).
+  [2026-10-18; metadata dokumen: NU Online] yang harakat Arabnya dilengkapi dan transliterasi
+  Latinnya disederhanakan polos — permintaan pengguna 2026-10-19).
 
 ## 7. Aturan konten
 - Setiap entri JSON wajib: `sumber_url` — domain resmi, dan **gagal** di mode `--strict`.

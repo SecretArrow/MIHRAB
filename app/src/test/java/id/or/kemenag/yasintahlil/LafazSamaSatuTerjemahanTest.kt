@@ -27,10 +27,12 @@ import java.io.File
  *
  * Pengecualian tunggal: entri berpenanda `ragam_dokumen: true` (kini: 22 bagian `bi_*` susunan
  * "Buku Imam"). Penanda itu BUKAN izin untuk salinan yang menyimpang dari satu sumber yang sama —
- * ia menyatakan bahwa lafaz itu tercatat di **dokumen sumber lain** dengan konvensi ejaan Arab dan
- * transliterasinya sendiri (dokumen jamaah "Tahlil dan doa IMAM": gaya ā/ḫ, takbir menyatu di
- * bagian surat, tanpa terjemahan). Bedanya dengan ejaan NU Online memang disengaja dan justru inti
- * permintaan pengguna (2026-10-19): bacaan harus persis dokumen. Tanpa penanda, lafaz tahlil dan
+ * ia menyatakan bahwa lafaz itu tercatat di **dokumen sumber lain** dengan harakat dan
+ * transliterasinya sendiri (dokumen jamaah "Tahlil dan doa IMAM": takbir menyatu di
+ * bagian surat, tanpa terjemahan; sejak 2026-10-19 harakatnya dilengkapi dan transliterasinya
+ * disederhanakan polos atas permintaan pengguna — tetap bacaan dokumen, bukan salinan NU Online).
+ * Bedanya dengan ejaan NU Online memang disengaja dan justru inti
+ * permintaan pengguna (2026-10-19): bacaan harus mengikuti dokumen. Tanpa penanda, lafaz tahlil dan
  * dua tasbih ditolak sebagai "dibaca/diterjemahkan berbeda" — padahal yang diperbandingkan bukan
  * dua salinan satu sumber, melainkan dua dokumen sumber. Penanda hanya sah untuk dokumen yang
  * sumbernya berbeda; pasangan adzan×iqomah dan doa mayit TETAP dipindai karena salinannya satu

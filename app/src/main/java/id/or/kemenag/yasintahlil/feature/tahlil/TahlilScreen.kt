@@ -45,11 +45,13 @@ import id.or.kemenag.yasintahlil.navigation.Routes
  *
  * Tiga susunan dapat langsung dipilih dari baris chip di kepala layar ini: dua versi NU —
  * Ringkas dan Lengkap — persis dua tab di quran.nu.or.id/tahlil, ditambah "Buku Imam" —
- * rangkaian buku panduan imam milik jamaah (22 bagian) yang Arab dan Latinnya persis dokumen
- * "Tahlil dan doa IMAM" (2026-10-19): semula id bagian-lah yang disamakan dengan Lengkap,
+ * rangkaian buku panduan imam milik jamaah (22 bagian) yang teksnya dari dokumen
+ * "Tahlil dan doa IMAM": semula id bagian-lah yang disamakan dengan Lengkap,
  * tetapi Latin gaya NU dan takbir antar surat yang berdiri sendiri membuat bacaannya tidak
  * sesuai buku (keluhan pengguna, 2026-10-19) — kini 22 bagian khusus `bi_*` dengan teks
- * dokumen apa adanya, tanpa terjemahan sebab dokumen tak menyertakannya. Seluruh
+ * dokumen yang harakatnya dilengkapi dan transliterasi Latinnya disederhanakan polos,
+ * tanpa gaya ilmiah NU (permintaan pengguna, 2026-10-19), tanpa terjemahan sebab dokumen
+ * tak menyertakannya. Seluruh
  * susunan (termasuk "Susunan saya") tetap dapat dilihat dari Pengaturan dan penyusunnya lewat
  * ikon Tune. Keterangan susunan — nama susunan, catatan tradisi, sumber sampai sunnah.com —
  * tinggal di layar keterangan lewat ikon Info.
@@ -124,7 +126,8 @@ fun TahlilScreen(go: (String) -> Unit = {}, vm: TahlilViewModel = hiltViewModel(
             BarisChip {
                 // Pemilih versi tahlil — tiga id susunan dari berkas konten (`tahlil.json`):
                 // dua versi NU Online dan "Buku Imam" (22 bagian khusus `bi_*` yang teksnya
-                // persis dokumen jamaah), bukan susunan karangan: bila bundelnya diganti, chip
+                // dokumen jamaah — harakat dilengkapi, Latin polos), bukan susunan karangan:
+                // bila bundelnya diganti, chip
                 // yang tak dikenal tidak digambar dan pilihan tinggal yang sah. Bila "Susunan
                 // saya" yang aktif, chip ini libur terpilih — penyusunnya tetap lewat ikon Tune.
                 listOf("nu_online_ringkas" to "Ringkas", "nu_online_lengkap" to "Lengkap",
