@@ -227,7 +227,7 @@ class SkripE2eSiapPerangkatTest {
     fun ujiAsapMemberiIzinNotifikasiSebelumActivityDiluncurkan() {
         val teks = File(
             repo(),
-            "app/src/androidTest/java/id/or/kemenag/yasintahlil/NavSmokeTest.kt",
+            "android/app/src/androidTest/java/id/or/kemenag/yasintahlil/NavSmokeTest.kt",
         ).readText()
         val kode = KodeSumber.kodeTanpaKomentar(teks)
 

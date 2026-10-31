@@ -23,9 +23,12 @@ class DaftarArwahTest {
 
     @Test
     fun namaDenganBarisBaruDirapikanMenjadiSatuBaris() {
-        // Baris baru di dalam nama merusak format simpanan — wajib menjadi satu baris.
-        assertEquals(listOf("Ahmad Sulaiman"), DaftarArwah.parse("Ahmad\nSulaiman"))
-        assertEquals(listOf("Ahmad Sulaiman"), DaftarArwah.tambah(emptyList(), "Ahmad\r\nSulaiman"))
+        // Masukan pengguna dirapikan menjadi SATU nama (bersih/tambah) — baris baru di dalam
+        // nama tidak boleh merusak format simpanan satu-nama-per-baris.
+        assertEquals("Ahmad Sulaiman", DaftarArwah.bersih("Ahmad\r\nSulaiman"))
+        assertEquals(listOf("Ahmad Sulaiman"), DaftarArwah.tambah(emptyList(), "Ahmad\nSulaiman"))
+        // Sebaliknya, format simpanan yang memang satu nama per baris dibaca sebagai dua nama.
+        assertEquals(listOf("Ahmad", "Sulaiman"), DaftarArwah.parse("Ahmad\nSulaiman"))
     }
 
     @Test

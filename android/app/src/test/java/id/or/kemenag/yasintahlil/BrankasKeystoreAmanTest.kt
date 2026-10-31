@@ -29,11 +29,12 @@ class BrankasKeystoreAmanTest {
 
     private val namaBrankas = listOf("key-sign-apk.zip", "key-sign-apk.zip.enc")
 
-    /** Akar repo: folder yang memuat `.gitignore` sekaligus `app/src/main`. */
+    /** Akar repo: folder yang memuat `.gitignore` sekaligus kode sumber Android — kini di `android/`. */
     private fun akarRepo(): File {
-        val kandidat = listOf(File("."), File("app"), File(".."), File("../.."))
+        val kandidat = listOf(File("."), File("app"), File("android/app"), File(".."), File("../.."))
         return kandidat.firstOrNull {
-            File(it, ".gitignore").isFile && File(it, "app/src/main").isDirectory
+            File(it, ".gitignore").isFile &&
+                (File(it, "android/app/src/main").isDirectory || File(it, "app/src/main").isDirectory)
         } ?: error("akar repo tidak ditemukan dari ${File(".").absolutePath}")
     }
 
