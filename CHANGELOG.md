@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-10-31
+
 ### Fitur
 - **Daftar Arwah** (permintaan pengguna, 2026-10-20: *"saya lihat imam disini membaca daftar
   nama nama orang yang sudah wafat di tahlil dan juga doa"*). Buku "Tahlil dan doa IMAM"
@@ -25,6 +27,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   dengan lencana siapa membaca, dan Daftar Arwah (localStorage); konten disalin dari bundel
   Android lewat `tools/sinkron_web.py`, deploy GitHub Pages (`web-pages.yml`) menolak bila
   salinannya basi.
+
+**Rilis otomatis** dari commit `e29151d434f566273a08f49a74fa589a0c62c8ea`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.19.0`.
 
 ## [1.18.4] - 2026-10-19
 
