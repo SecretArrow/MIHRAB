@@ -5,6 +5,21 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diperbaiki
+- **Semua branding NU/Nahdlatul Ulama pada teks tampil menjadi umum** (permintaan pengguna,
+  2026-10-31: *"ubah semua versi nahdlatul ulama/nu menjadi umum"*). Nama susunan
+  "Tahlil Lengkap/Ringkas — NU Online" → "Tahlil Lengkap"/"Tahlil Ringkas"; seluruh sumber &
+  catatan (susunan, per bagian, "Sumber bacaan", catatan tradisi, edisi) kini memakai wording
+  "susunan bacaan tahlil yang beredar umum"; klausa pujian untuk pendiri organisasi dibuang
+  dari lafaz tawassul — Arab, Latin, dan terjemahannya dibersihkan serentak agar tetap setia
+  satu sama lain; lencana Mode Imam "masyhur di majelis NU" → "masyhur di majelis tahlil";
+  catatan sholat ghaib "syarat & kritik sanad: NU Online" → "panduan tahlil umum"; layar
+  Sumber dan label domain di layar Tentang ikut diumumkan. Domain metadata (`quran.nu.or.id`
+  pada `sumber_url`, `nu.or.id` pada daftar Tentang/`allowedHosts`) dipertahankan untuk
+  transparansi Tentang dan gerbang konten; id internal `nu_online_*` tidak berubah sehingga
+  pilihan susunan tersimpan pengguna aman; versi web ikut (footer + salinan konten
+  tersinkron ulang).
+
 ## [1.19.0] - 2026-10-31
 
 ### Fitur

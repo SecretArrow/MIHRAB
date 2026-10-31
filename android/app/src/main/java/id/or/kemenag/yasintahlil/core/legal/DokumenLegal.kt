@@ -35,7 +35,7 @@ object SumberKonten {
         "kemenag.dev" to "SIHAT Bimas Islam Kemenag (jadwal sholat dan arah kiblat)",
         "sunnah.com" to "sunnah.com (teks hadis beserta penomoran rujukannya)",
         "bmkg.go.id" to "BMKG (rujukan hilal dan kalender)",
-        "nu.or.id" to "NU Online (rujukan amalan dan doa)",
+        "nu.or.id" to "Situs rujukan amalan & doa tahlil",
     )
 
     /** Domain induk resmi untuk [host] (yang boleh jadi subdomain), atau null bila di luar daftar. */

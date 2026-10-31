@@ -73,7 +73,7 @@ Semuanya adalah pilihan sadar, bukan pekerjaan yang tertinggal — supaya tidak 
   ("Hindari tombol dekoratif yang tidak bekerja").
 - **Tidak ada audio adzan bawaan.** Lisensi audio tidak dapat dipastikan, jadi setiap jenis suara
   adalah berkas pilihan pengguna yang ia beri nama — aplikasi tidak menyertakan satu pun.
-- **Tiga susunan Tahlil** — dua versi NU Online (ringkas & lengkap, sumber resmi `nu.or.id`)
+- **Tiga susunan Tahlil** — dua versi susunan bacaan yang beredar umum (ringkas & lengkap)
   dan "Buku Imam" (rangkaian buku panduan imam milik jamaah); lihat `docs/CONTENT_SOURCES.md`.
 - **Pengingat memakai WorkManager, tanpa izin alarm tepat waktu.** Waktu dapat bergeser beberapa
   menit saat perangkat tidur (Doze); hal ini dinyatakan di layar Adzan, bukan disembunyikan.

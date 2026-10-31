@@ -24,6 +24,11 @@ import java.io.File
  * dirujuk ("tidak dapat bertambah diam-diam"). Karena `nu.or.id` tak ada di bundel, janji itu
  * bocor ke arah sebaliknya — domain yang benar-benar disebut layar justru **hilang** dari daftar.
  *
+ * Kini kalimat rujukan tinggal di bundel dan berbunyi: "Rujukan tata cara: imbauan Kemenag;
+ * syarat & kritik sanad: panduan tahlil umum. Lihat SOURCES.md." — tanpa lagi menyebut brand NU.
+ * (permintaan pengguna 2026-10-31: semua brand NU pada teks tampil menjadi umum; domain tetap
+ * tercatat di sumber_tambahan untuk transparansi Tentang)
+ *
  * Uji ini menjaga agar kalimat rujukan tinggal di bundel (satu rumah), agar setiap domain yang
  * disebutnya benar-benar tercatat di `sumber_tambahan` sehingga layar Tentang dapat menyebutnya,
  * dan agar layar Ghaib membacanya — bukan mengetiknya lagi.
@@ -55,8 +60,8 @@ class AtribusiRujukanGhaibTest {
         assertTrue("catatan rujukan ghaib kosong", isi.isNotBlank())
         assertTrue("catatan rujukan ghaib tidak lagi menyebut imbauan Kemenag: $isi",
             isi.contains("Kemenag"))
-        assertTrue("catatan rujukan ghaib tidak lagi menyebut NU Online: $isi",
-            isi.contains("NU Online"))
+        assertTrue("catatan rujukan ghaib tidak lagi menyebut panduan tahlil umum: $isi",
+            isi.contains("panduan tahlil umum"))
     }
 
     /**

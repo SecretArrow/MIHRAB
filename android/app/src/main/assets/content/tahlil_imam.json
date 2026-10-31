@@ -1,9 +1,9 @@
 {
   "modul": "tahlil_imam",
   "judul": "Panduan Imam Tahlil",
-  "sumber": "Panduan pelaksanaan umum tradisi tahlil NU (aba-aba & pembagian bacaan) untuk peran; bacaan Mode Imam kini susunan Buku Imam — dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18; permintaan pengguna 2026-10-19: imam membaca persis buku, bukan susunan NU Online). Dokumen tak mencantumkan penanda siapa membaca, sehingga lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan ini; entri 41 bagian Lengkap dipertahankan sebagai rujukan padanan.",
+  "sumber": "Panduan pelaksanaan umum tradisi tahlil (aba-aba & pembagian bacaan) untuk peran; bacaan Mode Imam kini susunan Buku Imam — dokumen jamaah \"Tahlil dan doa IMAM\" (2026-10-18; permintaan pengguna 2026-10-19: imam membaca persis buku). Dokumen tak mencantumkan penanda siapa membaca, sehingga lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan ini; entri 41 bagian Lengkap dipertahankan sebagai rujukan padanan.",
   "sumber_url": "https://quran.nu.or.id/tahlil",
-  "catatan": "Bacaan Mode Imam kini susunan Buku Imam — 22 bagian dokumen jamaah \"Tahlil dan doa IMAM\" yang harakat Arabnya dilengkapi (permintaan pengguna 2026-10-19; semula dipaksa ke susunan Lengkap NU Online). Dokumen tidak mencantumkan penanda siapa membaca, maka lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan umum tradisi tahlil: hadiah Al-Fatihah pembuka diimami (yang dituju arwah disebut namanya, makmum menyambut amin), surat dan ayat dibaca bersama-sama, tahlil 100x dan tasbih 33x sendiri-sendiri dalam hati, rangkaian doa diimami. Entri panduan untuk 41 bagian Lengkap dipertahankan sebagai rujukan padanan — bukan bacaan Mode Imam lagi. Yang tetap ditambahkan hanyalah aba-aba (panggilan nama bagian) yang diucapkan imam sebelum setiap bagian serta catatan siapa yang membaca, agar makmum tahu apa yang akan dibaca setelah aba-aba. Adat aba-aba berbeda-beda antar daerah dan pengajian — pakailah ini sebagai panduan umum dan ikuti imam setempat.",
+  "catatan": "Bacaan Mode Imam kini susunan Buku Imam — 22 bagian dokumen jamaah \"Tahlil dan doa IMAM\" yang harakat Arabnya dilengkapi (permintaan pengguna 2026-10-19; semula dipaksa ke susunan Lengkap). Dokumen tidak mencantumkan penanda siapa membaca, maka lencana tiap bagian bi_* diturunkan dari padanan tahapannya pada panduan umum tradisi tahlil: hadiah Al-Fatihah pembuka diimami (yang dituju arwah disebut namanya, makmum menyambut amin), surat dan ayat dibaca bersama-sama, tahlil 100x dan tasbih 33x sendiri-sendiri dalam hati, rangkaian doa diimami. Entri panduan untuk 41 bagian Lengkap dipertahankan sebagai rujukan padanan — bukan bacaan Mode Imam lagi. Yang tetap ditambahkan hanyalah aba-aba (panggilan nama bagian) yang diucapkan imam sebelum setiap bagian serta catatan siapa yang membaca, agar makmum tahu apa yang akan dibaca setelah aba-aba. Adat aba-aba berbeda-beda antar daerah dan pengajian — pakailah ini sebagai panduan umum dan ikuti imam setempat.",
   "siapa_ket": {
     "Bersama": "Imam & makmum membaca bersama-sama",
     "Imam": "Imam yang membaca, makmum menyimak",
@@ -109,7 +109,7 @@
     "sholawat_afdhal_1": {
       "aba": "Shalawat afdhal",
       "siapa": "Bersama",
-      "ket": "Nūril hudā wa misbāḥuḥ… — pilihan sholawat afdhal yang masyhur di majelis NU."
+      "ket": "Nūril hudā wa misbāḥuḥ… — pilihan sholawat afdhal yang masyhur di majelis tahlil."
     },
     "sholawat_afdhal_2": {
       "aba": "Shalawat afdhal",

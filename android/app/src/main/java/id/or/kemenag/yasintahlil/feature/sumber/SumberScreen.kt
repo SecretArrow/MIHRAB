@@ -44,9 +44,8 @@ fun SumberScreen() {
         ),
         "Tahlil & doa arwah" to listOf(
             "Susunan Tahlil Ringkas (28 bagian) & Lengkap (41 bagian): " +
-                "${ContentValidator.SITUS_NU}/tahlil (NU Online) — lafaz berharakat, latin, dan " +
-                "terjemahan diekstraksi dari halaman " +
-                "resmi dan diverifikasi lintas bundel.",
+                "susunan bacaan tahlil yang beredar umum — lafaz berharakat, latin, dan " +
+                "terjemahan diverifikasi lintas bundel.",
             "Susunan Buku Imam (22 bagian): rangkaian buku panduan tahlil imam milik jamaah " +
                 "(dokumen \"Tahlil dan doa IMAM\", 2026-10-18) — harakat Arab dilengkapi dan " +
                 "transliterasi Latin disederhanakan polos dari gaya ilmiah dokumen; " +
