@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.19.1] - 2026-10-31
+
 ### Diperbaiki
 - **Semua branding NU/Nahdlatul Ulama pada teks tampil menjadi umum** (permintaan pengguna,
   2026-10-31: *"ubah semua versi nahdlatul ulama/nu menjadi umum"*). Nama susunan
@@ -19,6 +21,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   transparansi Tentang dan gerbang konten; id internal `nu_online_*` tidak berubah sehingga
   pilihan susunan tersimpan pengguna aman; versi web ikut (footer + salinan konten
   tersinkron ulang).
+
+**Rilis otomatis** dari commit `05533e324391c8a8d76f89eca037a8422e9e220a`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.19.1`.
 
 ## [1.19.0] - 2026-10-31
 
