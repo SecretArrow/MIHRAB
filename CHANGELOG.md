@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.19.2] - 2026-10-31
+
 ### Diperbaiki
 - **Halaman web tanpa catatan kaki panjang** (permintaan pengguna, 2026-10-31: *"tanpa teks
   semacam ini …"*). Tiga paragraf catatan kaki di `web/index.html` — ringkasan sumber bacaan,
@@ -14,6 +16,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   berubah sehingga gerbang `tools/sinkron_web.py --check` tetap lulus dan deploy GitHub
   Pages terbit ulang. Sesuai pesan yang sama, pengembangan aplikasi Android dihentikan
   sementara — fokus perbaikan pada versi web.
+
+**Rilis otomatis** dari commit `f7803a9049b2da27390d6e860ec791dbc2986eb2`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.19.2`.
 
 ## [1.19.1] - 2026-10-31
 
