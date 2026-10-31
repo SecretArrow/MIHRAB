@@ -160,3 +160,13 @@ harus berasal dari `assets/content` agar sumbernya dapat ditelusuri.
 Terakhir, gate **menuntut `kategori`** pada setiap berkas ber-Arab (nilai tak dikenal = galat),
 dan **menolak nilai `kategori` di luar** `quran`/`hadis`/`dzikir`/`tradisi`. Lihat bagian
 "Kategori sumber bacaan (wajib)" di atas; pasangan ujinya adalah `SumberKategoriTest`.
+
+## Salinan konten di `web/content/` (versi web)
+
+Versi web (`web/`) melayani konten Tahlil yang sama. Sumber tunggalnya TETAP bundel Android
+di atas — `web/content/tahlil.json`, `tahlil_full.json`, dan `tahlil_imam.json` hanyalah
+**salinan** yang dibuat `tools/sinkron_web.py`. Gerbang ganda menjaga salinan itu tidak
+pernah basi: deploy GitHub Pages (`web-pages.yml`) menolak terbit bila `--check` mendeteksi
+perbedaan byte dengan bundelnya, dan perubahan pada salah satu sisi menggugat deploy berikutnya.
+Perbaiki teks di bundel Android, jalankan `python3 tools/sinkron_web.py`, commit keduanya
+sebagai satu perubahan.

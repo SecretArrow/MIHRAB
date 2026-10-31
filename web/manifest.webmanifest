@@ -1,0 +1,19 @@
+{
+  "name": "MIHRAB Web — Tahlil & Doa Arwah",
+  "short_name": "MIHRAB Web",
+  "description": "Bacaan Tahlil tiga susunan dengan Mode Imam dan Daftar Arwah — versi web dari aplikasi MIHRAB.",
+  "lang": "id",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f7f4ec",
+  "theme_color": "#1b5e46",
+  "icons": [
+    {
+      "src": "icons/ikon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -30,6 +30,7 @@ jobs:
       # tetap terpakai lewat `--build-cache` di langkah uji — emulator hanya perlu memasang
       # dan menjalankan uji.
       - name: Bangun APK uji (tanpa emulator)
+        working-directory: android
         run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --build-cache
 
       # Akselerasi perangkat keras: `/dev/kvm` ADA di runner, tetapi pengguna `runner` tidak

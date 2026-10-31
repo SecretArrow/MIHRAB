@@ -28,7 +28,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTENT = ROOT / "app" / "src" / "main" / "assets" / "content"
+CONTENT = ROOT / "android" / "app" / "src" / "main" / "assets" / "content"
 
 # Layanan yang dipakai situs resmi quran.kemenag.go.id untuk memuat ayat.
 API = "https://web-api.qurankemenag.net"

@@ -5,6 +5,27 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Fitur
+- **Daftar Arwah** (permintaan pengguna, 2026-10-20: *"saya lihat imam disini membaca daftar
+  nama nama orang yang sudah wafat di tahlil dan juga doa"*). Buku "Tahlil dan doa IMAM"
+  menulis titik-titik pada Bagian 4 ("hadhrati ruhi…") — tempat imam menyebut nama arwah yang
+  dituju — dan frasa doa *"man ijtama'na hahuna bisababihi"* menunjuk orang tertentu tanpa
+  menulis namanya. Aplikasi kini menyediakan tempatnya: kartu Daftar Arwah di Bagian 4
+  (tulis–tambah–hapus nama) dan panel pengingat di kartu doa 20/21. Nama adalah **data
+  pengguna sendiri** — disimpan lokal di perangkat (`Store.ARWAH`, ikut backup/pulihkan),
+  tidak pernah disisipkan ke lafaz bacaan, dan buku tetap persis.
+
+### Diubah
+- **Struktur repo: proyek Android kini di `android/`, versi web di `web/`** (permintaan
+  pengguna, 2026-10-20). Seluruh pipeline (CI, E2E, Rilis Otomatis, Auto Release) mengikuti
+  lokasi baru — `working-directory: android`, keystore.properties ditulis ke `android/`,
+  Dependabot memantau `/android`, dan rantai resolusi path penjaga uji diperluas naik ke akar
+  repo. Isi aplikasi tidak berubah.
+- **Versi web di `web/`**: halaman statis tanpa tahap bangun — Tahlil tiga susunan, Mode Imam
+  dengan lencana siapa membaca, dan Daftar Arwah (localStorage); konten disalin dari bundel
+  Android lewat `tools/sinkron_web.py`, deploy GitHub Pages (`web-pages.yml`) menolak bila
+  salinannya basi.
+
 ## [1.18.4] - 2026-10-19
 
 ### Diperbaiki

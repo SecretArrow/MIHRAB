@@ -111,7 +111,7 @@ tunggu_tenang() {
 }
 
 jalankan_uji() {
-  ./gradlew :app:connectedDebugAndroidTest --build-cache > "$LOG" 2>&1
+  (cd android && ./gradlew :app:connectedDebugAndroidTest --build-cache) > "$LOG" 2>&1
 }
 
 # plan.txt: "Pemeriksaan crash serta error log". Uji yang lulus bisa saja melewati proses
@@ -153,7 +153,7 @@ buang_bukti() {
   echo "=== proses aplikasi ==="
   adb shell ps -A 2>/dev/null | grep -i yasintahlil || echo "(proses aplikasi tidak ada)"
   echo "=== laporan uji (XML) ==="
-  find app/build/outputs/androidTest-results -name '*.xml' -newermt '-30 minutes' 2>/dev/null \
+  find android/app/build/outputs/androidTest-results -name '*.xml' -newermt '-30 minutes' 2>/dev/null \
     | head -5 | while read -r f; do echo "--- $f"; tail -n 40 "$f"; done || true
 }
 

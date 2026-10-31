@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Naikkan versi rilis di tempat: `versionName`/`versionCode` di app/build.gradle.kts + CHANGELOG.md.
+"""Naikkan versi rilis di tempat: `versionName`/`versionCode` di android/app/build.gradle.kts + CHANGELOG.md.
 
 Dipakai oleh `.github/workflows/auto-release.yml` untuk rilis otomatis. Versi hidup di SATU tempat
-— `app/build.gradle.kts` — dan tag rilis wajib menyamainya (`release.yml` membandingkan keduanya
+— `android/app/build.gradle.kts` — dan tag rilis wajib menyamainya (`release.yml` membandingkan keduanya
 lalu menggagalkan rilis bila berbeda), jadi kenaikan versi pun harus dilakukan pada sumber yang
 sama, bukan diketik ulang di workflow. Angka yang disalin ke banyak tempat pasti menyimpang.
 
 Yang dilakukan:
-  1. Membaca `versionName` ("X.Y.Z") dan `versionCode` (bilangan bulat) dari `app/build.gradle.kts`
+  1. Membaca `versionName` ("X.Y.Z") dan `versionCode` (bilangan bulat) dari `android/app/build.gradle.kts`
      — masing-masing wajib tepat satu kali, kalau tidak: galat keras. Baris komentar yang menyebut
      kedua nama itu tidak ikut terbaca karena polanya menuntut awal baris berupa penugasan.
   2. Menurunkan versi baru: `--jenis minor` → X.(Y+1).0; `--jenis patch` (bawaan) → X.Y.(Z+1).
@@ -38,7 +38,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-BERKAS_GRADLE = Path("app/build.gradle.kts")
+BERKAS_GRADLE = Path("android/app/build.gradle.kts")
 BERKAS_CHANGELOG = Path("CHANGELOG.md")
 
 # Awal baris (bukan komentar) berupa penugasan versionName/versionCode. Backreference menahan

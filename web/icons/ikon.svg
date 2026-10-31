@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Ikon MIHRAB Web — buku terbuka dengan bulan sabit">
+  <rect width="128" height="128" rx="28" fill="#1b5e46"/>
+  <path d="M64 26a14 14 0 1 0 12 22 18 18 0 1 1-4-30 14 14 0 0 0-8 8z" fill="#f4e3b2"/>
+  <path d="M20 74c14-8 30-8 44 2 14-10 30-10 44-2v26c-14-8-30-8-44 2-14-10-30-10-44-2z" fill="#f4e3b2"/>
+  <path d="M64 76v26" stroke="#1b5e46" stroke-width="3"/>
+</svg>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIHRAB Web — Tahlil &amp; Doa Arwah</title>
+<meta name="description" content="Versi web bacaan Tahlil: tiga susunan (Ringkas, Lengkap, Buku Imam), Mode Imam dengan lencana siapa membaca, dan Daftar Arwah — konten disinkronkan dari bundel aplikasi Android MIHRAB.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/ikon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="gaya.css">
+</head>
+<body>
+<header>
+  <div class="kepala">
+    <h1>Tahlil &amp; Doa Arwah <span class="kecil">— MIHRAB Web</span></h1>
+    <p id="jumlah-bagian" class="kecil"></p>
+  </div>
+  <nav class="chip" id="chip-susunan" aria-label="Pilih susunan"></nav>
+  <nav class="chip" id="chip-imam" aria-label="Mode Imam"></nav>
+</header>
+<main>
+  <p id="galat" class="galat" hidden>Gagal memuat konten — buka halaman ini melalui server
+  (di komputer: <code>python3 -m http.server -d web</code>), bukan lewat berkas langsung.</p>
+  <div id="daftar-bacaan"></div>
+</main>
+<footer>
+  <p><strong>Sumber bacaan:</strong> Susunan Ringkas &amp; Lengkap mengikuti NU Online
+  (quran.nu.or.id/tahlil) — lafaz berharakat, Latin, dan terjemahan dari halaman resminya;
+  susunan <em>Buku Imam</em> mengikuti dokumen jamaah "Tahlil dan doa IMAM" (2026-10-18) —
+  teks dokumen apa adanya, harakat Arab dilengkapi dan transliterasi Latin polos, tanpa
+  terjemahan sebab dokumen tidak menyertakannya. Lencana siapa membaca (Mode Imam) adalah
+  panduan umum tradisi tahlil, diturunkan dari padanan tahapannya.</p>
+  <p><strong>Daftar Arwah</strong> adalah data Anda sendiri: disimpan lokal di peramban
+  Anda, tidak dikirim ke mana pun, dan tidak pernah disisipkan ke lafaz bacaan — buku
+  menulis titik-titik sebagai tempat imam menyebut nama arwah yang dituju.</p>
+  <p>Versi web dari aplikasi Android
+  <a href="https://github.com/SecretArrow/MIHRAB">SecretArrow/MIHRAB</a> — konten
+  disinkronkan otomatis dari bundelnya (<code>tools/sinkron_web.py</code>).</p>
+</footer>
+<noscript><p class="galat">Halaman ini membutuhkan JavaScript untuk menampilkan bacaan.</p></noscript>
+<script src="aplikasi.js"></script>
+</body>
+</html>

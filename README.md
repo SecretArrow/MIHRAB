@@ -11,13 +11,16 @@ panduan sholat mengacu Fasolatan Kemenag + verifikasi `sunnah.com`.
 Jangan commit token/API key. Pakai GitHub Secrets.
 
 ## Struktur
-- `app/` kode Android (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
-- `app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
+- `android/` proyek Android — `android/app/` kode (feature: home, yasin, tahlil, sholat incl. ghaib & wudhu, adzan, iqomah, kiblat, jadwal, dzikir, search, settings)
+- `android/app/src/main/assets/content/` JSON konten berlisensi + kolom `sumber_url`
+- `web/` versi web (statis, tanpa tahap bangun) — Tahlil tiga susunan, Mode Imam, dan Daftar
+  Arwah (localStorage); kontennya SALINAN bundel Android lewat `tools/sinkron_web.py`, dan
+  deploy GitHub Pages menolak bila salinannya basi (`.github/workflows/web-pages.yml`)
 - `.github/workflows/` ci (lint+unit+build, hemat), e2e (main/nightly saja), release (tag v*),
   auto-release (rilis otomatis: push main yang lulus seluruh pipeline → naik versi + tag +
   dispatch `release.yml`), autofix (higiene teks: `workflow_dispatch` + sapuan mingguan),
-  workflow-lint (memastikan berkas workflow sendiri dapat dibaca — lihat
-  `tools/check_workflows.py`)
+  web-pages (deploy `web/` ke GitHub Pages), workflow-lint (memastikan berkas workflow sendiri
+  dapat dibaca — lihat `tools/check_workflows.py`)
 - `.github/dependabot.yml` pembaruan dependensi Gradle & GitHub Actions
 - `tools/` gate konten & gate cepat: `validate_content.py` (konten wajib bersumber resmi),
   `validate_bundle.py` (bundel pembaruan), `check_workflows.py` (workflow dapat dibaca),
@@ -82,7 +85,11 @@ Semuanya adalah pilihan sadar, bukan pekerjaan yang tertinggal — supaya tidak 
   pengajuan aplikasi baru (wajib API 36 sejak 31 Agustus 2026).
 
 ## Jalankan lokal (opsional)
-Butuh Android Studio + JDK 17. `./gradlew :app:assembleDebug`.
+Butuh Android Studio + JDK 17. `cd android && ./gradlew :app:assembleDebug`.
+
+Versi web tanpa tahap bangun — layani dengan server statis apa pun dari akar repo:
+`python3 tools/sinkron_web.py && python3 -m http.server -d web` (membuka `index.html`
+langsung dari berkas tidak berfungsi karena peramban memblokir `fetch` lokal).
 
 ## Lisensi
 Kode aplikasi: **Apache License 2.0** — lihat `LICENSE`.

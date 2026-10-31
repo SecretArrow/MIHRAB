@@ -2,7 +2,7 @@
 """Validasi konten keagamaan sesuai SOURCES.md.
 
 Aturan:
-- Setiap JSON di app/src/main/assets/content/ harus JSON valid.
+- Setiap JSON di android/app/src/main/assets/content/ harus JSON valid.
 - Tidak boleh ada kunci objek yang ditulis dua kali (nilainya hilang tanpa jejak).
 - Setiap "entri" (objek yang memuat teks keagamaan) sebaiknya punya `sumber_url`
   yang domainnya termasuk whitelist resmi.
@@ -38,8 +38,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTENT_DIR = ROOT / "app" / "src" / "main" / "assets" / "content"
-CONTENT_VALIDATOR = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+CONTENT_DIR = ROOT / "android" / "app" / "src" / "main" / "assets" / "content"
+CONTENT_VALIDATOR = (ROOT / "android" / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
                      / "yasintahlil" / "core" / "util" / "ContentValidator.kt")
 
 # Pola pengambil daftar host dari sumber Kotlin. Ditulis persis sama di penjaga Kotlin
@@ -93,7 +93,7 @@ ENTRY_KEYS = {"arab", "latin", "terjemahan", "judul", "nama", "dalil"}
 # pengambilnya ditulis persis sama di penjaga Kotlin (`AturanBundelSatuTempatTest`), sehingga pola
 # yang berbeda antar-keduanya tidak dapat lolos tanpa ketahuan.
 
-BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+BUNDEL_KONTEN = (ROOT / "android" / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
                  / "yasintahlil" / "core" / "data" / "BundelKonten.kt")
 
 # Bentuk dokumen konten — nama wadah entri (`bagian`, `bacaan`, `kelompok[].items[]`) dan kunci
@@ -104,14 +104,14 @@ BUNDEL_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag
 # **dilewati** dan berkas cacat lolos CI tanpa satu pun galat — sementara aplikasi tetap membaca
 # wadahnya lewat `BentukKonten`. Karena itu namanya dibaca dari `BentukKonten.kt`, sama seperti
 # aturan bundel dibaca dari `BundelKonten.kt`.
-BENTUK_KONTEN = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+BENTUK_KONTEN = (ROOT / "android" / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
                  / "yasintahlil" / "core" / "data" / "BentukKonten.kt")
 
 # Aturan teks Arab (rentang blok, rentang huruf, tanda harakat, panjang kata minimum) dipakai tiga
 # kali dengan nilai yang sama: `BundelKonten` saat memasang bundel, `ArabicTextTest` saat memeriksa
 # assets, dan gate ini. Rentang Unicode tidak dapat dibaca sekilas, sehingga salinan yang tertinggal
 # tidak pernah tampak salah bagi peninjau — karena itu nilainya dibaca dari satu tempat.
-TEKS_ARAB = (ROOT / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
+TEKS_ARAB = (ROOT / "android" / "app" / "src" / "main" / "java" / "id" / "or" / "kemenag"
              / "yasintahlil" / "core" / "util" / "TeksArab.kt")
 
 # Literal string Kotlin, termasuk escape di dalamnya (`"\\"`), supaya `PEMISAH_NAMA_DILARANG`

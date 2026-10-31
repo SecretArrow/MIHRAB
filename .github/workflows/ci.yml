@@ -35,7 +35,7 @@ jobs:
       - name: "Higiene komentar Kotlin (mencegah galat kompilasi karena komentar tertutup awal)"
         run: |
           python3 tools/check_kotlin_lex.py --uji-diri
-          python3 tools/check_kotlin_lex.py app/src
+          python3 tools/check_kotlin_lex.py android/app/src
       - name: "Higiene teks (akhir baris LF, tanpa spasi ekor, tepat satu baris baru di akhir)"
         run: python3 tools/format_teks.py .
       - name: "Validasi gate bundel pembaruan konten (fixture sah lolos, cacat ditolak)"
@@ -44,10 +44,11 @@ jobs:
           python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/cacat.json
           python3 tools/validate_bundle.py --strict --harus-gagal tools/fixtures/bundel/bacaan-cacat.json
       - name: Lint debug (hemat, tanpa emulator)
+        working-directory: android
         run: ./gradlew :app:lintDebug --parallel --build-cache
       - uses: actions/upload-artifact@v7
         if: failure()
-        with: { name: lint-report, path: app/build/reports/lint-results-debug.html }
+        with: { name: lint-report, path: android/app/build/reports/lint-results-debug.html }
 
   unit:
     runs-on: ubuntu-latest
@@ -58,10 +59,11 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v6
       - name: Unit test (jadwal, kiblat, hijriah, konten, repo)
+        working-directory: android
         run: ./gradlew :app:testDebugUnitTest --parallel --build-cache
       - uses: actions/upload-artifact@v7
         if: always()
-        with: { name: unit-report, path: app/build/reports/tests/testDebugUnitTest/ }
+        with: { name: unit-report, path: android/app/build/reports/tests/testDebugUnitTest/ }
 
   build:
     needs: [lint, unit]
@@ -73,6 +75,7 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v6
       - name: Assemble debug
+        working-directory: android
         run: ./gradlew :app:assembleDebug --parallel --build-cache
       # Sumber `app/src/androidTest` tak disentuh `lintDebug`, `testDebugUnitTest`, maupun kedua
       # perintah assemble di atas: tanpa langkah ini, kesalahan kompilasi di sana baru terbaca
@@ -80,8 +83,10 @@ jobs:
       # satu siklus PR penuh untuk sesuatu yang seharusnya gugur sebelum merge. Tugasnya sama
       # dengan yang dipakai `e2e.yml`, jadi hasilnya terpakai lewat `--build-cache`.
       - name: Kompilasi APK uji instrumented (androidTest)
+        working-directory: android
         run: ./gradlew :app:assembleDebugAndroidTest --parallel --build-cache
       - name: Build release (validasi R8/ProGuard; unsigned bila tanpa keystore)
+        working-directory: android
         run: ./gradlew :app:assembleRelease --parallel --build-cache
       - uses: actions/upload-artifact@v7
-        with: { name: app-debug, path: app/build/outputs/apk/debug/*.apk }
+        with: { name: app-debug, path: android/app/build/outputs/apk/debug/*.apk }

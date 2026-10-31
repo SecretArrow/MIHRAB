@@ -1,0 +1,45 @@
+name: Web (GitHub Pages)
+
+# Versi web di `web/` — statis, tanpa tahap bangun: deploy langsung memuat direktorinya.
+# Gerbang `tools/sinkron_web.py --check` menolak deploy bila salinan konten di web/content/
+# basi terhadap bundel Android — sumber tunggal konten tetap bundel Android, sehingga
+# perbaikan teks yang hanya di salah satu versi gugur di sini, bukan diam-diam terbit.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "android/app/src/main/assets/content/tahlil.json"
+      - "android/app/src/main/assets/content/tahlil_full.json"
+      - "android/app/src/main/assets/content/tahlil_imam.json"
+      - "tools/sinkron_web.py"
+      - ".github/workflows/web-pages.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Gerbang sinkronisasi konten (salinan web wajib segar)
+        run: python3 tools/sinkron_web.py --check
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deployment
+        uses: actions/deploy-pages@v4

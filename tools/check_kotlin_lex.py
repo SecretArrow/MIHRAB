@@ -174,7 +174,7 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] == "--uji-diri":
         return uji_diri()
 
-    akar = Path(sys.argv[1] if len(sys.argv) > 1 else "app/src")
+    akar = Path(sys.argv[1] if len(sys.argv) > 1 else "android/app/src")
     if not akar.is_dir():
         print(f"[check_kotlin_lex] folder tidak ditemukan: {akar}")
         return 1
