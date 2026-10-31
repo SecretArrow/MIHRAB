@@ -19,7 +19,7 @@
 #    `navigation` 2.9.8 (2.10.0 sama), `lifecycle` 2.10.0 (2.11.0 sama), dan `composeBom`
 #    2026.06.01 — BOM 2026.08.00 memetakan compose-ui 1.12.0 yang menuntut 37/AGP 9.1, sedangkan
 #    2026.06.01 memetakan ui 1.11.4 (cs 35).
-agp = "8.13.2"
+agp = "9.5.0"
 kotlin = "2.3.21"
 ksp = "2.3.12"
 hilt = "2.58"
