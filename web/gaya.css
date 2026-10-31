@@ -89,7 +89,5 @@ article {
 .arwah-panel { margin-top: 10px; font-size: 0.85rem; }
 .arwah-panel .daftar { color: var(--hijau-tua); font-weight: 600; }
 details.sumber { margin-top: 8px; font-size: 0.75rem; color: var(--teks-lembut); }
-footer { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--garis); }
-footer p { font-size: 0.8rem; color: var(--teks-lembut); }
 .galat { background: #fdecea; color: #8c2b1d; border-radius: 10px; padding: 10px 14px; }
 a { color: var(--hijau); }

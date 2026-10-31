@@ -5,6 +5,16 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diperbaiki
+- **Halaman web tanpa catatan kaki panjang** (permintaan pengguna, 2026-10-31: *"tanpa teks
+  semacam ini …"*). Tiga paragraf catatan kaki di `web/index.html` — ringkasan sumber bacaan,
+  catatan privasi Daftar Arwah, dan catatan "versi web dari aplikasi Android" — dihapus
+  seluruhnya beserta gaya `footer` di `gaya.css`; halaman kini berhenti pada daftar bacaan.
+  Sumber tiap bagian tetap tersedia di lipatan "Sumber" pada kartunya; salinan konten tidak
+  berubah sehingga gerbang `tools/sinkron_web.py --check` tetap lulus dan deploy GitHub
+  Pages terbit ulang. Sesuai pesan yang sama, pengembangan aplikasi Android dihentikan
+  sementara — fokus perbaikan pada versi web.
+
 ## [1.19.1] - 2026-10-31
 
 ### Diperbaiki

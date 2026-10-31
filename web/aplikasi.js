@@ -1,7 +1,7 @@
 /* MIHRAB Web — Tahlil & Doa Arwah.
  *
  * Konten dibaca dari web/content/ — SALINAN dari bundel Android yang dibuat
- * tools/sinkron_web.py (sumber tunggal tetap bundel Android, lihat footer halaman).
+ * tools/sinkron_web.py (sumber tunggal tetap bundel Android).
  * Keadaan pengguna (susunan terpilih, Mode Imam, Daftar Arwah) disimpan di
  * localStorage peramban — data pengguna, bukan teks bundel, sama seperti di Android.
  */
