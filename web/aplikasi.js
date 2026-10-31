@@ -1,7 +1,9 @@
 /* MIHRAB Web — Tahlil & Doa Arwah.
  *
  * Konten dibaca dari web/content/ — SALINAN dari bundel Android yang dibuat
- * tools/sinkron_web.py (sumber tunggal tetap bundel Android).
+ * tools/sinkron_web.py (sumber tunggal tetap bundel Android). Bagian yang menunjuk
+ * rujukan_file (kartu surat pada Ringkas/Lengkap) diselesaikan di sini persis seperti
+ * ContentRepo di Android — lihat bagian "Rujukan berkas" di bawah.
  * Keadaan pengguna (susunan terpilih, Mode Imam, Daftar Arwah) disimpan di
  * localStorage peramban — data pengguna, bukan teks bundel, sama seperti di Android.
  */
@@ -22,6 +24,7 @@ const keadaan = {
   susunan: [],
   bagian: [],
   lencana: {},
+  rujukan: {},
 };
 
 function simpan() {
@@ -195,6 +198,7 @@ async function mulai() {
     ]);
     keadaan.susunan = tahlil.susunan || [];
     keadaan.bagian = full.bagian || [];
+    await selesaikanRujukan();
     const aba = (imam && imam.aba) || {};
     keadaan.lencana = Object.fromEntries(
       Object.entries(aba).map(([id, a]) => [id, a.siapa || ""]),
@@ -204,6 +208,91 @@ async function mulai() {
   } catch (e) {
     document.getElementById("galat").hidden = false;
     console.error(e);
+  }
+}
+
+/* ---------- Rujukan berkas (rujukan_file) ----------
+ *
+ * Kartu surat pada Ringkas/Lengkap tidak menyimpan teksnya — ia menunjuk berkas lain
+ * (surah_001/112/113/114.json, ayat_kursi.json) lewat rujukan_file, sama seperti di
+ * Android. Resolver di bawah meniru ContentRepo.resolveArabLatinTerjemah +
+ * entriRujukan supaya yang dibaca web persis sama dengan yang dibaca aplikasi:
+ *   - berkas "verses" (surat) dirangkai — Arab dengan koma Arab (U+060C) seperti
+ *     mushaf dibaca bersambung, Latin & terjemahan dengan spasi;
+ *   - akhiran "#id" menunjuk satu entri di dalam berkas (wadah "bagian"/"bacaan"/
+ *     "kelompok[].items[]" — BentukKonten.DAFTAR_ENTRI);
+ *   - teks inline pada bagian tetap menang di atas hasil rujukan;
+ *   - rujukan mati dibiarkan kosong, bukan mengarang isi (gerbang sinkron_web.py
+ *     sudah menolak rujukan mati sebelum halaman ini terbit).
+ */
+
+const WADAH_ENTRI = ["bagian", "bacaan"];
+
+function cariEntri(dok, id) {
+  for (const kunci of WADAH_ENTRI) {
+    const daftar = dok[kunci];
+    if (Array.isArray(daftar)) {
+      const o = daftar.find((e) => e && e.id === id);
+      if (o) return o;
+    }
+  }
+  if (Array.isArray(dok.kelompok)) {
+    for (const g of dok.kelompok) {
+      const items = g && Array.isArray(g.items) ? g.items : [];
+      const o = items.find((e) => e && e.id === id);
+      if (o) return o;
+    }
+  }
+  return null;
+}
+
+function teksRujukan(dok, id) {
+  if (id) {
+    const o = cariEntri(dok, id);
+    return o ? { arab: o.arab || "", latin: o.latin || "", terjemahan: o.terjemahan || "" } : null;
+  }
+  if (Array.isArray(dok.verses)) {
+    const rangkai = (kunci, pisah) => dok.verses.map((v) => v[kunci] || "").join(pisah);
+    return {
+      arab: rangkai("arab", "\u060C "),
+      latin: rangkai("latin", " "),
+      terjemahan: rangkai("terjemahan", " "),
+    };
+  }
+  return { arab: dok.arab || "", latin: dok.latin || "", terjemahan: dok.terjemahan || "" };
+}
+
+async function selesaikanRujukan() {
+  const nama = new Set();
+  for (const b of keadaan.bagian) {
+    for (const kunci of ["rujukan_file", "rujukanFile"]) {
+      const nilai = typeof b[kunci] === "string" ? b[kunci] : "";
+      const n = nilai.split("#", 1)[0].trim();
+      if (n) nama.add(n);
+    }
+  }
+  keadaan.rujukan = {};
+  await Promise.all(
+    [...nama].map(async (n) => {
+      const r = await fetch(`content/${encodeURIComponent(n)}`);
+      if (!r.ok) throw new Error(`Rujukan konten ${n} tidak dapat dibaca`);
+      keadaan.rujukan[n] = await r.json();
+    }),
+  );
+  for (const b of keadaan.bagian) {
+    for (const kunci of ["rujukan_file", "rujukanFile"]) {
+      if (typeof b[kunci] !== "string") continue;
+      const potong = b[kunci].split("#");
+      const namaBerkas = potong[0].trim();
+      if (!namaBerkas) continue;
+      const dok = keadaan.rujukan[namaBerkas];
+      const t = dok ? teksRujukan(dok, (potong[1] || "").trim()) : null;
+      if (!t) continue; // rujukan mati → tetap kosong, sama seperti Android
+      if (!b.arab) b.arab = t.arab;
+      if (!b.latin) b.latin = t.latin;
+      if (!b.terjemahan) b.terjemahan = t.terjemahan;
+      break;
+    }
   }
 }
 

@@ -5,6 +5,20 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diperbaiki
+- **Kartu surat pada Ringkas/Lengkap versi web kini terisi** (ditemukan saat verifikasi
+  urutan & bacaan atas permintaan pengguna, 2026-10-31). Bagian Al-Ikhlas,
+  Al-Falaq, An-Nas, Al-Fatihah (pembuka & penutup), dan Ayat Kursi tidak menyimpan teks —
+  ia menunjuk `rujukan_file` (surah_001/112/113/114.json, ayat_kursi.json) yang di Android
+  diselesaikan `ContentRepo`; salinan web tidak memuat berkas itu dan halamannya tidak
+  menyelesaikan rujukan, sehingga enam kartu tampil kosong. Kini `tools/sinkron_web.py`
+  memindai seluruh `rujukan_file` di bundel lalu menyalin sasarannya dan menolak rujukan
+  mati (sejalur `BundelKonten.periksaRujukan`), sementara `web/aplikasi.js` menyelesaikan
+  rujukannya persis seperti Android — Arab surat dirangkai koma Arab (U+060C), Latin dan
+  terjemahan dengan spasi. Verifikasi penuh: Buku Imam 22/22 bagian cocok dokumen jamaah
+  (urutan, judul, huruf dasar Arab, Latin, pengulangan, slot arwah utuh), Ringkas 28 dan
+  Lengkap 41 tanpa bagian kosong, urutan keduanya tak bergeser dari v1.18.4.
+
 ## [1.19.2] - 2026-10-31
 
 ### Diperbaiki
