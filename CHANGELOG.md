@@ -5,6 +5,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+## [1.19.3] - 2026-10-31
+
 ### Diperbaiki
 - **Kartu surat pada Ringkas/Lengkap versi web kini terisi** (ditemukan saat verifikasi
   urutan & bacaan atas permintaan pengguna, 2026-10-31). Bagian Al-Ikhlas,
@@ -18,6 +20,8 @@ Versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   terjemahan dengan spasi. Verifikasi penuh: Buku Imam 22/22 bagian cocok dokumen jamaah
   (urutan, judul, huruf dasar Arab, Latin, pengulangan, slot arwah utuh), Ringkas 28 dan
   Lengkap 41 tanpa bagian kosong, urutan keduanya tak bergeser dari v1.18.4.
+
+**Rilis otomatis** dari commit `618934259addc942032f94dd020ae5d57d5485f6`: seluruh pipeline push `main` (CI lint+unit+build, E2E emulator, workflow-lint) telah lulus sebelum versi dinaikkan. Versi dan changelog ditulis oleh `tools/naik_versi.py` melalui `.github/workflows/auto-release.yml`; catatan lengkap perubahan dihasilkan otomatis pada GitHub Release tag `v1.19.3`.
 
 ## [1.19.2] - 2026-10-31
 
